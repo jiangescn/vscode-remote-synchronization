@@ -63,6 +63,13 @@
                 "isDefault": true
             },
             "detail": "调试器生成的任务。"
+        },
+        {
+            "label": "Git: Auto Sync",
+            "type": "shell",
+            "command": "powershell -ExecutionPolicy Bypass -File sync.ps1",
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }

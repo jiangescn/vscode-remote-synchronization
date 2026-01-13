@@ -13,9 +13,9 @@ const int N = 998244353;
 int ksm(int a, int b, int mod)
 {
     int ans = 1;
-    while(b)
+    while (b)
     {
-        if(b & 1)
+        if (b & 1)
         {
             ans = ans * a % mod;
         }
@@ -124,7 +124,8 @@ string mtp(string la, string lb)
 signed main()
 {
     int a;
-    int b;
-    cin >> a >> b;
-    cout << ksm(a, b, N) << endl;
+    cin >> a;
+    cout << a;
+
+    return 0;
 }

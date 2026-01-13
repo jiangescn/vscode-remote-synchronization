@@ -1,6 +1,5 @@
-# Auto sync to GitHub
+# Auto sync to GitHub (safe version)
 
-# 如果没有变更，直接退出
 if (-not (git status --porcelain)) {
     Write-Host "No changes to commit"
     exit 0
