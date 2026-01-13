@@ -1,0 +1,1 @@
+{"name":"Local: Substrings_Sort","url":"/media/legion/Data/code/learn/STL专项/Substrings_Sort.cpp","tests":[{"id":1764471444677,"input":"5\na\naba\nabacaba\nba\naba\n","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/media/legion/Data/code/learn/STL专项/Substrings_Sort.cpp","group":"local","local":true}

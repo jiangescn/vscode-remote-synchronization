@@ -1,0 +1,1 @@
+{"name":"Local: 实验六 4","url":"e:\\code\\homework\\实验六 4.c","tests":[{"id":1766545822085,"input":"14 25 36\n47 58 69 \n71 82 93","output":"14 47 71\n25 58 82\n36 69 93"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\homework\\实验六 4.c","group":"local","local":true}

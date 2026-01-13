@@ -1,0 +1,1 @@
+{"name":"Local: B - Power Socket","url":"e:\\code\\atcoder\\B - Power Socket.cpp","tests":[{"id":1764934381473,"input":"4 10 ","output":"3"},{"id":1764934390294,"input":"8 9 ","output":"2"},{"id":1764934397656,"input":"8 8","output":"1"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\atcoder\\B - Power Socket.cpp","group":"local","local":true}
