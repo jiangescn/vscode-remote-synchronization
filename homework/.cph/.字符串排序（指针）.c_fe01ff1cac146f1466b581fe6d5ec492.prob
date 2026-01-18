@@ -1,0 +1,1 @@
+{"name":"Local: 字符串排序（指针）","url":"e:\\code\\homework\\字符串排序（指针）.c","tests":[{"id":1767149722974,"input":"apple\npeach\npineapple\nwatermelon \nstrawberry","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\homework\\字符串排序（指针）.c","group":"local","local":true}

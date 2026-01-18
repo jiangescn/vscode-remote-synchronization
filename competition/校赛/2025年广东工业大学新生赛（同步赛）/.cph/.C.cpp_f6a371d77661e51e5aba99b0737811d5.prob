@@ -1,0 +1,1 @@
+{"name":"Local: C","url":"/media/legion/Data/code/competition/2025年广东工业大学新生赛（同步赛）/C.cpp","tests":[{"id":1764482014056,"input":"2\n5 3\n2 3 6 1 4\n6\n12\n1\n7 1\n2 1 1 1 1 1 3\n6","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/media/legion/Data/code/competition/2025年广东工业大学新生赛（同步赛）/C.cpp","group":"local","local":true}

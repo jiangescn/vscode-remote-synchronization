@@ -1,0 +1,1 @@
+{"name":"Local: P1226 【模板】快速幂 ","url":"e:\\code\\模板\\P1226 【模板】快速幂 .cpp","tests":[{"id":1765255735091,"input":"2 10 9\n","output":"2^10 mod 9=7\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\模板\\P1226 【模板】快速幂 .cpp","group":"local","local":true}

@@ -1,0 +1,1 @@
+{"name":"Local: 方阵的转置(函数的参数为数组指针)","url":"e:\\code\\homework\\方阵的转置(函数的参数为数组指针).c","tests":[{"id":1767150554287,"input":"14 25 36\n47 58 69 \n71 82 93","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\homework\\方阵的转置(函数的参数为数组指针).c","group":"local","local":true}

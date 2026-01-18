@@ -1,0 +1,1 @@
+{"name":"Local: B3613 图的存储与出边的排序","url":"e:\\code\\learn\\vjudge\\图论入门\\B3613 图的存储与出边的排序.cpp","tests":[{"id":1763344500887,"input":"2\n3 4\n1 3\n1 2\n3 2\n3 1\n3 9\n1 3\n2 3\n3 3\n1 2\n2 2\n3 2\n1 1\n2 1\n3 1","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\learn\\vjudge\\图论入门\\B3613 图的存储与出边的排序.cpp","group":"local","local":true}

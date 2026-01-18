@@ -1,0 +1,1 @@
+{"name":"Local: 口算练习题","url":"e:\\code\\learn\\vjudge\\字符串\\口算练习题.cpp","tests":[{"id":1764060606335,"input":"4\na 64 46\n275 125\nc 11 99\nb 46 64\n","output":"64+46=110\n9\n275+125=400\n11\n11*99=1089\n10\n46-64=-18\n9\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\learn\\vjudge\\字符串\\口算练习题.cpp","group":"local","local":true}

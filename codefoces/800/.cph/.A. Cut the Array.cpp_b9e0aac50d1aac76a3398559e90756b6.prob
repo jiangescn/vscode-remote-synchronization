@@ -1,0 +1,1 @@
+{"name":"Local: A","url":"e:\\code\\codefoces\\800\\A. Cut the Array.cpp","tests":[{"id":1761280893307,"input":"4\n6\n1 2 3 4 5 6\n4\n1 3 3 7\n3\n2 1 0\n5\n7 2 6 2 4\n","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\codefoces\\800\\A. Cut the Array.cpp","group":"local","local":true}
