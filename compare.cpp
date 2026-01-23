@@ -1,32 +1,38 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define int long long
+using ll = long long;
 
-void solve()
+int main()
 {
-    int a = 1, b = 1, c = 0;
-    int n;
-    cin >> n;
-    for (int i = 3; i <= n; i++)
+    int n, k;
+    if (!(cin >> n >> k))
+        return 0;
+    vector<int> m(n);
+    ll M = 0, P = 0;
+    for (int i = 0; i < n; i++)
     {
-        c = a + b;
-        a = b;
-        b = c;
+        cin >> m[i];
+        M += m[i];
+        P += (ll)m[i] * (i + 1);
     }
-    cout << c << ".00";
-    return;
-}
-
-signed main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr), cout.tie(nullptr);
-
-    int t = 1;
-    // cin >> t;
-    while (t--)
+    int N = 1 << n;
+    for (int mask = 0; mask < N; ++mask)
     {
-        solve();
+        if (__builtin_popcount(mask) != k)
+            continue;
+        ll MS = 0, PS = 0;
+        for (int i = 0; i < n; i++)
+            if (mask & (1 << i))
+            {
+                MS += m[i];
+                PS += (ll)m[i] * (i + 1);
+            }
+        if (PS * M == P * MS)
+        {
+            cout << "Yes\n";
+            return 0;
+        }
     }
+    cout << "No\n";
     return 0;
 }
