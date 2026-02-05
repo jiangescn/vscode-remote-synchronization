@@ -4,7 +4,20 @@ using namespace std;
 
 void solve()
 {
-    
+    int n;
+    cin >> n;
+    if(n <= 3)
+    {
+        cout << n << endl;
+    }
+    else if(n & 1)
+    {
+        cout << 1 << endl;
+    }
+    else
+    {
+        cout << 0 << endl;
+    }
 
 }
 
@@ -14,7 +27,7 @@ signed main()
     cin.tie(nullptr), cout.tie(nullptr);
     
     int t = 1;
-    //cin >> t;
+    cin >> t;
     while (t--)
     {
         solve();
