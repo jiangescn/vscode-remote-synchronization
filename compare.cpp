@@ -1,37 +1,28 @@
 #include <bits/stdc++.h>
 using namespace std;
-// #define int long long
+#define int long long
+
+const int MAXV = 1000000; // 状态上界（包含）
+
+int re(int x)
+{
+    int r = 0;
+    while (x > 0)
+    {
+        r = r * 10 + (x % 10);
+        x /= 10;
+    }
+    return r;
+}
+
+// 全局静态数组用时间戳法避免每组测试 memset
+static vector<int> seen(MAXV + 1, 0);
+static vector<int> deep(MAXV + 1, 0);
 
 void solve()
 {
-    string s;
-    cin >> s;
-    int n = s.size();
-    s = ' ' + s;
-    vector<vector<int>> dp(n + 1, vector<int>(26, 0));
-
-    int ans = 1e11;
-    for (int i = 0; i <= 25; i++)
-    {
-        dp.assign(n + 1, vector<int>(26, 0));
-        for (int j = 1; j <= n; j++)
-        {
-            for (int k = 0; k < 26; k++)
-            {
-                if (s[j] - 'a' == k)
-                {
-                    dp[j][k] = min(dp[j - 1][(k - i + 26) % 26], dp[j - 1][(k + i + 26) % 26]);
-                }
-                else
-                {
-                    dp[j][k] = min(dp[j - 1][(k - i + 26) % 26], dp[j - 1][(k + i + 26) % 26]) + 1;
-                }
-            }
-        }
-        ans = min(ans, *min_element(dp[n].begin(), dp[n].end()));
-    }
-
-    cout << ans << '\n';
+    int a = 2;
+    cout << a << endl;
 }
 
 signed main()
@@ -40,7 +31,7 @@ signed main()
     cin.tie(nullptr), cout.tie(nullptr);
 
     int t = 1;
-    // cin >> t;
+    cin >> t;
     while (t--)
     {
         solve();
