@@ -1,4 +1,4 @@
-p#include <bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 #define int long long
 const int N = 2e5 + 10;
