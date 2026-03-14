@@ -142,9 +142,7 @@ string mtp(string la, string lb)
 
 signed main()
 {
-    int a;
-    cin >> a;
-    cout << a;
+    cout << qpow(2, 1) << endl;
 
     return 0;
 }

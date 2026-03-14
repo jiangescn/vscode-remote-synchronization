@@ -1,0 +1,1 @@
+{"name":"Local: 2025-L2-1 算式拆解","url":"e:\\code\\homework\\天梯赛\\2025L2\\2025-L2-1 算式拆解.cpp","tests":[{"id":1773457132001,"input":"(((2+3)*4)-(5/(6*7)))\n","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\homework\\天梯赛\\2025L2\\2025-L2-1 算式拆解.cpp","group":"local","local":true}
