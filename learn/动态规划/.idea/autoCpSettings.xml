@@ -3,7 +3,6 @@
   <component name="settings.Project">
     <option name="fileGenerationRoot">
       <map>
-        <entry key="Codeforces" value="competition\Codeforces\Codeforces Round 1076 (Div 3) " />
         <entry key="Virtual Judge" value="动态规划" />
       </map>
     </option>

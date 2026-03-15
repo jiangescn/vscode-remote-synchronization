@@ -1,84 +1,35 @@
 #include <bits/stdc++.h>
 using namespace std;
-// #define int long long
+#define int long long
 
 void solve()
 {
-    int n, x;
-    cin >> n >> x;
-    vector<multiset<int>> s(n);
-    for (int i = 0; i < x; i++)
+    int T, S, t;
+    cin >> T >> S >> t;
+
+    if(T >= 35 && t >= 33)
     {
-        int a, b;
-        cin >> a >> b;
-        s[a].insert(b);
-        s[b].insert(a);
+        if(S == 1)
+        {
+            cout << "Bu Tie" << endl;
+        }
+        else
+        {
+            cout << "Shi Nei" << endl;
+        }
+        cout << T << endl;
     }
-
-    vector<int> vi(n);
-
-    stack<int> st;
-    for (int i = 0; i < n; i++)
+    else
     {
-        vector<int> ansdfs;
-        if (vi[i])
-            continue;
-
-        st.push(i);
-        while (!st.empty())
+        if (S == 1)
         {
-            int a = st.top();
-            st.pop();
-
-            if (vi[a]) continue;
-            vi[a] = 1;
-            ansdfs.push_back(a);
-
-            for (auto it = s[a].rbegin(); it != s[a].rend(); ++it)
-            {
-                if (!vi[*it])
-                    st.push(*it);
-            }
+            cout << "Bu Re" << endl;
         }
-
-        cout << "{ ";
-        for (int j = 0; j < ansdfs.size(); j++)
+        else
         {
-            cout << ansdfs[j] << " ";
+            cout << "ShU Shi" << endl;
         }
-        cout << "}" << '\n';
-    }
-
-    fill(vi.begin(), vi.end(), 0);
-    queue<int> q;
-    for (int i = 0; i < n; i++)
-    {
-        vector<int> ansbfs;
-        if (vi[i])
-            continue;
-
-        q.push(i);
-        vi[i] = 1;
-        while (!q.empty())
-        {
-            int a = q.front();
-            q.pop();
-            ansbfs.push_back(a);
-            for (auto it : s[a])
-            {
-                if (vi[it])
-                    continue;
-                q.push(it);
-                vi[it] = 1;
-            }
-        }
-
-        cout << "{ ";
-        for (int i = 0; i < ansbfs.size(); i++)
-        {
-            cout << ansbfs[i] << " ";
-        }
-        cout << "}" << endl;
+        cout << t << endl;
     }
 }
 
