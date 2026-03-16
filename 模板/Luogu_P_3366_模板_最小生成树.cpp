@@ -40,7 +40,7 @@ void solve()
     {
         father[i] = i;
     }
-
+ 
     for (int i = 1; i <= m; i++)
     {
         int x, y, z;

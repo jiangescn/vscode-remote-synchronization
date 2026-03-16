@@ -11,7 +11,7 @@ struct bian
     int ii;
 };
 
-int Find(int x, vector<int> &fa)
+int father(int x, vector<int> &fa)
 {
     if (fa[x] == x)
     {
@@ -19,14 +19,14 @@ int Find(int x, vector<int> &fa)
     }
     else
     {
-        return fa[x] = Find(fa[x], fa);
+        return fa[x] = father(fa[x], fa);
     }
 }
 
 void un(int x, int y, vector<int> &fa)
 {
-    x = Find(x, fa);
-    y = Find(y, fa);
+    x = father(x, fa);
+    y = father(y, fa);
     if (x != y)
         fa[x] = y;
 }
@@ -51,7 +51,6 @@ void solve()
         if (s[i].p)
         {
             ans.push_back(s[i].ii);
-            un(s[i].v, s[i].v, fa);
             un(s[i].v, s[i].u, fa);
         }
     }
@@ -61,7 +60,7 @@ void solve()
 
     for (int i = 1; i <= m; i++)
     {
-        if (Find(s[i].u, fa) == Find(s[i].v, fa))
+        if (father(s[i].u, fa) == father(s[i].v, fa))
         {
             continue;
         }
@@ -72,11 +71,11 @@ void solve()
         }
     }
 
-    int seam = Find(1, fa);
+    int seam = father(1, fa);
     int ok = 1;
     for (int i = 1; i <= n; i++)
     {
-        if (Find(i, fa) != seam)
+        if (father(i, fa) != seam)
         {
             ok = 0;
         }
@@ -88,7 +87,8 @@ void solve()
         for (int k = 0; k < ans.size(); k++)
         {
             cout << ans[k] << " ";
-        }cout << endl;
+        }
+        cout << endl;
     }
     else
     {
