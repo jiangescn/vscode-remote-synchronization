@@ -2,107 +2,61 @@
 using namespace std;
 #define int long long
 
-struct bian
-{
-    int u;
-    int v;
-    int w;
-    int p;
-    int ii;
-};
+const int mod = 1e9 + 7;
 
-int Find(int x, vector<int> &fa)
+void solve ()
 {
-    if (fa[x] == x)
-    {
-        return x;
+    int n;
+    cin >> n;
+    vector <vector <int> > e(n + 1);
+    for (int i = 1; i <= n; i++) {
+        int l, r;
+        cin >> l >> r;
+        if (l != 0) e[i].push_back(l), e[l].push_back(i);
+        if (r != 0) e[i].push_back(r), e[r].push_back(i);
     }
-    else
-    {
-        return fa[x] = Find(fa[x], fa);
-    }
-}
-
-void un(int x, int y, vector<int> &fa)
-{
-    x = Find(x, fa);
-    y = Find(y, fa);
-    if (x != y)
-        fa[x] = y;
-}
-void solve()
-{
-    int n, m;
-    cin >> n >> m;
-
-    vector<bian> s(m + 1);
-    vector<int> ans;
-
-    vector<int> fa(n + 1);
-    for (int i = 1; i <= n; i++)
-    {
-        fa[i] = i;
-    }
-
-    for (int i = 1; i <= m; i++)
-    {
-        cin >> s[i].u >> s[i].v >> s[i].w >> s[i].p;
-        s[i].ii = i;
-        if (s[i].p)
-        {
-            ans.push_back(s[i].ii);
-            un(s[i].v, s[i].v, fa);
-            un(s[i].v, s[i].u, fa);
+ 
+    vector <int> val(n + 1, 0);
+    auto dfs1 = [&] (auto self, int u, int fa) -> void {
+        val[u] = 1;
+        for (auto v : e[u]) {
+            if (v == fa) continue;
+            self(self, v, u);
+            val[u] += val[v];
         }
-    }
+    };
+    dfs1(dfs1, 1, 0);
 
-    sort(s.begin() + 1, s.end(), [](bian a, bian b)
-         { return a.w < b.w; });
-
-    for (int i = 1; i <= m; i++)
-    {
-        if (Find(s[i].u, fa) == Find(s[i].v, fa))
-        {
-            continue;
+    vector <int> ans(n + 1, 0);
+    auto dfs2 = [&] (auto self, int u, int fa) -> void {
+        ans[u] = ((ans[fa] + val[u] * 2 % mod) % mod - 1) % mod;
+        for (auto v : e[u]) {
+            if (v == fa) continue;
+            self(self, v, u);
         }
-        else
-        {
-            un(s[i].u, s[i].v, fa);
-            ans.push_back(s[i].ii);
-        }
-    }
+    };
+    dfs2(dfs2, 1, 0);
 
-    int seam = Find(1, fa);
-    int ok = 1;
-    for (int i = 1; i <= n; i++)
-    {
-        if (Find(i, fa) != seam)
-        {
-            ok = 0;
-        }
+    for (int i = 1; i <= n; i++) {
+        cout << ans[i] << " \n"[i == n];
     }
-
-    if (ok)
-    {
-        cout << ans.size() << endl;
-        for (int k = 0; k < ans.size(); k++)
-        {
-            cout << ans[k] << " ";
-        }cout << endl;
-    }
-    else
-    {
-        cout << -1 << endl;
-    }
-}
-signed main()
+    
+}   
+    
+int32_t main ()
 {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+    ios::sync_with_stdio(0);
+    cin.tie(0);
     int _ = 1;
-    while (_--)
-    {
+    cin >> _;
+    while (_--) {
         solve();
     }
     return 0;
 }
+
+/*
+  /\_/\
+ (= ._.)
+ / >  \>
+*/
