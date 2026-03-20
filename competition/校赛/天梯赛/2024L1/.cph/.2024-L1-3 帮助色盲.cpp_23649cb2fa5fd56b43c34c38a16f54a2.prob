@@ -1,0 +1,1 @@
+{"name":"Local: 2024-L1-3 帮助色盲","url":"e:\\code\\competition\\校赛\\天梯赛\\2024L1\\2024-L1-3 帮助色盲.cpp","tests":[{"id":1773921680666,"input":"0 0","output":"biii\nstop"},{"id":1773921687496,"input":"1 1","output":"-\nmove"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\competition\\校赛\\天梯赛\\2024L1\\2024-L1-3 帮助色盲.cpp","group":"local","local":true}

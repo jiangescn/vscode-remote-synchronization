@@ -1,0 +1,1 @@
+{"name":"Local: 2025-L2-3 胖达的山头","url":"e:\\code\\homework\\天梯赛\\2025L2\\2025-L2-3 胖达的山头.cpp","tests":[{"id":1773920634086,"input":"4\n16:30:00 23:00:00\n04:50:00 11:25:59\n11:25:59 22:00:00\n11:26:00 15:45:23","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\homework\\天梯赛\\2025L2\\2025-L2-3 胖达的山头.cpp","group":"local","local":true}
