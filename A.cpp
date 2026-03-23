@@ -8,7 +8,7 @@
 #include <string>
 using namespace std;
 #define int long long
-// const int N = 998244353;   
+// const int N = 998244353;
 const long long mod = 1e9 + 7;
 const int N = 200005;
 int fac[N + 1], invfac[N + 1];
@@ -140,9 +140,21 @@ string mtp(string la, string lb)
     return ans;
 }
 
+void solve()
+{
+    
+}
+
 signed main()
 {
-    cout << qpow(2, 1) << endl;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr), cout.tie(nullptr);
 
+    int t = 1;
+    // cin >> t;
+    while (t--)
+    {
+        solve();
+    }
     return 0;
 }

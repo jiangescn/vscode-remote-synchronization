@@ -1,26 +1,21 @@
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
-#include <stack>
+#include <bits/stdc++.h>
 using namespace std;
 #define int long long
 
 void solve()
 {
+    int n;
+    cin >> n;
+    
 }
 
 signed main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr), cout.tie(nullptr);
-
+    
     int t = 1;
-    // cin >> t;
+    cin >> t;
     while (t--)
     {
         solve();

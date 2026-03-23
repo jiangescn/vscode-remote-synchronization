@@ -1,17 +1,12 @@
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
+#include <bits/stdc++.h>
 using namespace std;
 #define int long long
 
 void solve()
 {
-    
+    int a = 1;
+    // int x = max(a, 4);
+    int x = max(a, 4ll);
 
 }
 
