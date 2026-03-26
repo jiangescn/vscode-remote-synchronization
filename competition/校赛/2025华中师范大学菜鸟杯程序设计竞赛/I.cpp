@@ -1,9 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-// #define int long long
-
-// const int N = 1e9 + 1;
-// vector<int> dp;
 vector<double> s(1, 0);
 
 void solve()

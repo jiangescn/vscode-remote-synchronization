@@ -4,9 +4,7 @@ using namespace std;
 
 void solve()
 {
-    int a = 1;
-    // int x = max(a, 4);
-    int x = max(a, 4ll);
+    
 
 }
 

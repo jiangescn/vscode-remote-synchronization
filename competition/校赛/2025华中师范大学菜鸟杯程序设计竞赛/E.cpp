@@ -27,8 +27,8 @@ void solve()
     cin >> n >> m;
     cin >> A >> B >> C;
 
-    int p = A % MOD * inv(A + B) % MOD; // p = A / (A+B)
-    int q = B % MOD * inv(A + B) % MOD; // q = B / (A+B)
+    int p = A % MOD * inv(A + B) % MOD;
+    int q = B % MOD * inv(A + B) % MOD;
 
     int x = n, y = m;
     int ans = 0;
