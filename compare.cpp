@@ -2,73 +2,63 @@
 using namespace std;
 #define int long long
 
-// 返回 x 的最低位 1 的下标（0-based），若 x == 0 返回 -1
-int ctz_pos(int x)
-{
-    if (x == 0)
-        return -1;
-    int pos = 0;
-    while ((x & 1LL) == 0)
-    {
-        x >>= 1;
-        ++pos;
-    }
-    return pos;
-}
-
-// 检查长度 len 是否可行
-bool check_len(int s, int m, int len)
-{
-    __int128 sum = 0;
-    for (int bit = 0; bit <= 60; bit++)
-    {
-        if ((m >> bit) & 1LL)
-        {
-            sum += len;
-        }
-        if ((s >> bit) & 1LL)
-        {
-            if (sum == 0)
-                return false;
-            --sum;
-        }
-        sum /= 2;
-    }
-    return true;
-}
-
 void solve()
 {
-    int s, m;
-    cin >> s >> m;
+    int n;
+    cin >> n;
 
-    int k1 = ctz_pos(s);
-    int k2 = ctz_pos(m);
-
-    if (k1 < k2)
+    vector<vector<int>> g(n + 1);
+    for (int i = 1; i < n; i++)
     {
-        cout << -1 << '\n';
-        return;
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
     }
 
-    int l = 1, r = (int)1e18;
-    int ans = -1;
+    vector<int> good(n + 1, 0); // 是否为 good 点
+    vector<int> cnt(n + 1, 0);  // 相邻 good 点数量
+    queue<int> q;
 
-    while (l <= r)
+    // 所有非根叶子初始就是 good
+    for (int i = 2; i <= n; i++)
     {
-        int mid = l + (r - l) / 2;
-        if (check_len(s, m, mid))
+        if ((int)g[i].size() == 1)
         {
-            ans = mid;
-            r = mid - 1;
-        }
-        else
-        {
-            l = mid + 1;
+            good[i] = 1;
+            q.push(i);
         }
     }
 
-    cout << ans << '\n';
+    // 反向传播：相邻 good 点数 >= 2 的点也变成 good
+    while (!q.empty())
+    {
+        int u = q.front();
+        q.pop();
+
+        for (int v : g[u])
+        {
+            cnt[v]++;
+            if (!good[v] && cnt[v] >= 2)
+            {
+                good[v] = 1;
+                q.push(v);
+            }
+        }
+    }
+
+    // 根节点只要有一个 good 邻居，小红就能先手走过去
+    bool ok = false;
+    for (int v : g[1])
+    {
+        if (good[v])
+        {
+            ok = true;
+            break;
+        }
+    }
+
+    cout << (ok ? "red" : "purple") << '\n';
 }
 
 signed main()
@@ -76,9 +66,9 @@ signed main()
     ios::sync_with_stdio(false);
     cin.tie(nullptr), cout.tie(nullptr);
 
-    int t = 1;
-    cin >> t;
-    while (t--)
+    int T;
+    cin >> T;
+    while (T--)
     {
         solve();
     }
