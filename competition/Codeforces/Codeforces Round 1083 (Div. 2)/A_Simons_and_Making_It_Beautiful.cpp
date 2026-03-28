@@ -4,11 +4,29 @@ using namespace std;
 
 void solve()
 {
-    int n = 9;
-    for (int i = n - 1; n >= 0; i--)
+    int n;
+    cin >> n;
+    vector<int> s(n + 1);
+    int Max = 0;
+    int idx;
+    for (int i = 1; i <= n; i++)
     {
-        
+        cin >> s[i];
+        if(s[i] > Max)
+        {
+            Max = s[i];
+            idx = i;
+        }
     }
+
+    swap(s[1], s[idx]);
+    for (int i = 1; i <= n; i++)
+    {
+        cout << s[i] << " ";
+    }
+
+    cout << endl;
+    return;
 
 }
 
@@ -18,7 +36,7 @@ signed main()
     cin.tie(nullptr), cout.tie(nullptr);
     
     int t = 1;
-    //cin >> t;
+    cin >> t;
     while (t--)
     {
         solve();

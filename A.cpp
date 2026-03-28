@@ -9,6 +9,27 @@
 using namespace std;
 #define int long long
 // const int N = 998244353;
+
+vector<pair<long long, int>> fct(long long n)
+{
+    vector<pair<long long, int>> res;
+    for (long long i = 2; i * i <= n; i++)
+    {
+        if (n % i == 0)
+        {
+            int cnt = 0;
+            while (n % i == 0)
+            {
+                n /= i;
+                cnt++;
+            }
+            res.push_back({i, cnt});
+        }
+    }
+    if (n > 1) res.push_back({n, 1});
+    return res;
+}
+
 const long long mod = 1e9 + 7;
 const int N = 200005;
 int fac[N + 1], invfac[N + 1];
