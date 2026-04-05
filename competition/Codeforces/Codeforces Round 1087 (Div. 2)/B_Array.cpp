@@ -12,31 +12,26 @@ void solve()
         cin >> s[i];
     }
 
-    sort(s.begin() + 1, s.end());
-    vector<int> ans;
-
-    for (int i = 1; i <= n; i++)
+    for (int i = 1; i < n; i++)
     {
-        if (ans.empty())
+        int count1 = 0;
+        int count2 = 0;
+        for (int j = i + 1; j <= n; j++)
         {
-            ans.push_back(s[i]);
-            continue;
+            if(s[j] > s[i]) count1++;
+            if(s[j] < s[i]) count2++;
         }
-
-        if(s[i] - ans.back() >= ans.size())
-        {
-            ans.push_back(s[i]);
-        }
+        cout << max(count1, count2) << " ";
     }
 
-    cout << ans.size() << endl;
+    cout << 0 << endl;
 }
 
 signed main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr), cout.tie(nullptr);
-
+    
     int t = 1;
     cin >> t;
     while (t--)

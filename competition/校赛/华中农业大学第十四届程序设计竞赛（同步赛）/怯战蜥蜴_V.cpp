@@ -4,24 +4,19 @@ using namespace std;
 
 void solve()
 {
-    map<int, int> s;
-    for (int i = 1; i <= 10000; i++)
+    int n;
+    cin >> n;
+    vector<int> s(n + 1);
+    for (int i = 1; i <= n; i++)
     {
-        s[i*i]++;
+        int a;
+        cin >> a;
+        s[a]++;
     }
 
-
-    int x, l, r;
-    cin >> x >> l >> r;
-
-    if(x >= l && x <= r)
+    for (int i = 1; i <= n; i++)
     {
-        cout << x << endl;
-        return;
-    }
-    for (int i = l; i <= r; i++)
-    {
-        if(s[x * i])
+        if(s[i] == 0)
         {
             cout << i << endl;
             return;
@@ -38,7 +33,7 @@ signed main()
     cin.tie(nullptr), cout.tie(nullptr);
     
     int t = 1;
-    //cin >> t;
+    cin >> t;
     while (t--)
     {
         solve();

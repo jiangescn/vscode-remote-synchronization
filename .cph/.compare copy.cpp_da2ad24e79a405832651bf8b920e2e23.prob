@@ -1,1 +1,1 @@
-{"name":"Local: compare copy","url":"e:\\code\\compare copy.cpp","tests":[{"id":1774329084866,"input":"1 2 3 ","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\compare copy.cpp","group":"local","local":true}
+{"name":"Local: compare copy","url":"e:\\code\\compare copy.cpp","tests":[{"id":1774329084866,"input":"2\n5 1800\n1900 1900 1900 1900 1900\n3 2400\n800 800 800","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\compare copy.cpp","group":"local","local":true}

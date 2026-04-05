@@ -7,38 +7,42 @@ void solve()
     int n;
     cin >> n;
     vector<int> s(n + 1);
+    int x = 0;
     for (int i = 1; i <= n; i++)
     {
         cin >> s[i];
+        x ^= s[i];
     }
 
-    sort(s.begin() + 1, s.end());
-    vector<int> ans;
-
-    for (int i = 1; i <= n; i++)
+    int pre_count = 0;
+    int ans = 0;
+    int pre = 0, suf = (x ^ s[1]);
+    for (int i = 2; i <= n - 1; i++)
     {
-        if (ans.empty())
+        pre ^= s[i -1];
+        suf ^= s[i];
+        if(pre == x)
         {
-            ans.push_back(s[i]);
-            continue;
+            pre_count++;
         }
 
-        if(s[i] - ans.back() >= ans.size())
+        if(suf == x)
         {
-            ans.push_back(s[i]);
+            ans += pre_count;
         }
     }
 
-    cout << ans.size() << endl;
+
+    cout << ans << endl;
 }
 
 signed main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr), cout.tie(nullptr);
-
+    
     int t = 1;
-    cin >> t;
+    //cin >> t;
     while (t--)
     {
         solve();

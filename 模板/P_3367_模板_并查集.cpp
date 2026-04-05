@@ -93,59 +93,59 @@ void solve1()
     }
 }
 
-// // 按秩合并优化  按高度合并
-// int find2(int x)
-// {
-//     if (fa[x] == x)
-//     {
-//         return x;
-//     }
-//     else
-//     {
-//         return find2(fa[x]);
-//     }
-// }
+// 按秩合并优化  按高度合并
+int find2(int x)
+{
+    if (fa[x] == x)
+    {
+        return x;
+    }
+    else
+    {
+        return find2(fa[x]);
+    }
+}
 
-// void solve2()
-// {
-//     int n, m;
-//     cin >> n >> m;
-//     for (int i = 1; i <= n; i++)
-//     {
-//         fa[i] = i;
-//         rankv[i] = 1;
-//     }
+void solve2()
+{
+    int n, m;
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++)
+    {
+        fa[i] = i;
+        rankv[i] = 1;
+    }
 
-//     for (int i = 1; i <= m; i++)
-//     {
-//         int op, x, y;
-//         cin >> op >> x >> y;
-//         x = find2(x), y = find2(y);
-//         if (op == 1)
-//         {
-//             if (rankv[x] > rankv[y])
-//             {
-//                 swap(x, y);
-//             }
-//             if (rankv[x] == rankv[y])
-//             {
-//                 rankv[y]++;
-//             }
-//             fa[x] = y;
-//         }
-//         else
-//         {
-//             if(x == y)
-//             {
-//                 cout << "Y" << endl;
-//             }
-//             else
-//             {
-//                 cout << "N" << endl;
-//             }
-//         }
-//     }
-// }
+    for (int i = 1; i <= m; i++)
+    {
+        int op, x, y;
+        cin >> op >> x >> y;
+        x = find2(x), y = find2(y);
+        if (op == 1)
+        {
+            if (rankv[x] > rankv[y])
+            {
+                swap(x, y);
+            }
+            if (rankv[x] == rankv[y])
+            {
+                rankv[y]++;
+            }
+            fa[x] = y;
+        }
+        else
+        {
+            if(x == y)
+            {
+                cout << "Y" << endl;
+            }
+            else
+            {
+                cout << "N" << endl;
+            }
+        }
+    }
+}
 
 signed main()
 {

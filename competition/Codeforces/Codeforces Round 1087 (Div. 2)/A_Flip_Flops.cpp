@@ -4,8 +4,8 @@ using namespace std;
 
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, c, k;
+    cin >> n >> c >> k;
     vector<int> s(n + 1);
     for (int i = 1; i <= n; i++)
     {
@@ -13,30 +13,37 @@ void solve()
     }
 
     sort(s.begin() + 1, s.end());
-    vector<int> ans;
 
     for (int i = 1; i <= n; i++)
     {
-        if (ans.empty())
+        if(c >= s[i] + 1 && k > 0)
         {
-            ans.push_back(s[i]);
-            continue;
-        }
+            int Max = min(c - s[i], k);
 
-        if(s[i] - ans.back() >= ans.size())
+            k -= Max;
+            c += Max + s[i];
+        }
+        else if(c >= s[i])
         {
-            ans.push_back(s[i]);
+            c += s[i];
+        }
+        else
+        {
+            break;
         }
     }
 
-    cout << ans.size() << endl;
+    cout << c << endl;
+    return;
+
+
 }
 
 signed main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr), cout.tie(nullptr);
-
+    
     int t = 1;
     cin >> t;
     while (t--)

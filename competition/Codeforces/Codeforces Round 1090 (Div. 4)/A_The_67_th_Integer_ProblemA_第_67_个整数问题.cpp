@@ -4,20 +4,21 @@ using namespace std;
 
 void solve()
 {
-    int a, b, c;
-    cin >> a >> b >> c;
-    cout << (int)max({a, b, c}) << endl;
+    int n;
+    cin >> n;
+    cout << n << endl;
 }
 
 signed main()
 {
     ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+    cin.tie(nullptr), cout.tie(nullptr);
 
     int t = 1;
-    // cin >> t;
+    cin >> t;
     while (t--)
+    {
         solve();
-
+    }
     return 0;
 }

@@ -12,31 +12,25 @@ void solve()
         cin >> s[i];
     }
 
-    sort(s.begin() + 1, s.end());
-    vector<int> ans;
+    if(n == 1)
+    {
+        cout << 1 << endl;
+        return;
+    }
 
     for (int i = 1; i <= n; i++)
     {
-        if (ans.empty())
-        {
-            ans.push_back(s[i]);
-            continue;
-        }
-
-        if(s[i] - ans.back() >= ans.size())
-        {
-            ans.push_back(s[i]);
-        }
+        cout << 2 << " ";
     }
-
-    cout << ans.size() << endl;
+    cout << endl;
+    return;
 }
 
 signed main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr), cout.tie(nullptr);
-
+    
     int t = 1;
     cin >> t;
     while (t--)
