@@ -90,7 +90,6 @@ signed main()
     {
         int n;
         cin >> n;
-
         vector<int> a(n + 1), pre1(n + 1), pre2(n + 1), pre(n + 1);
         for (int i = 1; i <= n; i++)
         {
