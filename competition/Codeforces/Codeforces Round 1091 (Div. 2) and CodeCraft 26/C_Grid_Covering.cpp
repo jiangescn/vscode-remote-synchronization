@@ -21,20 +21,12 @@ bool isPrime(int n)
     return true;
 }
 
-void solve(){
+void solve()
+{
     int n, m, a, b;
     cin >> n >> m >> a >> b;
 
-    if(a == 1)
-    {
-        if(b == 1)
-        {
-            cout << "YES" << endl;
-            return;
-        }
-    }
-
-    if(isPrime(n % a) && isPrime(m % b))
+    if (__gcd(n, a) == 1 && __gcd(m, b) == 1 && __gcd(n, m) <= 2)
     {
         cout << "YES" << endl;
     }
@@ -43,7 +35,6 @@ void solve(){
         cout << "NO" << endl;
     }
 
-    // cout << 985865 % 899368 << endl;
 
 }
 

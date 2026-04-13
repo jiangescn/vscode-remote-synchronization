@@ -1,102 +1,34 @@
 #include <bits/stdc++.h>
-using namespace std;
-
-const int MAXL = 1000000 + 5;
-
-int n, k;
-char s[MAXL];
-
-// trie
-int idx;          // 当前节点总数
-int tr[MAXL][26]; // trie 边
-int ed[MAXL];     // ed[u]：有多少字符串恰好在 u 结束
-int sum[MAXL];    // sum[u]：u 子树里一共有多少字符串
-
-int newNode()
-{
-    ++idx;
-    ed[idx] = 0;
-    sum[idx] = 0;
-    memset(tr[idx], 0, sizeof(tr[idx]));
-    return idx;
-}
-
-void insertStr()
-{
-    int u = 1;
-    ++sum[u];
-    for (int i = 1; s[i]; i++)
-    {
-        int c = s[i] - 'a';
-        if (!tr[u][c])
-            tr[u][c] = newNode();
-        u = tr[u][c];
-        ++sum[u];
-    }
-    ++ed[u];
-}
+#define int long long
 
 void solve()
 {
-    scanf("%d%d", &n, &k);
-
-    idx = 0;
-    newNode(); // root = 1
-
+    int n, k, p, q;
+    std::cin >> n >> k >> p >> q;
+    std::vector<int> ve(n + 1, 0);
+    std::vector<int> prea(n + 1, 0), preb(n + 1, 0), prec(n + 1, 0);
     for (int i = 1; i <= n; i++)
     {
-        scanf("%s", s + 1);
-        insertStr();
+        std::cin >> ve[i];
+        prea[i] = (ve[i] % p) % q + prea[i - 1];
+        preb[i] = (ve[i] % q) % p + preb[i - 1];
+        prec[i] = std::min((ve[i] % p) % q, (ve[i] % q) % p) + prec[i - 1];
+        // std:: cout<<ve[i]%p<<' '<<(ve[i]%q)%p<<'\n';
     }
-
-    int u = 1;
-
-    while (true)
+    int total = 1e18;
+    for (int i = k; i <= n; i++)
     {
-        // 当前前缀本身作为答案时，最多能选多少个串
-        int can = ed[u];
-        for (int c = 0; c < 26; c++)
-        {
-            if (tr[u][c] && sum[tr[u][c]] > 0)
-                ++can;
-        }
-
-        // 如果已经能选够 k 个，那么当前前缀就是答案
-        if (can >= k)
-        {
-            if (u == 1)
-                printf("EMPTY");
-            printf("\n");
-            return;
-        }
-
-        // 贪心确定下一位
-        for (int c = 0; c < 26; c++)
-        {
-            int v = tr[u][c];
-            if (!v || sum[v] == 0)
-                continue;
-
-            // 把当前这个儿子从“最多选 1 个”改成“整棵子树都能选”
-            can = can - 1 + sum[v];
-
-            if (can >= k)
-            {
-                // 外面的串已经够固定了，只需要在这个子树里继续找剩下的
-                k -= (can - sum[v]);
-                u = v;
-                printf("%c", char('a' + c));
-                break;
-            }
-        }
+        int mn = std::min(prea[i] - prea[i - k], preb[i] - preb[i - k]);
+        total = std::min(total, prec[i - k] + prec[n] - prec[i] + mn);
     }
+    std::cout << total << '\n';
 }
-
-int main()
+signed main()
 {
-    int T;
-    scanf("%d", &T);
-    while (T--)
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0), std::cout.tie(0);
+    int t = 1;
+    std::cin >> t;
+    while (t--)
         solve();
-    return 0;
 }
