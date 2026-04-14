@@ -1,34 +1,55 @@
 #include <bits/stdc++.h>
 #define int long long
+using namespace std;
 
-void solve()
+using arr2 = array<int, 2>;
+
+void ovo()
 {
-    int n, k, p, q;
-    std::cin >> n >> k >> p >> q;
-    std::vector<int> ve(n + 1, 0);
-    std::vector<int> prea(n + 1, 0), preb(n + 1, 0), prec(n + 1, 0);
+    int n;
+    cin >> n;
+
+    vector<vector<int>> g(n + 1);
+    for (int i = 0; i < n - 1; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    vector<arr2> dp(n + 1);
+
+    auto dfs = [&](auto self, int u, int fa) -> void
+    {
+        dp[u][0] = 0; // 不删 u
+        dp[u][1] = 1; // 删 u
+
+        for (int v : g[u])
+        {
+            if (v == fa)
+                continue;
+            self(self, v, u);
+            dp[u][0] += dp[v][1];
+            dp[u][1] += min(dp[v][0], dp[v][1]);
+        }
+    };
+
+    dfs(dfs, 1, 0);
+
     for (int i = 1; i <= n; i++)
     {
-        std::cin >> ve[i];
-        prea[i] = (ve[i] % p) % q + prea[i - 1];
-        preb[i] = (ve[i] % q) % p + preb[i - 1];
-        prec[i] = std::min((ve[i] % p) % q, (ve[i] % q) % p) + prec[i - 1];
-        // std:: cout<<ve[i]%p<<' '<<(ve[i]%q)%p<<'\n';
+        cout << min(dp[i][0], dp[i][1]) << " \n"[i == n];
     }
-    int total = 1e18;
-    for (int i = k; i <= n; i++)
-    {
-        int mn = std::min(prea[i] - prea[i - k], preb[i] - preb[i - k]);
-        total = std::min(total, prec[i - k] + prec[n] - prec[i] + mn);
-    }
-    std::cout << total << '\n';
 }
+
 signed main()
 {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0), std::cout.tie(0);
-    int t = 1;
-    std::cin >> t;
-    while (t--)
-        solve();
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+
+    int T;
+    cin >> T;
+    while (T--)
+        ovo();
 }

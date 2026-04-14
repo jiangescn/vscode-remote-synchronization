@@ -50,6 +50,7 @@ int qpow(int a, int b)
     }
     return r;
 }
+
 int inv(int x)
 {
     return qpow(x, mod - 2) % mod;
