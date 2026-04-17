@@ -1,55 +1,61 @@
 #include <bits/stdc++.h>
-#define int long long
 using namespace std;
 
-using arr2 = array<int, 2>;
+int L, N;
+long long ans = 0;
+vector<int> col, rowv;
 
-void ovo()
+// 枚举第 r 行的内容
+void genRow(int r, int pos, int rest)
 {
-    int n;
-    cin >> n;
-
-    vector<vector<int>> g(n + 1);
-    for (int i = 0; i < n - 1; i++)
+    if (pos == N - 1)
     {
-        int u, v;
-        cin >> u >> v;
-        g[u].push_back(v);
-        g[v].push_back(u);
+        // 最后一个位置由剩余值决定
+        if (rest <= col[pos])
+        {
+            rowv[pos] = rest;
+            for (int j = 0; j < N; j++)
+                col[j] -= rowv[j];
+
+            // 继续填下一行
+            if (r == N - 2)
+            {
+                // 前 N-1 行填完，最后一行唯一确定
+                ans++;
+            }
+            else
+            {
+                genRow(r + 1, 0, L);
+            }
+
+            for (int j = 0; j < N; j++)
+                col[j] += rowv[j];
+        }
+        return;
     }
 
-    vector<arr2> dp(n + 1);
-
-    auto dfs = [&](auto self, int u, int fa) -> void
+    for (int x = 0; x <= min(rest, col[pos]); x++)
     {
-        dp[u][0] = 0; // 不删 u
-        dp[u][1] = 1; // 删 u
-
-        for (int v : g[u])
-        {
-            if (v == fa)
-                continue;
-            self(self, v, u);
-            dp[u][0] += dp[v][1];
-            dp[u][1] += min(dp[v][0], dp[v][1]);
-        }
-    };
-
-    dfs(dfs, 1, 0);
-
-    for (int i = 1; i <= n; i++)
-    {
-        cout << min(dp[i][0], dp[i][1]) << " \n"[i == n];
+        rowv[pos] = x;
+        genRow(r, pos + 1, rest - x);
     }
 }
 
-signed main()
+int main()
 {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
+    cin >> L >> N;
 
-    int T;
-    cin >> T;
-    while (T--)
-        ovo();
+    col.assign(N, L);
+    rowv.assign(N, 0);
+
+    if (N == 1)
+    {
+        cout << 1 << "\n";
+        return 0;
+    }
+
+    genRow(0, 0, L);
+
+    cout << ans << "\n";
+    return 0;
 }
