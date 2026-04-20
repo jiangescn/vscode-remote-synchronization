@@ -1,92 +1,113 @@
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
-#include <stack>
+#include <bits/stdc++.h>
 using namespace std;
-#define int long long
 
-vector<vector<int>> s;
-vector<int> idx;
-vector<int> reidx;
-int timer = 1;
+const long long INF = (1LL << 60);
 
-vector<int> sz;
-
-
-int dfs(int x)
+int main()
 {
-    idx[x] = timer++;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-    if(s[x].size() == 0) return 1;
+    long long b;
+    int n, m, k;
+    cin >> b >> n >> m >> k;
 
-    for (int i = 0; i < s[x].size(); i++)
-    {
-        sz[x] += dfs(s[x][i]);
-    }
-
-    return sz[x];
-}
-
-void solve()
-{
-    int n, q;
-    cin >> n >> q;
-
-    s.resize(n + 1);
-    idx.resize(n + 1);
-    reidx.resize(n + 1);
-    sz.resize(n + 1, 1);
-    for (int i = 2; i <= n; i++)
-    {
-        int a;
-        cin >> a;
-        s[a].push_back(i);
-    }
-
-    for (int i = 1; i < s.size(); i++)
-    {
-        sort(s[i].begin(), s[i].end());
-    }
-
-
-    dfs(1);
+    vector<vector<long long>> dist(n + 1, vector<long long>(n + 1, INF));
+    vector<vector<long long>> mood(n + 1, vector<long long>(n + 1, -1));
 
     for (int i = 1; i <= n; i++)
     {
-        reidx[idx[i]] = i;
+        dist[i][i] = 0;
+        mood[i][i] = 0;
     }
 
-    while(q--)
+    for (int i = 0; i < m; i++)
     {
-        int u, k;
-        cin >> u >> k;
+        int u, v;
+        long long cost, happy;
+        cin >> u >> v >> cost >> happy;
 
-        if(k > sz[u])
+        // 题目说任意两城市之间最多一条路，这里直接赋值即可
+        dist[u][v] = dist[v][u] = cost;
+        mood[u][v] = mood[v][u] = happy;
+    }
+
+    // Floyd：最短路 + 同最短路下最大心情值
+    for (int mid = 1; mid <= n; mid++)
+    {
+        for (int i = 1; i <= n; i++)
         {
-            cout << -1 << endl;
+            if (dist[i][mid] == INF) continue;
+            for (int j = 1; j <= n; j++)
+            {
+                if (dist[mid][j] == INF) continue;
+
+                long long nd = dist[i][mid] + dist[mid][j];
+                long long nm = mood[i][mid] + mood[mid][j];
+
+                if (nd < dist[i][j])
+                {
+                    dist[i][j] = nd;
+                    mood[i][j] = nm;
+                }
+                else if (nd == dist[i][j] && nm > mood[i][j])
+                {
+                    mood[i][j] = nm;
+                }
+            }
+        }
+    }
+
+    vector<int> query(k);
+    for (int i = 0; i < k; i++)
+        cin >> query[i];
+
+    for (int qi = 0; qi < k; qi++)
+    {
+        int s = query[qi];
+        vector<int> reachable;
+        long long bestMood = -1;
+
+        for (int v = 1; v <= n; v++)
+        {
+            if (v == s)
+                continue;
+            if (dist[s][v] <= b)
+            {
+                reachable.push_back(v);
+                bestMood = max(bestMood, mood[s][v]);
+            }
+        }
+
+        if (reachable.empty())
+        {
+            cout << "T_T\n";
             continue;
         }
 
-        cout << reidx[idx[u] + k - 1] << endl;
+        // 第一行：所有可达城市（按编号升序，当前枚举本来就是升序）
+        for (int i = 0; i < (int)reachable.size(); i++)
+        {
+            if (i)
+                cout << ' ';
+            cout << reachable[i];
+        }
+        cout << '\n';
+
+        // 第二行：心情指数总值最高的那些城市
+        bool first = true;
+        for (int v : reachable)
+        {
+            if (mood[s][v] == bestMood)
+            {
+                if (!first)
+                    cout << ' ';
+                cout << v;
+                first = false;
+            }
+        }
+        cout << '\n';
     }
 
-}
-
-signed main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr), cout.tie(nullptr);
-
-    int t = 1;
-    // cin >> t;
-    while (t--)
-    {
-        solve();
-    }
     return 0;
 }
