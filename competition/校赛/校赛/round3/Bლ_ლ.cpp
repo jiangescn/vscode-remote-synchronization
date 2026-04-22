@@ -4,7 +4,6 @@ using namespace std;
 
 void solve()
 {
-
     int n;
     cin >> n;
     vector<int> s(n + 1);

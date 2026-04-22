@@ -12,7 +12,6 @@ void solve()
         cin >> s[i];
     }
 
-
     vector<int> candi;
     int l = 1, r = 2;
     while(l <= n && r <= n)

@@ -13,11 +13,12 @@ int ask(vector<int> s)
 
     int n;
     cin >> n;
-    if(n == -1) exit(0);
+    if (n == -1)
+        exit(0);
     return n;
 }
 
-int check (vector<int> s)
+int check(vector<int> s)
 {
     int n = ask(s);
     return (s.size() - n) & 1;
@@ -30,16 +31,16 @@ void solve()
     int N = 2 * n + 1;
 
     int l = 1, r = N;
-    while(l < r)
+    while (l < r)
     {
         int mid = l + (r - l) / 2;
         vector<int> t;
-        for (int i = l; i <= mid; i++)
+        for (int i = 1; i <= mid; i++)
         {
             t.push_back(i);
         }
 
-        if(check(t))
+        if (check(t))
         {
             r = mid;
         }
@@ -50,17 +51,17 @@ void solve()
     }
     int z = l;
 
-    int l = 1, r = N;
-    while(l < r)
+    l = 1, r = N;
+    while (l < r)
     {
-        int mid = l + (r - l) / 2; 
+        int mid = l + (r - l + 1) / 2;
         vector<int> t;
         for (int i = mid; i <= N; i++)
         {
             t.push_back(i);
         }
 
-        if(check(t))
+        if (check(t))
         {
             l = mid;
         }
@@ -71,8 +72,8 @@ void solve()
     }
     int x = l;
 
-    int l = x + 1, r = z - 1;
-    while(l < r)
+    l = x + 1, r = z - 1;
+    while (l < r)
     {
         int mid = l + (r - l) / 2;
         vector<int> t;
@@ -83,8 +84,10 @@ void solve()
             t.push_back(i);
         }
 
-        if(check(t)) r = mid;
-        else l = mid + 1;
+        if (check(t))
+            r = mid;
+        else
+            l = mid + 1;
     }
     int y = l;
 
