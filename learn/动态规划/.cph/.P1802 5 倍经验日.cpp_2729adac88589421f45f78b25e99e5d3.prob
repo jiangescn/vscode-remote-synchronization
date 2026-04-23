@@ -1,0 +1,1 @@
+{"name":"Local: P1802 5 倍经验日","url":"e:\\code\\learn\\动态规划\\P1802 5 倍经验日.cpp","tests":[{"id":1776913612375,"input":"6 8\n21 52 1\n21 70 5\n21 48 2\n14 38 3\n14 36 1\n14 36 2\n","output":"1060"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\learn\\动态规划\\P1802 5 倍经验日.cpp","group":"local","local":true}

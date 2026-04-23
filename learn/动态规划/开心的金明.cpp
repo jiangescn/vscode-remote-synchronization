@@ -22,7 +22,6 @@ void solve()
         s[i] = val[i] * price[i];
     }
 
-    int ans = 0;
     vector<vector<int>> dp(n + 1, vector<int>(5 * m));
     for (int i = 1; i <= n; i++)
     {

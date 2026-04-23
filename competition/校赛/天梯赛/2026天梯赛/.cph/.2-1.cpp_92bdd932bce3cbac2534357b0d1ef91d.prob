@@ -1,0 +1,1 @@
+{"name":"Local: 2-1","url":"c:\\Users\\LEGION\\Desktop\\code\\2-1.cpp","tests":[{"id":1776493534201,"input":"10 2\n233 8 1 6 0 745 2 555 42 3\n","output":"3 5 7 10 9 4 2 1 8 6\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\LEGION\\Desktop\\code\\2-1.cpp","group":"local","local":true}

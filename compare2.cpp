@@ -1,107 +1,50 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define int long long
 
-int ask(vector<int> s)
+int main()
 {
-    cout << "? " << s.size();
-    for (auto it : s)
+    int T;
+    cin >> T;
+    while (T--)
     {
-        cout << " " << it;
+        int n;
+        cin >> n;
+        vector<int> a(n);
+
+        for (int i = 0; i < n; i++)
+            cin >> a[i];
+
+        vector<vector<int>> e(n);
+
+        for (int i = 1; i < n; i++)
+        {
+            int u, v;
+            cin >> u >> v;
+            u--, v--;
+            e[u].push_back(v);
+            e[v].push_back(u);
+        }
+
+        long long res = 0;
+
+        auto dfs = [&](auto &&self, int u, int fa) -> int
+        {
+            int cur = 0;
+            for (auto v : e[u])
+            {
+                if (v == fa)
+                    continue;
+                int t = self(self, v, u);
+                if (a[v] == a[u])
+                    cur += t;
+            }
+
+            res += cur;
+            return cur;
+        };
+
+        dfs(dfs, 0, -1);
+
+        cout << res << "\n";
     }
-    cout << endl;
-
-    int n;
-    cin >> n;
-    if(n == -1) exit(0);
-    return n;
-}
-
-int check (vector<int> s)
-{
-    int n = ask(s);
-    return (s.size() - n) & 1;
-}
-
-void solve()
-{
-    int n;
-    cin >> n;
-    int N = 2 * n + 1;
-
-    int l = 1, r = N;
-    while(l < r)
-    {
-        int mid = l + (r - l) / 2;
-        vector<int> t;
-        for (int i = l; i <= mid; i++)
-        {
-            t.push_back(i);
-        }
-
-        if(check(t))
-        {
-            r = mid;
-        }
-        else
-        {
-            l = mid + 1;
-        }
-    }
-    int z = l;
-
-    int l = 1, r = N;
-    while(l < r)
-    {
-        int mid = l + (r - l) / 2; 
-        vector<int> t;
-        for (int i = mid; i <= N; i++)
-        {
-            t.push_back(i);
-        }
-
-        if(check(t))
-        {
-            l = mid;
-        }
-        else
-        {
-            r = mid - 1;
-        }
-    }
-    int x = l;
-
-    int l = x + 1, r = z - 1;
-    while(l < r)
-    {
-        int mid = l + (r - l) / 2;
-        vector<int> t;
-        t.push_back(x);
-        t.push_back(z);
-        for (int i = x + 1; i <= mid; i++)
-        {
-            t.push_back(i);
-        }
-
-        if(check(t)) r = mid;
-        else l = mid + 1;
-    }
-    int y = l;
-
-    cout << "! " << x << " " << y << " " << z << endl;
-    return;
-}
-
-signed main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int _;
-    cin >> _;
-    while (_--)
-    {
-        solve();
-    }
-    return 0;
 }

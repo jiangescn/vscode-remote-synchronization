@@ -1,0 +1,1 @@
+{"name":"Local: P1757 通天之分组背包","url":"e:\\code\\learn\\动态规划\\P1757 通天之分组背包.cpp","tests":[{"id":1776919254702,"input":"45 3\n10 10 1\n10 5 1\n50 400 2","output":"10"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\learn\\动态规划\\P1757 通天之分组背包.cpp","group":"local","local":true}

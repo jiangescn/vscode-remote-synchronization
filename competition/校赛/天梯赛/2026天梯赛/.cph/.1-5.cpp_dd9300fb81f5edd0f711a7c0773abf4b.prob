@@ -1,0 +1,1 @@
+{"name":"Local: 1-5","url":"c:\\Users\\LEGION\\Desktop\\code\\1-5.cpp","tests":[{"id":1776490782751,"input":"7\n23333 0\n1 0\n2 0\n1 1\n2 0\n666 1\n5555 0","output":"2 5555 23333 "},{"id":1776490956812,"input":"3\n1 1\n2 0\n2 1","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\LEGION\\Desktop\\code\\1-5.cpp","group":"local","local":true}
