@@ -3,19 +3,8 @@ using namespace std;
 
 void solve()
 {
-    int x, y;
-    cin >> x >> y;
-
-    int time = y / 500;
-
-    int rest = time % 5;
-    int zhengshu = time / 5;
-
-
-    if(rest & 1)
-    {
-
-    }
+    cout << 61.6 / 2 + 54.23 / 4 << endl;
+    cout << 54.23 / 4 + 72.91 / 3 << endl;
 }  
 
 int main()
@@ -23,8 +12,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int T;
-    cin >> T;
+    int T = 1;
+    // cin >> T;
     while (T--)
         solve();
 
