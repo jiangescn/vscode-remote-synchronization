@@ -4,25 +4,18 @@ using namespace std;
 
 void solve()
 {
-    int n, k;
-    cin >> n >> k;
-
-    vector<array<int, 3>> s(n + 1);
+    int n;
+    cin >> n;
+    vector<int> s(n + 1);
+    int ok = 0;
     for (int i = 1; i <= n; i++)
     {
-        cin >> s[i][1] >> s[1][2] >> s[i][0];
+        cin >> s[i];
+        if(s[i] == 100) ok = 1;
     }
-    sort(s.begin() + 1, s.end());
 
-    for (int i = 1; i <= n; i++)
-    {
-        if(k >= s[i][1] && k < s[i][0])
-        {
-            k = s[i][0];
-        }
-    }
-    cout << k << endl;
-    return;
+    cout << (ok ? "Yes" : "No") << endl;
+
 }
 
 signed main()

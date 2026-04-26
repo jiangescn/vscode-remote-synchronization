@@ -41,9 +41,9 @@ void solve()
                 continue;
             }
 
-            int tneed = (x - moli + (k)*y - 1) / ((k)*y);
+            int tneed = (x - moli + k * y - 1) / (k * y);
             time += tneed;
-            moli = (moli + (tneed)*k * y) - x;
+            moli = (moli + (tneed) * k * y) - x;
         }
     }
 
