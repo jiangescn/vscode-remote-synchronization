@@ -22,12 +22,12 @@ void solve()
     map<int, int> s;
     for (int i = 1; i * i <= 1e9; i++)
     {
-        s[i * i] = 1;
+        s[i * i] = i;
     }
 
     // cout << hiuwen(n) << endl;
 
-    if(s[n] && hiuwen(n) == n)
+    if(s[n] && hiuwen(n) == n && hiuwen(s[n]) == s[n])
     {
         cout << "YES" << endl;
     }
