@@ -30,30 +30,33 @@ void solve()
         }
     }
 
-    int a = __gcd(p[1], p[2]);
-    for (int i = 2; i <= n; i++)
-    {
-        a = __gcd(a, p[i]);
-    }
-
-    if(p[n] != a)
+    if(p[n] != s[1])
     {
         cout << "NO" << endl;
         return;
     }
 
-    int b = __gcd(s[1], s[2]);
-    for (int i = 2; i <= n; i++)
+    for (int i = 1; i < n; i++)
     {
-        b = __gcd(b, s[i]);
+        if (p[i] % p[i + 1] != 0)
+        {
+            cout << "NO" << endl;
+            return;
+        }
+
+        if (s[i + 1] % s[i] != 0)
+        {
+            cout << "NO" << endl;
+            return;
+        }
+
+        if (__gcd(p[i], s[i + 1]) != p[n])
+        {
+            cout << "NO" << endl;
+            return;
+        }
     }
 
-    if(s[1] != b)
-    {
-        cout << "NO" << endl;
-        return;
-    }
- 
     cout << "YES" << endl;
     return;
 }

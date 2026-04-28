@@ -1,50 +1,73 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main()
+const int INF = INT_MAX;
+
+void solve()
 {
-    int T;
-    cin >> T;
-    while (T--)
+    int n, m, s;
+    cin >> n >> m >> s;
+
+    vector<vector<pair<int, int>>> graph(n + 1);
+
+    for (int i = 1; i <= m; i++)
     {
-        int n;
-        cin >> n;
-        vector<int> a(n);
+        int u, v, w;
+        cin >> u >> v >> w;
+        graph[u].push_back({v, w});
+    }
 
-        for (int i = 0; i < n; i++)
-            cin >> a[i];
+    vector<int> dist(n + 1, INF);
+    vector<bool> vis(n + 1, false);
 
-        vector<vector<int>> e(n);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
-        for (int i = 1; i < n; i++)
+    dist[s] = 0;
+    pq.push({0, s});
+
+    while (!pq.empty())
+    {
+        auto [d, u] = pq.top();
+        pq.pop();
+
+        if (vis[u])
         {
-            int u, v;
-            cin >> u >> v;
-            u--, v--;
-            e[u].push_back(v);
-            e[v].push_back(u);
+            continue;
         }
 
-        long long res = 0;
+        vis[u] = true;
 
-        auto dfs = [&](auto &&self, int u, int fa) -> int
+        for (auto [v, w] : graph[u])
         {
-            int cur = 0;
-            for (auto v : e[u])
+            if (!vis[v] && dist[u] + w < dist[v])
             {
-                if (v == fa)
-                    continue;
-                int t = self(self, v, u);
-                if (a[v] == a[u])
-                    cur += t;
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
             }
-
-            res += cur;
-            return cur;
-        };
-
-        dfs(dfs, 0, -1);
-
-        cout << res << "\n";
+        }
     }
+
+    int ans = 0;
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (dist[i] == INF)
+        {
+            cout << -1 << endl;
+            return;
+        }
+        ans = max(ans, dist[i]);
+    }
+
+    cout << ans << endl;
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    solve();
+
+    return 0;
 }
