@@ -20,9 +20,9 @@ signed main()
     ios::sync_with_stdio(false);
     cin.tie(nullptr), cout.tie(nullptr);
 
-    int t = 1;
-    // cin >> t;
-    while (t--)
+    int _ = 1;
+    // cin >> _;
+    while (_--)
     {
         solve();
     }
