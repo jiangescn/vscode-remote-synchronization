@@ -147,6 +147,48 @@ void solve2()
     }
 }
 
+
+//////////////////////////////////////////////
+
+int fa[400];
+int rk[400];
+
+int id(int x, int y)
+{
+    return (x - 1) * 19 + y;
+}
+
+int find(int x)
+{
+    if (fa[x] == x)
+        return x;
+    return fa[x] = find(fa[x]);
+}
+
+void uni(int a, int b)
+{
+    int x = find(a);
+    int y = find(b);
+
+    if (x == y)
+        return;
+
+    if (rk[x] < rk[y])
+    {
+        fa[x] = y;
+    }
+    else if (rk[x] > rk[y])
+    {
+        fa[y] = x;
+    }
+    else
+    {
+        fa[y] = x;
+        rk[x]++;
+    }
+}
+//////////////////////////////////////////////
+
 signed main()
 {
     ios::sync_with_stdio(false);

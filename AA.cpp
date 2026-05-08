@@ -4,57 +4,18 @@ using namespace std;
 
 void solve()
 {
-    int n, m, s;
-    cin >> n >> m >> s;
+    int n, m, k;
+    cin >> n >> m >> k;
 
-    vector<vector<pair<int, int>>> graph(n + 1);
-    for (int i = 1; i <= m; i++)
+    map<array<int, 2>, int> s;
+    for (int i = 1; i <= k; i++)
     {
-        int u, v, w;
-        cin >> u >> v >> w;
-        graph[u].push_back({v, w});
+        int a, b, c;
+        cin >> a >> b >> c;
+        s[{a, b}] = c;
     }
 
-    vector<int> dis(n + 1, INT_MAX);
-    vector<bool> vi(n + 1, false);
-
-    dis[s] = 0;
-
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-
-
-    pq.push({0, s});
-
-    while(!pq.empty())
-    {
-        auto [d, u] = pq.top();
-        pq.pop();
-
-        if(vi[u]) continue;
-
-        vi[u] = 1;
-
-        for (auto [v, w] : graph[u])
-        {
-            if(!vi[v] && dis[u] + w < dis[v])
-            {
-                dis[v] = dis[u] + w;
-                pq.push({dis[v], v});
-            }
-        }
-    }
-
-    cout << "dis:" << endl;
-    for (int i = 1; i <= n; i++)
-    {
-        cout << dis[i] << " \n"[i == n];
-    }
-    cout << "vi:" << endl;
-    for (int i = 1; i <= n; i++)
-    {
-        cout << vi[i] << " \n"[i == n];
-    }
-
+    
 }  
 
 signed main()
