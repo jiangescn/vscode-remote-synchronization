@@ -4,18 +4,12 @@ using namespace std;
 
 void solve()
 {
-    int n, m, k;
-    cin >> n >> m >> k;
-
-    map<array<int, 2>, int> s;
-    for (int i = 1; i <= k; i++)
-    {
-        int a, b, c;
-        cin >> a >> b >> c;
-        s[{a, b}] = c;
-    }
-
-    
+    cout << "你好" << endl;
+    cout << "你好" << endl;
+    cout << "你好" << endl;
+    cout << "你好" << endl;
+    cout << "你好" << endl;
+    cout << "你好" << endl;
 }  
 
 signed main()

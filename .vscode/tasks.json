@@ -70,6 +70,26 @@
             "command": "powershell -ExecutionPolicy Bypass -File sync.ps1",
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "label": "run cpp",
+            "type": "shell",
+            "command": "g++ \"${file}\" -std=c++17 -O2 -Wall -o \"${fileBasenameNoExtension}.exe\" && \".\\${fileBasenameNoExtension}.exe\" < \"${fileBasenameNoExtension}in.txt\"",
+            "options": {
+                "cwd": "${fileDirname}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/d",
+                        "/c"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         }
     ]
 }

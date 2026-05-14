@@ -29,10 +29,8 @@ void solve()
 
         auto remove_dead = [&](int sx, int sy, int tar) -> int
         {
-            if (!in(sx, sy))
-                return 0;
-            if (s[sx][sy] != tar)
-                return 0;
+            if (!in(sx, sy)) return 0;
+            if (s[sx][sy] != tar) return 0;
 
             tim++;
 
@@ -56,8 +54,7 @@ void solve()
                     int xx = cx + dx[k];
                     int yy = cy + dy[k];
 
-                    if (!in(xx, yy))
-                        continue;
+                    if (!in(xx, yy)) continue;
 
                     if (s[xx][yy] == 0)
                     {
@@ -71,8 +68,7 @@ void solve()
                 }
             }
 
-            if (qi)
-                return 0;
+            if (qi) return 0;
 
             int cnt = v.size();
 
