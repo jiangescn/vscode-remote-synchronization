@@ -2,172 +2,161 @@
 using namespace std;
 #define int long long
 
-int dx[4] = {1, 0, -1, 0};
-int dy[4] = {0, -1, 0, 1};
+struct SegTree
+{
+    int n;
+    vector<int> tr;
+
+    SegTree(int n = 0) : n(n)
+    {
+        tr.assign(4 * n + 10, 0);
+    }
+
+    void add(int i, int l, int r, int x, int v)
+    {
+        if (l == r)
+        {
+            tr[i] += v;
+            return;
+        }
+
+        int mid = (l + r) >> 1;
+
+        if (x <= mid)
+            add(i << 1, l, mid, x, v);
+        else
+            add(i << 1 | 1, mid + 1, r, x, v);
+
+        tr[i] = tr[i << 1] + tr[i << 1 | 1];
+    }
+
+    int query(int i, int l, int r, int jobl, int jobr)
+    {
+        if (jobl <= l && r <= jobr)
+            return tr[i];
+
+        int mid = (l + r) >> 1;
+        int res = 0;
+
+        if (jobl <= mid)
+            res += query(i << 1, l, mid, jobl, jobr);
+
+        if (jobr > mid)
+            res += query(i << 1 | 1, mid + 1, r, jobl, jobr);
+
+        return res;
+    }
+
+    void add(int x, int v)
+    {
+        add(1, 1, n, x, v);
+    }
+
+    int query(int l, int r)
+    {
+        if (l > r)
+            return 0;
+
+        return query(1, 1, n, l, r);
+    }
+};
+
+int get_parity(vector<int> a, int n)
+{
+    SegTree seg(n);
+
+    int res = 0;
+
+    for (int i = 0; i < a.size(); i++)
+    {
+        int x = a[i];
+
+        int greater = seg.query(x + 1, n);
+
+        res ^= (greater & 1);
+
+        seg.add(x, 1);
+    }
+
+    return res;
+}
+
+vector<int> build(vector<int> odd, vector<int> even, int n)
+{
+    vector<int> ans(n + 1);
+
+    int p1 = 0, p2 = 0;
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (i & 1)
+            ans[i] = odd[p1++];
+        else
+            ans[i] = even[p2++];
+    }
+
+    return ans;
+}
 
 void solve()
 {
-    int n = 19;
-    int m;
-    cin >> m;
-    vector<vector<int>> s(n + 1, vector<int>(n + 1, -1));
-    for (int step = 1; step <= m; step++)
+    int n;
+    cin >> n;
+
+    vector<int> a(n + 1);
+    vector<int> odd, even;
+
+    for (int i = 1; i <= n; i++)
     {
-        int _x, _y;
-        cin >> _x >> _y;
-        if (step & 1)
-        { // black 1
-            s[_x][_y] = 1;
-        }
+        cin >> a[i];
+
+        if (i & 1)
+            odd.push_back(a[i]);
         else
-        { // white 0
-            s[_x][_y] = 0;
-        }
-
-        vector<vector<array<int, 2>>> a(400);
-        int cnt = 0;
-
-        int pos = -1;
-        vector<vector<int>> vis(n + 1, vector<int>(n + 1, 0));
-        vector<vector<int>> comp(n + 1, vector<int>(n + 1, -1));
-
-        for (int i = 1; i <= n; i++)
-        {
-            for (int j = 1; j <= n; j++)
-            {
-                if (vis[i][j] || s[i][j] == -1)
-                    continue;
-                if (i == _x && j == _y)
-                {
-                    pos = cnt;
-                }
-
-                queue<array<int, 2>> q;
-                q.push({i, j});
-                vis[i][j] = true;
-                comp[i][j] = cnt;
-                while (!q.empty())
-                {
-                    auto [x, y] = q.front();
-                    q.pop();
-                    a[cnt].push_back({x, y});
-                    if (x == _x && y == _y)
-                    {
-                        pos = cnt;
-                    }
-                    for (int k = 0; k < 4; k++)
-                    {
-                        int xx = x + dx[k];
-                        int yy = y + dy[k];
-
-                        if (xx < 1 || yy < 1 || xx > n || yy > n)
-                            continue;
-                        if (vis[xx][yy] || s[xx][yy] != s[i][j])
-                            continue;
-                        q.push({xx, yy});
-                        vis[xx][yy] = true;
-                        comp[xx][yy] = cnt;
-                    }
-                }
-
-                cnt++;
-            }
-        }
-  
-        vector<set<array<int, 2>>> h(400);
-
-        for (int i = 0; i < cnt; i++)
-        {
-            int sum = 0;
-            for (auto [x, y] : a[i])
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    int xx = x + dx[j];
-                    int yy = y + dy[j];
-                    if (xx < 1 || yy < 1 || xx > n || yy > n)
-                    {
-                        continue;
-                    }
-                    if (s[xx][yy] == -1)
-                    {
-                        h[i].insert({xx, yy});
-                    }
-                }
-            }
-        }
-
-        int ans1 = 0, ans2 = 0;
-
-        auto cal = [&](int p, int l) -> void
-        {
-            for (auto [x, y] : a[p])
-            {
-                s[x][y] = -1;
-                if (l == 0)
-                    ans2++;
-                else
-                    ans1++;
-                for (int i = 0; i < 4; i++)
-                {
-                    int xx = x + dx[i];
-                    int yy = y + dy[i];
-                    if (xx < 1 || yy < 1 || xx > n || yy > n)
-                    {
-                        continue;
-                    }
-                    if (s[xx][yy] == -1 || s[xx][yy] == s[x][y])
-                    {
-                        continue;
-                    }
-                    int com = comp[xx][yy];
-                    if (h[com].find({xx, yy}) != h[com].end())
-                    {
-                        h[com].erase(h[com].find({xx, yy}));
-                    }
-                }
-            }
-        };
-
-        bool ok = false;
-        for (auto [x, y] : a[pos])
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                int xx = x + dx[i];
-                int yy = y + dy[i];
-                if (xx < 1 || yy < 1 || xx > n || yy > n)
-                    continue;
-                if (s[xx][yy] != s[_x][_y] ^ 1)
-                    continue;
-                int c = comp[xx][yy];
-                int is = s[xx][yy];
-                if (h[c].size() == 0)
-                {
-                    cal(c, is);
-                    ok = true;
-                }
-            }
-        }
-
-        if (!ok && h[pos].empty())
-        {
-            cal(pos, s[_x][_y]);
-        }
-
-        cout << ans1 << ' ' << ans2 << '\n';
+            even.push_back(a[i]);
     }
+
+    int p1 = get_parity(odd, n);
+    int p2 = get_parity(even, n);
+
+    sort(odd.begin(), odd.end());
+    sort(even.begin(), even.end());
+
+    vector<int> ans;
+
+    if (p1 == p2)
+    {
+        ans = build(odd, even, n);
+    }
+    else
+    {
+        vector<int> odd1 = odd, even1 = even;
+        vector<int> odd2 = odd, even2 = even;
+
+        swap(odd1[odd1.size() - 1], odd1[odd1.size() - 2]);
+        swap(even2[even2.size() - 1], even2[even2.size() - 2]);
+
+        vector<int> ans1 = build(odd1, even1, n);
+        vector<int> ans2 = build(odd2, even2, n);
+
+        ans = min(ans1, ans2);
+    }
+
+    for (int i = 1; i <= n; i++)
+        cout << ans[i] << " ";
+    cout << "\n";
 }
 
-int32_t main()
+signed main()
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    int _ = 1;
-    // cin >> _;
-    while (_--)
-    {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int T;
+    cin >> T;
+
+    while (T--)
         solve();
-    }
+
     return 0;
 }

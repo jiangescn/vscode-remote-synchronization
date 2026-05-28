@@ -8,9 +8,38 @@
 #include <string>
 #include <queue>
 #include <stack>
+#include <bits/stdc++.h>
 using namespace std;
 #define int long long
 // const int N = 998244353;
+
+struct DSU
+{
+    vector<int> fa;
+
+    DSU(int n)
+    {
+        fa.resize(n + 1);
+        iota(fa.begin(), fa.end(), 0);
+    }
+
+    int find(int x)
+    {
+        if (fa[x] == x)
+            return x;
+        return fa[x] = find(fa[x]);
+    }
+
+    bool unite(int x, int y)
+    {
+        x = find(x);
+        y = find(y);
+        if (x == y)
+            return false;
+        fa[x] = y;
+        return true;
+    }
+};
 
 // 分解质因数
 vector<pair<long long, int>> fct(int n)

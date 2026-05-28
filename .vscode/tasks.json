@@ -72,7 +72,7 @@
             "problemMatcher": []
         },
         {
-            "label": "run cpp",
+            "label": "run",
             "type": "shell",
             "command": "g++ \"${file}\" -std=c++17 -O2 -Wall -o \"${fileBasenameNoExtension}.exe\" && \".\\${fileBasenameNoExtension}.exe\" < \"${fileBasenameNoExtension}in.txt\"",
             "options": {
@@ -80,7 +80,6 @@
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
-                        "/d",
                         "/c"
                     ]
                 }
