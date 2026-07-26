@@ -1,0 +1,1 @@
+{"name":"Local: J","url":"e:\\code\\competition\\校赛\\选拔赛2026\\J.cpp","tests":[{"id":1781937474232,"input":"4\nDAAABDCA\nAB\nABCDEEDCBA\nDDDDAAADDABECD","output":"11088\n10010\n31000\n15886"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\code\\competition\\校赛\\选拔赛2026\\J.cpp","group":"local","local":true}

@@ -90,11 +90,6 @@ struct SegTree
 };
 
 
-
-
-
-
-
 #define int long long
 
 const int N = 100001;
