@@ -22,7 +22,23 @@ def roll_dice(num_rolls, dice=six_sided):
     assert num_rolls > 0, "必须至少投掷一次。"
     # 第 1 题开始
     "*** 在此处编写代码 ***"
+    ans = 0
+
+    sow_sad = False
+
+    for i in range(num_rolls):
+        temp = dice()
+        if(temp == 1):
+            sow_sad = True
+        else:
+            ans += temp
+
+    if sow_sad:
+        return 1
+    else:
+        return ans
     # 第 1 题结束
+    
 
 
 def boar_brawl(player_score, opponent_score):
@@ -34,6 +50,12 @@ def boar_brawl(player_score, opponent_score):
     """
     # 第 2 题开始
     "*** 在此处编写代码 ***"
+    player_fir = player_score % 10
+    opponent_sec = opponent_score // 10 % 10
+
+    add_score = 3 * abs(opponent_sec - player_fir)
+
+    return max(1, add_score)
     # 第 2 题结束
 
 
@@ -52,6 +74,10 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     assert num_rolls <= 10, "不能投掷超过 10 个骰子。"
     # 第 3 题开始
     "*** 在此处编写代码 ***"
+    if num_rolls == 0:
+        return boar_brawl(player_score, opponent_score)
+    else:
+        return roll_dice(num_rolls, dice)
     # 第 3 题结束
 
 
@@ -79,6 +105,11 @@ def num_factors(n):
     """返回 N 的因数个数，包括 1 和 N 本身。"""
     # 第 4 题开始
     "*** 在此处编写代码 ***"
+    count = 0
+    for i in range(1, n + 1):
+        if(n % i == 0):
+            count += 1
+    return count
     # 第 4 题结束
 
 
@@ -86,6 +117,11 @@ def sus_points(score):
     """返回考虑 Sus Fuss 规则后玩家的新分数。"""
     # 第 4 题开始
     "*** 在此处编写代码 ***"
+    count = num_factors(score)
+    if(count == 4 or count == 3):
+        while(not is_prime(score)):
+            score += 1
+    return score
     # 第 4 题结束
 
 
@@ -95,6 +131,7 @@ def sus_update(num_rolls, player_score, opponent_score, dice=six_sided):
     """
     # 第 4 题开始
     "*** 在此处编写代码 ***"
+    return sus_points(simple_update(num_rolls, player_score, opponent_score, dice))
     # 第 4 题结束
 
 
@@ -129,6 +166,13 @@ def play(strategy0, strategy1, update, score0=0, score1=0, dice=six_sided, goal=
     who = 0  # 即将行动的玩家：0（先手）或 1（后手）
     # 第 5 题开始
     "*** 在此处编写代码 ***"
+    while (score0 < goal and score1 < goal):
+        if(who == 0):
+            score0 = update(strategy0(score0, score1), score0, score1, dice)
+        else:
+            score1 = update(strategy1(score1, score0), score1, score0, dice)
+        who ^= 1
+
     # 第 5 题结束
     return score0, score1
 
@@ -154,6 +198,9 @@ def always_roll(n):
 
     # 第 6 题开始
     "*** 在此处编写代码 ***"
+    def always(a, b):
+        return n
+    return always
     # 第 6 题结束
 
 
@@ -185,6 +232,12 @@ def is_always_roll(strategy, goal=GOAL):
     """
     # 第 7 题开始
     "*** 在此处编写代码 ***"
+    seam = True
+    for i in range(goal):
+        for j in range(goal):
+            if(strategy(i, j) != strategy(1, 1)):
+                seam = False
+    return seam
     # 第 7 题结束
 
 
@@ -202,6 +255,13 @@ def make_averaged(original_function, times_called=1000):
 
     # 第 8 题开始
     "*** 在此处编写代码 ***"
+    def average(*args):
+        sum = 0
+        for i in range(times_called):
+            sum += original_function(*args)
+        return sum / times_called
+
+    return average
     # 第 8 题结束
 
 
@@ -215,6 +275,15 @@ def max_scoring_num_rolls(dice=six_sided, times_called=1000):
     """
     # 第 9 题开始
     "*** 在此处编写代码 ***"
+    ans = 1
+    val = 0
+    average = make_averaged(roll_dice, times_called)
+    for i in range(1, 11):
+        temp = average(i, dice)
+        if(temp > val):
+            ans = i
+            val = temp
+    return ans
     # 第 9 题结束
 
 
@@ -260,7 +329,11 @@ def boar_strategy(score, opponent_score, threshold=11, num_rolls=6):
     否则返回 NUM_ROLLS。忽略 Sus Fuss 规则。
     """
     # 第 10 题开始
-    return num_rolls  # 完成实现后删除此行。
+    if(boar_brawl(score, opponent_score) >= threshold):
+        return 0
+    else:
+        return num_rolls
+    #return num_rolls  # 完成实现后删除此行。
     # 第 10 题结束
 
 
@@ -268,6 +341,11 @@ def sus_strategy(score, opponent_score, threshold=11, num_rolls=6):
     """当投掷 0 个骰子能使分数至少增加 THRESHOLD 分时，此策略返回 0；
     否则返回 NUM_ROLLS。同时考虑 Boar Brawl 和 Suss Fuss 规则。"""
     # 第 11 题开始
+    if(sus_update(0, score, opponent_score) - score >= threshold):
+        return 0
+    else:
+        return num_rolls
+        
     return num_rolls  # 完成实现后删除此行。
     # 第 11 题结束
 

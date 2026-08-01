@@ -4,13 +4,10 @@ using namespace std;
 
 void solve()
 {
-    int n;
-    cin >> n;
-    int i = 1;
-    vector<int> s(n + 1);
-    for (int i = 1; i <= n; i++)
+    int 循环量 = 10;
+    for (int 计数器 = 1; 计数器 <= 循环量; 计数器++)
     {
-        cin >> s[i];
+        cout << "循环节 ";
     }
     
 }
