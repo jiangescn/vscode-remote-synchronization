@@ -161,7 +161,7 @@ class Server:
         """把客户端加入 clients 映射（即从客户端名称到客户端实例的字典）。
             client 是 Client 类的实例。
         """
-        self.clients[self.clients] = client
+        self.clients[client.name] = client
 
 class Client:
     """客户端拥有服务器、名称（str）和收件箱（list）。
@@ -228,18 +228,23 @@ class Mint:
 
     def create(self, coin):
         "*** 在此处编写代码 ***"
+        return coin(self.year)
 
     def update(self) -> None:
         "*** 在此处编写代码 ***"
+        self.year = self.present_year
 
 class Coin:
-    cents = None # 该属性由子类提供，而不是由 Coin 本身提供
+    cents:int # 该属性由子类提供，而不是由 Coin 本身提供
 
     def __init__(self, year: int):
         self.year = year
 
     def worth(self) -> int:
         "*** 在此处编写代码 ***"
+        age: int = Mint.present_year - self.year
+        value: int = max(0, age - 50)
+        return self.cents + value
 
 class Nickel(Coin):
     cents = 5
@@ -269,12 +274,20 @@ class VirFib():
     >>> start.next().next().next().next().next().next() # 确保 start 没有被修改
     VirFib object, value 8
     """
+    previous: VirFib
 
     def __init__(self, value: int = 0):
         self.value = value
 
     def next(self):
         "*** 在此处编写代码 ***"
+        if(self.value == 0):
+            result = VirFib(1)
+        else:
+            result = VirFib(self.value + self.previous.value)
+
+        result.previous = self
+        return result
 
     def __repr__(self) -> str:
         return "VirFib object, value " + str(self.value)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 class VendingMachine:
-    """A vending machine that vends some product for some price.
+    """一台以指定价格销售某种商品的自动售货机。
 
     >>> v = VendingMachine('candy', 10)
     >>> v.vend()
@@ -39,45 +39,69 @@ class VendingMachine:
     'Here is your soda.'
     """
     def __init__(self, product: str, price: int):
-        """Set the product and its price, as well as other instance attributes."""
-        "*** YOUR CODE HERE ***"
+        """设置商品、价格以及其他实例属性。"""
+        "*** 在此处填写你的代码 ***"
+        self.product = product
+        self.price = price
+        self.restone = 0
+        self.balance = 0
 
     def restock(self, n: int) -> str:
-        """Add n to the stock and return a message about the updated stock level.
+        """把库存增加 n，并返回说明最新库存数量的消息。
 
-        E.g., Current candy stock: 3
+        例如：Current candy stock: 3
         """
-        "*** YOUR CODE HERE ***"
+        "*** 在此处填写你的代码 ***"
+        self.restone += n
+        return f"Current {self.product} stock: {self.restone}"
 
     def add_funds(self, n: int) -> str:
-        """If the machine is out of stock, return a message informing the user to restock
-        (and return their n dollars).
+        """如果机器缺货，返回提示用户补货的消息（并退还其投入的 n 美元）。
 
-        E.g., Nothing left to vend. Please restock. Here is your $4.
+        例如：Nothing left to vend. Please restock. Here is your $4.
 
-        Otherwise, add n to the balance and return a message about the updated balance.
+        否则，把 n 加入余额，并返回说明最新余额的消息。
 
-        E.g., Current balance: $4
+        例如：Current balance: $4
         """
-        "*** YOUR CODE HERE ***"
+        "*** 在此处填写你的代码 ***"
+        if self.restone == 0:
+            return f"Nothing left to vend. Please restock. Here is your ${n}."
+        
+        self.balance += n
+        return f"Current balance: ${self.balance}"
 
     def vend(self) -> str:
-        """Dispense the product if there is sufficient stock and funds and
-        return a message. Update the stock and balance accordingly.
+        """如果库存和投入金额充足，就售出商品并返回相应消息，同时更新库存和余额。
 
-        E.g., Here is your candy and $2 change.
+        例如：Here is your candy and $2 change.
 
-        If not, return a message suggesting how to correct the problem.
+        否则，返回说明如何解决问题的消息。
 
-        E.g., Nothing left to vend. Please restock.
+        例如：Nothing left to vend. Please restock.
               Please add $3 more funds.
         """
-        "*** YOUR CODE HERE ***"
+        "*** 在此处填写你的代码 ***"
+        if(self.restone == 0):
+            return "Nothing left to vend. Please restock."
+
+        if(self.balance < self.price):
+            return f"Please add ${self.price - self.balance} more funds."
+
+        self.restone -= 1
+        change = self.balance - self.price
+        self.balance = 0
+
+        if(change > 0):
+            return f"Here is your {self.product} and ${change} change."
+        else:
+            return f"Here is your {self.product}."
+
+
 
 
 def cumulative_mul(t: Tree) -> None:
-    """Mutates t so that each node's label becomes the product of its own
-    label and all labels in the corresponding subtree rooted at t.
+    """改变 t，使每个节点的标签变为自身标签与其对应子树中所有标签的乘积。
 
     >>> t = Tree(1, [Tree(3, [Tree(5)]), Tree(7)])
     >>> cumulative_mul(t)
@@ -88,12 +112,16 @@ def cumulative_mul(t: Tree) -> None:
     >>> otherTree
     Tree(5040, [Tree(60, [Tree(3), Tree(4), Tree(5)]), Tree(42, [Tree(7)])])
     """
-    "*** YOUR CODE HERE ***"
+    "*** 在此处填写你的代码 ***"
+    for i in t.branches:
+        cumulative_mul(i)
+        t.label *= i.label
+    
+
 
 
 def prune_small(t: Tree, n: int) -> None:
-    """Prune the tree mutatively, keeping only the n branches
-    of each node with the smallest labels.
+    """就地修剪树，使每个节点只保留标签最小的 n 个分支。
 
     >>> t1 = Tree(6)
     >>> prune_small(t1, 2)
@@ -108,11 +136,11 @@ def prune_small(t: Tree, n: int) -> None:
     >>> t3
     Tree(6, [Tree(1), Tree(3, [Tree(1), Tree(2)])])
     """
-    while ____:
-        largest = max(____, key=____)
-        ____
+    while len(t.branches) > n:
+        largest = max(t.branches, key=lambda b:b.label)
+        t.branches.remove(largest)
     for b in t.branches:
-        ____
+        prune_small(b, n)
 
 
 class Pet:
@@ -144,18 +172,28 @@ class Cat(Pet):
     """
     def __init__(self, name: str, owner: str, lives: int = 9) -> None:
         assert type(lives) == int and  lives > 0
-        "*** YOUR CODE HERE ***"
+        "*** 在此处填写你的代码 ***"
+        self.name = name
+        self.owner = owner
+        self.lives = lives
+        self.is_alive = True
 
     def talk(self) -> None:
-        """A cat says 'Meow!' when asked to talk."""
-        "*** YOUR CODE HERE ***"
+        """猫在被要求说话时会说“Meow!”。"""
+        "*** 在此处填写你的代码 ***"
+        print("Meow!")
 
     def lose_life(self) -> str | None:
-        """A cat can only lose a life if it has at least one
-        life. When there are zero lives left, the 'is_alive'
-        variable becomes False.
+        """猫只有在至少还有一条命时才能失去一条命。生命数变为零时，变量 is_alive 会变为 False。
         """
-        "*** YOUR CODE HERE ***"
+        "*** 在此处填写你的代码 ***"
+        if(not self.is_alive):
+            return 'Cat is dead x_x'
+        else:
+            self.lives -= 1
+            if(self.lives == 0):
+                self.is_alive = False
+
 
     def eat(self, thing: str) -> None:
         self.talk()
@@ -165,7 +203,7 @@ class Cat(Pet):
 
 
 class Tree:
-    """A tree has a label and a list of branches.
+    """一棵树具有一个标签和一个分支列表。
 
     >>> t = Tree(3, [Tree(2, [Tree(5)]), Tree(4)])
     >>> t.label
