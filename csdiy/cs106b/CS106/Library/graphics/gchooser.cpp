@@ -1,16 +1,16 @@
 /*
- * 文件：gchooser.cpp
+ * File: gchooser.cpp
  * ------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加按键事件支持
+ * - added key event support
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/08/23
- * - 重命名为 gchooser.cpp，以替代 Java 版本
+ * - renamed to gchooser.cpp to replace Java version
  * @version 2018/06/28
- * - 初始版本
+ * - initial version
  */
 
 #include "gchooser.h"
@@ -23,7 +23,7 @@ GChooser::GChooser(QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {
         _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GChooser::GChooser(const std::initializer_list<std::string>& items, QWidget* parent) {
@@ -31,7 +31,7 @@ GChooser::GChooser(const std::initializer_list<std::string>& items, QWidget* par
         _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
     });
     addItems(items);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GChooser::GChooser(const Vector<std::string>& items, QWidget* parent) {
@@ -39,11 +39,11 @@ GChooser::GChooser(const Vector<std::string>& items, QWidget* parent) {
         _iqcomboBox = new _Internal_QComboBox(this, getInternalParent(parent));
     });
     addItems(items);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GChooser::~GChooser() {
-    // TODO：delete _iqcomboBox;
+    // TODO: delete _iqcomboBox;
     _iqcomboBox->detach();
     _iqcomboBox = nullptr;
 }
@@ -189,10 +189,10 @@ void _Internal_QComboBox::handleChange() {
         return;
     }
     GEvent changeEvent(
-                /* 类  */ CHANGE_EVENT,
-                /* 类型   */ STATE_CHANGED,
-                /* 名称   */ "change",
-                /* 来源 */ _gchooser);
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gchooser);
     changeEvent.setActionCommand(_gchooser->getActionCommand());
     _gchooser->fireEvent(changeEvent);
 }
@@ -203,10 +203,10 @@ void _Internal_QComboBox::keyPressEvent(QKeyEvent* event) {
         event->accept();
         _gchooser->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
-            QComboBox::keyPressEvent(event);   // 调用父类实现
+            QComboBox::keyPressEvent(event);   // call super
         }
     } else {
-        QComboBox::keyPressEvent(event);   // 调用父类实现
+        QComboBox::keyPressEvent(event);   // call super
     }
 }
 
@@ -216,10 +216,10 @@ void _Internal_QComboBox::keyReleaseEvent(QKeyEvent* event) {
         event->accept();
         _gchooser->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
-            QComboBox::keyReleaseEvent(event);   // 调用父类实现
+            QComboBox::keyReleaseEvent(event);   // call super
         }
     } else {
-        QComboBox::keyReleaseEvent(event);   // 调用父类实现
+        QComboBox::keyReleaseEvent(event);   // call super
     }
 }
 

@@ -1,4 +1,4 @@
-/* 不应导出给客户端的内部 #define。 */
+/* Internal #defines that shouldn't be exported to clients. */
 
 #pragma once
 

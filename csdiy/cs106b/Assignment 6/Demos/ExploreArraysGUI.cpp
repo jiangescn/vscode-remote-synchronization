@@ -6,7 +6,7 @@ using namespace std;
 using namespace MiniGUI;
 
 namespace {
-    /* 给用户的消息。 */
+    /* Message for the user. */
     const string kMessage = "Make sure you're running your code in debug mode before "
                             "hitting the 'Go!' button below. Otherwise, you won't be "
                             "able to do the array exploration you need to do.";
@@ -14,9 +14,9 @@ namespace {
 
     const Font kMessageFont(FontFamily::SERIF, FontStyle::ITALIC, 24, "#400080");
 
-    /* 用随机值填充大型栈帧的实用函数。这
-     * 用于让未来调用中的局部变量值看起来更加
-     * 比原本可能的值更随机。:-)
+    /* Utility function that fills a large stack frame with random values. This
+     * is used to make the values of locals in future calls look even more
+     * random than they might otherwise be. :-)
      */
     const int kLargeSize = 1024;
     int floodTheStack() {
@@ -70,7 +70,7 @@ namespace {
             render->alignCenterHorizontally();
             render->draw(window());
         } catch (...) {
-            /* 糟糕，没有空间！*/
+            /* Oops, no space !*/
         }
     }
 }

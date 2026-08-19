@@ -1,53 +1,53 @@
 /*
- * 文件：exceptions.cpp
+ * File: exceptions.cpp
  * --------------------
- * 此文件包含顶层异常处理程序，用于打印抛出的异常
- * 由学生代码输出到控制台。
+ * This file contains a top-level exception handler to print exceptions thrown
+ * by student code on the console.
  *
  * @author Julie Zelenski
  * @version 2020/08/28
- * - 移除堆栈跟踪收集，统一致命错误处理
+ * - stack trace harvesting removed, consolidate handling of fatal errors
  * @author Marty Stepp
  * @version 2019/05/16
- * - 添加更多从堆栈跟踪中过滤的函数名
+ * - added more function names to filter from stack trace
  * @version 2019/04/16
- * - 从堆栈跟踪中过滤 Qt/std 线程方法
+ * - filter Qt/std thread methods from stack trace
  * @version 2019/04/02
- * - 小幅修复 string 异常中 -Wreturn-std-move 的警告
+ * - small fix for warning about -Wreturn-std-move on string exception
  * @version 2018/10/18
- * - 添加 set_unexpected 处理程序（自动评分器在抛出错误时使用）
- * - 添加一些新的函数名以从堆栈跟踪中过滤
+ * - added set_unexpected handler (used by autograders when errors are thrown)
+ * - added some new function names to filter from stack traces
  * @version 2018/09/27
- * - 修复在线程环境下打印更好堆栈跟踪的问题
+ * - bug fixes to print better stack traces when used with threads
  * @version 2018/09/25
- * - 修改 setTopLevelExceptionHandlerEnabled，使其更适合线程环境
+ * - modify setTopLevelExceptionHandlerEnabled to work better with threads
  * @version 2016/12/23
- * - 添加更多用于堆栈跟踪过滤的函数名（主要是线程相关）
+ * - added more function names for stack trace filtering (mainly thread stuff)
  * @version 2016/12/09
- * - 添加 insertStarsBeforeEachLine
+ * - added insertStarsBeforeEachLine
  * @version 2016/11/07
- * - 添加 cleanupFunctionNameForStackTrace
- * - 小幅重构 shouldFilterOutFromStackTrace
+ * - added cleanupFunctionNameForStackTrace
+ * - slight refactor of shouldFilterOutFromStackTrace
  * @version 2016/10/30
- * - 将递归函数移到 recursion.h/cpp
+ * - moved recursion functions to recursion.h/cpp
  * @version 2016/10/04
- * - 移除所有静态变量（改用 STATIC_VARIABLE 宏）
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
- * - 向堆栈跟踪添加一些新的 C++11 过滤器
- * - 修复异常处理程序 *** 消息的间距
+ * - added some new cxx11 filters to stack traces
+ * - fixed spacing on *** messages from exception handlers
  * @version 2015/10/13
- * - 修复 terminate 处理程序，使其在结束时关闭信号处理程序
+ * - bug fix in terminate handler to turn off signal handler at end
  * @version 2015/05/28
- * - 修复 Windows 上异常堆栈跟踪打印格式的小错误
+ * - tiny bug fix to exception stack trace printing format on Windows
  * @version 2014/11/19
- * - 禁用 SetThreadErrorMode，以避免 Windows 系统上的编译错误
+ * - disabled SetThreadErrorMode to avoid compiler errors on Windows systems
  * @version 2014/11/18
- * - 修复从堆栈跟踪中过滤嵌套 <> 模板参数的小错误
+ * - fixed minor bug with filtering out nested <> template args from stack traces
  * @version 2014/11/14
- * - 修复自动评分器模式下 SIGABRT 处理的错误（原先会掩盖单元测试失败）
+ * - fixed bug with SIGABRT handling in autograder mode (was muffling unit test failures)
  * @version 2014/11/12
- * - 公开提供 printStackTrace 函数
- * - 添加顶层信号处理程序（用于空指针解引用等）
+ * - made printStackTrace function publicly available
+ * - added top-level signal handler (for null-pointer derefs etc.)
  * @since 2014/11/05
  */
 
@@ -58,22 +58,22 @@
 #include "strlib.h"
 #include "private/static.h"
 #include "qtgui.h"
-#include <QCoreApplication> // 用于应用程序名称
+#include <QCoreApplication> // for application name
 #ifdef _WIN32
 #include <windows.h>
 #include <Debugapi.h>
 #endif
-#ifdef __GNUG__ // GNU C++ 编译器
+#ifdef __GNUG__ // gnu C++ compiler
 #include <cxxabi.h>
 #endif
 
 
 namespace exceptions {
-// 只是一个不等于任何现有信号的值
+// just some value that is not any existing signal
 #define SIGSTACK (static_cast<int>(0xdeadbeef))
 #define SIGUNKNOWN (static_cast<int>(0xcafebabe))
 
-// 静态“变量”（使用函数形式以避免初始化顺序错误）
+// static 'variables' (as functions to avoid initialization ordering bugs)
 STATIC_VARIABLE_DECLARE(std::string, gProgramName, "")
 STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
 
@@ -82,12 +82,12 @@ static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
 [[noreturn]] static void stanfordCppLibTerminateHandler();
 
-#ifdef __GNUG__ // GNU C++ 编译器
+#ifdef __GNUG__ // gnu C++ compiler
 
 static std::string demangle(const char* mangled_name)
 {
     int status = -99;
-    // name 由 malloc 分配并会泄漏，但我们只在 terminate 时反修饰……
+    // name is malloc'ed and will leak, but we only demangle on terminate...
     char *name = __cxxabiv1::__cxa_demangle(mangled_name, nullptr, nullptr, &status);
     return (status == 0 && name) ? name : mangled_name;
 }
@@ -114,16 +114,16 @@ static status_t gStatus = DBG_UNKNOWN;
 static void local_handler(int)
 {
     gStatus = DBG_NO;
-    signal(SIGTRAP, SIG_DFL); // 重置为默认处理程序
+    signal(SIGTRAP, SIG_DFL); // reset to default handler
 }
 
 void interruptIfDebug()
 {
-    if (gStatus == DBG_UNKNOWN) { // 第一次执行时
-        gStatus = DBG_YES;  // 除非获知其他情况，否则假定存在调试器
-        signal(SIGTRAP, local_handler); // 安装我们的信号处理程序
-        raise(SIGTRAP); // raise；如果处理程序接收到信号，则没有 IsDebuggerPresent
-                        // 如果在调试器中运行，则调试器会接收到它
+    if (gStatus == DBG_UNKNOWN) { // first time through
+        gStatus = DBG_YES;  // assume debugger unless we learn otherwise
+        signal(SIGTRAP, local_handler); // install our signal handler
+        raise(SIGTRAP); // raise; if our handler receives signal, there is no IsDebuggerPresent
+                        // if debugger then it will receive it
     } else if (gStatus == DBG_YES) {
         raise(SIGTRAP);
     }
@@ -177,7 +177,7 @@ void setTopLevelExceptionHandlerEnabled(bool enabled) {
         SetErrorMode(SEM_FAILCRITICALERRORS);
         SetUnhandledExceptionFilter(UnhandledException);
 #endif // _WIN32
-        signalHandlerEnable(); // 捕获段错误 / abort / fpe
+        signalHandlerEnable(); // to catch segfault / abort / fpe
     } else {
         std::set_terminate(old_terminate);
         signalHandlerDisable();
@@ -193,18 +193,18 @@ static void signalHandlerDisable() {
 static void signalHandlerEnable() {
 #if _WIN32
     for (int sig : STATIC_VARIABLE(SIGNALS_HANDLED)) {
-        signal(sig, stanfordCppLibSignalHandler); // 仅 Windows 信号，不是 sigaction，唉
+        signal(sig, stanfordCppLibSignalHandler); // Windows only signal, not sigaction, sigh
     }
 #else
     struct sigaction action;
     action.sa_handler = stanfordCppLibSignalHandler;
     action.sa_flags = 0;
     sigemptyset(&action.sa_mask);
-    // 处理程序运行期间屏蔽其他信号
+    // mask other signals during handler
     for (int sig : STATIC_VARIABLE(SIGNALS_HANDLED)) {
         sigaddset(&action.sa_mask, sig);
     }
-    // 对所有处理的信号使用同一操作
+    // use same action for all handled signals
     for (int sig : STATIC_VARIABLE(SIGNALS_HANDLED)) {
         sigaction(sig, &action, 0);
     }
@@ -213,7 +213,7 @@ static void signalHandlerEnable() {
 
 static void reportFatalEvent(std::string event, std::string details)
 {
-    std::string indent = "    "; // 用于让详细信息从样板代码中突出显示
+    std::string indent = "    "; // used for details to stand out from boilerplate
 
     std::cerr << std::endl;
     std::cerr <<"*** STANFORD C++ LIBRARY" << std::endl;
@@ -228,13 +228,13 @@ static void reportFatalEvent(std::string event, std::string details)
 }
 
 /*
- * 进程信号的通用处理程序。
- * 打印信号详细信息。
+ * A general handler for process signals.
+ * Prints details about the signal.
  */
 static void stanfordCppLibSignalHandler(int sig) {
     signalHandlerDisable();
 
-   // 根据发生的信号类型定制错误消息
+   // tailor the error message to the kind of signal that occurred
     std::string event = "A fatal error (signal " + std::to_string(sig) + ") was received";
     std::string details = "No details were provided about the error";
 
@@ -260,18 +260,18 @@ static void stanfordCppLibSignalHandler(int sig) {
     reportFatalEvent(event, details);
 
     if (GThread::iAmRunningOnTheQtGuiThread()) {
-        // 如果崩溃的是 GUI 线程，则无法恢复
-        raise(sig); // 我们的信号处理已禁用，默认处理程序将中止
+        // no recovery possible if gui thread was the one who crashed
+        raise(sig); // our signal handling has been disabled, default handler will abort
     } else {
         interruptIfDebug();
         stanfordcpplib::studentThreadHasExited("Terminated");
-        native_thread_exit(); // 退出此线程（不返回），GUI 循环可继续运行
+        native_thread_exit(); // exit this thread (no return), gui loop can live on
     }
 }
 
 /*
- * 任何未捕获异常的通用处理程序。
- * 打印异常详细信息。
+ * A general handler for any uncaught exception.
+ * Prints details about the exception.
  */
 [[noreturn]] static void stanfordCppLibTerminateHandler() {
     signalHandlerDisable();
@@ -280,7 +280,7 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::string details = "(details of exception unknown)";
 
     try {
-        throw;   // 重新抛出已经发生的异常
+        throw;   // re-throws the exception that already occurred
     } catch (const ErrorException& ex) {
         event = "A fatal error was reported:";
         details = ex.what();
@@ -291,24 +291,24 @@ static void stanfordCppLibSignalHandler(int sig) {
         details = str;
     } catch (char const* str) {
         details = str;
-    } catch (int n) {   // 抛出基本类型帮助不大，但我想有些人可能会这样做
+    } catch (int n) {   // throw primitive type is unhelpful, but I suppose some might do it
         details = "int exception " + std::to_string(n);
     } catch (double d) {
         details = "double exception " + realToString(d);
     } catch (...) {
         event = "An unexpected exception was thrown during program execution";
-        // 使用默认详细信息
+        // use default details
     }
 
     reportFatalEvent(event, details);
 
     if (GThread::iAmRunningOnTheQtGuiThread()) {
-        // 如果崩溃的是 GUI 线程，则无法恢复
+        // no recovery possible if gui thread was the one who crashed
         abort();
     } else {
         interruptIfDebug();
         stanfordcpplib::studentThreadHasExited("Terminated");
-        native_thread_exit(); // 退出此线程（不返回），GUI 循环可继续运行
+        native_thread_exit(); // exit this thread (no return), gui loop can live on
     }
 }
 

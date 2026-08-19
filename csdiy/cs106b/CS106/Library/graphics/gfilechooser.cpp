@@ -1,16 +1,16 @@
 /*
- * 文件：gfilechooser.cpp
+ * File: gfilechooser.cpp
  * ----------------------
- * 此文件实现 gfilechooser.h 中声明的操作。
- * 各成员的文档请参阅 gfilechooser.h。
+ * This file implements the operations declared in the gfilechooser.h file.
+ * See gfilechooser.h for documentation of each member.
  * 
  * @author Marty Stepp
  * @version 2018/09/07
- * - 添加接受 GWindow* parent 的重载
+ * - added overloads that accept GWindow* parent
  * @version 2018/08/23
- * - 重命名为 gfilechooser.cpp，以替代 Java 版本
+ * - renamed to gfilechooser.cpp to replace Java version
  * @version 2018/06/28
- * - 初始版本
+ * - initial version
  */
 
 #include "gfilechooser.h"
@@ -20,11 +20,11 @@
 #include "vector.h"
 
 GFileChooser::GFileChooser() {
-    // 空
+    // empty
 }
 
 std::string GFileChooser::showOpenDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
-    return showOpenDialog(/* 父级 */ (QWidget*) nullptr, title, currentDir, fileFilter);
+    return showOpenDialog(/* parent */ (QWidget*) nullptr, title, currentDir, fileFilter);
 }
 
 std::string GFileChooser::showOpenDialog(GWindow* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
@@ -32,9 +32,9 @@ std::string GFileChooser::showOpenDialog(GWindow* parent, const std::string& tit
 }
 
 std::string GFileChooser::showOpenDialog(QWidget* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
-    // Qt 筛选器规范：
-    // 如果需要多个筛选器，用 ';;' 分隔，例如：
-    // “图像 (*.png *.xpm *.jpg);;文本文件 (*.txt);;XML 文件 (*.xml)”
+    // Qt filter spec:
+    // If you want multiple filters, separate them with ';;', for example:
+    // "Images (*.png *.xpm *.jpg);;Text files (*.txt);;XML files (*.xml)"
 
     std::string result = "";
     GThread::runOnQtGuiThread([parent, title, currentDir, fileFilter, &result]() {
@@ -47,7 +47,7 @@ std::string GFileChooser::showOpenDialog(QWidget* parent, const std::string& tit
 }
 
 std::string GFileChooser::showSaveDialog(const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
-    return showSaveDialog(/* 父级 */ (QWidget*) nullptr, title, currentDir, fileFilter);
+    return showSaveDialog(/* parent */ (QWidget*) nullptr, title, currentDir, fileFilter);
 }
 
 std::string GFileChooser::showSaveDialog(GWindow* parent, const std::string& title, const std::string& currentDir, const std::string& fileFilter) {
@@ -70,7 +70,7 @@ std::string GFileChooser::normalizeFileFilter(const std::string& fileFilter) {
     for (int i = 0; i < tokens.size(); i++) {
         std::string token = tokens[i];
         token = trim(token);
-        // TODO：更多处理
+        // TODO: more processing
         tokens[i] = token;
     }
     return stringJoin(tokens, ";;");

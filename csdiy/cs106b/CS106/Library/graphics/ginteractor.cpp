@@ -1,26 +1,26 @@
 /*
- * 文件：ginteractor.cpp
+ * File: ginteractor.cpp
  * ---------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加 set/removeActionListener
- * - 添加 set/removeClickListener
- * - 添加 set/removeDoubleClickListener
- * - 添加 set/removeKeyListener
- * - 添加 set/removeMouseListener
+ * - added set/removeActionListener
+ * - added set/removeClickListener
+ * - added set/removeDoubleClickListener
+ * - added set/removeKeyListener
+ * - added set/removeMouseListener
  * @version 2019/04/22
- * - 添加接受 QIcon 和 QPixmap 的 setIcon
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/04/10
- * - 修复 GTextArea 和 GBrowserPane 上 setBackground 的错误
+ * - bug fix for setBackground on GTextArea and GBrowserPane
  * @version 2018/09/20
- * - 修复 requestFocus 线程处理的错误
+ * - bug fix for requestFocus threading
  * @version 2018/09/04
- * - 添加 get/setName、getID
+ * - added get/setName, getID
  * @version 2018/08/23
- * - 重命名为 ginteractor.cpp，以替代 Java 版本
+ * - renamed to ginteractor.cpp to replace Java version
  * @version 2018/06/29
- * - 初始版本
+ * - initial version
  */
 
 #include "ginteractor.h"
@@ -43,12 +43,12 @@ GInteractor::GInteractor()
           _id(-1),
           _container(nullptr),
           _lock(QReadWriteLock::Recursive) {
-    QtGui::instance()->initializeQt();   // 确保 Qt 系统已初始化
-    _id = ++_interactorCount;            // 将 ID 设为交互控件数量 + 1
+    QtGui::instance()->initializeQt();   // make sure Qt system is initialized
+    _id = ++_interactorCount;            // set ID to number of interactors + 1
 }
 
 GInteractor::~GInteractor() {
-    // 空
+    // empty
 }
 
 bool GInteractor::eventsEnabled() const {
@@ -56,7 +56,7 @@ bool GInteractor::eventsEnabled() const {
 }
 
 std::string GInteractor::getAccelerator() const {
-    // 在子类中重写
+    // override in subclasses
     return "";
 }
 
@@ -130,7 +130,7 @@ GPoint GInteractor::getLocation() const {
     return GPoint(getX(), getY());
 }
 
-/* 静态 */ QWidget* GInteractor::getInternalParent(QWidget* parent) {
+/* static */ QWidget* GInteractor::getInternalParent(QWidget* parent) {
     return parent ? parent : (QWidget*) GWindow::getLastWindow();
 }
 
@@ -272,8 +272,8 @@ void GInteractor::setActionCommand(const std::string& actionCommand) {
     _actionCommand = actionCommand;
 }
 
-void GInteractor::setAccelerator(const std::string& /* 快捷键 */) {
-    // 在子类中重写
+void GInteractor::setAccelerator(const std::string& /* accelerator */) {
+    // override in subclasses
 }
 
 void GInteractor::setActionListener(GEventListener func) {
@@ -289,8 +289,8 @@ void GInteractor::setBackground(int rgb) {
         QPalette palette(getWidget()->palette());
         palette.setColor(getWidget()->backgroundRole(), QColor(rgb));
 
-        // 为 GChooser 和其他控件添加额外调色板颜色设置
-        // TODO：对某些控件尚不能完全正常工作，例如 GChooser 弹出菜单
+        // additional palette color settings for GChooser and other widgets
+        // TODO: does not totally work for some widgets, e.g. GChooser popup menu
         if (getType() == "GChooser") {
             palette.setColor(QPalette::Base, QColor(rgb));
             palette.setColor(QPalette::Active, QPalette::Button, QColor(rgb));
@@ -313,8 +313,8 @@ void GInteractor::setBackground(const std::string& color) {
             QPalette palette(getWidget()->palette());
             palette.setColor(getWidget()->backgroundRole(), qcolor);
 
-            // 为 GChooser 和其他控件添加额外调色板颜色设置
-            // TODO：对某些控件尚不能完全正常工作，例如 GChooser 弹出菜单
+            // additional palette color settings for GChooser and other widgets
+            // TODO: does not totally work for some widgets, e.g. GChooser popup menu
             if (getType() == "GChooser") {
                 palette.setColor(QPalette::Base, qcolor);
                 palette.setColor(QPalette::Active, QPalette::Button, qcolor);
@@ -363,8 +363,8 @@ void GInteractor::setColor(const std::string& color) {
 void GInteractor::setContainer(GContainer* container) {
     _container = container;
     if (!container) {
-        // 不在任何容器中的控件不应显示在屏幕上
-        // （如果显示，它们会尴尬地悬停在 (0, 0)）
+        // widgets that are not in any container should not be shown on screen
+        // (they will awkwardly hover at (0, 0) if they are shown)
         QWidget* widget = getWidget();
         GThread::runOnQtGuiThread([widget]() {
             widget->setParent(nullptr);
@@ -391,7 +391,7 @@ void GInteractor::setForeground(int rgb) {
     GThread::runOnQtGuiThread([this, rgb]() {
         QPalette palette(getWidget()->palette());
         palette.setColor(getWidget()->foregroundRole(), QColor(rgb));
-        // TODO：对某些控件尚不能完全正常工作，例如 GChooser 弹出菜单
+        // TODO: does not totally work for some widgets, e.g. GChooser popup menu
         getWidget()->setPalette(palette);
     });
 }
@@ -402,7 +402,7 @@ void GInteractor::setForeground(const std::string& color) {
         GThread::runOnQtGuiThread([this, argb]() {
             QPalette palette(getWidget()->palette());
             palette.setColor(getWidget()->foregroundRole(), GColor::toQColorARGB(argb));
-            // TODO：对某些控件尚不能完全正常工作，例如 GChooser 弹出菜单
+            // TODO: does not totally work for some widgets, e.g. GChooser popup menu
             getWidget()->setPalette(palette);
         });
     } else {
@@ -428,18 +428,18 @@ void GInteractor::setHeight(double height) {
     });
 }
 
-void GInteractor::setIcon(const QIcon& /*图标*/) {
-    // 在适当的子类中重写
+void GInteractor::setIcon(const QIcon& /*icon*/) {
+    // override in subclasses as appropriate
 }
 
-void GInteractor::setIcon(const QPixmap& /*图标*/) {
-    // 在适当的子类中重写
+void GInteractor::setIcon(const QPixmap& /*icon*/) {
+    // override in subclasses as appropriate
 }
 
 void GInteractor::setIcon(const std::string& filename, bool /* retainIconSize */) {
     _icon = filename;
 
-    // 在子类中按需重写；务必调用父类
+    // override in subclasses as appropriate; make sure to call super
 }
 
 void GInteractor::setKeyListener(GEventListener func) {
@@ -498,7 +498,7 @@ void GInteractor::setMouseListener(GEventListenerVoid func) {
 
 void GInteractor::setName(const std::string& name) {
     _name = name;
-    // TODO：getWidget()->setObjectName()？
+    // TODO: getWidget()->setObjectName() ?
 }
 
 void GInteractor::setPreferredHeight(double height) {
@@ -545,7 +545,7 @@ void GInteractor::setTooltip(const std::string& tooltipText) {
 }
 
 void GInteractor::setVisible(bool visible) {
-    // 除非控件位于容器中，否则不允许将 visible 设置为 true
+    // don't allow setting visible to true unless widget is in a container
     if (!visible || _container) {
         GThread::runOnQtGuiThread([this, visible]() {
             getWidget()->setVisible(visible);
@@ -580,7 +580,7 @@ void GInteractor::unlockConst() const {
 _Internal_QWidget::_Internal_QWidget()
         : _minimumSize(-1, -1),
           _preferredSize(-1, -1) {
-    // 空
+    // empty
 }
 
 _Internal_QWidget::~_Internal_QWidget() {
@@ -588,7 +588,7 @@ _Internal_QWidget::~_Internal_QWidget() {
 }
 
 void _Internal_QWidget::detach() {
-    // 空
+    // empty
 }
 
 QSize _Internal_QWidget::getMinimumSize() const {

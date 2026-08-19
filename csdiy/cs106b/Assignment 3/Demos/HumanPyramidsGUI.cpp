@@ -12,117 +12,117 @@ using namespace std;
 using namespace MiniGUI;
 
 namespace {
-    /* 调色板。 */
+    /* Color palette. */
     const string kBackgroundColor = "#727472"; // Nickel
-    const string kLatticeColor    = "#C46210"; // 合金橙
+    const string kLatticeColor    = "#C46210"; // Alloy Orange
 
-    /* 人物颜色取决于其上方的权重。 */
+    /* Colors for people are based on how much weight is on top of them. */
     struct ColorEntry {
         double minWeight;
         int red, green, blue;
     };
 
-    /* 按权重分配颜色。条目在边界之间插值。 */
+    /* Colors by weight. Entries are interpolated between boundaries. */
     const vector<ColorEntry> kPersonColors = {
-        /* 没有权重？使用纯绿色。 */
+        /* No weight? You get pure green. */
         {  0.0, 0x00, 0xFF, 0x00 },
 
-        /* 有一定权重？显示为黄色。 */
+        /* Some weight? You get yellow. */
         {  400, 0xFF, 0xFF, 0x00 },
 
-        /* 权重很大？显示为橙色。 */
+        /* Lots of weight? You get orange. */
         {  600, 0xFF, 0x80, 0x00 },
 
-        /* 权重令人痛苦？显示为黄色。 */
+        /* Painful weight? You get yellow. */
         {  600, 0xFF, 0x00, 0x00 },
 
-        /* 权重很大？颜色会越来越深。 */
+        /* Tons of weight? You get darker and darker. */
         { 1000, 0x80, 0x00, 0x00 },
         { 5000, 0x00, 0x00, 0x00 },
 
-        /* 最后一项必须大于所有可能的权重。 */
+        /* This last entry must be bigger than all possible weights. */
         { numeric_limits<double>::infinity(), 0x00, 0x00, 0x00 },
     };
 
-    /* 绘制金字塔中人物边框时颜色回退的量。 */
+    /* Amount to back off colors when drawing borders of the people in the pyramid. */
     const double kBorderDamper = 0.75;
 
-    /* 滑块常量。 */
+    /* Slider constants. */
     const int kMinHeight     = 1;
     const int kMaxHeight     = 31;
     const int kDefaultHeight = 6;
     const int kMajorTickSize = 5;
 
-    /* 单个人的半径。如果并非所有内容都能容纳，可能需要稍微缩小
-     * 能够容纳，但这是首选大小。
+    /* Radius of a single person. We may have to shrink things a bit if not everything is
+     * going to fit, but this is our preferred size.
      */
     const double kPersonRadius = 20;
 
-    /* 所有人排列在等边三角形晶格中。这是首选边长
-     * 其中一个三角形的边长；如果并非所有内容都满足条件，我们可能无法做到
-     * 适合。
+    /* Everyone is arranged in an equilateral triangle lattice. This is the preferred side
+     * length for one of those triangles, which we might not be able to do if not everything
+     * fits.
      */
     const double kLatticeSize  = 60;
     const double kLatticeWidth = 5;
 
-    /* 边长为 1 的等边三角形高度。 */
+    /* Height of an equilateral triangle with unit side length. */
     const double kEquilateralTriangleHeight = sqrt(3.0) / 2.0;
 
-    /* 窗口边框周围的内边距。 */
+    /* Padding around the border of the window. */
     const double kPadding = 75;
 
-    /* 用于绘制人物信息的边界框。 */
+    /* Bounding box for drawing person information. */
     const double kPersonInfoX           = 10;
     const double kPersonInfoY           = 10;
     const double kPersonInfoWidth       = 400;
     const double kPersonInfoHeight      = 100;
     const double kPersonInfoPadding     = 10;
-    const string kPersonInfoFillColor   = "#F5FFFA"; // 薄荷奶油色
-    const string kPersonInfoBorderColor = "#F0EAD6"; // 蛋壳白
+    const string kPersonInfoFillColor   = "#F5FFFA"; // Mint Cream
+    const string kPersonInfoBorderColor = "#F0EAD6"; // Eggshell
 
     const Font kPersonInfoFont(FontFamily::SANS_SERIF, FontStyle::NORMAL, 24, kBackgroundColor);
 
-    /* 给定金字塔层数信息，返回边界
-     * 应绘制该金字塔的方框，以及要使用的缩放系数
-     * 绘制时。
+    /* Given information about the number of layers in the pyramid, returns the bounding
+     * box into which that pyramid should be drawn, along with the scale factor to use
+     * when drawing.
      */
     tuple<GRectangle, double> computeGraphicsParameters(const GRectangle& bounds, int height) {
-        /* 计算所需总高度。三角晶格高度完全由
-         * 与人数无关，人的大小只影响
-         * 当查看顶部和底部伸出的部分时。因此，
-         * 晶格的高度就是总层数乘以单层高度
-         * 这些三角形的高度，加上一个人的高度。
+        /* Compute the total height we'll need. The triangle lattice height is completely
+         * independent of the number of people, and the size of a person only factors in
+         * when we look at the amount overhanging from the top and bottom. As a result, the
+         * height of the lattice is just the total number of layers, times the height of one
+         * of the triangles, plus the height of one person.
          *
-         * 高度中的 -1 项是因为高度计算层数，
-         * 这样做存在栅栏柱问题。
+         * The -1 term on the height is here because the height counts the number of layers,
+         * and there's a fencepost issue in doing so.
          */
         double figureHeight = (height - 1) * kEquilateralTriangleHeight * kLatticeSize + 2 * kPersonRadius;
 
-        /* 宽度的计算方式类似，但稍容易一些，因为
-         * 等边三角形更容易确定。
+        /* The width is computed similarly, but it's a bit easier because the width of
+         * an equilateral triangle is easier to determine.
          */
         double figureWidth = (height - 1) * kLatticeSize + 2 * kPersonRadius;
 
-        /* 如果图形高度超过工作高度，则重新缩放所有内容。 */
+        /* If the figure height exceeds the working height, rescale everything. */
         double scaleFactor = min(1.0, bounds.height / figureHeight);
         if (scaleFactor < 1) {
             figureHeight *= scaleFactor;
             figureWidth  *= scaleFactor;
         }
 
-        /* 确定如何将所有内容居中。 */
+        /* Determine how to center everything. */
         double x = bounds.x + (bounds.width  - figureWidth)  / 2.0;
         double y = bounds.y + (bounds.height - figureHeight) / 2.0;
 
-        /* 组装结果。 */
+        /* Assemble the result. */
         GRectangle result = { x, y, figureWidth, figureHeight };
         return make_tuple(result, scaleFactor);
     }
 
-    /* 绘制人物所处晶格的线条。输入为
-     * 给出，使前两个点形成三角形的一条边，第三个点
-     * 该点是三角形上的另一个点，使第三个点夹在
-     * 位于 p0 和 p1 之间，如下所示：
+    /* Draws the lines that make up the lattice in which the people sit. The inputs are
+     * provided so that the first two points form one side of the triangle and the third
+     * point is the other point on the triangle, such that the third point is sandwiched
+     * between p0 and p1, like this:
      *
      *
      *        p2
@@ -133,17 +133,17 @@ namespace {
     void drawLatticeLines(GWindow& window,
                           const GPoint& p0, const GPoint& p1, const GPoint& p2,
                           int height) {
-        /* 边界情况！如果高度为 1，则没有内容可绘制。 */
+        /* Edge case! If the height is 1, there's nothing to draw. */
         if (height == 1) return;
 
-        /* 我们将通过连接 p0 和 p1 绘制晶格，然后向上移动
-         * 以适当大小的步长朝 p2 移动。为此我们需要获取
-         * 使我们朝 p2 移动的向量。
+        /* We're going to draw the lattice by connecting p0 and p1, then moving upward
+         * toward p2 by a step of the appropriate size. That will require us to get
+         * vectors that move us toward p2.
          */
         GVector p02 = (p2 - p0) / (height - 1);
         GVector p12 = (p2 - p1) / (height - 1);
 
-        /* 绘制线条！ */
+        /* Draw the lines! */
         GLine line(0, 0, 0, 0);
         line.setColor(kLatticeColor);
         line.setLineWidth(kLatticeWidth);
@@ -159,15 +159,15 @@ namespace {
         }
     }
 
-    /* 给定晶格信息，返回该晶格的控制点
-     * （三角晶格的三个边界点）。这些点的排列方式使得
-     * 使 p0 位于顶部，底部 p1 在左、p2 在右。
+    /* Given information about a lattice, returns the control points for that lattice
+     * (the three bounding points of the triangle lattice). The points are arranged so
+     * that p0 is on top and the bottom has p1 on the left and p2 on the right.
      */
     tuple<GPoint, GPoint, GPoint> controlPointsFor(const GRectangle& bounds,
                                                    int height,
                                                    double latticeSize, double personRadius) {
-        /* 确定晶格的角点，并计入需要留出的缓冲区
-         * 用于人物。
+        /* Determine the corners of the lattice, factoring in the buffer we need to leave in
+         * for the people.
          */
         double topY    = bounds.y + personRadius;
         double bottomY = bounds.y + bounds.height - personRadius;
@@ -180,14 +180,14 @@ namespace {
         return make_tuple(p0, p1, p2);
     }
 
-    /* 绘制晶格（所有人的手臂）。 */
+    /* Draws the lattice (everyone's arms). */
     void drawLattice(GWindow& window, int height, const GRectangle& bounds,
                      double latticeSize, double personRadius) {
 
         GPoint p0, p1, p2;
         tie(p0, p1, p2) = controlPointsFor(bounds, height, latticeSize, personRadius);
 
-        /* 在图形空间中，三角形如下所示：
+        /* In graphics space, the triangle looks like this:
          *
          *           p0
          *          /  \
@@ -199,23 +199,23 @@ namespace {
         drawLatticeLines(window, p1, p0, p2, height);
     }
 
-    /* 给定某人背上的重量，返回该人员应使用的颜色。
-     * 其工作方式是在颜色表的一对端点之间进行线性插值。
+    /* Given a weight on someone's back, returns the color that person should receive.
+     * This works by linearly interpolating between a pair of endpoints in the color table.
      */
     tuple<int, int, int> colorFor(double weight) {
-        /* 向前扫描，直到找到超过我们的边界。这里使用线性搜索
-         * 因为颜色数量较少。
+        /* Scan forward until we find a boundary that exceeds us. We'll use linear search
+         * because the number of colors is low.
          */
         size_t index = 1;
         while (kPersonColors[index].minWeight < weight) {
             index++;
         }
 
-        /* 为简单起见。 */
+        /* For simplicity. */
         const auto& lhs = kPersonColors[index - 1];
         const auto& rhs = kPersonColors[index];
 
-        /* 在线性颜色之间插值。 */
+        /* Linearly interpolate between the colors. */
         double alpha = (weight - lhs.minWeight) / (rhs.minWeight - lhs.minWeight);
 
         int red   = lhs.red   + (rhs.red   - lhs.red  ) * alpha;
@@ -225,19 +225,19 @@ namespace {
         return tie(red, green, blue);
     }
 
-    /* 绘制人体金字塔中的一个人。提供图形坐标，以便
-     * 我们知道绘制位置，并提供逻辑坐标 (row, col) 以
-     * 确定颜色信息。
+    /* Draws a single person in the human pyramid. A graphics coordinate is provided so
+     * we know where to draw, and the logical coordinate (row, col) is provided for
+     * determining color information.
      */
     void drawPersonAt(GWindow& window, const GPoint& pt, int row, int col, int pyramidHeight, double radius) {
         int red, green, blue;
         tie(red, green, blue) = colorFor(weightOnBackOf(row, col, pyramidHeight));
 
-        /* 背景 */
+        /* Background */
         window.setColor(GCanvas::createRgbPixel(red, green, blue));
         window.fillOval(pt.x - radius, pt.y - radius, 2 * radius, 2 * radius);
 
-        /* 边框 */
+        /* Border */
         red   *= kBorderDamper;
         green *= kBorderDamper;
         blue  *= kBorderDamper;
@@ -245,27 +245,27 @@ namespace {
         window.drawOval(pt.x - radius, pt.y - radius, 2 * radius, 2 * radius);
     }
 
-    /* 绘制人体金字塔中的人物。 */
+    /* Draws the people in the human pyramid. */
     void drawPeople(GWindow& window, int height, const GRectangle& bounds,
                     double latticeSize, double personRadius) {
         GPoint p0, p1, p2;
         tie(p0, p1, p2) = controlPointsFor(bounds, height, latticeSize, personRadius);
 
-        /* 我们始终在位置 p0 绘制一个人。 */
+        /* We always draw a person at position p0. */
         drawPersonAt(window, p0, 0, 0, height, personRadius);
 
-        /* 边界情况：如果高度恰好为 1，则只绘制这些内容。 */
+        /* Edge case: If the height is exactly 1, that's all we draw. */
         if (height == 1) return;
 
-        /* 否则，获取从 p0 到 p1 的向量，我们在向下移动时使用它
-         * 晶格，以及从 p1 到 p2 的方向，移动穿过晶格时会使用它。
-         * 根据高度缩放它们，使每个向量表示
-         * 将一个人向右或向下移动一格。
+        /* Otherwise, get vectors from p0 to p1, which we use when moving down the
+         * lattice, and from p1 to p2, which we use when moving across the lattice.
+         * Scale them based on the height so that each of these vectors represent
+         * moving one person over or down.
          */
         auto down = (p1 - p0) / (height - 1);
         auto left = (p2 - p1) / (height - 1);
 
-        /* 绘制一大群人！ */
+        /* Draw a bunch of people! */
         for (int row = 1; row < height; row++) {
             for (int col = 0; col <= row; col++) {
                 drawPersonAt(window, p0 + down * row + left * col, row, col, height, personRadius);
@@ -273,10 +273,10 @@ namespace {
         }
     }
 
-    /* 在给定矩形内绘制人体金字塔。 */
+    /* Draws a human pyramid within the given rectangle. */
     void drawPyramid(GWindow& window, int height,
                      const GRectangle& bounds, double scaleFactor) {
-        /* 确定要使用的实际人物半径和晶格大小。 */
+        /* Determine the actual person radius and lattice sizes to use. */
         double personRadius = kPersonRadius * scaleFactor;
         double latticeSize  = kLatticeSize  * scaleFactor;
 
@@ -284,7 +284,7 @@ namespace {
         drawPeople (window, height, bounds, latticeSize, personRadius);
     }
 
-    /* 在方框中绘制文本。 */
+    /* Draws text in a box. */
     GRectangle drawTextBox(const string& text,
                            const GRectangle& bounds,
                            double padding,
@@ -297,20 +297,20 @@ namespace {
                                                 bounds.width - 2 * padding, bounds.height - 2 * padding
                                             }, font);
 
-        /* 绘制方框。 */
+        /* Draw the box. */
         window.setColor(fillColor);
         window.fillRect(bounds);
 
         window.setColor(borderColor);
         window.drawRect(bounds);
 
-        /* 绘制文本。 */
+        /* Draw the text. */
         render->draw(window);
         return bounds;
     }
 
-    /* 显示各种人体金字塔并报告其所受重量的问题处理程序
-     * 每个人。
+    /* Problem handler that displays a variety of human pyramids and reports the weight on
+     * each person.
      */
     class HumanPyramidsGUI: public ProblemHandler {
     public:
@@ -324,36 +324,36 @@ namespace {
         void repaint() override;
 
     private:
-        /* 控制金字塔高度。 */
+        /* Controls for the height of the pyramid. */
         Temporary<GSlider> mHeightSlider;
         int mHeight;
 
-        /* 金字塔本身是否为脏状态。当高度
-         * 更改。
+        /* Whether the pyramid itself is dirty. This happens if the height
+         * changes.
          */
         bool mPyramidDirty = true;
 
-        /* 选中了哪个人（如果有）。我们使用 -1 作为
-         * 未选中任何人时的哨兵值。
+        /* Which person, if any, is selected. We use the values of -1 as a
+         * sentinel if no one is selected.
          */
         int mSelectedRow = -1, mSelectedCol = -1;
 
-        /* 所选人员是否为脏状态。当鼠标在
-         * 以会改变内容的方式。
+        /* Whether the selected person is dirty. This happens if the mouse moves around
+         * in a way that changes things.
          */
         bool mPersonDirty = false;
 
-        /* 所选人员最后一次的边界矩形。 */
+        /* Last bounding rectangle for the selected person. */
         GRectangle mPersonInfo;
 
-        /* 用于放置所有内容的边界矩形。 */
+        /* Bounding rectangle for positioning everything. */
         GRectangle mBounds;
 
-        /* 设置选中的人员。 */
+        /* Sets which person is selected. */
         void select(int row, int col);
         void clearSelection();
 
-        /* 重绘选中的图形项目。 */
+        /* Redraws selected graphics items. */
         void redrawPyramid(GWindow& window);
         void redrawPersonInfo(GWindow& window);
 
@@ -379,7 +379,7 @@ namespace {
 
     void HumanPyramidsGUI::changeOccurredIn(GObservable* source) {
         if (source == mHeightSlider) {
-            /* 检查值是否发生变化。如果是，则重绘。 */
+            /* See if the value changed. If so, redraw things. */
             int height = mHeightSlider->getValue();
             if (height != mHeight) {
                 mHeight = height;
@@ -395,7 +395,7 @@ namespace {
         if (mPyramidDirty) {
             redrawPyramid(window());
 
-            /* 假装该人员也变脏——需要重绘内容。 */
+            /* Pretend the person is dirty too - we need to redraw things. */
             mPersonDirty = true;
         }
     }
@@ -413,11 +413,11 @@ namespace {
     }
 
     void HumanPyramidsGUI::redrawPersonInfo(GWindow& window) {
-        /* 清除绘制此信息的区域。 */
+        /* Clear the area where we draw this information. */
         window.setColor(kBackgroundColor);
         window.fillRect(mPersonInfo);
 
-        /* 如果选中了某人，则显示其信息。 */
+        /* If someone is selected, display their information. */
         if (mSelectedRow != -1 && mSelectedCol != -1) {
             ostringstream builder;
             builder << "Person (" << mSelectedRow << ", " << mSelectedCol << ")" << endl;
@@ -441,22 +441,22 @@ namespace {
     }
 
     void HumanPyramidsGUI::mouseMoved(double x, double y) {
-        /* 获取图形信息，我们需要用它反转所有内容。 */
+        /* Get graphics information, which we'll need to invert everything. */
 
         GRectangle bounds;
         double scaleFactor;
         tie(bounds, scaleFactor) = computeGraphicsParameters(mBounds, mHeight);
 
-        /* 为了反转内容，需要知道窗口中各对象的大小。 */
+        /* We'll need the sizes of the objects in the window in order to invert things. */
         double latticeSize  = kLatticeSize  * scaleFactor;
         double personRadius = kPersonRadius * scaleFactor;
 
-        /* 获取控制点，用于确定当前位置。 */
+        /* Get the control points, which we'll use for figuring out where we are. */
         GPoint p0, p1, p2;
         tie(p0, p1, p2) = controlPointsFor(bounds, mHeight, latticeSize, personRadius);
 
-        /* 边界情况！如果高度恰好为 1，则会与一个人重叠
-         * 当且仅当位于其半径范围内时。
+        /* Edge Case! If the height is exactly one, then we're overlapping the one person
+         * precisely if we're within a radius of them.
          */
         GPoint mouse { x, y };
         if (mHeight == 1) {
@@ -468,28 +468,28 @@ namespace {
             return;
         }
 
-        /* 获取从 p0 到 p1（向下）和从 p1 到 p2（向左）的向量。缩放应
-         * 应选择为：在晶格中向下或横向移动一个单位对应于以下空间中的一个单位：
-         * 新的空间。
+        /* Get vectors going from p0 to p1 (down) and from p1 to p2 (left). The scale should
+         * be chosen so that moving down or over one lattice unit corresponds to one unit in
+         * the new space.
          */
         auto down = (p1 - p0) / (mHeight - 1);
         auto left = (p2 - p1) / (mHeight - 1);
 
-        /* 向下和向左向量构成晶格空间的一组基。我们希望
-         * 从标准空间转换为向下/向左空间，这意味着要计算
+        /* The down and left vectors form a basis for the lattice space. We want to
+         * convert from canonical space to down/left space, which means we want to compute
          *
          *  | d    l | -1                             -1
          *  | o    e |     | x - p0 |     | d.x  l.x |    |x - p0|
          *  | w    f |     | y - p0 |  =  | d.y  l.y |    |y - p0|
          *  | n    t |
          *
-         * 这意味着需要进行以下矩阵计算：
+         * That means that we want this matrix calculation:
          *
          *           1           |  l.y    -l.x | |x - p0|
          * --------------------  | -d.y     d.x | |y - p0|
          * d.x * ly - l.x * d.y
          *
-         *         （det）              （A）            （v）
+         *         (det)               (A)            (v)
          */
         double det = down.x * left.y - left.x * down.y;
 
@@ -499,21 +499,21 @@ namespace {
             (-down.y * v.x + down.x * v.y) / det
         };
 
-        /* 该晶格点几乎肯定是实数值。将坐标舍入到
-         * 最近的整数。这绝不会带来问题，因为最近的点
-         * 对我们而言，永远不会涉及向相反方向舍入。
+        /* That lattice point is almost certainly real-valued. Round the coordinates to the
+         * nearest integers. This will never get us into trouble because the closest point
+         * to us is never going to involve rounding the opposite direction.
          *
-         * 由于矩阵列的选择方式，X 坐标对应于
-         * 行号对应 Y 坐标，列号对应
+         * Because of how we chose our matrix columns, our X coordinate corresponds to the
+         * row number and our Y coordinate corresponds to the column.
          */
         int row = round(latticePoint.x);
         int col = round(latticePoint.y);
 
-        /* 如果该点不是真实人物，则处理结束。 */
+        /* If that point isn't a real person, we're done. */
         if (row < 0 || row >= mHeight || col < 0 || col > row) {
             clearSelection();
         } else {
-            /* 现在，查看鼠标与该位置圆之间的距离。 */
+            /* Now, see how far the mouse is from the circle at that point. */
             if (magnitudeOf(mouse - (p0 + down * row + left * col)) <= personRadius) {
                 select(row, col);
             } else {
@@ -523,10 +523,10 @@ namespace {
     }
 
     void HumanPyramidsGUI::select(int row, int col) {
-        /* 如果它与现有内容相同，则无需执行任何操作。 */
+        /* If this is the same as what we already have, there's nothing to do. */
         if (row == mSelectedRow && col == mSelectedCol) return;
 
-        /* 否则，需要重绘内容。 */
+        /* Otherwise, we need to redraw things. */
         mSelectedRow = row;
         mSelectedCol = col;
         mPersonDirty = true;
@@ -546,14 +546,14 @@ namespace {
         double width  = max(window().getCanvasWidth()  - 2 * kPadding, 2 * kPadding);
         double height = max(window().getCanvasHeight() - 2 * kPadding, 2 * kPadding);
 
-        /* 可使用的空间是整个画布减去各边的内边距。 */
+        /* The space we have to work with is the whole canvas, less the padding on each side. */
         mBounds = {
             (window().getCanvasWidth() - width) / 2.0, (window().getCanvasHeight() - height) / 2.0,
             width,
             height
         };
 
-        /* 强制重绘所有内容。 */
+        /* Force everything to be redrawn. */
         mPyramidDirty = mPersonDirty = true;
     }
 }

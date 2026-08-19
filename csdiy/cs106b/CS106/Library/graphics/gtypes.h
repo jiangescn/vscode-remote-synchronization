@@ -1,13 +1,13 @@
 /*
- * 文件：gtypes.h
+ * File: gtypes.h
  * --------------
- * 此文件定义用于表示点、尺寸和
- * 矩形。
+ * This file defines classes for representing points, dimensions, and
+ * rectangles.
  *
  * @version 2018/09/09
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/07/14
- * - 初始版本，基于 gtypes.h
+ * - initial version, based on gtypes.h
  */
 
 
@@ -20,56 +20,56 @@
 #include <string>
 
 /**
- * 无参数 void 函数的函数包装器别名
- * 且无返回值。
+ * An alias for a function wrapper around a void function with no parameters
+ * and no return.
  */
 typedef std::function<void()> GThunk;
 
 /**
- * 无参数且有返回值函数的函数包装器别名
- * 并返回 int（例如 main()）。
+ * An alias for a function wrapper around a function with no parameters
+ * and an int return (such as main()).
  */
 typedef std::function<int()> GThunkInt;
 
 
 /**
- * 此结构体包含实数类型的 width 和 height 字段。
- * 用于表示图形对象的大小。
+ * This struct contains real-valued width and height fields.
+ * It is used to indicate the size of a graphical object.
  */
 struct GDimension {
 public:
     /**
-     * 使用指定参数创建 <code>GDimension</code> 对象
-     * <code>width</code> 和 <code>height</code> 坐标。
+     * Creates a <code>GDimension</code> object with the specified
+     * <code>width</code> and <code>height</code> coordinates.
      */
     GDimension(double width, double height);
 
     /*
-     * 构造默认维度 0, 0。
+     * Constructs a default dimension 0, 0.
      */
     GDimension();
 
 
     /**
-     * 将 <code>GDimension</code> 转换为以下形式的字符串：
-     * <code>"(</code><i>宽度</i><code>,</code>&nbsp;<i>高度</i><code>)"</code>。
+     * Converts the <code>GDimension</code> to a string in the form
+     * <code>"(</code><i>width</i><code>,</code>&nbsp;<i>height</i><code>)"</code>.
      */
     std::string toString() const;
 
-    /* 宽度和高度——可直接访问或修改 */
+    /* width and height - may be directly accessed or modified */
     double width;
     double height;
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：此类中此处以下的所有内容在逻辑上都属于  */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in this class is logically part  */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 private:
-    /* 实例变量 */
+    /* Instance variables */
 
-    /* 友元声明 */
+    /* Friend declarations */
     friend std::ostream& operator <<(std::ostream& os, const GDimension& dim);
     friend bool operator ==(const GDimension& d1, const GDimension& d2);
     friend bool operator !=(const GDimension& d1, const GDimension& d2);
@@ -82,58 +82,58 @@ private:
 };
 
 /**
- * 将 GDimension 写入给定输出流。
+ * Writes the GDimension to the given output stream.
  */
 std::ostream& operator <<(std::ostream& os, const GDimension& dim);
 
 /**
- * 比较两个 GDimension 对象是否相等。
+ * Compares two GDimension objects for equality.
  */
 bool operator ==(const GDimension& d1, const GDimension& d2);
 
 /**
- * 比较两个 GDimension 对象是否不相等。
+ * Compares two GDimension objects for inequality.
  */
 bool operator !=(const GDimension& d1, const GDimension& d2);
 
 /**
- * 先按宽度、再按以下属性比较两个 GDimension 对象的关系运算符：
- * 然后按高度。
+ * Relational operators that compare two GDimension objects by width and
+ * then by height.
  */
 bool operator <(const GDimension& d1, const GDimension& d2);
 
 /**
- * 先按宽度、再按以下属性比较两个 GDimension 对象的关系运算符：
- * 然后按高度。
+ * Relational operators that compare two GDimension objects by width and
+ * then by height.
  */
 bool operator <=(const GDimension& d1, const GDimension& d2);
 
 /**
- * 先按宽度、再按以下属性比较两个 GDimension 对象的关系运算符：
- * 然后按高度。
+ * Relational operators that compare two GDimension objects by width and
+ * then by height.
  */
 bool operator >(const GDimension& d1, const GDimension& d2);
 
 /**
- * 先按宽度、再按以下属性比较两个 GDimension 对象的关系运算符：
- * 然后按高度。
+ * Relational operators that compare two GDimension objects by width and
+ * then by height.
  */
 bool operator >=(const GDimension& d1, const GDimension& d2);
 
 /**
- * 将给定 GDimension 对象的宽度和高度乘以给定的
- * 缩放系数，并返回缩放后的尺寸对象。
+ * Multiplies the width and height of the given GDimension object by the given
+ * scale factor and returns the scaled dimension object.
  */
 GDimension operator *(const GDimension& d, double scale);
 
 /**
- * GDimension 对象的哈希函数。
+ * Hashing function for GDimension objects.
  */
 int hashCode(const GDimension& dim);
 
 /**
- * 控件或组件支持的水平对齐方式。
- * 屏幕上的对象。
+ * The supported kinds of horizontal alignment of a widget or
+ * onscreen object.
  */
 enum HorizontalAlignment {
     ALIGN_CENTER,
@@ -143,8 +143,8 @@ enum HorizontalAlignment {
 };
 
 /**
- * 控件或组件支持的垂直对齐方式。
- * 屏幕上的对象。
+ * The supported kinds of vertical alignment of a widget or
+ * onscreen object.
  */
 enum VerticalAlignment {
     ALIGN_MIDDLE,
@@ -154,8 +154,8 @@ enum VerticalAlignment {
 };
 
 /**
- * 对齐方式和图标位置的常量。
- * 为向后兼容而保留；新代码不应使用此枚举。
+ * Constants for alignments and icon positions.
+ * Retained for backward compatibility; new code should not use this enum.
  *
  */
 enum SwingConstants {
@@ -165,74 +165,74 @@ enum SwingConstants {
     SWING_BOTTOM,
     SWING_RIGHT
 };
-// 注意：必须与 GInteractor::TextPosition 保持同步。
+// Note: Must keep in sync with GInteractor::TextPosition.
 
 /**
- * 将对齐值转换为“Center”或“Left”这样的字符串。
+ * Converts an alignment value into a string such as "Center" or "Left".
  */
 std::string toString(HorizontalAlignment alignment);
 
 /**
- * 将对齐值转换为“Middle”或“Top”这样的字符串。
+ * Converts an alignment value into a string such as "Middle" or "Top".
  */
 std::string toString(VerticalAlignment alignment);
 
 /**
- * 将“Center”或“Left”这样的字符串转换为对齐值。
+ * Converts a string such as "Center" or "Left" into an alignment value.
  */
 HorizontalAlignment toHorizontalAlignment(const std::string& alignmentStr);
 
 /**
- * 将对齐值转换为 Qt 对齐常量。
+ * Converts our alignment values into Qt alignment constants.
  */
 Qt::Alignment toQtAlignment(HorizontalAlignment alignment);
 
 /**
- * 将对齐值转换为 Qt 对齐常量。
+ * Converts our alignment values into Qt alignment constants.
  */
 Qt::Alignment toQtAlignment(VerticalAlignment alignment);
 
 /**
- * 将“Middle”或“Top”这样的字符串转换为对齐值。
+ * Converts a string such as "Middle" or "Top" into an alignment value.
  */
 VerticalAlignment toVerticalAlignment(const std::string& alignmentStr);
 
 /**
- * 此结构体包含实数类型的 x 和 y 字段。
- * 用于表示图形平面上的位置。
+ * This struct contains real-valued x and y fields.
+ * It is used to represent a location on the graphics plane.
  */
 struct GPoint {
 public:
     /**
-     * 使用指定 <code>x</code> 创建 <code>GPoint</code> 对象
-     * 以及 <code>y</code> 坐标。
+     * Creates a <code>GPoint</code> object with the specified <code>x</code>
+     * and <code>y</code> coordinates.
      */
     GPoint(double x, double y);
 
     /*
-     * 构造默认 GPoint 0, 0。
+     * Constructs a default GPoint 0, 0.
      */
     GPoint();
 
     /**
-     * 将 <code>GPoint</code> 转换为以下形式的字符串：
-     * <code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>)"</code>。
+     * Converts the <code>GPoint</code> to a string in the form
+     * <code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>)"</code>.
      */
     std::string toString() const;
 
-    /* x 和 y 坐标——可直接访问或修改 */
+    /* x and y coordinates - may be directly accessed or modified */
     double x;
     double y;
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：此类中此处以下的所有内容在逻辑上都属于  */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in this class is logically part  */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 private:
 
-    /* 友元声明 */
+    /* Friend declarations */
     friend std::ostream& operator <<(std::ostream& out, const GPoint& p);
     friend bool operator ==(const GPoint& p1, const GPoint& p2);
     friend bool operator !=(const GPoint& p1, const GPoint& p2);
@@ -245,148 +245,148 @@ private:
 };
 
 /**
- * 将给定点写入给定输出流。
+ * Writes the given point to the given output stream.
  */
 std::ostream& operator <<(std::ostream& os, const GPoint& pt);
 
 /**
- * 比较两个 GPoint 对象是否相等。
+ * Compares two GPoint objects for equality.
  */
 bool operator ==(const GPoint& p1, const GPoint& p2);
 
 /**
- * 比较两个 GPoint 对象是否不相等。
+ * Compares two GPoint objects for inequality.
  */
 bool operator !=(const GPoint& p1, const GPoint& p2);
 
 /**
- * 先按 x 坐标、然后按以下属性比较点的关系运算符：
- * 按 y 坐标。
+ * Relational operators that compare points by x-coordinate and then
+ * by y-coordinate.
  */
 bool operator <(const GPoint& p1, const GPoint& p2);
 
 /**
- * 先按 x 坐标、然后按以下属性比较点的关系运算符：
- * 按 y 坐标。
+ * Relational operators that compare points by x-coordinate and then
+ * by y-coordinate.
  */
 bool operator <=(const GPoint& p1, const GPoint& p2);
 
 /**
- * 先按 x 坐标、然后按以下属性比较点的关系运算符：
- * 按 y 坐标。
+ * Relational operators that compare points by x-coordinate and then
+ * by y-coordinate.
  */
 bool operator >(const GPoint& p1, const GPoint& p2);
 
 /**
- * 先按 x 坐标、然后按以下属性比较点的关系运算符：
- * 按 y 坐标。
+ * Relational operators that compare points by x-coordinate and then
+ * by y-coordinate.
  */
 bool operator >=(const GPoint& p1, const GPoint& p2);
 
 /**
- * 将给定点的 x 和 y 坐标乘以给定缩放系数
- * 系数并返回缩放后的点。
+ * Multiplies the x and y coordinates of the given point by the given scale
+ * factor and returns the scaled point.
  */
 GPoint operator *(const GPoint& p, double scale);
 
 /**
- * GPoint 对象的哈希函数。
+ * Hashing function for GPoint objects.
  */
 int hashCode(const GPoint& pt);
 
 /**
- * 此结构体包含实数类型的 x、y、width 和 height 字段。
- * 用于表示图形对象的边界框。
+ * This struct contains real-valued x, y, width, and height fields.
+ * It is used to represent the bounding box of a graphical object.
  */
 struct GRectangle {
 public:
     /**
-     * 创建具有指定位置的 <code>GRectangle</code> 对象
-     * 以及大小。若未提供这些参数，构造函数会将
-     * 将这些字段设为 0。
+     * Creates a <code>GRectangle</code> object with the specified position
+     * and size. If these parameters are not supplied, the constructor sets
+     * these fields to 0.
      */
     GRectangle(double x = 0, double y = 0, double width = 0, double height = 0);
 
     /**
-     * 创建具有指定位置的 <code>GRectangle</code> 对象
-     * 以及大小。若未提供这些参数，构造函数会将
-     * 将这些字段设为 0。
+     * Creates a <code>GRectangle</code> object with the specified position
+     * and size. If these parameters are not supplied, the constructor sets
+     * these fields to 0.
      */
     GRectangle(double x, double y, const GDimension& size);
 
     /**
-     * 创建具有指定位置的 <code>GRectangle</code> 对象
-     * 以及大小。若未提供这些参数，构造函数会将
-     * 将这些字段设为 0。
+     * Creates a <code>GRectangle</code> object with the specified position
+     * and size. If these parameters are not supplied, the constructor sets
+     * these fields to 0.
      */
     GRectangle(const GPoint& p, double width = 0, double height = 0);
 
     /**
-     * 创建具有指定位置的 <code>GRectangle</code> 对象
-     * 以及大小。若未提供这些参数，构造函数会将
-     * 将这些字段设为 0。
+     * Creates a <code>GRectangle</code> object with the specified position
+     * and size. If these parameters are not supplied, the constructor sets
+     * these fields to 0.
      */
     GRectangle(const GPoint& p, const GDimension& size);
 
     /**
-     * 如果矩形包含给定点，则返回 <code>true</code>。
+     * Returns <code>true</code> if the rectangle contains the given point.
      */
     bool contains(double x, double y) const;
 
     /**
-     * 如果矩形包含给定点，则返回 <code>true</code>。
+     * Returns <code>true</code> if the rectangle contains the given point.
      */
     bool contains(const GPoint& pt) const;
 
     /**
-     * 如果此矩形包含给定矩形，则返回 <code>true</code>
-     * 完全。
+     * Returns <code>true</code> if this rectangle contains the given rectangle
+     * entirely.
      */
     bool contains(const GRectangle& rect) const;
 
     /**
-     * 返回一个边界向外移动给定距离的新矩形
-     * 四个边上相同的量。
-     * 例如，位于 (55, 42) 的 10x10 矩形扩大 1 后将变为
-     *      位于 (54, 41) 的 12x12 矩形。
+     * Returns a new rectangle with its boundaries shifted outward by the given
+     * amount on all 4 sides.
+     * e.g. a 10x10 rectangle at position (55, 42) enlarged by 1 will become
+     *      a 12x12 rectangle at position (54, 41).
      */
     GRectangle enlargedBy(double amount);
 
     /**
-     * 如果此矩形与给定另一矩形重叠，则返回 true。
+     * Returns true if this rectangle and the given other rectangle overlap.
      */
     bool intersects(const GRectangle& other) const;
 
     /**
-     * 如果矩形为空（即它满足以下条件），则返回 <code>true</code>
-     * 宽度和高度都为 0 或负数。
+     * Returns <code>true</code> if the rectangle is empty, meaning that it
+     * has a width and height that are both 0 or negative.
      */
     bool isEmpty() const;
 
     /**
-     * 将 <code>GRectangle</code> 转换为以下形式的字符串：
+     * Converts the <code>GRectangle</code> to a string in the form
      * <code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>,</code>
-     * <i>宽度</i><code>,</code>&nbsp;<i>高度</i><code>)"</code>。
+     * <i>width</i><code>,</code>&nbsp;<i>height</i><code>)"</code>.
      */
     std::string toString() const;
 
-    /* 坐标和尺寸——可直接访问或修改 */
-    double x;        /* 矩形的 x 坐标 */
-    double y;        /* 矩形的 y 坐标 */
-    double width;    /* 矩形的宽度        */
-    double height;   /* 矩形的高度       */
+    /* coordinates and dimension - may be directly accessed or modified */
+    double x;        /* The x-coordinate of the rectangle */
+    double y;        /* The y-coordinate of the rectangle */
+    double width;    /* The width of the rectangle        */
+    double height;   /* The height of the rectangle       */
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：此类中此处以下的所有内容在逻辑上都属于  */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in this class is logically part  */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 private:
-    /* 实例变量 */
+    /* Instance variables */
 
 
-    /* 友元声明 */
+    /* Friend declarations */
     friend std::ostream& operator <<(std::ostream& os, const GRectangle& rect);
     friend bool operator ==(const GRectangle& r1, const GRectangle& r2);
     friend bool operator !=(const GRectangle& r1, const GRectangle& r2);
@@ -398,42 +398,42 @@ private:
 };
 
 /**
- * 将给定矩形写入给定输出流。
+ * Writes the given rectangle to the given output stream.
  */
 std::ostream& operator <<(std::ostream& os, const GRectangle& rect);
 
 /**
- * 比较两个矩形是否相等。
+ * Compares two rectangles for equality.
  */
 bool operator ==(const GRectangle& r1, const GRectangle& r2);
 
 /**
- * 比较两个矩形是否不相等。
+ * Compares two rectangles for inequality.
  */
 bool operator !=(const GRectangle& r1, const GRectangle& r2);
 
 /**
- * 依次按 x、y、宽度、高度比较矩形的关系运算符。
+ * Relational operators that compare rectangles by x, y, then width, then height.
  */
 bool operator <(const GRectangle& r1, const GRectangle& r2);
 
 /**
- * 依次按 x、y、宽度、高度比较矩形的关系运算符。
+ * Relational operators that compare rectangles by x, y, then width, then height.
  */
 bool operator <=(const GRectangle& r1, const GRectangle& r2);
 
 /**
- * 依次按 x、y、宽度、高度比较矩形的关系运算符。
+ * Relational operators that compare rectangles by x, y, then width, then height.
  */
 bool operator >(const GRectangle& r1, const GRectangle& r2);
 
 /**
- * 依次按 x、y、宽度、高度比较矩形的关系运算符。
+ * Relational operators that compare rectangles by x, y, then width, then height.
  */
 bool operator >=(const GRectangle& r1, const GRectangle& r2);
 
 /**
- * GRectangle 对象的哈希函数。
+ * Hashing function for GRectangle objects.
  */
 int hashCode(const GRectangle& r);
 

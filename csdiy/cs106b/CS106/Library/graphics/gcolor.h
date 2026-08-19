@@ -1,18 +1,18 @@
 /*
- * 文件：gcolor.h
+ * File: gcolor.h
  * --------------
  *
  * @author Marty Stepp
  * @version 2019/05/05
- * - 添加 getLuminance
+ * - added getLuminance
  * @version 2018/09/16
- * - 添加 splitRGB/ARGB、hasAlpha；改进 ARGB 支持
+ * - added splitRGB/ARGB, hasAlpha; better ARGB support
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gcolor.h，以替代 Java 版本
+ * - renamed to gcolor.h to replace Java version
  * @version 2018/06/30
- * - 初始版本
+ * - initial version
  */
 
 
@@ -25,51 +25,51 @@
 #include "map.h"
 
 /**
- * 此类提供处理颜色的静态方法。
+ * This class provides static methods for dealing with colors.
  *
- * 许多图形交互控件和对象接受以字符串指定的颜色
- * 或 RGB 整数。RGB 整数是包含红、绿、蓝分量的整数
- * 按如下方式打包到各位中的 0–255 值：
+ * Many graphical interactors and objects accept colors specified as strings
+ * or as RGB integers.  An RGB integer is an integer with red, green, and blue
+ * values from 0-255 packed into its bits as follows:
  *
  * <pre>
  * 00000000 00000000 00000000 00000000
  *    ^        ^        ^        ^
  *    |        |        |        |
- *  alpha     红      绿       蓝
+ *  alpha     red     green     blue
  * </pre>
  *
- * 颜色也可以指定为字符串。
- * 颜色字符串可以是以下预定义颜色名称之一：
+ * A color can also be specified as a string.
+ * A color string can be one of the predefined color names:
  *
- *    <code>BLACK</code>，
- *    <code>BLUE</code>，
- *    <code>CYAN</code>，
- *    <code>DARK_GRAY</code>，
- *    <code>GRAY</code>，
- *    <code>GREEN</code>，
- *    <code>LIGHT_GRAY</code>，
- *    <code>MAGENTA</code>，
- *    <code>ORANGE</code>，
- *    <code>PINK</code>，
- *    <code>RED</code>，
- *    <code>WHITE</code>，以及
- *    <code>YELLOW</code>。
+ *    <code>BLACK</code>,
+ *    <code>BLUE</code>,
+ *    <code>CYAN</code>,
+ *    <code>DARK_GRAY</code>,
+ *    <code>GRAY</code>,
+ *    <code>GREEN</code>,
+ *    <code>LIGHT_GRAY</code>,
+ *    <code>MAGENTA</code>,
+ *    <code>ORANGE</code>,
+ *    <code>PINK</code>,
+ *    <code>RED</code>,
+ *    <code>WHITE</code>, and
+ *    <code>YELLOW</code>.
  *
- * 颜色名称中各字母的大小写会被忽略，正如
- * 是空格和下划线，因此颜色 <code>DARK_GRAY</code>
- * 可以写成 <code>"Dark Gray"</code>。
+ * The case of the individual letters in the color name is ignored, as
+ * are spaces and underscores, so that the color <code>DARK_GRAY</code>
+ * can be written as <code>"Dark Gray"</code>.
  *
- * 最后，颜色也可以使用以下形式的字符串指定
- * <code>"#rrggbb"</code>，其中 <code>rr</code>、<code>gg</code> 和
- * <code>bb</code> 是表示以下内容的十六进制数字对：
- * 分别表示颜色的红、绿、蓝分量。
- * 还可以通过编写十六进制字符串加入 alpha（不透明度）通道
- * 以 ARGB 形式表示为 <code>"#aarrggbb"</code>。
+ * Lastly, the color can also be specified as a string in the form
+ * <code>"#rrggbb"</code> where <code>rr</code>, <code>gg</code>, and
+ * <code>bb</code> are pairs of hexadecimal digits indicating the
+ * red, green, and blue components of the color, respectively.
+ * You can also include an alpha (opacity) channel by writing the hex string
+ * in ARGB form as <code>"#aarrggbb"</code>.
  */
 class GColor {
 public:
     /**
-     * 表示常见系统颜色名称的常量。
+     * Constants representing common system color names.
      */
     enum {
         BLACK = 0x000000,
@@ -90,157 +90,157 @@ public:
     } Color;
 
     /**
-     * 将四个 0-255 的整数 RGB 值转换为以下形式的颜色名称：
-     * 形式 <code>"#aarrggbb"</code>。其中 <code>aa</code>、<code>rr</code> 等
-     * <code>gg</code> 和 <code>bb</code> 的值均为两位
-     * 表示该颜色分量强度的十六进制数。
-     * 若 a、r、g、b 中任一值超出 0-255，则抛出错误。
+     * Converts four integer RGB values from 0-255 into a color name in the
+     * form <code>"#aarrggbb"</code>.  Each of the <code>aa</code>, <code>rr</code>,
+     * <code>gg</code>, and <code>bb</code> values are two-digit
+     * hexadecimal numbers indicating the intensity of that component.
+     * If any of a, r, g, or b is outside the range of 0-255, throws an error.
      */
     static std::string convertARGBToColor(int a, int r, int g, int b);
 
     /**
-     * 将给定 ARGB 整数转换为以下形式的颜色名称：
-     * 形式 <code>"#aarrggbb"</code>。
+     * Converts the given ARGB integer into a color name in the
+     * form <code>"#aarrggbb"</code>.
      */
     static std::string convertARGBToColor(int argb);
 
     /**
-     * 将四个 0-255 的整数 RGB 值转换为 ARGB 整数
-     * 形式 <code>0xaarrggbb</code>。其中 <code>aa</code>、<code>rr</code> 等
-     * <code>gg</code> 和 <code>bb</code> 的值均为两位
-     * 表示该颜色分量强度的十六进制数。
-     * 若 a、r、g、b 中任一值超出 0-255，则抛出错误。
+     * Converts four integer RGB values from 0-255 into an ARGB integer of the
+     * form <code>0xaarrggbb</code>.  Each of the <code>aa</code>, <code>rr</code>,
+     * <code>gg</code>, and <code>bb</code> values are two-digit
+     * hexadecimal numbers indicating the intensity of that component.
+     * If any of a, r, g, or b is outside the range of 0-255, throws an error.
      */
     static int convertARGBToARGB(int a, int r, int g, int b);
 
     /**
-     * 将颜色名称转换为编码以下内容的 ARGB 整数：
-     * 颜色的 alpha（不透明度）、红、绿、蓝分量。
+     * Converts a color name into an ARGB integer that encodes the
+     * alpha (opacity), red, green, and blue components of the color.
      */
     static int convertColorToARGB(const std::string& colorName);
 
     /**
-     * 将颜色名称转换为编码该颜色的整数
-     * 颜色的红、绿、蓝分量。
-     * 此函数也兼容 ARGB 颜色。
+     * Converts a color name into an integer that encodes the
+     * red, green, and blue components of the color.
+     * This function is also compatible with ARGB colors.
      */
     static int convertColorToRGB(const std::string& colorName);
 
     /**
-     * 将 Qt RGB 颜色对象转换为颜色字符串。
-     * 不保留 alpha 透明度。
+     * Converts a Qt RGB color object into a color string.
+     * Does not preserve alpha transparency.
      */
     static std::string convertQColorToColor(const QColor& color);
 
     /**
-     * 将 Qt 颜色对象转换为 RGB 整数。
-     * 不保留 alpha 透明度。
+     * Converts a Qt color object into an RGB integer.
+     * Does not preserve alpha transparency.
      */
     static int convertQColorToRGB(const QColor& color);
 
     /**
-     * 将 RGB 整数值转换为以下形式的颜色名称：
-     * 形式 <code>"#rrggbb"</code>。
-     * 不保留 alpha 透明度。
+     * Converts an RGB integer value into a color name in the
+     * form <code>"#rrggbb"</code>.
+     * Does not preserve alpha transparency.
      */
     static std::string convertRGBToColor(int rgb);
 
     /**
-     * 将三个 0-255 的整数 RGB 值转换为以下形式的颜色名称：
-     * 格式为 <code>"#rrggbb"</code>。其中 <code>rr</code>、
-     * <code>gg</code> 和 <code>bb</code> 的值均为两位
-     * 表示该颜色分量强度的十六进制数。
-     * 若 r、g、b 中任一值超出 0-255，则抛出错误。
+     * Converts three integer RGB values from 0-255 into a color name in the
+     * form <code>"#rrggbb"</code>.  Each of the <code>rr</code>,
+     * <code>gg</code>, and <code>bb</code> values are two-digit
+     * hexadecimal numbers indicating the intensity of that component.
+     * If any of r, g, or b is outside the range of 0-255, throws an error.
      */
     static std::string convertRGBToColor(int r, int g, int b);
 
     /**
-     * 将三个 0-255 的整数 RGB 值转换为单个 RGB 整数。
-     * <code>rr</code>、<code>gg</code> 和 <code>bb</code> 的值均
-     * 表示该分量强度的两位十六进制数。
-     * 若 r、g、b 中任一值超出 0-255，则抛出错误。
+     * Converts three integer RGB values from 0-255 into a single RGB integer.
+     * Each of the <code>rr</code>, <code>gg</code>, and <code>bb</code> values
+     * are two-digit hexadecimal numbers indicating the intensity of that component.
+     * If any of r, g, or b is outside the range of 0-255, throws an error.
      */
     static int convertRGBToRGB(int r, int g, int b);
 
     /**
-     * 将给定整数的 'alpha'（高位）设为 ff。
-     * 如果 RGB 并非全黑，但 alpha 为 0，则假定
-     * 客户端原本想使用不透明颜色，并添加 ff 作为 alpha 通道。
+     * Sets the 'alpha' (high order bits) of the given integer to ff.
+     * If RGB is not completely black, but alpha is 0, assumes that the
+     * client meant to use an opaque color and add ff as alpha channel.
      */
     static int fixAlpha(int argb);
 
     /**
-     * 返回给定 RGB 整数的光度亮度，
-     * 它衡量颜色的明亮程度。
-     * 使用以下公式计算：
+     * Returns the photometric luminance of the given RGB integer,
+     * which is a measure of how bright the color is.
+     * This is calculated using the following formula:
      * https://en.wikipedia.org/wiki/Relative_luminance
      */
     static double getLuminance(int rgb);
 
     /**
-     * 返回给定颜色的光度亮度，
-     * 它衡量颜色的明亮程度。
-     * 使用以下公式计算：
+     * Returns the photometric luminance of the given color,
+     * which is a measure of how bright the color is.
+     * This is calculated using the following formula:
      * https://en.wikipedia.org/wiki/Relative_luminance
      */
     static double getLuminance(const std::string& color);
 
     /**
-     * 如果给定颜色字符串采用 8 个十六进制字符的形式，则返回 true
-     * 在最高两个字符中包含 alpha 通道，
-     * 前面带井号，例如 "#aaff0033"。
+     * Returns true if the given color string is of the 8-hex-character form
+     * that contains an alpha channel in the highest order two characters,
+     * preceded by a hash sign, such as "#aaff0033".
      */
     static bool hasAlpha(const std::string& color);
 
     /**
-     * 将给定 ARGB 整数拆分为四个 0-255 的整数分量。
-     * <code>aa</code>、<code>rr</code> 等每一项
-     * <code>gg</code> 和 <code>bb</code> 的值均为两位
-     * 表示该颜色分量强度的十六进制数。
+     * Splits the given ARGB integer into four integer RGB values from 0-255.
+     * Each of the <code>aa</code>, <code>rr</code>,
+     * <code>gg</code>, and <code>bb</code> values are two-digit
+     * hexadecimal numbers indicating the intensity of that component.
      */
     static void splitARGB(int argb, int& a, int& r, int& g, int& b);
 
     /**
-     * 将给定 RGB 整数拆分为三个 0-255 的整数分量。
-     * <code>rr</code>、<code>gg</code> 和 <code>bb</code> 的值均
-     * 表示该分量强度的两位十六进制数。
-     * 忽略 alpha 透明度。
+     * Splits the given RGB integer into three integer RGB values from 0-255.
+     * Each of the <code>rr</code>, <code>gg</code>, and <code>bb</code> values
+     * are two-digit hexadecimal numbers indicating the intensity of that component.
+     * Ignores alpha transparency.
      */
     static void splitRGB(int rgb, int& r, int& g, int& b);
 
     /**
-     * 将颜色字符串转换为 Qt 颜色对象。
-     * 如果颜色字符串包含 alpha 分量，则保留 alpha 透明度。
+     * Converts a color string into a Qt color object.
+     * Preserves alpha transparency if the color string contains an alpha component.
      */
     static QColor toQColor(const std::string& color);
 
     /**
-     * 将 ARGB 整数转换为 Qt 颜色对象。
-     * 保留 QColor 对象中的 alpha 透明度。
+     * Converts an ARGB integer into a Qt color object.
+     * Preserves alpha transparency in the QColor object.
      */
     static QColor toQColorARGB(int argb);
 
 private:
-    GColor();   // 禁止构造
+    GColor();   // forbid construction
 
     /**
-     * 移除大小写差异和标点；例如 "Dark Gray" => "darkgray"
+     * Strips casing and punctuation; e.g. "Dark Gray" => "darkgray"
      */
     static std::string canonicalColorName(const std::string& str);
 
     /**
-     * 返回常用颜色表的引用，
-     * 从名称到 RGB 整数的映射。
+     * Returns a reference to the table of common colors,
+     * mapping from names to RGB integers.
      */
     static const Map<std::string, int>& colorTable();
 
     /**
-     * 返回常用颜色表的引用，
-     * 从名称到颜色字符串的映射。
+     * Returns a reference to the table of common colors,
+     * mapping from names to color strings.
      */
     static const Map<std::string, std::string>& colorNameTable();
 
-    // 内部颜色表
+    // internal color tables
     static Map<std::string, int> _colorTable;
     static Map<std::string, std::string> _colorNameTable;
 };

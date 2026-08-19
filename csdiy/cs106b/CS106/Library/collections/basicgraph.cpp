@@ -1,8 +1,8 @@
 /*
- * 文件：basicgraph.cpp
+ * File: basicgraph.cpp
  * --------------------
- * 此文件实现由
- * BasicGraph 类。
+ * This file implements any non-template functionality used by
+ * the BasicGraph class.
  *
  * @version 2016/12/01
  */

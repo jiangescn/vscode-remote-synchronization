@@ -1,12 +1,12 @@
 /*
- * 文件：gridlocation.cpp
+ * File: gridlocation.cpp
  * ----------------------
- * 此文件实现 <code>GridLocation</code> 结构体中声明的成员
- * 以及 <code>GridLocationRange</code> 类。
- * 每个成员的声明见 gridlocation.h。
+ * This file implements the members of the <code>GridLocation</code> structure
+ * and the <code>GridLocationRange</code> class.
+ * See gridlocation.h for the declarations of each member.
  *
  * @version 2018/03/12
- * - 初始版本
+ * - initial version
  */
 
 #include "gridlocation.h"
@@ -60,7 +60,7 @@ std::ostream& operator <<(std::ostream& out, const GridLocation& loc) {
 }
 
 std::istream& operator >>(std::istream& input, GridLocation& loc) {
-    // 读取 'r'
+    // read 'r'
     char ch = '\0';
     input >> ch;
     if (!input || ch != 'r' ) {
@@ -68,28 +68,28 @@ std::istream& operator >>(std::istream& input, GridLocation& loc) {
         return input;
     }
 
-    // 读取行
+    // read row
     int row;
     if (!(input >> row)) {
         input.setstate(std::ios_base::failbit);
         return input;
     }
 
-    // 读取 'c'
+    // read 'c'
     ch = input.get();
     if (!input || ch != 'c') {
         input.setstate(std::ios_base::failbit);
         return input;
     }
 
-    // 读取列
+    // read col
     int col;
     if (!(input >> col)) {
         input.setstate(std::ios_base::failbit);
         return input;
     }
 
-    // 成功！
+    // success!
     loc.row = row;
     loc.col = col;
     return input;
@@ -99,18 +99,18 @@ GridLocationRange::GridLocationRange(int startRow, int startCol, int endRow, int
         : _start(startRow, startCol),
           _end(endRow, endCol),
           _isRowMajor(isRowMajor) {
-    // 空
+    // empty
 }
 
 GridLocationRange::GridLocationRange(const GridLocation& startLoc, const GridLocation& endLoc, bool isRowMajor)
         : _start(startLoc),
           _end(endLoc),
           _isRowMajor(isRowMajor) {
-    // 空
+    // empty
 }
 
 GridLocationRange::GridLocationRangeIterator GridLocationRange::begin() const {
-    return GridLocationRangeIterator(this, /* 结束 */ false);
+    return GridLocationRangeIterator(this, /* end */ false);
 }
 
 bool GridLocationRange::contains(const GridLocation& loc) const {
@@ -118,7 +118,7 @@ bool GridLocationRange::contains(const GridLocation& loc) const {
 }
 
 GridLocationRange::GridLocationRangeIterator GridLocationRange::end() const {
-    return GridLocationRangeIterator(this, /* 结束 */ true);
+    return GridLocationRangeIterator(this, /* end */ true);
 }
 
 int GridLocationRange::endCol() const {

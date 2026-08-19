@@ -1,37 +1,37 @@
 /*
- * 文件：gconsolewindow.cpp
+ * File: gconsolewindow.cpp
  * ------------------------
- * 此文件实现 gconsolewindow.h 接口。
+ * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
  * @version 2019/04/25
- * - 添加 hasInputScript
+ * - added hasInputScript
  * @version 2019/04/16
- * - 修复 Mac 深色模式下文本颜色错误的问题
+ * - bug fix for wrong text color on Mac dark mode
  * @version 2019/04/10
- * - 支持使用图标条图像中的图标创建工具栏
+ * - toolbar support with icons from icon strip image
  * @version 2019/04/09
- * - 修复输入脚本/比较输出窗口过早弹出的错误
- * - 将 Mac 默认字体从 Menlo 改为 Courier New
+ * - bug fix for premature input script / compare output popup
+ * - changed default Mac font to Courier New from Menlo
  * @version 2018/12/27
- * - 修复打印文本导致 waitForEvent 对排队事件无限等待的错误
- *   输出到控制台（Keith Schwarz 报告的问题）
+ * - bug fix for endless waitForEvent queued events caused by printing text
+ *   to console (bug reported by Keith Schwarz)
  * @version 2018/10/11
- * - 修复关闭标志、输入脚本快捷键（例如 Ctrl+1）的错误
+ * - bug fixes for shutdown flag, input script hotkeys (e.g. Ctrl+1)
  * @version 2018/10/04
- * - 将默认自动换行改为 true
+ * - changed default line wrap to true
  * @version 2018/09/27
- * - 修复打印含换行符的字符串（移除 \r，优先使用 \n）
+ * - bug fix for printing strings with line breaks (remove \r, favor \n)
  * @version 2018/09/23
- * - 添加 getFont
- * - 修复加载输入脚本的错误
- * - 修复 Mac 上默认字体的错误
+ * - added getFont
+ * - bug fix for loading input scripts
+ * - bug fix for default font on Mac
  * @version 2018/09/18
- * - 修复窗口大小/位置
+ * - window size/location fixes
  * @version 2018/09/17
- * - 修复 Mac OS X 上等宽字体的问题
+ * - fixes for monospaced font on Mac OS X
  * @version 2018/08/23
- * - 初始版本，从 console.cpp 中分离
+ * - initial version, separated out from console.cpp
  */
 
 #include "gconsolewindow.h"
@@ -56,31 +56,31 @@
 
 void setConsolePropertiesQt();
 
-/*静态*/ const bool GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
-/*静态*/ const double GConsoleWindow::DEFAULT_WIDTH = 900;
-/*静态*/ const double GConsoleWindow::DEFAULT_HEIGHT = 550;
-/*静态*/ const double GConsoleWindow::DEFAULT_X = 10;
-/*静态*/ const double GConsoleWindow::DEFAULT_Y = 40;
-/*静态*/ const std::string GConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
-/*静态*/ const std::string GConsoleWindow::DEFAULT_FONT_FAMILY = "Monospace";
-/*静态*/ const std::string GConsoleWindow::DEFAULT_FONT_WEIGHT = "";
-/*静态*/ const int GConsoleWindow::DEFAULT_FONT_SIZE = 12;
-/*静态*/ const int GConsoleWindow::MIN_FONT_SIZE = 4;
-/*静态*/ const int GConsoleWindow::MAX_FONT_SIZE = 255;
-/*静态*/ const std::string GConsoleWindow::DEFAULT_ERROR_COLOR = "#cc0000";
-/*静态*/ const std::string GConsoleWindow::DEFAULT_ERROR_COLOR_DARK_MODE = "#f47862";
-/*静态*/ const std::string GConsoleWindow::DEFAULT_USER_INPUT_COLOR = "#0000cc";
-/*静态*/ const std::string GConsoleWindow::DEFAULT_USER_INPUT_COLOR_DARK_MODE = "#2c90e5";
-/*静态*/ GConsoleWindow* GConsoleWindow::_instance = nullptr;
-/*静态*/ bool GConsoleWindow::_consoleEnabled = false;
+/*static*/ const bool GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
+/*static*/ const double GConsoleWindow::DEFAULT_WIDTH = 900;
+/*static*/ const double GConsoleWindow::DEFAULT_HEIGHT = 550;
+/*static*/ const double GConsoleWindow::DEFAULT_X = 10;
+/*static*/ const double GConsoleWindow::DEFAULT_Y = 40;
+/*static*/ const std::string GConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
+/*static*/ const std::string GConsoleWindow::DEFAULT_FONT_FAMILY = "Monospace";
+/*static*/ const std::string GConsoleWindow::DEFAULT_FONT_WEIGHT = "";
+/*static*/ const int GConsoleWindow::DEFAULT_FONT_SIZE = 12;
+/*static*/ const int GConsoleWindow::MIN_FONT_SIZE = 4;
+/*static*/ const int GConsoleWindow::MAX_FONT_SIZE = 255;
+/*static*/ const std::string GConsoleWindow::DEFAULT_ERROR_COLOR = "#cc0000";
+/*static*/ const std::string GConsoleWindow::DEFAULT_ERROR_COLOR_DARK_MODE = "#f47862";
+/*static*/ const std::string GConsoleWindow::DEFAULT_USER_INPUT_COLOR = "#0000cc";
+/*static*/ const std::string GConsoleWindow::DEFAULT_USER_INPUT_COLOR_DARK_MODE = "#2c90e5";
+/*static*/ GConsoleWindow* GConsoleWindow::_instance = nullptr;
+/*static*/ bool GConsoleWindow::_consoleEnabled = false;
 
-/*静态*/ bool GConsoleWindow::consoleEnabled() {
+/*static*/ bool GConsoleWindow::consoleEnabled() {
     return _consoleEnabled;
 }
 
-/*静态*/ std::string GConsoleWindow::getDefaultFont() {
+/*static*/ std::string GConsoleWindow::getDefaultFont() {
     if (OS::isMac()) {
-        // 出于某种原因，在 Mac 测试中使用“Monospace”对我不起作用
+        // for some reason, using "Monospace" doesn't work for me on Mac testing
         return "Courier New-"
                 + std::to_string(DEFAULT_FONT_SIZE + 1)
                 + (DEFAULT_FONT_WEIGHT.empty() ? "" : ("-" + DEFAULT_FONT_WEIGHT));
@@ -91,9 +91,9 @@ void setConsolePropertiesQt();
     }
 }
 
-/*静态*/ GConsoleWindow* GConsoleWindow::instance() {
+/*static*/ GConsoleWindow* GConsoleWindow::instance() {
     if (!_instance) {
-        // 初始化 Qt 系统和 Qt Console 窗口
+        // initialize Qt system and Qt Console window
         GThread::runOnQtGuiThread([]() {
             if (!_instance) {
                 QtGui::instance()->initializeQt();
@@ -105,16 +105,16 @@ void setConsolePropertiesQt();
     return _instance;
 }
 
-/*静态*/ bool GConsoleWindow::isInitialized() {
+/*static*/ bool GConsoleWindow::isInitialized() {
     return _instance != nullptr;
 }
 
-/*静态*/ void GConsoleWindow::setConsoleEnabled(bool enabled) {
+/*static*/ void GConsoleWindow::setConsoleEnabled(bool enabled) {
     _consoleEnabled = enabled;
 }
 
 GConsoleWindow::GConsoleWindow()
-        : GWindow(/* 可见 */ false),
+        : GWindow(/* visible */ false),
           _textArea(nullptr),
           _clearEnabled(true),
           _echo(false),
@@ -142,7 +142,7 @@ GConsoleWindow::GConsoleWindow()
 void GConsoleWindow::_initMenuBar() {
     addToolbar();
 
-    // 文件菜单
+    // File menu
     addMenu("&File");
     addMenuItem("File", "&Save", QPixmap(":/save"),
                 [this]() { this->save(); })
@@ -160,15 +160,15 @@ void GConsoleWindow::_initMenuBar() {
     addMenuSeparator("File");
 
     addMenuItem("File", "&Quit", QPixmap(":/quit"),
-                [this]() { this->close(); /* TODO：退出应用程序 */ })
+                [this]() { this->close(); /* TODO: exit app */ })
                 ->setShortcut(QKeySequence::Quit);
 
-    // 编辑菜单
+    // Edit menu
     addMenu("&Edit");
     addMenuItem("Edit", "Cu&t", QPixmap(":/cut"),
                 [this]() { this->clipboardCut(); })
                 ->setShortcut(QKeySequence::Cut);
-    //   Console 没有可用的剪切操作，不添加到工具栏
+    //   no cut operation available for Console, do not add to toolbar
 
     addMenuItem("Edit", "&Copy", QPixmap(":/copy"),
                 [this]() { this->clipboardCopy(); })
@@ -193,7 +193,7 @@ void GConsoleWindow::_initMenuBar() {
                        [this]() { this->clearConsole(); });
     addToolbarSeparator();
 
-    // 选项菜单
+    // Options menu
     addMenu("&Options");
     addMenuItem("Options", "&Font...", QPixmap(":/font"),
                 [this]() { this->showFontDialog(); });
@@ -201,17 +201,17 @@ void GConsoleWindow::_initMenuBar() {
                        [this]() { this->showFontDialog(); });
 
     addMenuItem("Options", "&Background Color...", QPixmap(":/background_color"),
-                [this]() { this->showColorDialog(/* 背景 */ true); });
+                [this]() { this->showColorDialog(/* background */ true); });
     addToolbarItem("Background Color...", QPixmap(":/background_color"),
-                       [this]() { this->showColorDialog(/* 背景 */ true); });
+                       [this]() { this->showColorDialog(/* background */ true); });
 
     addMenuItem("Options", "&Text Color...", QPixmap(":/text_color"),
-                [this]() { this->showColorDialog(/* 背景 */ false); });
+                [this]() { this->showColorDialog(/* background */ false); });
     addToolbarItem("Text Color...", QPixmap(":/text_color"),
-                       [this]() { this->showColorDialog(/* 背景 */ false); });
+                       [this]() { this->showColorDialog(/* background */ false); });
     addToolbarSeparator();
 
-    // 帮助菜单
+    // Help menu
     addMenu("&Help");
     addMenuItem("Help", "&About...", QPixmap(":/about"),
                 [this]() { this->showAboutDialog(); })
@@ -222,12 +222,12 @@ void GConsoleWindow::_initMenuBar() {
 }
 
 void GConsoleWindow::_initStreams() {
-    // 缓冲 C 风格 stderr
+    // buffer C-style stderr
     static char stderrBuf[BUFSIZ + 10] = {'\0'};
     std::ios::sync_with_stdio(false);
     setbuf(stderr, stderrBuf);
 
-    // 重定向 cin/cout/cerr
+    // redirect cin/cout/cerr
     _cinout_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt();
     _cerr_new_buf = new stanfordcpplib::qtgui::ConsoleStreambufQt(/* isStderr */ true);
     _cin_old_buf = std::cin.rdbuf(_cinout_new_buf);
@@ -239,7 +239,7 @@ void GConsoleWindow::_initWidgets() {
     _textArea = new GTextArea();
     _outputColor = _textArea->getColor();
 
-    // BUG 修复：使用操作系统默认背景色/前景色（有助于 Mac 深色模式）
+    // BUGFIX: use OS defaults for BG/FG colors (helps w/ Mac dark mode)
     _textArea->setBackground(GWindow::getDefaultInteractorBackgroundColorInt());
     _textArea->setColor(GWindow::getDefaultInteractorTextColorInt());
     _textArea->setContextMenuEnabled(false);
@@ -256,9 +256,9 @@ void GConsoleWindow::_initWidgets() {
         }
     });
     _textArea->setMouseListener([](GEvent event) {
-        // 禁用基于鼠标的操作：
-        // - 通过右键单击弹出上下文菜单
-        // - Linux 风格的复制/粘贴操作：选择后单击中键
+        // snuff out mouse-based operations:
+        // - popping up context menu by right-clicking
+        // - Linux-style copy/paste operations using selection plus middle-click
         if (event.getButton() > 1
                 || event.getEventType() == MOUSE_RELEASED) {
             event.ignore();
@@ -266,7 +266,7 @@ void GConsoleWindow::_initWidgets() {
     });
     addToRegion(_textArea, "Center");
 
-    // 让窗口关闭时自行退出
+    // tell window to shut down when it is closed
     setWindowListener([this](GEvent event) {
         if (event.getEventType() == WINDOW_CLOSING) {
             shutdown("Close");
@@ -282,7 +282,7 @@ void GConsoleWindow::_initWidgets() {
 
 
 GConsoleWindow::~GConsoleWindow() {
-    // TODO：删除？
+    // TODO: delete?
     _cinout_new_buf = nullptr;
     _cerr_new_buf = nullptr;
     _cin_old_buf = nullptr;
@@ -294,15 +294,15 @@ GConsoleWindow::~GConsoleWindow() {
 void GConsoleWindow::clearConsole() {
     std::string msg = "==================== (console cleared) ====================";
     if (_clearEnabled) {
-        // 打印到标准控制台（不是 Stanford 图形控制台）
+        // print to standard console (not Stanford graphical console)
         printf("%s\n", msg.c_str());
 
-        // 清空图形控制台窗口
+        // clear the graphical console window
         _coutMutex.lock();
         _textArea->clearText();
         _coutMutex.unlock();
     } else {
-        // 不要真正清空窗口，只在其上显示“已清空”消息
+        // don't actually clear the window, just display 'cleared' message on it
         println(msg);
     }
 }
@@ -319,7 +319,7 @@ void GConsoleWindow::clipboardCut() {
         return;
     }
 
-    // 如果选区完全位于用户输入区域内，则从用户输入区域剪切
+    // if selection is entirely within the user input area, cut out of user input area
     int userInputStart = getUserInputStart();
     int userInputEnd   = getUserInputEnd();
     int selectionStart = _textArea->getSelectionStart();
@@ -327,7 +327,7 @@ void GConsoleWindow::clipboardCut() {
     if (selectionEnd > selectionStart
             && selectionStart >= userInputStart
             && selectionEnd <= userInputEnd) {
-        // 选区完全是用户输入！剪切它！
+        // selection is entirely user input! cut it!
         QTextFragment frag = getUserInputFragment();
         if (frag.isValid()) {
             std::string selectedText = _textArea->getSelectedText();
@@ -372,7 +372,7 @@ void GConsoleWindow::clipboardPaste() {
 
 void GConsoleWindow::close() {
     shutdown("Close");
-    GWindow::close();   // 调用父类实现
+    GWindow::close();   // call super
 }
 
 std::string GConsoleWindow::getBackground() const {
@@ -434,7 +434,7 @@ QTextFragment GConsoleWindow::getUserInputFragment() const {
                 if (frag.isValid()) {
                     std::string fragText = frag.text().toStdString();
 
-                    // 查看它是否为给定用户输入
+                    // see if it is the given user input
                     if (fragText == _inputBuffer) {
                         return frag;
                     }
@@ -444,7 +444,7 @@ QTextFragment GConsoleWindow::getUserInputFragment() const {
         }
     }
 
-    // 未找到片段；这将返回一个“无效”片段
+    // didn't find the fragment; this will return an 'invalid' fragment
     QTextFragment notFound;
     return notFound;
 }
@@ -454,7 +454,7 @@ int GConsoleWindow::getUserInputStart() const {
     if (frag.isValid()) {
         return frag.position();
     } else if (_promptActive) {
-        // 位于文本末尾
+        // at end of text
         return (int) _textArea->getText().length();
     } else {
         return -1;
@@ -466,7 +466,7 @@ int GConsoleWindow::getUserInputEnd() const {
     if (frag.isValid()) {
         return frag.position() + frag.length();
     } else if (_promptActive) {
-        // 位于文本末尾
+        // at end of text
         return (int) _textArea->getText().length();
     } else {
         return -1;
@@ -552,7 +552,7 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
         }
     }
 
-    // 清理换行符（移除 \r）
+    // clean up line breaks (remove \r)
     std::string strToPrint = str;
     stringReplaceInPlace(strToPrint, "\r\n", "\n");
     stringReplaceInPlace(strToPrint, "\r", "\n");
@@ -586,7 +586,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
 
     if (event.isCtrlOrCommandKeyDown()) {
         if (keyCode == Qt::Key_Plus || keyCode == Qt::Key_Equal) {
-            // 增大字体大小
+            // increase font size
             event.ignore();
             QFont font = GFont::toQFont(_textArea->getFont());
             if (font.pointSize() + 1 <= MAX_FONT_SIZE) {
@@ -594,7 +594,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
                 setFont(GFont::toFontString(font));
             }
         } else if (keyCode == Qt::Key_Minus) {
-            // 减小字体大小
+            // decrease font size
             event.ignore();
             QFont font = GFont::toQFont(_textArea->getFont());
             if (font.pointSize() - 1 >= MIN_FONT_SIZE) {
@@ -602,11 +602,11 @@ void GConsoleWindow::processKeyPress(GEvent event) {
                 setFont(GFont::toFontString(font));
             }
         } else if (keyCode == Qt::Key_Insert) {
-            // Ctrl+Ins => 复制
+            // Ctrl+Ins => Copy
             event.ignore();
             clipboardCopy();
         } else if (keyCode == Qt::Key_0) {
-            // 规范化字号
+            // normalize font size
             event.ignore();
             setFont(DEFAULT_FONT_FAMILY + "-" + std::to_string(DEFAULT_FONT_SIZE));
         } else if (keyCode == Qt::Key_C) {
@@ -642,7 +642,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
     }
 
     if (event.isCtrlOrCommandKeyDown() || event.isAltKeyDown()) {
-        // 系统快捷键；让普通键盘处理程序处理此事件
+        // system hotkey; let the normal keyboard handler process this event
         event.ignore();
         return;
     }
@@ -650,7 +650,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
     switch (keyCode) {
         case GEvent::PAGE_UP_KEY:
         case GEvent::PAGE_DOWN_KEY:
-            // 不要忽略事件
+            // don't ignore event
             break;
         case GEvent::BACKSPACE_KEY: {
             event.ignore();
@@ -660,7 +660,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         case GEvent::DELETE_KEY: {
             event.ignore();
             if (event.isShiftKeyDown()) {
-                clipboardCut();   // Shift+Del => 剪切
+                clipboardCut();   // Shift+Del => Cut
             } else {
                 processBackspace(keyCode);
             }
@@ -669,13 +669,13 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         case GEvent::INSERT_KEY: {
             event.ignore();
             if (event.isShiftKeyDown()) {
-                clipboardPaste();   // Shift+Ins => 粘贴
+                clipboardPaste();   // Shift+Ins => Paste
             }
             break;
         }
         case GEvent::HOME_KEY:
             if (ALLOW_RICH_INPUT_EDITING) {
-                // 移动到输入缓冲区开头
+                // move to start of input buffer
                 if (_promptActive) {
                     event.ignore();
                     int start = getUserInputStart();
@@ -693,7 +693,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
             break;
         case GEvent::END_KEY:
             if (ALLOW_RICH_INPUT_EDITING) {
-                // 移动到输入缓冲区末尾
+                // move to end of input buffer
                 if (_promptActive) {
                     event.ignore();
                     int end = getUserInputEnd();
@@ -710,7 +710,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
             }
             break;
         case GEvent::LEFT_ARROW_KEY: {
-            // 若提示处于活动状态，则限制在用户输入区域内
+            // bound within user input area if a prompt is active
             if (ALLOW_RICH_INPUT_EDITING) {
                 if (isCursorInUserInputArea()) {
                     int cursorPosition = _textArea->getCursorPosition();
@@ -728,7 +728,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
             break;
         }
         case GEvent::RIGHT_ARROW_KEY:
-            // 若提示处于活动状态，则限制在用户输入区域内
+            // bound within user input area if a prompt is active
             if (ALLOW_RICH_INPUT_EDITING) {
                 if (isCursorInUserInputArea()) {
                     int cursorPosition = _textArea->getCursorPosition();
@@ -747,17 +747,17 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         case GEvent::UP_ARROW_KEY:
             if (isCursorInUserInputArea()) {
                 event.ignore();
-                processCommandHistory(/* 增量 */ -1);
+                processCommandHistory(/* delta */ -1);
             }
             break;
         case GEvent::DOWN_ARROW_KEY:
             if (isCursorInUserInputArea()) {
                 event.ignore();
-                processCommandHistory(/* 增量 */ 1);
+                processCommandHistory(/* delta */ 1);
             }
             break;
         case GEvent::TAB_KEY:
-            // TODO：Tab 补全？
+            // TODO: tab completion?
         case GEvent::CLEAR_KEY:
             break;
         case GEvent::F1_KEY: {
@@ -777,7 +777,7 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         case GEvent::F11_KEY:
         case GEvent::F12_KEY:
         case GEvent::HELP_KEY: {
-            // 各种控制键/修饰键：不执行任何操作 / 消耗事件
+            // various control/modifier keys: do nothing / consume event
             event.ignore();
             break;
         }
@@ -793,12 +793,12 @@ void GConsoleWindow::processKeyPress(GEvent event) {
         case GEvent::META_KEY:
         case GEvent::WINDOWS_KEY:
         case GEvent::MENU_KEY: {
-            // 其他各种控制键/修饰键：让操作系统处理事件（不要调用 ignore()）
+            // various other control/modifier keys: let OS have the event (don't call ignore())
             break;
         }
         case GEvent::RETURN_KEY:
         case GEvent::ENTER_KEY: {
-            // \n 行结束
+            // \n end line
             event.ignore();
             processUserInputEnterKey();
             break;
@@ -816,16 +816,16 @@ void GConsoleWindow::processBackspace(int key) {
         return;
     }
 
-    // 检查它是退格键还是删除键
-    bool isBackspace = key == GEvent::BACKSPACE_KEY /* TODO：或者计算机是 Mac */;
+    // check whether it is a backspace or a delete
+    bool isBackspace = key == GEvent::BACKSPACE_KEY /* TODO: or computer is Mac */;
 
     _cinMutex.lockForWrite();
     if (!_inputBuffer.empty()) {
-        // 从屏幕文本编辑器中删除最后一个字符：
-        // - 查找最后一个蓝色区域
+        // remove last char from onscreen text editor:
+        // - find last blue area
         QTextFragment frag = getUserInputFragment();
         if (frag.isValid()) {
-            // 从屏幕文档片段中删除最后一个字符
+            // remove last char from onscreen document fragment
             QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
             QTextCursor cursor(textArea->textCursor());
 
@@ -835,11 +835,11 @@ void GConsoleWindow::processBackspace(int key) {
             int userInputIndexMax = frag.position() + frag.length() - (isBackspace ? 0 : 1);
 
             if (oldCursorPosition >= userInputIndexMin && oldCursorPosition < userInputIndexMax) {
-                // 光标位于用户输入片段内；
-                // 确定它位于哪个字符，以便删除该字符
+                // cursor is inside the user input fragment;
+                // figure out which character it's on so we can delete it
                 indexToDelete = oldCursorPosition - frag.position() - (isBackspace ? 1 : 0);
             } else {
-                // 光标位于用户输入片段外；将其移动到那里
+                // cursor is outside of the user input fragment; move it there
                 cursor.setPosition(frag.position() + frag.length());
             }
 
@@ -847,10 +847,10 @@ void GConsoleWindow::processBackspace(int key) {
                 if (isBackspace || indexToDelete == (int) _inputBuffer.length() - 1) {
                     cursor.deletePreviousChar();
                 } else {
-                    cursor.deleteChar();   // 删除
+                    cursor.deleteChar();   // Delete
                 }
 
-                // 从内部输入缓冲区删除最后一个字符
+                // remove last char from internal input buffer
                 _inputBuffer.erase(indexToDelete, 1);
             }
         }
@@ -878,7 +878,7 @@ void GConsoleWindow::processEof() {
     if (_shutdown) {
         return;
     }
-    // 仅当输入缓冲区为空时设置 EOF；这是大多数 *nix 控制台的行为
+    // only set EOF if input buffer is empty; this is the behavior on most *nix consoles
     if (_inputBuffer.empty()) {
         std::cin.setstate(std::ios_base::eofbit);
     }
@@ -895,7 +895,7 @@ void GConsoleWindow::processUserInputEnterKey() {
     _commandHistoryIndex = _inputCommandHistory.size();
     _cinQueueMutex.unlock();
     _allOutputBuffer << _inputBuffer << std::endl;
-    _inputBuffer = "";   // 清空输入缓冲区
+    _inputBuffer = "";   // clear input buffer
     this->_textArea->appendFormattedText("\n", getUserInputColor());
     _cinMutex.unlock();
 }
@@ -905,7 +905,7 @@ void GConsoleWindow::processUserInputKey(int key) {
         return;
     }
     if (key != '\0' && isprint(key)) {
-        // 普通按键：追加到用户输入缓冲区
+        // normal key: append to user input buffer
         _cinMutex.lockForWrite();
 
         std::string keyStr = charToString((char) key);
@@ -917,7 +917,7 @@ void GConsoleWindow::processUserInputKey(int key) {
                 QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
                 QTextCursor cursor(textArea->textCursor());
 
-                // BUG 修复：如果存在任何选中文本，先将其移除
+                // BUGFIX: if there is any selected text, remove it first
                 int fragStart = frag.position();
                 int selectionStart = cursor.selectionStart() - fragStart;
                 int selectionEnd = cursor.selectionEnd() - fragStart;
@@ -931,29 +931,29 @@ void GConsoleWindow::processUserInputKey(int key) {
                 int cursorPosition = cursor.position();
                 int indexToInsert = cursorPosition - frag.position();
                 if (indexToInsert == 0) {
-                    // 在片段开头插入的特殊情况。
-                    // 示例：fragment 为“abcde”，光标在开头，用户输入“x”。
-                    // 如果只在文档中插入 "x"，它不会成为
-                    // 同一片段，并且不会采用蓝色粗体格式。
-                    // 我们的做法是暂时将它插入第一个字符之后，
-                    // 然后删除第一个字符，使所有内容都位于
-                    // 格式化跨度。
-                    // “abcde”
+                    // special case for inserting at start of fragment.
+                    // example: fragment is "abcde", cursor at start, user types "x".
+                    // if we just insert the "x" in the document, it won't be part of
+                    // the same fragment and won't have the blue bold format.
+                    // So what we do is temporarily insert it after the first character,
+                    // then delete the first character, so that everything is inside
+                    // the formatted span.
+                    // "abcde"
                     //  ^
-                    //   ^          向右移动 1
-                    // “axabcde”    在索引 1 处插入“xa”
+                    //   ^          move right by 1
+                    // "axabcde"    insert "xa" at index 1
                     //     ^
-                    //   ^          向左移动 2
-                    // “xabcde”     删除索引 0 处前一个字符“a”
+                    //   ^          move left by 2
+                    // "xabcde"     delete previous character "a" from index 0
                     //  ^
-                    //   ^          向右移动 1
+                    //   ^          move right by 1
                     cursor.beginEditBlock();
 
-                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // 移动到索引 1
-                    cursor.insertText(QString::fromStdString(keyStr + _inputBuffer.substr(0, 1)));   // 插入新字符 + 原首字符
-                    cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 2);              // 删除第一个字符的旧副本
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // move to index 1
+                    cursor.insertText(QString::fromStdString(keyStr + _inputBuffer.substr(0, 1)));   // insert new char + old first char
+                    cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 2);              // delete old copy of first char
                     cursor.deletePreviousChar();
-                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // 移动到索引 1
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);             // move to index 1
                     cursor.endEditBlock();
                     textArea->setTextCursor(cursor);
                 } else {
@@ -968,9 +968,9 @@ void GConsoleWindow::processUserInputKey(int key) {
         }
 
         if (!inserted) {
-            // 追加到缓冲区/片段末尾
+            // append to end of buffer/fragment
             _inputBuffer += keyStr;
-            // 以蓝色高亮文本显示
+            // display in blue highlighted text
             this->_textArea->appendFormattedText(keyStr, getUserInputColor(), "*-*-Bold");
         }
 
@@ -979,8 +979,8 @@ void GConsoleWindow::processUserInputKey(int key) {
 }
 
 std::string GConsoleWindow::readLine() {
-    // TODO：线程/锁
-    // 等待队列中有可用的一行
+    // TODO: threads/locking
+    // wait for a line to be available in queue
     std::string line;
     if (_shutdown) {
         return line;
@@ -988,7 +988,7 @@ std::string GConsoleWindow::readLine() {
 
     this->_textArea->moveCursorToEnd();
     this->_textArea->scrollToBottom();
-    this->toFront();   // 提示输入时将窗口移到前面
+    this->toFront();   // move window to front on prompt for input
     this->_textArea->requestFocus();
 
     _cinMutex.lockForWrite();
@@ -1003,7 +1003,7 @@ std::string GConsoleWindow::readLine() {
             lineRead = true;
             _cinQueueMutex.unlock();
 
-            // 回显用户输入，就像用户刚刚输入它一样
+            // echo user input, as if the user had just typed it
             GThread::runOnQtGuiThreadAsync([this, line]() {
                 _coutMutex.lock();
                 _allOutputBuffer << line << std::endl;
@@ -1048,8 +1048,8 @@ void GConsoleWindow::saveAs(const std::string& filename) {
     std::string filenameToUse;
     if (filename.empty()) {
         filenameToUse = GFileChooser::showSaveDialog(
-                /* 父级 */ this->getWidget(),
-                /* 标题 */ "",
+                /* parent */ this->getWidget(),
+                /* title */ "",
                 getHead(_lastSaveFileName));
     } else {
         filenameToUse = filename;
@@ -1065,9 +1065,9 @@ void GConsoleWindow::saveAs(const std::string& filename) {
 
 void GConsoleWindow::saveConfiguration(bool prompt) {
     if (prompt && !GOptionPane::showConfirmDialog(
-            /* 父级  */  getWidget(),
-            /* 消息 */  "Make this the default for future console windows?",
-            /* 标题   */  "Save configuration?")) {
+            /* parent  */  getWidget(),
+            /* message */  "Make this the default for future console windows?",
+            /* title   */  "Save configuration?")) {
         return;
     }
     std::string configFile = getTempDirectory() + "/" + CONFIG_FILE_NAME;
@@ -1083,12 +1083,12 @@ void GConsoleWindow::selectAll() {
 }
 
 void GConsoleWindow::setBackground(int color) {
-    GWindow::setBackground(color);   // 调用父类实现
+    GWindow::setBackground(color);   // call super
     _textArea->setBackground(color);
 }
 
 void GConsoleWindow::setBackground(const std::string& color) {
-    GWindow::setBackground(color);   // 调用父类实现
+    GWindow::setBackground(color);   // call super
     _textArea->setBackground(color);
 }
 
@@ -1100,7 +1100,7 @@ void GConsoleWindow::setClearEnabled(bool clearEnabled) {
 }
 
 void GConsoleWindow::setConsoleSize(double width, double height) {
-    // TODO：基于文本区域的首选大小 / 打包窗口
+    // TODO: base on text area's preferred size / packing window
     // _textArea->setPreferredSize(width, height);
     // pack();
     setSize(width, height);
@@ -1122,12 +1122,12 @@ void GConsoleWindow::setEcho(bool echo) {
 }
 
 void GConsoleWindow::setFont(const QFont& font) {
-    GWindow::setFont(font);   // 调用父类实现
+    GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
 
 void GConsoleWindow::setFont(const std::string& font) {
-    GWindow::setFont(font);   // 调用父类实现
+    GWindow::setFont(font);   // call super
     _textArea->setFont(font);
 }
 
@@ -1162,10 +1162,10 @@ void GConsoleWindow::setOutputColor(const std::string& outputColor) {
         return;
     }
 
-    // 遍历所有过去片段并将其重新着色为此颜色
+    // go through any past fragments and recolor them to this color
 
-    // 选择之前所有文本并更改其颜色
-    // （BUG？：还会把用户输入文本改成该颜色；这是预期行为吗？）
+    // select all previous text and change its color
+    // (BUG?: also changes user input text to be that color; desired?)
     QTextEdit* textArea = static_cast<QTextEdit*>(this->_textArea->getWidget());
     QTextCursor cursor = textArea->textCursor();
     cursor.beginEditBlock();
@@ -1186,7 +1186,7 @@ void GConsoleWindow::setSize(double width, double height) {
         height = std::min(getScreenHeight(), height * ratio);;
     }
 
-    // 调用父类实现
+    // call super
     GWindow::setSize(width, height);
 }
 
@@ -1197,7 +1197,7 @@ void GConsoleWindow::setUserInput(const std::string& userInput) {
     _cinMutex.lockForWrite();
     QTextEdit* textArea = static_cast<QTextEdit*>(_textArea->getWidget());
 
-    // 删除任何当前用户输入
+    // delete any current user input
     QTextFragment frag = getUserInputFragment();
     if (frag.isValid()) {
         QTextCursor cursor = textArea->textCursor();
@@ -1211,7 +1211,7 @@ void GConsoleWindow::setUserInput(const std::string& userInput) {
     _inputBuffer.clear();
     _cinMutex.unlock();
 
-    // 插入给定的用户输入
+    // insert the given user input
     for (int i = 0; i < (int) userInput.length(); i++) {
         processUserInputKey(userInput[i]);
     }
@@ -1222,43 +1222,43 @@ void GConsoleWindow::setUserInputColor(const std::string& userInputColor) {
 }
 
 void GConsoleWindow::showAboutDialog() {
-    // 此文本与旧版 spl.jar 消息中的文本大致匹配
+    // this text roughly matches that from old spl.jar message
     static const std::string ABOUT_MESSAGE = version::getLibraryInfoPanelMessage();
     GOptionPane::showMessageDialog(
-                /* 父级 */   getWidget(),
-                /* 消息 */  ABOUT_MESSAGE,
-                /* 标题 */    "About Stanford C++ Library",
-                /* 类型 */     GOptionPane::MESSAGE_ABOUT);
+                /* parent */   getWidget(),
+                /* message */  ABOUT_MESSAGE,
+                /* title */    "About Stanford C++ Library",
+                /* type */     GOptionPane::MESSAGE_ABOUT);
 }
 
 void GConsoleWindow::showColorDialog(bool background) {
     std::string color = GColorChooser::showDialog(
-                /* 父级 */   getWidget(),
-                /* 标题 */    "",
-                /* 初始值 */  background ? _textArea->getBackground() : _textArea->getForeground());
+                /* parent */   getWidget(),
+                /* title */    "",
+                /* initial */  background ? _textArea->getBackground() : _textArea->getForeground());
     if (!color.empty()) {
         if (background) {
             setBackground(color);
         } else {
             setOutputColor(color);
         }
-        saveConfiguration();   // 提示保存配置
+        saveConfiguration();   // prompt to save configuration
     }
 }
 
 void GConsoleWindow::showFontDialog() {
     std::string font = GFontChooser::showDialog(
-                /* 父级 */ getWidget(),
-                /* 标题  */ "",
+                /* parent */ getWidget(),
+                /* title  */ "",
                 /* initialFont */ _textArea->getFont());
     if (!font.empty()) {
         _textArea->setFont(font);
-        saveConfiguration();   // 提示保存配置
+        saveConfiguration();   // prompt to save configuration
     }
 }
 
 void GConsoleWindow::showPrintDialog() {
-    // TODO（待办）
+    // TODO
 }
 
 void GConsoleWindow::shutdown(const std::string& reason) {
@@ -1266,7 +1266,7 @@ void GConsoleWindow::shutdown(const std::string& reason) {
     std::cout.flush();
     std::cerr.flush();
 
-    // 恢复原来的 cin、cout、cerr
+    // restore old cin, cout, cerr
     if (_cin_old_buf) {
         _coutMutex.lock();
         std::cin.rdbuf(_cin_old_buf);
@@ -1286,10 +1286,10 @@ void GConsoleWindow::shutdown(const std::string& reason) {
         setTitle(title + " [" + reason + "]");
     }
 
-    // TODO：禁用某些菜单项
+    // TODO: disable some menu items
 }
 
-// ConsoleStreambufQt 使用的全局函数
+// global functions used by ConsoleStreambufQt
 
 namespace stanfordcpplib {
 namespace qtgui {

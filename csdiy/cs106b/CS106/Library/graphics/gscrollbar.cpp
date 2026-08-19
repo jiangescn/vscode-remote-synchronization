@@ -1,14 +1,14 @@
 /*
- * 文件：gscrollbar.cpp
+ * File: gscrollbar.cpp
  * --------------------
  *
  * @author Marty Stepp
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/08/23
- * - 重命名为 gscrollbar.cpp，以替代 Java 版本
+ * - renamed to gscrollbar.cpp to replace Java version
  * @version 2018/07/16
- * - 初始版本
+ * - initial version
  */
 
 #include "gscrollbar.h"
@@ -25,11 +25,11 @@ GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
         _iqscrollbar = new _Internal_QScrollBar(this, orientation == VERTICAL ? Qt::Vertical : Qt::Horizontal, getInternalParent(parent));
     });
     setState(value, extent, min, max);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GScrollBar::~GScrollBar() {
-    // TODO：delete _iqscrollbar;
+    // TODO: delete _iqscrollbar;
     _iqscrollbar->detach();
     _iqscrollbar = nullptr;
 }
@@ -137,15 +137,15 @@ void _Internal_QScrollBar::detach() {
     _gscrollbar = nullptr;
 }
 
-void _Internal_QScrollBar::handleValueChange(int /* 值 */) {
+void _Internal_QScrollBar::handleValueChange(int /* value */) {
     if (!_gscrollbar) {
         return;
     }
     GEvent changeEvent(
-                /* 类  */ CHANGE_EVENT,
-                /* 类型   */ STATE_CHANGED,
-                /* 名称   */ "change",
-                /* 来源 */ _gscrollbar);
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gscrollbar);
     changeEvent.setActionCommand(_gscrollbar->getActionCommand());
     _gscrollbar->fireEvent(changeEvent);
 }

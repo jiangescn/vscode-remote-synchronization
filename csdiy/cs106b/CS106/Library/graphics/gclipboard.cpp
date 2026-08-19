@@ -1,12 +1,12 @@
 /*
- * 文件：gclipboard.cpp
+ * File: gclipboard.cpp
  * --------------------
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 gclipboard.cpp，以替代 Java 版本
+ * - renamed to gclipboard.cpp to replace Java version
  * @version 2018/07/19
- * - 初始版本
+ * - initial version
  */
 
 #include "gclipboard.h"
@@ -16,7 +16,7 @@
 #include "require.h"
 
 GClipboard::GClipboard() {
-    // 空
+    // empty
 }
 
 void GClipboard::set(const std::string& text) {

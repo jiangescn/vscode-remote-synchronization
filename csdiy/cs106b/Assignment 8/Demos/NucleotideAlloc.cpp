@@ -6,14 +6,14 @@
 using namespace std;
 
 namespace {
-    /* 分配器魔数，用于内部验证我们没有
-     * 对指针执行某些不合理操作（并确保已释放的
-     * 指针实际上有效！）
+    /* Allocator magic number, used to internally validate that we didn't
+     * do something silly with a pointer (and to make sure that deallocated
+     * pointers are actually valid!)
      */
     const uint32_t kMagicHeader = 0xC5106BA7; // CS106B, A7
     const uint32_t kMagicFooter = 0x13710642; // 137, 106, 42
 
-    /* 一块足以容纳 Nucleotide 的内存。 */
+    /* One block of memory, large enough to hold a Nucleotide. */
     struct Block {
         uint32_t header = kMagicHeader;
         bool isFree = true;
@@ -21,25 +21,25 @@ namespace {
         uint32_t footer = kMagicFooter;
     };
 
-    /* 所有可用块的列表。
+    /* List of all available blocks.
      *
-     * TODO：这里可能应使用 std::vector，而不是原始
-     * 数组。
+     * TODO: This should probably be replaced with a std::vector rather than raw
+     * arrays.
      */
     Block* theQueue;
     Block* theHead;
-    const size_t kNumObjects = 1 << 22; // 400 万个核苷酸，远超所需数量。
+    const size_t kNumObjects = 1 << 22; // 4M nucleotides, way more than needed.
 
-    /* 已分配的实例数量。 */
+    /* Number of instances allocated. */
     int theNumInstances = 0;
 
-    /* 设置和拆除内存块。 */
+    /* Set up and tear down the memory blocks. */
     struct MemoryInitializer {
         MemoryInitializer() {
             theQueue = new Block[kNumObjects]();
             theHead  = theQueue;
 
-            /* 用垃圾值填充所有块。 */
+            /* Fill all blocks with garbage. */
             for (size_t i = 0; i < kNumObjects; i++) {
                 fill(begin(theQueue[i].buffer), end(theQueue[i].buffer), 0xBA);
             }
@@ -54,23 +54,23 @@ namespace {
 void* NucleotideAlloc::alloc(size_t numBytes) {
     ++theNumInstances;
 
-    /* 如果分配的字节数不是预期值，则一定有问题
-     * 是错误的。
+    /* If we are allocating any number of bytes other than what we expect, something
+     * is wrong.
      */
     if (numBytes != sizeof(Nucleotide)) {
         abort();
     }
 
-    /* 一直遍历，直到找到空闲内存块。 */
+    /* Walk until we find a free block. */
     Block* orig = theHead;
     do {
-        /* 如果此处空闲，则占用该空间。 */
+        /* If we're free, claim this space. */
         if (theHead->isFree) {
-            /* 占用此位置。 */
+            /* Claim this spot. */
             theHead->isFree = false;
             void* result = theHead->buffer;
 
-            /* 前进到下一个空闲槽位。 */
+            /* Advance to the next free slot. */
             theHead++;
             if (theHead - theQueue == kNumObjects) {
                 theHead = theQueue;
@@ -80,22 +80,22 @@ void* NucleotideAlloc::alloc(size_t numBytes) {
         }
     } while (theHead != orig);
 
-    /* 糟糕，失败了。 */
+    /* Oops, failed. */
     return ::operator new(numBytes);
 }
 
 void NucleotideAlloc::free(void* memory) {
     --theNumInstances;
 
-    /* 如果位于队列内部，很好！回收该空间。 */
+    /* If we're within the queue, great! Reclaim this space. */
     if (memory >= theQueue && memory < theQueue + kNumObjects) {
-        /* 将其映射回块，并确认没有发生未对齐。 */
+        /* Map this back to a block, and confirm that we aren't misaligned. */
         Block* theBlock = reinterpret_cast<Block*>(static_cast<char*>(memory) - offsetof(Block, buffer));
         if (theBlock->header != kMagicHeader || theBlock->footer != kMagicFooter) {
             abort();
         }
 
-        /* 此时该内存块不应处于空闲状态。如果是，则发生了重复释放。 */
+        /* This block should not be free at this point. If it is, this is a double-free. */
         if (theBlock->isFree) {
             cerr << "You have attempted to delete a Nucleotide object that is no longer allocated. "
                     "This may indicate that you are trying to delete the same pointer multiple times, "
@@ -104,8 +104,8 @@ void NucleotideAlloc::free(void* memory) {
             abort();
         }
 
-        /* 将块标记为空闲，并破坏块中的内存，使对它的使用
-         * 越晚越可能触发错误。
+        /* Mark the block as free, and fry the memory in the block so that using it
+         * later is more likely to trigger an error.
          */
         theBlock->isFree = true;
         fill(begin(theBlock->buffer), end(theBlock->buffer), 0xBA);

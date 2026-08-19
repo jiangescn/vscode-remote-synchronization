@@ -1,10 +1,10 @@
 /*
- * 文件：gspacer.cpp
+ * File: gspacer.cpp
  * -----------------
  *
  * @author Marty Stepp
  * @version 2018/10/06
- * - 初始版本
+ * - initial version
  */
 
 #include "gspacer.h"
@@ -17,11 +17,11 @@ GSpacer::GSpacer(double width, double height, QWidget* parent)
     GThread::runOnQtGuiThread([this, width, height, parent]() {
         _iqspacer = new _Internal_QSpacer(this, width, height, getInternalParent(parent));
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GSpacer::~GSpacer() {
-    // TODO：delete _iqspacer;
+    // TODO: delete _iqspacer;
     _iqspacer->detach();
     _iqspacer = nullptr;
 }

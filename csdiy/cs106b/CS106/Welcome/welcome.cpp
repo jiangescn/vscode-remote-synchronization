@@ -1,7 +1,7 @@
 /*
- * 文件：welcome.cpp
+ * File: welcome.cpp
  * --------------
- * 用于确认 Qt/CS106 安装的示例程序。
+ * Sample program used to confirm Qt/CS106 install.
  * @author Julie Zelenski
  * @version 2021/09/08
  */
@@ -25,7 +25,7 @@ void welcomeAlert(string name)
     window->setColor("black");
     window->drawString("Welcome " + name + "!", 75, 175);
     window->drawImage("res/stanford.png", 75, 25);
-    window->setColor("#008F00"); // 绿色
+    window->setColor("#008F00"); // green
     double x = 140, y = 50, w = 15, h = 30;
     for (int i = 0; i < 4; i++) {
         window->fillPolygon({GPoint(x-w, y+h),GPoint(x, y),GPoint(x+w, y+h) } );

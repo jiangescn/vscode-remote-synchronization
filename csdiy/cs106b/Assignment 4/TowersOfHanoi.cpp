@@ -2,15 +2,15 @@
 #include "TowersOfHanoi.h"
 using namespace std;
 
-/* 常量：kPauseTime
+/* Constant: kPauseTime
  *
- * 开始汉诺塔动画时暂停的时间。
+ * Amount of time to pause for when beginning the Towers Of Hanoi animation.
  */
 const double kPauseTime = 500;
 
-/* 此函数改编自教材第 8.1 章中的函数。如果你
- * 如果你还没有读过那一章，建议先阅读再开始
- * 这个问题。
+/* This function is adapted from the one in Chapter 8.1 of the textbook. If you
+ * haven't yet read that chapter, I recommend that you do so before starting
+ * this problem.
  */
 void moveTower(int numDisks, char start, char finish, char temp, int& totalMoves) {
     if (numDisks != 0) {
@@ -22,11 +22,11 @@ void moveTower(int numDisks, char start, char finish, char temp, int& totalMoves
 }
 
 int solveTowersOfHanoi(int numDisks, char start, char finish, char temp) {
-    /* 想让它慢下来？尝试为最后一个参数使用以下其他选项：
+    /* Want to slow this down? Try these other options for the final parameter:
      *
-     *   AnimationSpeed::MOLASSES         （极慢）
-     *   AnimationSpeed::CHEETAH          （正常）
-     *   AnimationSpeed::PEREGRINE_FALCON （极快）
+     *   AnimationSpeed::MOLASSES         (extremely slow)
+     *   AnimationSpeed::CHEETAH          (regular)
+     *   AnimationSpeed::PEREGRINE_FALCON (extremely fast)
      */
     initHanoiDisplay(numDisks, AnimationSpeed::CHEETAH);
     pause(kPauseTime);

@@ -1,23 +1,23 @@
 /*
- * 文件：gobjects.cpp
+ * File: gobjects.cpp
  * ------------------
- * 此文件实现 gobjects.h 接口。
+ * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
  * @version 2019/08/13
- * - 修复加载 GImage 的错误（hasError -> !hasError），感谢 Tyler Conklin
+ * - bug fix for loading GImage (hasError -> !hasError) - thanks to Tyler Conklin
  * @version 2019/05/05
- * - 添加可预测的 GLine 点顺序 * @version 2019/04/23
- * - 修复 Windows 上因 istream 更改导致的从文件加载 GImage 问题
+ * - added predictable GLine point ordering * @version 2019/04/23
+ * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
- * - 添加直接从 istream 加载 GImage 的支持（htiek）
+ * - added support for loading a GImage directly from istream (htiek)
  * @version 2018/09/14
- * - 添加不透明度支持
- * - 添加 GCanvas 到 GImage 的转换支持
+ * - added opacity support
+ * - added GCanvas-to-GImage conversion support
  * @version 2018/08/23
- * - 重命名为 gobjects.cpp，以替代 Java 版本
+ * - renamed to gobjects.cpp to replace Java version
  * @version 2018/06/30
- * - 初始版本
+ * - initial version
  */
 
 #include "gobjects.h"
@@ -44,7 +44,7 @@
 
 const double GRoundRect::DEFAULT_CORNER = 10.0;
 
-// 静态常量
+// static constants
 STATIC_CONST_VARIABLE_DECLARE(double, LINE_TOLERANCE, 1.5)
 STATIC_CONST_VARIABLE_DECLARE(double, ARC_TOLERANCE, 2.5)
 STATIC_VARIABLE_DECLARE_BLANK(QBrush, DEFAULT_BRUSH)
@@ -52,14 +52,14 @@ STATIC_VARIABLE_DECLARE_BLANK(QFont, DEFAULT_QFONT)
 STATIC_VARIABLE_DECLARE(bool, DEFAULT_QFONT_SET, false)
 
 /**
- * 返回两点间距离的平方。
- * 用于检查一条线是否接触给定点。
+ * Returns the square of the distance between two points.
+ * Used when checking to see if a line touches a given point.
  * @private
  */
 static double dsq(double x0, double y0, double x1, double y1);
 
 
-/* GObject 类 */
+/* GObject class */
 
 bool GObject::_sAntiAliasing = true;
 
@@ -81,19 +81,19 @@ GObject::GObject(double x, double y, double width, double height)
           _transformed(false),
           _parent(nullptr) {
     // http://doc.qt.io/qt-5/qpen.html#cap-style
-    _pen.setJoinStyle(Qt::MiterJoin);   // 不要将线边角圆化
+    _pen.setJoinStyle(Qt::MiterJoin);   // don't round corners of line edges
     _pen.setMiterLimit(99.0);
-    _pen.setCapStyle(Qt::FlatCap);      // 不要让线段端点延伸过头
+    _pen.setCapStyle(Qt::FlatCap);      // don't overextend line endpoint
     _brush.setStyle(Qt::SolidPattern);
 }
 
 GObject::~GObject() {
-    // 空
+    // empty
 }
 
 bool GObject::contains(double x, double y) const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         return getBounds().contains(x, y);
     } else {
         return getBounds().contains(x, y);
@@ -114,7 +114,7 @@ double GObject::getBottomY() const {
 
 GRectangle GObject::getBounds() const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         return GRectangle(getX(), getY(), getWidth(), getHeight());
     } else {
         return GRectangle(getX(), getY(), getWidth(), getHeight());
@@ -191,7 +191,7 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
         return;
     }
     if (GColor::hasAlpha(_color)) {
-        _pen.setColor(GColor::toQColorARGB(_colorInt));   // 允许 alpha
+        _pen.setColor(GColor::toQColorARGB(_colorInt));   // allow alpha
     } else {
         _pen.setColor(QColor(_colorInt));
     }
@@ -201,7 +201,7 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
     // http://doc.qt.io/qt-5/qpen.html#join-style
     painter->setPen(_pen);
 
-    // 字体
+    // font
     if (!STATIC_VARIABLE(DEFAULT_QFONT_SET)) {
         STATIC_VARIABLE(DEFAULT_QFONT) = painter->font();
         STATIC_VARIABLE(DEFAULT_BRUSH).setColor(QColor(0x00ffffff));
@@ -213,10 +213,10 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
     }
 
 
-    // 填充颜色
+    // fill color
     if (_fillFlag) {
         if (GColor::hasAlpha(_fillColor)) {
-            _brush.setColor(GColor::toQColorARGB(_fillColorInt));   // 允许 alpha
+            _brush.setColor(GColor::toQColorARGB(_fillColorInt));   // allow alpha
         } else {
             _brush.setColor(QColor(_fillColorInt));
         }
@@ -225,15 +225,15 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
         painter->setBrush(STATIC_VARIABLE(DEFAULT_BRUSH));
     }
 
-    // 抗锯齿
+    // anti-aliasing
     painter->setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
     painter->setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
 
-    // 不透明度
+    // opacity
     painter->setOpacity(_opacity);
 
-    // 变换
-    painter->setTransform(_transform, /* 合并 */ false);
+    // transform
+    painter->setTransform(_transform, /* combine */ false);
 }
 
 bool GObject::isAntiAliasing() {
@@ -253,11 +253,11 @@ bool GObject::isVisible() const {
 }
 
 void GObject::move(double dx, double dy) {
-    setLocation(getX() + dx, getY() + dy);   // 调用 repaint
+    setLocation(getX() + dx, getY() + dy);   // calls repaint
 }
 
 void GObject::repaint() {
-    // 实际上指示 GCompound 父对象重绘自身
+    // really instructs the GCompound parent to redraw itself
     GCompound* parent = getParent();
     while (parent && parent->getParent()) {
         parent = parent->getParent();
@@ -280,7 +280,7 @@ void GObject::rotate(double theta) {
 }
 
 void GObject::scale(double sf) {
-    scale(sf, sf);   // 调用 repaint
+    scale(sf, sf);   // calls repaint
 }
 
 void GObject::scale(double sx, double sy) {
@@ -322,19 +322,19 @@ void GObject::setAntiAliasing(bool value) {
 }
 
 void GObject::setBottomY(double y) {
-    setBottomRightLocation(getRightX(), y);   // 调用 repaint
+    setBottomRightLocation(getRightX(), y);   // calls repaint
 }
 
 void GObject::setRightX(double x) {
-    setBottomRightLocation(x, getBottomY());   // 调用 repaint
+    setBottomRightLocation(x, getBottomY());   // calls repaint
 }
 
 void GObject::setBottomRightLocation(double x, double y) {
-    setLocation(x - getWidth(), y - getHeight());   // 调用 repaint
+    setLocation(x - getWidth(), y - getHeight());   // calls repaint
 }
 
 void GObject::setBottomRightLocation(const GPoint& pt) {
-    setBottomRightLocation(pt.x, pt.y);   // 调用 repaint
+    setBottomRightLocation(pt.x, pt.y);   // calls repaint
 }
 
 void GObject::setBounds(double x, double y, double width, double height) {
@@ -350,19 +350,19 @@ void GObject::setBounds(const GRectangle& bounds) {
 }
 
 void GObject::setCenterX(double x) {
-    setCenterLocation(x, getCenterY());   // 调用 repaint
+    setCenterLocation(x, getCenterY());   // calls repaint
 }
 
 void GObject::setCenterY(double y) {
-    setCenterLocation(getCenterX(), y);   // 调用 repaint
+    setCenterLocation(getCenterX(), y);   // calls repaint
 }
 
 void GObject::setCenterLocation(double x, double y) {
-    setLocation(x - getWidth() / 2, y - getHeight() / 2);   // 调用 repaint
+    setLocation(x - getWidth() / 2, y - getHeight() / 2);   // calls repaint
 }
 
 void GObject::setCenterLocation(const GPoint& pt) {
-    setCenterLocation(pt.x, pt.y);   // 调用 repaint
+    setCenterLocation(pt.x, pt.y);   // calls repaint
 }
 
 void GObject::setColor(int r, int g, int b) {
@@ -460,7 +460,7 @@ void GObject::setLocation(double x, double y) {
 }
 
 void GObject::setLocation(const GPoint& pt) {
-    setLocation(pt.x, pt.y);   // 调用 repaint
+    setLocation(pt.x, pt.y);   // calls repaint
 }
 
 void GObject::setOpacity(double opacity) {
@@ -479,7 +479,7 @@ void GObject::setSize(double width, double height) {
 }
 
 void GObject::setSize(const GDimension& size) {
-    setSize(size.width, size.height);   // 调用 repaint
+    setSize(size.width, size.height);   // calls repaint
 }
 
 void GObject::setVisible(bool flag) {
@@ -492,11 +492,11 @@ void GObject::setWidth(double width) {
 }
 
 void GObject::setX(double x) {
-    setLocation(x, getY());   // 调用 repaint
+    setLocation(x, getY());   // calls repaint
 }
 
 void GObject::setY(double y) {
-    setLocation(getX(), y);   // 调用 repaint
+    setLocation(getX(), y);   // calls repaint
 }
 
 std::string GObject::toString() const {
@@ -543,19 +543,19 @@ GArc::GArc(double width, double height, double start, double sweep)
         : GObject(/* x */ 0, /* y */ 0, width, height),
           _start(start),
           _sweep(sweep) {
-    // 空
+    // empty
 }
 
 GArc::GArc(double x, double y, double width, double height, double start, double sweep)
         : GObject(x, y, width, height),
           _start(start),
           _sweep(sweep) {
-    // 空
+    // empty
 }
 
 bool GArc::contains(double x, double y) const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
     double rx = getWidth() / 2;
@@ -577,7 +577,7 @@ bool GArc::contains(double x, double y) const {
         }
     }
 
-    // JL 错误修复：必须按 ry、rx 缩放。
+    // JL BUGFIX: must scale by ry, rx.
     return containsAngle(atan2(-dy/ry, dx/rx) * 180 / PI);
 }
 
@@ -597,8 +597,8 @@ bool GArc::containsAngle(double theta) const {
 }
 
 void GArc::draw(QPainter* painter) {
-    // 出于某种原因，Qt 的弧绘制功能要求角度采用
-    // 1/16 度。好吧，随便了
+    // for some reason, Qt's arc-drawing functionality asks for angles in
+    // 1/16ths of a degree. okay sure whatever
     static const int QT_ANGLE_SCALE_FACTOR = 16;
     initializeBrushAndPen(painter);
     painter->drawChord((int) getX(), (int) getY(),
@@ -618,7 +618,7 @@ GPoint GArc::getArcPoint(double theta) const {
 
 GRectangle GArc::getBounds() const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
     double rx = getWidth() / 2;
@@ -673,11 +673,11 @@ std::string GArc::getType() const {
 }
 
 void GArc::setFrameRectangle(double x, double y, double width, double height) {
-    setBounds(x, y, width, height);   // 调用 repaint
+    setBounds(x, y, width, height);   // calls repaint
 }
 
 void GArc::setFrameRectangle(const GRectangle& rect) {
-    setFrameRectangle(rect.x, rect.y, rect.width, rect.height);   // 调用 repaint
+    setFrameRectangle(rect.x, rect.y, rect.width, rect.height);   // calls repaint
 }
 
 void GArc::setStartAngle(double start) {
@@ -699,12 +699,12 @@ std::string GArc::toStringExtra() const {
 
 GCompound::GCompound()
         : _autoRepaint(true) {
-    // 空
+    // empty
 }
 
 void GCompound::add(GObject* gobj) {
     require::nonNull(gobj, "GCompound::add");
-    for (int i = _contents.size() - 1; i >= 0; i--) {   // 避免重复
+    for (int i = _contents.size() - 1; i >= 0; i--) {   // avoid duplicates
         if (_contents[i] == gobj) {
             return;
         }
@@ -721,7 +721,7 @@ void GCompound::add(GObject* gobj) {
 void GCompound::add(GObject* gobj, double x, double y) {
     require::nonNull(gobj, "GCompound::add");
     gobj->setLocation(x, y);
-    add(gobj);   // 调用 conditionalRepaint
+    add(gobj);   // calls conditionalRepaint
 }
 
 void GCompound::add(GObject& gobj) {
@@ -733,7 +733,7 @@ void GCompound::add(GObject& gobj, double x, double y) {
 }
 
 void GCompound::clear() {
-    removeAll();   // 调用 conditionalRepaint
+    removeAll();   // calls conditionalRepaint
 }
 
 void GCompound::conditionalRepaint() {
@@ -756,7 +756,7 @@ void GCompound::conditionalRepaintRegion(const GRectangle& bounds) {
 
 bool GCompound::contains(double x, double y) const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
     for (int i = 0, sz = _contents.size(); i < sz; i++) {
@@ -771,7 +771,7 @@ void GCompound::draw(QPainter* painter) {
     if (!painter) {
         return;
     }
-    // TODO：取消此处注释？需要将设置应用到每个形状
+    // TODO: uncomment this? need settings to apply to every shape
     // initializeBrushAndPen(painter);   //
     for (GObject* obj : _contents) {
         if (obj->isVisible()) {
@@ -792,7 +792,7 @@ int GCompound::findGObject(GObject* gobj) const {
 
 GRectangle GCompound::getBounds() const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
     double xMin = +1E20;
@@ -806,7 +806,7 @@ GRectangle GCompound::getBounds() const {
         xMax = std::max(xMax, bounds.x);
         yMax = std::max(yMax, bounds.y);   // JL BUGFIX 2016/10/11
     }
-    // JL 错误修复：锚点发生偏移
+    // JL BUGFIX: shifted anchor point
     return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
@@ -847,7 +847,7 @@ void GCompound::remove(GObject* gobj) {
     require::nonNull(gobj, "GCompound::remove");
     int index = findGObject(gobj);
     if (index != -1) {
-        removeAt(index);   // 调用 conditionalRepaint
+        removeAt(index);   // calls conditionalRepaint
     }
 }
 
@@ -861,7 +861,7 @@ void GCompound::removeAll() {
     _contents.clear();
     for (GObject* obj : contentsCopy) {
         obj->_parent = nullptr;
-        // TODO：delete obj;
+        // TODO: delete obj;
     }
     if (!wasEmpty) {
         conditionalRepaint();
@@ -884,12 +884,12 @@ void GCompound::repaint() {
         return;
     }
 
-    // 实际重绘必须在 Qt GUI 线程中完成
+    // actual repainting must be done in the Qt GUI thread
     if (GThread::iAmRunningOnTheQtGuiThread()) {
-        _widget->repaint();   // TODO：改为 update()？
+        _widget->repaint();   // TODO: change to update()?
     } else {
         GThread::runOnQtGuiThread([this]() {
-            _widget->repaint();   // TODO：改为 update()？
+            _widget->repaint();   // TODO: change to update()?
         });
     }
 }
@@ -899,7 +899,7 @@ void GCompound::repaintRegion(int x, int y, int width, int height) {
         return;
     }
 
-    // 实际重绘必须在 Qt GUI 线程中完成
+    // actual repainting must be done in the Qt GUI thread
     if (GThread::iAmRunningOnTheQtGuiThread()) {
         _widget->repaint(x, y, width, height);
     } else {
@@ -1017,7 +1017,7 @@ GImage::GImage(QImage* qimage) {
 }
 
 GImage::~GImage() {
-    // TODO：delete _image;
+    // TODO: delete _image;
     _qimage = nullptr;
 }
 
@@ -1035,16 +1035,16 @@ bool GImage::load(const std::string& filename) {
             hasError = true;
         }
     });
-    return !hasError;   // *** BUG 修复，感谢 Tyler Conklin
+    return !hasError;   // *** BUGFIX thanks to Tyler Conklin
 }
 
 bool GImage::loadFromStream(std::istream& input) {
-    // 通过 std::stringstream 将字节传输到字符串
+    // transfer bytes to a string through std::stringstream
     std::ostringstream byteStream;
     byteStream << input.rdbuf();
     std::string bytes = byteStream.str();
 
-    // 加载图像
+    // load image
     bool hasError = false;
     GThread::runOnQtGuiThread([&, this]() {
         _qimage = new QImage;
@@ -1070,12 +1070,12 @@ void GImage::draw(QPainter* painter) {
     double imgWidth = _qimage->width();
     double imgHeight = _qimage->height();
     painter->setOpacity(_opacity);
-    painter->setTransform(_transform, /* 合并 */ false);
+    painter->setTransform(_transform, /* combine */ false);
     if (floatingPointEqual(myWidth, imgWidth) && floatingPointEqual(myHeight, imgHeight)) {
-        // 不缩放绘制
+        // draw unscaled
         painter->drawImage((int) myX, (int) myY, *_qimage);
     } else {
-        // 按比例绘制
+        // draw scaled
         QRectF rect(myX, myY, myWidth, myHeight);
         painter->drawImage(rect, *_qimage);
     }
@@ -1111,7 +1111,7 @@ GLine::GLine(double x0, double y0, double x1, double y1, GObject::LineStyle line
         : GObject(x0, y0),
           _dx(x1 - x0),
           _dy(y1 - y0) {
-    setPoints(x0, y0, x1, y1);   // 检查是否需要交换点
+    setPoints(x0, y0, x1, y1);   // checks if point swap is needed
     setLineStyle(lineStyle);
 }
 
@@ -1119,12 +1119,12 @@ GLine::GLine(const GPoint& p0, const GPoint& p1)
         : GObject(p0.x, p0.y),
           _dx(p1.x - p0.x),
           _dy(p1.y - p0.y) {
-    // 空
+    // empty
 }
 
 bool GLine::contains(double x, double y) const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
     double x0 = getStartX();
@@ -1171,7 +1171,7 @@ void GLine::draw(QPainter* painter) {
 
 GRectangle GLine::getBounds() const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
     double minX = std::min(getStartX(), getEndX());
@@ -1252,12 +1252,12 @@ std::string GLine::toStringExtra() const {
 
 GOval::GOval(double x, double y, double width, double height)
         : GObject(x, y, width, height) {
-    // 空
+    // empty
 }
 
 bool GOval::contains(double x, double y) const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
     double rx = getWidth() / 2;
@@ -1284,7 +1284,7 @@ std::string GOval::getType() const {
 
 
 GPolygon::GPolygon() {
-    // 空
+    // empty
 }
 
 GPolygon::GPolygon(std::initializer_list<double> coords) {
@@ -1367,7 +1367,7 @@ void GPolygon::clear() {
 
 bool GPolygon::contains(double x, double y) const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
     int crossings = 0;
@@ -1402,7 +1402,7 @@ void GPolygon::draw(QPainter* painter) {
 
 GRectangle GPolygon::getBounds() const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
     double xMin = 0;
@@ -1417,7 +1417,7 @@ GRectangle GPolygon::getBounds() const {
         if (i == 0 || x > xMax) xMax = x;
         if (i == 0 || y > yMax) yMax = y;
     }
-    // JL 错误修复：添加 getX、getY
+    // JL BUGFIX: add getX, getY
     return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
 }
 
@@ -1446,7 +1446,7 @@ Vector<GPoint> GPolygon::getVertices() const {
 }
 
 double GPolygon::getWidth() const {
-    return getBounds().width; // 错误修复 JDZ
+    return getBounds().width; // BUGFIX JDZ
 }
 
 void GPolygon::setVertex(int i, GPoint point) {
@@ -1464,7 +1464,7 @@ std::string GPolygon::toStringExtra() const {
 
 GRect::GRect(double x, double y, double width, double height)
         : GObject(x, y, width, height) {
-    // 空
+    // empty
 }
 
 void GRect::draw(QPainter* painter) {
@@ -1483,9 +1483,9 @@ std::string GRect::getType() const {
 
 
 /*
- * 实现说明：GRoundRect 类
+ * Implementation notes: GRoundRect class
  * ---------------------------------------
- * GRoundRect 类的大部分内容继承自 GRect 类。
+ * Most of the GRoundRect class is inherited from the GRect class.
  */
 
 GRoundRect::GRoundRect(double width, double height, double corner)
@@ -1502,26 +1502,26 @@ GRoundRect::GRoundRect(double x, double y, double width, double height, double c
 
 bool GRoundRect::contains(double x, double y) const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
 
-    // JL 错误修复：其余代码用于在未变换情况下返回正确结果
-    // （将角落计算在内）
+    // JL BUGFIX: The rest of this is code to return correct result in non-transformed case
+    // (accounting for corners)
     if (!getBounds().contains(x, y)) {
         return false;
     }
 
-    // 如果圆角直径过大，Java 后端会使用最大的合理值。
+    // If corner diameter is too big, the largest sensible value is used by Java back end.
     double a = std::min(_corner, getWidth()) / 2;
     double b = std::min(_corner, getHeight()) / 2;
 
-    // 获取到边界矩形最近边缘的距离
+    // Get distances from nearest edges of bounding rectangle
     double dx = std::min(std::abs(x - getX()), std::abs(x - getRightX()));
     double dy = std::min(std::abs(y - getY()), std::abs(y - getBottomY()));
 
     if (dx > a || dy > b) {
-        return true;   // 位于圆角矩形的“中央十字”区域
+        return true;   // in "central cross" of rounded rect
     }
 
     return (dx - a) * (dx - a) / (a * a) + (dy - b) * (dy - b) / (b * b) <= 1;
@@ -1532,7 +1532,7 @@ void GRoundRect::draw(QPainter* painter) {
         return;
     }
     initializeBrushAndPen(painter);
-    // QPainter 将角值视为半径，而 GRoundRect 存储直径，因此需要转换
+    // QPainter takes corner as radius, GRoundRect stores as diameter, thus convert
     painter->drawRoundedRect((int) getX(), (int) getY(),
                            (int) getWidth(), (int) getHeight(),
                            (int) (_corner/2), (int) (_corner/2));
@@ -1560,7 +1560,7 @@ std::string GRoundRect::toStringExtra() const {
 GText::GText(const std::string& str, double x, double y)
         : GObject(x, y),
           _text(str) {
-    _font = GFont::toFontString(QApplication::font()); // 默认使用标准字体族和大小
+    _font = GFont::toFontString(QApplication::font()); // default to standard family+size
     updateSize();
 }
 
@@ -1574,7 +1574,7 @@ void GText::draw(QPainter* painter) {
 
 GRectangle GText::getBounds() const {
     if (isTransformed()) {
-        // TODO（待办）
+        // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
     return GRectangle(getX(), getY() - getFontAscent(), getWidth(), getHeight());

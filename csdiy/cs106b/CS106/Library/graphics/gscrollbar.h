@@ -1,14 +1,14 @@
 /*
- * 文件：qgscrollbar.h
+ * File: qgscrollbar.h
  * -------------------
  *
  * @author Marty Stepp
  * @version 2018/09/08
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gscrollbar.h，以替代 Java 版本
+ * - renamed to gscrollbar.h to replace Java version
  * @version 2018/07/16
- * - 初始版本
+ * - initial version
  */
 
 
@@ -23,19 +23,19 @@
 class _Internal_QScrollBar;
 
 /**
- * GScrollBar 表示可供使用的水平或垂直滚动条
- * 由用户拖动。滚动条本身不会使任何其他交互控件
- * 使其自身滚动。如果希望该滚动条产生任何效果，必须等待
- * 用于监听滚动事件并响应它们。
+ * A GScrollBar represents a horizontal or vertical scroll bar that can be
+ * dragged by the user.  The bar does not inherently cause any other interactor
+ * to scroll itself.  If you want the bar to cause any effect, you must wait
+ * for scroll events and respond to them.
  *
- * 给定滚动条具有可表示的值范围，包含最小值和最大值，
- * 以及一个当前值。
- * 滚动条的“extent”表示滚动条当前可见的部分。
+ * A given scroll bar has a range of values it can represent, with a min and max,
+ * along with a current value.
+ * The "extent" of a scrollbar represents the amount of the scrollbar in view.
  */
 class GScrollBar : public GInteractor {
 public:
     /**
-     * 滚动条的两种有效方向。
+     * The two valid orientations of scrollbars.
      */
     enum Orientation {
         HORIZONTAL = 0,
@@ -43,19 +43,19 @@ public:
     };
 
     /**
-     * 创建具有给定方向和值范围的新滚动条。
-     * @throw 如果 min > max，或 value 不在 min 与 max 之间，则抛出 ErrorException
+     * Creates a new scroll bar with the given orientation and value range.
+     * @throw ErrorException if min > max or value is not between min and max
      */
     GScrollBar(Orientation orientation = VERTICAL, int value = 0, int extent = 10, int min = 0, int max = 100, QWidget* parent = nullptr);
 
     /**
-     * 释放滚动条内部分配的内存。
+     * Frees memory allocated internally by the scroll bar.
      */
     ~GScrollBar() override;
 
     /**
-     * 返回滚动条的 extent，即其范围中以下部分的大小
-     * 当前可见。
+     * Returns the scroll bar's extent, meaning the amount of its range that is
+     * currently in view.
      */
     virtual int getExtent() const;
 
@@ -63,17 +63,17 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回滚动条允许的最大值。
+     * Returns the maximum allowed value of the scroll bar.
      */
     virtual int getMax() const;
 
     /**
-     * 返回滚动条允许的最小值。
+     * Returns the minimum allowed value of the scroll bar.
      */
     virtual int getMin() const;
 
     /**
-     * 返回滚动条方向，HORIZONTAL 或 VERTICAL。
+     * Returns the orientation of the scroll bar, either HORIZONTAL or VERTICAL.
      */
     virtual Orientation getOrientation() const;
 
@@ -81,7 +81,7 @@ public:
     std::string getType() const override;
 
     /**
-     * 返回滚动条的当前值。
+     * Returns the current value of the scroll bar.
      */
     virtual int getValue() const;
 
@@ -89,32 +89,32 @@ public:
     QWidget* getWidget() const override;
 
     /**
-     * 设置滚动条的 extent，即其范围中以下部分的大小
-     * 当前可见。
+     * Sets the scroll bar's extent, meaning the amount of its range that is
+     * currently in view.
      */
     virtual void setExtent(int extent);
 
     /**
-     * 设置滚动条允许的最大值。
-     * @throw 如果 min > max，则抛出 ErrorException
+     * Sets the maximum allowed value of the scroll bar.
+     * @throw ErrorException if min > max
      */
     virtual void setMax(int max);
 
     /**
-     * 设置滚动条允许的最小值。
-     * @throw 如果 min > max，则抛出 ErrorException
+     * Sets the minimum allowed value of the scroll bar.
+     * @throw ErrorException if min > max
      */
     virtual void setMin(int min);
 
     /**
-     * 设置滚动条的所有相关状态。
-     * @throw 如果 min > max，或 value 不在 min 与 max 之间，则抛出 ErrorException
+     * Sets all of the relevant state of the scroll bar.
+     * @throw ErrorException if min > max or value is not between min and max
      */
     virtual void setState(int value, int extent, int min, int max);
 
     /**
-     * 设置滚动条的当前值。
-     * @throw 如果 value 不在 min 和 max 之间，则抛出 ErrorException
+     * Sets the current value of the scroll bar.
+     * @throw ErrorException if value is not between min and max
      */
     virtual void setValue(int value);
 
@@ -135,7 +135,7 @@ private:
 };
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QScrollBar : public QScrollBar, public _Internal_QWidget {

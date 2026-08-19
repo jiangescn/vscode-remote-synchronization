@@ -1,8 +1,8 @@
 /*
- * 文件：hashmap.h
+ * File: hashmap.h
  * ---------------
- * 此文件导出 <code>HashMap</code> 类，该类存储
- * 一组<i>键</i>-<i>值</i>对。
+ * This file exports the <code>HashMap</code> class, which stores
+ * a set of <i>key</i>-<i>value</i> pairs.
  */
 
 #ifndef _hashmap_h
@@ -21,361 +21,361 @@
 #include "vector.h"
 
 /*
- * 类：HashMap<KeyType,ValueType>
+ * Class: HashMap<KeyType,ValueType>
  * ---------------------------------
- * 此类实现了
- * <b><i>键</i></b>和<b><i>值</i></b>。此类
- * 与 <a href="Map-class.html"><code>Map</code></a> 类相同
- * 区别仅在于它使用哈希表作为底层
- * 表示。尽管 <code>HashMap</code> 类以
- * 在常数时间内，<code>HashMap</code> 的迭代器返回
- * 以看似随机的顺序排列的值。
+ * This class implements an efficient association between
+ * <b><i>keys</i></b> and <b><i>values</i></b>.  This class is
+ * identical to the <a href="Map-class.html"><code>Map</code></a> class
+ * except for the fact that it uses a hash table as its underlying
+ * representation.  Although the <code>HashMap</code> class operates in
+ * constant time, the iterator for <code>HashMap</code> returns the
+ * values in a seemingly random order.
  */
 template <typename KeyType, typename ValueType>
 class HashMap {
 public:
     /*
-     * 构造函数：HashMap
-     * 用法：HashMap<KeyType,ValueType> map;
+     * Constructor: HashMap
+     * Usage: HashMap<KeyType,ValueType> map;
      * --------------------------------------
-     * 初始化一个新的空映射，用于关联以下类型的键和值
-     * 指定的类型。用作键的类型必须定义
-     * <code>==</code> 运算符，并且必须有一个自由函数
-     * 具有以下签名：
+     * Initializes a new empty map that associates keys and values of
+     * the specified types.  The type used for the key must define
+     * the <code>==</code> operator, and there must be a free function
+     * with the following signature:
      *
      *<pre>
      *    int hashCode(KeyType key);
      *</pre>
      *
-     * 返回由键决定的正整数。此接口
-     * 导出用于 <code>string</code> 和以下类型的 <code>hashCode</code> 函数
-     * C++ 基本类型。
+     * that returns a positive integer determined by the key.  This interface
+     * exports <code>hashCode</code> functions for <code>string</code> and
+     * the C++ primitive types.
      */
     HashMap() = default;
 
     /*
-     * 构造函数：HashMap
-     * 用法：HashMap<ValueType> map {{"a", 1}, {"b", 2}, {"c", 3}};
+     * Constructor: HashMap
+     * Usage: HashMap<ValueType> map {{"a", 1}, {"b", 2}, {"c", 3}};
      * -------------------------------------------------------------
-     * 初始化存储给定键值对的新映射。
-     * 请注意，键值对在内部以不可预测的顺序存储，而不是
-     * 不一定与它们在初始化列表中的书写顺序相同。
+     * Initializes a new map that stores the given pairs.
+     * Note that the pairs are stored in unpredictable order internally and not
+     * necessarily the order in which they are written in the initializer list.
      */
     HashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
-     * 析构函数：~HashMap
+     * Destructor: ~HashMap
      * --------------------
-     * 释放与此映射关联的所有堆存储。
+     * Frees any heap storage associated with this map.
      */
     virtual ~HashMap() = default;
 
     /*
-     * 方法：lastKey
-     * 用法：KeyType value = map.lastKey();
+     * Method: lastKey
+     * Usage: KeyType value = map.lastKey();
      * ------------------------------------
-     * 按照以下方式建立的顺序返回映射中的最后一个键：
-     * <code>for-each</code> 循环。
-     * 请注意，由于键的存储顺序不可预测，
-     * 这不一定等于任何特定意义上“最大”的键值
-     * 排序顺序；它只是恰好最后输出的键
-     * 来自 for-each 循环。
-     * 若映射为空，则产生错误。
+     * Returns the last key in the map in the order established by the
+     * <code>for-each</code> loop.
+     * Note that since the keys are stored in an unpredictable order,
+     * this is not necessarily equal to the "largest" key value in any particular
+     * sorting order; it is just the key that would happen to be emitted last
+     * from a for-each loop.
+     * If the map is empty, generates an error.
      */
     KeyType lastKey() const;
 
     /*
-     * 方法：clear
-     * 用法：map.clear();
+     * Method: clear
+     * Usage: map.clear();
      * -------------------
-     * 移除此映射中的所有条目。
+     * Removes all entries from this map.
      */
     void clear();
 
     /*
-     * 方法：containsKey
-     * 用法：if (map.containsKey(key)) ...
+     * Method: containsKey
+     * Usage: if (map.containsKey(key)) ...
      * ------------------------------------
-     * 如果存在 <code>key</code> 的条目，则返回 <code>true</code>
-     * 在此映射中。
+     * Returns <code>true</code> if there is an entry for <code>key</code>
+     * in this map.
      */
     bool containsKey(const KeyType& key) const;
 
     /*
-     * 方法：equals
-     * 用法：if (map.equals(map2)) ...
+     * Method: equals
+     * Usage: if (map.equals(map2)) ...
      * --------------------------------
-     * 如果两个映射包含完全相同的内容，则返回 <code>true</code>
-     * 键值对时为 true，否则为 false。
+     * Returns <code>true</code> if the two maps contain exactly the same
+     * key/value pairs, and <code>false</code> otherwise.
      */
     bool equals(const HashMap& map2) const;
 
     /*
-     * 方法：firstKey
-     * 用法：KeyType value = map.firstKey();
+     * Method: firstKey
+     * Usage: KeyType value = map.firstKey();
      * -------------------------------------
-     * 按照以下方式建立的顺序返回映射中的第一个键：
-     * <code>for-each</code> 循环。
-     * 请注意，由于键的存储顺序不可预测，
-     * 这不一定等于任何特定意义上“最小”的键值
-     * 排序顺序；它只是恰好最先输出的键
-     * 来自 for-each 循环。
-     * 若映射为空，则产生错误。
+     * Returns the first key in the map in the order established by the
+     * <code>for-each</code> loop.
+     * Note that since the keys are stored in an unpredictable order,
+     * this is not necessarily equal to the "smallest" key value in any particular
+     * sorting order; it is just the key that would happen to be emitted first
+     * from a for-each loop.
+     * If the map is empty, generates an error.
      */
     KeyType firstKey() const;
 
     /*
-     * 方法：get
-     * 用法：ValueType value = map.get(key);
+     * Method: get
+     * Usage: ValueType value = map.get(key);
      * --------------------------------------
-     * 返回此映射中与 <code>key</code> 关联的值。
-     * 若找不到 <code>key</code>，<code>get</code> 返回
-     * <code>ValueType</code> 的默认值。
+     * Returns the value associated with <code>key</code> in this map.
+     * If <code>key</code> is not found, <code>get</code> returns the
+     * default value for <code>ValueType</code>.
      */
     ValueType get(const KeyType& key) const;
 
     /*
-     * 方法：isEmpty
-     * 用法：if (map.isEmpty()) ...
+     * Method: isEmpty
+     * Usage: if (map.isEmpty()) ...
      * -----------------------------
-     * 如果此映射不包含任何条目，则返回 <code>true</code>。
+     * Returns <code>true</code> if this map contains no entries.
      */
     bool isEmpty() const;
 
     /*
-     * 方法：keys
-     * 用法：Vector<KeyType> keys = map.keys();
+     * Method: keys
+     * Usage: Vector<KeyType> keys = map.keys();
      * -----------------------------------------
-     * 返回包含此映射中所有键的集合。
-     * 请注意，此实现会对键进行深拷贝，
-     * 因此在大型映射上调用效率较低。
+     * Returns a collection containing all keys in this map.
+     * Note that this implementation makes a deep copy of the keys,
+     * so it is inefficient to call on large maps.
      */
     Vector<KeyType> keys() const;
 
     /*
-     * 方法：mapAll
-     * 用法：map.mapAll(fn);
+     * Method: mapAll
+     * Usage: map.mapAll(fn);
      * ----------------------
-     * 遍历映射条目，并调用 <code>fn(key, value)</code>
-     * 分别处理每一个。键按不确定顺序处理。
+     * Iterates through the map entries and calls <code>fn(key, value)</code>
+     * for each one.  The keys are processed in an undetermined order.
      */
     void mapAll(std::function<void(const KeyType&, const ValueType&)> fn) const;
 
     /*
-     * 方法：put
-     * 用法：map.put(key, value);
+     * Method: put
+     * Usage: map.put(key, value);
      * ---------------------------
-     * 在此映射中将 <code>key</code> 与 <code>value</code> 关联。
-     * 与 <code>key</code> 关联的任何旧值都会被替换
-     * 被新值替换。
+     * Associates <code>key</code> with <code>value</code> in this map.
+     * Any previous value associated with <code>key</code> is replaced
+     * by the new value.
      */
     void put(const KeyType& key, const ValueType& value);
 
     /*
-     * 方法：putAll
-     * 用法：map.putAll(map2);
+     * Method: putAll
+     * Usage: map.putAll(map2);
      * ---------------------------
-     * 将给定映射中的所有键值对添加到此映射。
-     * 若两个映射包含相同键的键值对，则采用 map2 中的
-     * 替换此映射中的对应项。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
-     * 返回对此映射的引用。
+     * Adds all key/value pairs from the given map to this map.
+     * If both maps contain a pair for the same key, the one from map2 will
+     * replace the one from this map.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
+     * Returns a reference to this map.
      */
     HashMap& putAll(const HashMap& map2);
 
     /*
-     * 方法：remove
-     * 用法：map.remove(key);
+     * Method: remove
+     * Usage: map.remove(key);
      * -----------------------
-     * 从此映射中移除 <code>key</code> 的任何条目。
-     * 如果找不到给定键，则不产生任何效果。
+     * Removes any entry for <code>key</code> from this map.
+     * If the given key is not found, has no effect.
      */
     void remove(const KeyType& key);
 
     /*
-     * 方法：removeAll
-     * 用法：map.removeAll(map2);
+     * Method: removeAll
+     * Usage: map.removeAll(map2);
      * ---------------------------
-     * 从此映射中移除包含在给定映射中的所有键/值对。
-     * 若两个映射都包含同一个键，但该键对应不同值，则
-     * 该映射不会被移除。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
-     * 返回对此映射的引用。
+     * Removes all key/value pairs from this map that are contained in the given map.
+     * If both maps contain the same key but it maps to different values, that
+     * mapping will not be removed.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
+     * Returns a reference to this map.
      */
     HashMap& removeAll(const HashMap& map2);
 
     /*
-     * 方法：retainAll
-     * 用法：map.retainAll(map2);
+     * Method: retainAll
+     * Usage: map.retainAll(map2);
      * ---------------------------
-     * 从此映射中移除不包含在给定映射中的所有键/值对。
-     * 若两个映射都包含同一个键，但该键对应不同值，则
-     * 该映射将被移除。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
-     * 返回对此映射的引用。
+     * Removes all key/value pairs from this map that are not contained in the given map.
+     * If both maps contain the same key but it maps to different values, that
+     * mapping will be removed.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
+     * Returns a reference to this map.
      */
     HashMap& retainAll(const HashMap& map2);
 
     /*
-     * 方法：size
-     * 用法：int nEntries = map.size();
+     * Method: size
+     * Usage: int nEntries = map.size();
      * ---------------------------------
-     * 返回此映射中的条目数。
+     * Returns the number of entries in this map.
      */
     int size() const;
 
     /*
-     * 方法：toString
-     * 用法：string str = map.toString();
+     * Method: toString
+     * Usage: string str = map.toString();
      * -----------------------------------
-     * 将映射转换为可打印的字符串表示。
+     * Converts the map to a printable string representation.
      */
     std::string toString() const;
 
     /*
-     * 方法：values
-     * 用法：Vector<ValueType> values = map.values();
+     * Method: values
+     * Usage: Vector<ValueType> values = map.values();
      * -----------------------------------------------
-     * 返回包含此映射中所有值的集合。
-     * 请注意，此实现会对值进行深拷贝，
-     * 因此在大型映射上调用效率较低。
+     * Returns a collection containing all values in this map.
+     * Note that this implementation makes a deep copy of the values,
+     * so it is inefficient to call on large maps.
      */
     Vector<ValueType> values() const;
 
     /*
-     * 运算符：[]
-     * 用法：map[key]
+     * Operator: []
+     * Usage: map[key]
      * ---------------
-     * 选择与 <code>key</code> 关联的值。此语法
-     * 使我们很容易把映射理解为“关联数组”
-     * 按键类型索引。若 <code>key</code> 已存在
-     * 若键存在于映射中，此函数返回对其关联
-     * 值。如果键不在映射中，则创建一个新条目
-     * 其值被设置为该值类型的默认值。
+     * Selects the value associated with <code>key</code>.  This syntax
+     * makes it easy to think of a map as an "associative array"
+     * indexed by the key type.  If <code>key</code> is already present
+     * in the map, this function returns a reference to its associated
+     * value.  If key is not present in the map, a new entry is created
+     * whose value is set to the default for the value type.
      */
     ValueType& operator [](const KeyType& key);
     ValueType operator [](const KeyType& key) const;
 
     /*
-     * 运算符：+
-     * 用法：map1 + map2
+     * Operator: +
+     * Usage: map1 + map2
      * ------------------
-     * 返回两个映射的并集，等价于第一个映射的副本
-     * 等价于在第一个映射上调用 putAll，并将第二个映射作为参数传入。
-     * 若两个映射都包含同一键的映射关系，则
-     * 优先采用第二个映射中的值。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Returns the union of the two maps, equivalent to a copy of the first map
+     * with putAll called on it passing the second map as a parameter.
+     * If the two maps both contain a mapping for the same key, the mapping
+     * from the second map is favored.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator +(const HashMap& map2) const;
 
     /*
-     * 运算符：+=
-     * 用法：map1 += map2;
+     * Operator: +=
+     * Usage: map1 += map2;
      * --------------------
-     * 将给定映射中的所有键值对添加到此映射。
-     * 等价于调用 putAll(map2)。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Adds all key/value pairs from the given map to this map.
+     * Equivalent to calling putAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator +=(const HashMap& map2);
 
     /*
-     * 运算符：-
-     * 用法：map1 - map2
+     * Operator: -
+     * Usage: map1 - map2
      * ------------------
-     * 返回两个映射的差集，等价于第一个映射的副本
-     * 等价于在第一个映射上调用 removeAll，并将第二个映射作为参数传入。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Returns the difference of the two maps, equivalent to a copy of the first map
+     * with removeAll called on it passing the second map as a parameter.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator -(const HashMap& map2) const;
 
     /*
-     * 运算符：-=
-     * 用法：map1 -= map2;
+     * Operator: -=
+     * Usage: map1 -= map2;
      * --------------------
-     * 从此映射中移除给定映射中的所有键/值对。
-     * 等价于调用 removeAll(map2)。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Removes all key/value pairs from the given map to this map.
+     * Equivalent to calling removeAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator -=(const HashMap& map2);
 
     /*
-     * 运算符：*
-     * 用法：map1 * map2
+     * Operator: *
+     * Usage: map1 * map2
      * ------------------
-     * 返回两个映射的交集，等价于第一个映射的副本
-     * 等价于在第一个映射上调用 retainAll，并将第二个映射作为参数传入。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Returns the intersection of the two maps, equivalent to a copy of the first map
+     * with retainAll called on it passing the second map as a parameter.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator *(const HashMap& map2) const;
 
     /*
-     * 运算符：*=
-     * 用法：map1 *= map2;
+     * Operator: *=
+     * Usage: map1 *= map2;
      * ---------------------
-     * 从此映射中移除给定映射中找不到的所有键/值对。
-     * 等价于调用 retainAll(map2)。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Removes all key/value pairs that are not found in the given map from this map.
+     * Equivalent to calling retainAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator *=(const HashMap& map2);
 
     /*
-     * 其他 HashMap 操作
+     * Additional HashMap operations
      * -----------------------------
-     * 除本接口中列出的方法外，HashMap
-     * 类支持以下操作：
+     * In addition to the methods listed in this interface, the HashMap
+     * class supports the following operations:
      *
-     *   - 使用 << 和 >> 运算符进行流输入/输出
-     *   - 为复制构造函数和赋值运算符实现深拷贝
-     *   - 使用基于范围的 for 语句和 STL 迭代器进行迭代
+     *   - Stream I/O using the << and >> operators
+     *   - Deep copying for the copy constructor and assignment operator
+     *   - Iteration using the range-based for statement and STL iterators
      *
-     * HashMap 类不保证迭代顺序。
+     * The HashMap class makes no guarantees about the order of iteration.
      */
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
 private:
     static_assert(stanfordcpplib::collections::IsHashable<KeyType>::value,
                   "Oops! You tried using a type as a key in our HashMap without making it hashable. Click this error for more details.");
     /*
-     * CS106 的同学你好！如果编译错误将你指向此行代码，
-     * 这可能意味着你尝试使用自定义结构体或类类型创建 HashMap
-     * 作为键类型，或将自定义结构体作为值类型的 HashSet。
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a HashMap with a custom struct or class type
+     * as the key type or a HashSet with a custom struct as a value type.
      *
-     * 要让某类型成为 HashMap 的键类型——或成为其值类型
-     * 在 HashSet 中——它需要定义 hashCode 函数，并且能够被
-     * 使用 == 运算符比较。如果你被引导到这里，则这两个条件之一
-     * 未满足。
+     * In order to have a type be a key type in a HashMap - or to have a type be a value type
+     * in a HashSet - it needs to have a hashCode function defined and be capable of being
+     * compared using the == operator. If you were directed here, one of those two conditions
+     * wasn't met.
      *
-     * 有两种修复方式。第一种是直接不使用自定义
-     * 将该类型用作 HashMap 的键或 HashSet 的值。这可能是最简单的选择。
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the HashMap or value in a HashSet. This is probably the easiest option.
      *
-     * 第二种修复方式是显式定义 hashCode() 和 operator== 函数
-     * 为你的类型定义。首先按如下方式定义 hashCode：
+     * The second way to fix this is to explicitly define a hashCode() and operator== function
+     * for your type. To do so, first define hashCode as follows:
      *
      *     int hashCode(const YourCustomType& obj) {
      *         return hashCode(obj.data1, obj.data2, ..., obj.dataN);
      *     }
      *
-     * 其中 data1、data2、...、dataN 是该类型的数据成员。例如，如果你有
-     * 自定义类型
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
      *
      *     struct MyType {
      *         int myInt;
      *         string myString;
      *     };
      *
-     * 你需要定义函数
+     * you would define the function
      *
      *     int hashCode(const MyType& obj) {
      *         return hashCode(obj.myInt, obj.myString);
      *     }
      *
-     * 其次，按如下方式定义 operator==：
+     * Second, define operator== as follows:
      *
      *     bool operator== (const YourCustomType& lhs, const YourCustomType& rhs) {
      *         return lhs.data1 == rhs.data1 &&
@@ -384,13 +384,13 @@ private:
      *                lhs.dataN == rhs.dataN;
      *     }
      *
-     * 使用上面的 MyType 示例，我们会编写
+     * Using the MyType example from above, we'd write
      *
      *     bool operator== (const MyType& lhs, const MyType& rhs) {
      *         return lhs.myInt == rhs.myInt && lhs.myString == rhs.myString;
      *     }
      *
-     * 希望这能有所帮助！
+     * Hope this helps!
      */
 
     struct Hasher {
@@ -402,20 +402,20 @@ private:
     std::unordered_map<KeyType, ValueType, Hasher> _elements;
     stanfordcpplib::collections::VersionTracker _version;
 
-    /* 私有方法 */
+    /* Private methods */
 
 public:
     /*
-     * 隐藏功能
+     * Hidden features
      * ---------------
-     * 此文件的剩余部分包含实现以下功能所需的代码：
-     * 支持深拷贝和迭代。加入这些方法
-     * 放入公共接口会使该接口更加
-     * 普通客户端难以理解。
+     * The remainder of this file consists of the code required to
+     * support deep copying and iteration.  Including these methods
+     * in the public interface would make that interface more
+     * difficult to understand for the average client.
      */
 
     /*
-     * 迭代器支持
+     * Iterator support
      */
 
     using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename std::unordered_map<KeyType, ValueType, Hasher>::const_iterator>>;
@@ -425,7 +425,7 @@ public:
     iterator end() const;
 
     /*
-     * 哈希支持。
+     * Hashing support.
      */
     bool operator== (const HashMap& rhs) const;
     bool operator!= (const HashMap& rhs) const;
@@ -642,11 +642,11 @@ int hashCode(const HashMap<KeyType, ValueType>& map) {
 }
 
 /*
- * 实现说明：<< 和 >>
+ * Implementation notes: << and >>
  * -------------------------------
- * 插入和提取运算符使用以下文件中的模板功能：
- * 使用 strlib.h 读写通用值，并以特殊方式处理字符串
- * 特殊处理。
+ * The insertion and extraction operators use the template facilities in
+ * strlib.h to read and write generic values in a way that treats strings
+ * specially.
  */
 template <typename KeyType, typename ValueType>
 std::ostream& operator <<(std::ostream& os,
@@ -659,15 +659,15 @@ std::istream& operator >>(std::istream& is,
                           HashMap<KeyType, ValueType>& map) {
     KeyType key;
     ValueType value;
-    return stanfordcpplib::collections::readPairedCollection(is, map, key, value, /* 描述符 */ std::string("HashMap::operator >>"));
+    return stanfordcpplib::collections::readPairedCollection(is, map, key, value, /* descriptor */ std::string("HashMap::operator >>"));
 }
 
 /*
- * 函数：randomKey
- * 用法：element = randomKey(map);
+ * Function: randomKey
+ * Usage: element = randomKey(map);
  * --------------------------------
- * 从给定映射中随机选择并返回一个键。
- * 如果映射为空，则抛出错误。
+ * Returns a randomly chosen key of the given map.
+ * Throws an error if the map is empty.
  */
 template <typename K, typename V>
 const K& randomKey(const HashMap<K, V>& map) {

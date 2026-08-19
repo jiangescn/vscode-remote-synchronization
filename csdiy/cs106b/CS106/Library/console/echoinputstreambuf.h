@@ -1,14 +1,14 @@
 /*
- * 文件：echoinputstreambuf.h
+ * File: echoinputstreambuf.h
  * --------------------------
- * 此文件定义 <code>EchoInputStreambuf</code> 类，该类
- * 表示一个将所有用户输入回显到 stdout 的流缓冲区。
- * 这主要用于从文件重定向输入时显示控制台输入。
+ * This file defines the <code>EchoInputStreambuf</code> class, which
+ * represents a stream buffer that echoes to stdout any user input.
+ * We mostly use this to display console input when redirecting in from a file.
  *
  * @version 2016/10/30
- * - 添加接受输入字符串的构造函数
+ * - added constructor that takes a string of input
  * @version 2016/10/04
- * - 初始版本
+ * - initial version
  */
 
 #ifndef _echoinputstreambuf_h
@@ -21,16 +21,16 @@
 namespace stanfordcpplib {
 
 /*
- * 读取字符时将其回显的输入流缓冲区。
- * 用于回显 cin 控制台输入，以便捕获后比较测试用例差异
- * 自动评分器向 cin 提供固定输入时。
+ * An input stream buffer that echoes characters as they are read.
+ * Used to echo cin console input for capturing for test case diffing
+ * when fixed input has been fed to cin by autograders.
  *
- * 灵感来源：http://gabisoft.free.fr/articles/fltrsbf1.html
+ * inspired by: http://gabisoft.free.fr/articles/fltrsbf1.html
  */
 class EchoInputStreambuf : public std::streambuf {
 public:
     EchoInputStreambuf(std::streambuf* source) : m_source(source), m_buffer('\0') {
-        // 空
+        // empty
     }
 
     EchoInputStreambuf(const std::string& input) : m_buffer('\0') {
@@ -47,9 +47,9 @@ public:
     }
 
     /*
-     * 这是关键函数；读取
-     * 底层流缓冲区（cin）。我们将其捕获到单字符 m_buffer 中
-     * 以便稍后返回它。
+     * This is the crucial function; called to read a character from the
+     * underlying stream buffer (cin).  We capture it in a one-char m_buffer
+     * so we can return it later.
      */
     virtual int underflow() {
         int result(EOF);
@@ -61,7 +61,7 @@ public:
                 m_buffer = result;
                 setg(&m_buffer, &m_buffer, &m_buffer + 1);
 
-                // 将字符回显到 stdout
+                // echo the character to stdout
                 std::cout.put(result);
                 std::cout.flush();
             }

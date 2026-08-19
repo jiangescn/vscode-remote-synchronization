@@ -1,4 +1,4 @@
-/* 用于测试优先队列的交互式环境。 */
+/* Interactive environment for testing the priority queue. */
 #include "LinearProbingHashTable.h"
 #include "RobinHoodHashTable.h"
 #include "ChainedHashTable.h"
@@ -17,7 +17,7 @@ using namespace MiniGUI;
 namespace {
     const string kButtonFont = Font(FontFamily::MONOSPACE, FontStyle::NORMAL, 12, "black").stanfordCPPLibFontString();
 
-    /* 允许用户以交互方式测试 PQueue 类型的问题处理程序。 */
+    /* Problem handler that lets the user interactively test the PQueue type. */
     template <typename Table> class InteractiveGUI: public ProblemHandler {
     public:
         InteractiveGUI(GWindow& window, const string& tableName);
@@ -31,40 +31,40 @@ namespace {
 
         string tableName;
 
-        /* 控制项。分为两组：一组用于构造函数，
-         * 一组用于构造函数，另一组用于析构函数和成员函数。
+        /* Controls. These are split into two groups: one for the constructor,
+         * and one for the destructor and member functions.
          */
         Temporary<GButton> construct;
         Temporary<GButton> destruct;
 
-        /* 其他命令的列表。由于我们无法
-         * 将它们用作映射键。
+        /* List of other commands. These are stored separately because we can't
+         * use them as map keys.
          */
         vector<Temporary<GButton>> memberFnButtons;
         HashMap<GButton*, std::string> memberFns;
 
-        /* 插入/删除/查找的输入。 */
+        /* Inputs for insert/delete/lookup. */
         Temporary<GLabel> nameDesc;
         Temporary<GTextField> nameInput;
         Temporary<GLabel> hashOut;
 
-        /* 用于清空控制台的按钮。 */
+        /* Button to clear the console. */
         Temporary<GButton> clear;
 
-        /* 实际的表。 */
+        /* The actual table. */
         Table* table = nullptr;
 
-        /* 这是哪个表格。 */
+        /* Which table this is. */
         int index = 0;
 
-        /* 返回给定可观察对象是否为命令的来源。 */
+        /* Returns whether the given obserable is the source of a command. */
         bool sourceIs(GObservable* observable, const string& command) const;
 
-        /* 执行函数并记录输出。 */
+        /* Performs a function, logging the output. */
         template <typename Function>
         bool performSafely(const string& command, Function fn);
 
-        /* 执行所有适当的操作。 */
+        /* Performs all the appropriate actions. */
         void setTableExists(bool exists);
         void doConstruct();
         void doDestruct();
@@ -76,12 +76,12 @@ namespace {
         void doClear();
         void doPrintDebugInfo();
 
-        /* 重新计算当前元素显示的哈希码。 */
+        /* Recomputes the displayed hash code for the current element. */
         void elemUpdated();
     };
 
-    /* 创建具有指定名称的按钮，并将其安装到窗口的给定
-     * 位置。
+    /* Creates a button with the specified name, installing it in the window in the given
+     * spot.
      */
     Temporary<GButton> makeButton(const string& name, GWindow& window, const string& location, bool enabled) {
         Temporary<GButton> result(new GButton(name), window, location);
@@ -94,11 +94,11 @@ namespace {
     InteractiveGUI<Table>::InteractiveGUI(GWindow& window, const string& tableName) : ProblemHandler(window) {
         this->tableName = tableName;
 
-        /* 标准按钮。 */
+        /* Standard buttons. */
         construct      = makeButton(tableName + "()", window, "WEST", true);
         destruct       = makeButton("~" + tableName + "()", window, "WEST", false);
 
-        /* 成员函数。 */
+        /* Member functions. */
         memberFnButtons.push_back(makeButton("size();", window, "WEST", false));
         memberFnButtons.push_back(makeButton("isEmpty();", window, "WEST", false));
         memberFnButtons.push_back(makeButton("contains(elem);", window, "WEST", false));
@@ -118,7 +118,7 @@ namespace {
         hashOut->setFont(kButtonFont);
         hashOut->setEnabled(false);
 
-        /* 输出窗格。 */
+        /* Output pane. */
         console = Temporary<GColorConsole>(new GColorConsole(), window, "CENTER");
         console->doWithStyle("#008000", [&] {
              *console << "/* Welcome to the interactive testing environment!\n"
@@ -130,10 +130,10 @@ namespace {
                       << " */" << endl;
         });
 
-        /* 清除按钮。 */
+        /* Clear button. */
         clear = makeButton("Clear Console", window, "EAST", true);
 
-        /* 将所有命令组装到命令列表。 */
+        /* Assemble all the commands into the command list. */
         for (const auto& button: memberFnButtons) {
             string command = button->getText();
             command = command.substr(0, command.find("("));
@@ -144,8 +144,8 @@ namespace {
         elemUpdated();
     }
 
-    /* 给定可观察对象，报告其是否与给定名称的对象关联
-     * 函数。
+    /* Given an observable, reports whether that observable is associated with the given named
+     * function.
      */
     template <typename Table>
     bool InteractiveGUI<Table>::sourceIs(GObservable* observable, const string& name) const {
@@ -169,7 +169,7 @@ namespace {
         g << endl;
     }
 
-    /* 执行给定操作并记录结果。 */
+    /* Performs the given action and logs the result. */
     template <typename Table>
     template <typename Function>
     bool InteractiveGUI<Table>::performSafely(const string& command, Function fn) {
@@ -195,7 +195,7 @@ namespace {
         }
     }
 
-    /* 在表格创建/销毁时更新控件。 */
+    /* Updates the controls in response to a table being created / destroyed. */
     template <typename Table>
     void InteractiveGUI<Table>::setTableExists(bool exists) {
         construct->setEnabled(!exists);
@@ -211,7 +211,7 @@ namespace {
 
     template <typename Table>
     void InteractiveGUI<Table>::doConstruct() {
-        /* 创建优先队列。 */
+        /* Make the priority queue. */
         performSafely(tableName + " %s(Hash::identity(10));", [&, this] {
             table = new Table(Hash::identity(10));
 
@@ -221,7 +221,7 @@ namespace {
 
     template <typename Table>
     void InteractiveGUI<Table>::doDestruct() {
-        /* 拆除表格队列。 */
+        /* Tear down the table queue. */
         performSafely("/* %s goes out of scope */", [&, this] {
             delete table;
             table = nullptr;
@@ -272,19 +272,19 @@ namespace {
     }
     template <typename Table>
     void InteractiveGUI<Table>::doPrintDebugInfo() {
-        /* 临时接管 cout，将其重定向到我们自己的缓冲区。 */
+        /* Temporarily hijack cout to direct to our own buffer. */
         stringstream result;
         auto* oldBuf = cout.rdbuf(result.rdbuf());
 
-        /* 调用 printDebugInfo 查看返回内容。 */
+        /* Call printDebugInfo to see what we get back. */
         performSafely("%s.printDebugInfo();", [&, this] {
             table->printDebugInfo();
         });
 
-        /* 恢复旧缓冲区。 */
+        /* Restore the old buffer. */
         cout.rdbuf(oldBuf);
 
-        /* 显示输出的内容。 */
+        /* Show that got printed out. */
         console->doWithStyle("#000080", [&, this] {
             for (string line; getline(result, line); ) {
                 *console << "  // " << line << endl;
@@ -295,12 +295,12 @@ namespace {
 
     template <typename Table>
     void InteractiveGUI<Table>::actionPerformed(GObservable* source) {
-        /* 若这是清除按钮，则清空日志。 */
+        /* If this is the clear button, then clear the log. */
         if (source == clear) {
             console->clearDisplay();
             console->flush();
         }
-        /* 我们有两种基本模式：一种存在队列，另一种不存在队列。 */
+        /* We have two basic modes - one for when there is a queue, and one for where there isn't. */
         else if (table == nullptr) {
             if (source == construct) {
                 doConstruct();
@@ -353,10 +353,10 @@ GRAPHICS_HANDLER("Interactive Robin Hood Hashing", GWindow& window) {
 }
 
 namespace {
-    /* 哈希 traits。 */
+    /* Hash traits. */
     template <typename Table> struct HashTraits;
 
-    /* 用于导入定义的 X 宏。 */
+    /* X Macros to import definition. */
     #define HASH_TABLE(type, desc)                \
         template <> struct HashTraits<type> {     \
             static string name() { return desc; } \
@@ -364,9 +364,9 @@ namespace {
     #include "TimeTestConfig.h"
     #undef HASH_TABLE
 
-    /* 函数：printReplInstructions
+    /* Function: printReplInstructions
      * ------------------------------------------------------------------
-     * 打印如何使用 REPL 环境的说明。
+     * Prints instructions on how to use the REPL environment.
      */
     template <typename Table> void printReplInstructions() {
         cout << "Interactive " << HashTraits<Table>::name() << " Test" << endl;
@@ -393,17 +393,17 @@ namespace {
     template <typename Table> void demoTable() {
         printReplInstructions<Table>();
 
-        /* 这些花括号引入了新的作用域层级。这可以确保如果
-         * 你的优先队列析构函数导致错误时，该错误会发生在
-         * 此函数返回。
+        /* These curly braces introduce a new layer of scoping.  This ensures that if
+         * your priority queue's destructor causes an error, the error occurs before
+         * this function returns.
          */
         {
             Table table(Hash::identity(10));
             while (true) {
-                /* 从用户获取命令。 */
+                /* Get a command from the user. */
                 istringstream command(getLine("Enter command: "));
 
-                /* 提取动作。 */
+                /* Extract the action. */
                 string action;
                 command >> action >> ws;
                 action = toLowerCase(action);
@@ -465,7 +465,7 @@ namespace {
             }
         }
 
-        /* 若执行到这里，说明析构函数没有崩溃。 */
+        /* If we made it here, the destructor didn't crash. */
         cout << "success." << endl;
         cout << endl;
     }

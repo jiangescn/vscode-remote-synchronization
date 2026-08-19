@@ -3,7 +3,7 @@
 #include <regex>
 using namespace std;
 
-/* 这里的所有内容都是此文件私有的。 */
+/* Everything in here is private to this file. */
 namespace {
     enum NameComponents {
         WholeString,
@@ -13,16 +13,16 @@ namespace {
         NumComponents
     };
 
-    /* 给定以下形式的城市信息
+    /* Given city information in the form
      *
-     *     城市名称 (X, Y)
+     *     CityName (X, Y)
      *
-     * 解析名称和 X/Y 坐标，并返回
-     * 名称，并使用找到的内容填充 DisasterTest。
+     * Parses out the name and the X/Y coordinate, returning the
+     * name, and filling in the DisasterTest with what's found.
      */
     string parseCity(const string& cityInfo, DisasterTest& result) {
-        /* 按所有分隔符拆分，并确认只得到
-         * 三个分量。
+        /* Split on all the delimiters and confirm we've only got
+         * three components.
          */
         regex  pattern("^([A-Za-z0-9 .\\-]+)\\(\\s*(-?[0-9]+(?:\\.[0-9]+)?)\\s*,\\s*(-?[0-9]+(?:\\.[0-9]+)?)\\s*\\)$");
         smatch components;
@@ -32,36 +32,36 @@ namespace {
             error("Can't parse this data; is it city info? " + cityInfo);
         }
 
-        /* 这里实际上有四个组成部分：整个匹配项、
-         * 加上我们关心的每个子表达式。
+        /* There are four components here, actually: the whole match,
+         * plus each subexpression we care about.
          */
         if (components.size() != NumComponents) {
             error("Could not find all components?");
         }
 
-        /* 我们会得到一些额外的前导或尾随
-         * 此处有空白，因此将其去除。
+        /* We're going to get back some extra leading or trailing
+         * whitespace here, so peel it off.
          */
         string name = trim(components[CityName]);
         if (name.empty()) error("City names can't be empty.");
 
-        /* 插入城市位置 */
+        /* Insert the city location */
         result.cityLocations[name] = {
             stringToReal(components[XCoord]),
             stringToReal(components[YCoord])
         };
 
-        /* 向道路网络中插入该城市的条目。 */
+        /* Insert an entry for the city into the road network. */
         result.network[name] = {};
         return name;
     }
 
-    /* 读取文件一行后半部分的出链，
-     * 将它们添加到道路网络中。
+    /* Reads the links out of the back half of the line of a file,
+     * adding them to the road network.
      */
     void parseLinks(const string& cityName, const string& linksStr,
                     DisasterTest& result) {
-        /* 可能不存在任何出链。 */
+        /* It's possible that there are no outgoing links. */
         if (trim(linksStr) == "") {
             result.network[cityName] = {};
             return;
@@ -69,15 +69,15 @@ namespace {
 
         auto components = stringSplit(linksStr, ",");
         for (const string& dest: components) {
-            /* 清理所有空白，并确保没有
-             * 发现一个空条目。
+            /* Clean up all whitespace and make sure that we didn't
+             * discover an empty entry.
              */
             string cleanName = trim(dest);
             if (cleanName.empty()) {
                 error("Blank name in list of outgoing cities?");
             }
 
-            /* 确认这不是重复项。 */
+            /* Confirm this isn't a dupe. */
             if (result.network[cityName].contains(cleanName)) {
                 error("City appears twice in outgoing list?");
             }
@@ -86,28 +86,28 @@ namespace {
         }
     }
 
-    /* 解析文件中的一行，并使用其中内容更新网络
-     * 它找到的内容。这只会按正向添加边，因为
-     * 一种安全措施；稍后会反转边。
+    /* Parses one line out of the file and updates the network with what
+     * it found. This will only add edges in the forward direction as
+     * a safety measure; edges are reversed later on.
      */
     void parseCityLine(const string& line, DisasterTest& result) {
-        /* 在行中搜索冒号。split 函数只会返回一个
-         * 如果未指定任何出链，则只有一个组件。
+        /* Search for a colon on the line. The split function will only return a
+         * single component if there are no outgoing links specified.
          */
         auto numColons = count(line.begin(), line.end(), ':');
         if (numColons != 1) {
             error("Each data line should have exactly one colon on it.");
         }
 
-        /* 将行拆分为城市名称/位置和列表
-         * 出发城市。
+        /* Split the line into the city name/location and the list
+         * of outgoing cities.
          */
         auto components = stringSplit(line, ":");
         if (components.isEmpty()) {
             error("Data line appears to have no city information.");
         }
 
-        /* 如果尚不存在，则创建一个虚拟的出发城市列表。 */
+        /* Create a dummy list of outgoing cities if one doesn't already exist. */
         if (components.size() == 1) components.add({});
 
         string name = parseCity(components[0], result);
@@ -115,8 +115,8 @@ namespace {
         parseLinks(name, components[1], result);
     }
 
-    /* 给定所有正向边都已添加的图，添加
-     * 图中的反向边。
+    /* Given a graph in which all forward edges have been added, adds
+     * the reverse edges to the graph.
      */
     void addReverseEdges(DisasterTest& result) {
         for (const string& source: result.network) {
@@ -129,7 +129,7 @@ namespace {
         }
     }
 
-    /* 给定一个图，确认所有节点位于不同位置。 */
+    /* Given a graph, confirms all nodes are at distinct locations. */
     void validateLocations(const DisasterTest& test) {
         Map<GPoint, string> locations;
         for (auto loc: test.cityLocations) {
@@ -142,18 +142,18 @@ namespace {
 }
 
 /**
- * 给定指向 Disaster Preparation 测试用例的流，
- * 从该测试用例中提取数据。
+ * Given a stream pointing at a test case for Disaster Preparation,
+ * pulls the data from that test case.
  *
- * @param source 包含测试用例的流。
- * @return 从文件读取的测试用例。
- * @throws 如果发生错误或文件无效，则抛出 ErrorException。
+ * @param source The stream containing the test case.
+ * @return A test case from the file.
+ * @throws ErrorException If an error occurs or the file is invalid.
  */
 DisasterTest loadDisaster(istream& source) {
     DisasterTest result;
 
     for (string line; getline(source, line); ) {
-        /* 跳过空行或注释。 */
+        /* Skip blank lines or comments. */
         if (trim(line).empty() || startsWith(line, "#")) continue;
 
         parseCityLine(line, result);

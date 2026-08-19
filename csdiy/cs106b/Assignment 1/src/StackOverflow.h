@@ -1,18 +1,18 @@
 /******************************************************************************
- * 文件：StackOverflow.h
- * 作者：Keith Schwarz（htiek@cs.stanford.edu）
+ * File: StackOverflow.h
+ * Author: Keith Schwarz (htiek@cs.stanford.edu)
  *
- * 作业中 Stack Overflow 部分的头文件。你不应
- * 修改此文件。
+ * Header file for the Stack Overflow portion of the assignment. You should not
+ * modify this file.
  */
 
 #ifndef StackOverflow_Included
 #define StackOverflow_Included
 
 /**
- * 触发作业讲义中描述的栈溢出。
+ * Triggers the stack overflow described in the assignment handout.
  *
- * @param index 开始触发堆栈溢出的起始数字。
+ * @param index The starting number at which to begin the stack overflow.
  */
 void triggerStackOverflow(int index);
 

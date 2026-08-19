@@ -35,23 +35,23 @@ namespace MiniGUI {
             printIntro();
 
             do {
-                /* 若存在初始演示，则运行它。 */
+                /* If we have an initial demo, run it. */
                 if (initialDemo) {
                     initialDemo();
                     initialDemo = nullptr;
 
-                    /* 若没有菜单选项，则处理完成。 */
+                    /* If there are no menu options, we're done. */
                     if (MiniGUI::Config::menuOptions().empty()) {
                         break;
                     }
 
-                    /* 否则，隐式返回主菜单。 */
+                    /* Otherwise, implicitly drop to the main menu. */
                 }
-                /* 否则，显示主菜单。 */
+                /* Otherwise, do the main menu. */
                 else {
                     int selection = makeMenuSelection();
 
-                    /* “退出”是最后一个选项。 */
+                    /* Quit is the last option. */
                     if (selection == int(MiniGUI::Config::menuOptions().size())) {
                         break;
                     }
@@ -64,7 +64,7 @@ namespace MiniGUI {
             cout << endl;
             cout << "Exiting..." << endl;
             
-            /* 强制退出程序；正常退出路径可能导致段错误。 */
+            /* Hard exit the program; the normal exit route can cause segfaults. */
             _Exit(0);
         }
     }

@@ -1,8 +1,8 @@
 #pragma once
 #include "../GUI/MemoryDiagnostics.h"
 
-/* 更快分配 Nucleotide 类型；用于提高以下场景的性能：
- * Windows。你无需研究其工作原理。
+/* Faster allocation of the Nucleotide type; used to speed up performance on
+ * Windows. You shouldn't need to investigate how this works.
  */
 namespace NucleotideAlloc {
     void* alloc(std::size_t numBytes);

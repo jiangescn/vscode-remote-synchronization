@@ -1,23 +1,23 @@
 /*
- * 文件：urlstream.cpp
+ * File: urlstream.cpp
  * -------------------
- * 此文件包含 iurlstream 类的实现。
- * 有关这些类的使用方法，请参阅 urlstream.h。
+ * This file contains the implementation of the iurlstream class.
+ * Please see urlstream.h for information about how to use these classes.
  *
  * @author Marty Stepp
  * @version 2018/10/02
- * - 为向后兼容添加 close() 方法（不执行任何操作）
+ * - added close() method for backward compatibility (does nothing)
  * @version 2018/09/18
- * - 重构以集成纯 C++ 的 GDownloader 实现
- * - 添加 getErrorMessage 方法
+ * - refactored to integrate with pure-C++ GDownloader implementation
+ * - added getErrorMessage method
  * @version 2018/06/20
- * - 支持设置 user agent 等请求头
- * - 支持 https URL
- * - 将 string 改为 const string&
+ * - support for setting headers such as user agent
+ * - https URL support
+ * - changed string to const string&
  * @version 2015/07/05
- * - 移除全局静态 Platform 变量，改为在需要时调用 getPlatform
+ * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/14
- * - 修复 ifstream::open() 调用中的 .c_str() Mac 错误
+ * - fixed .c_str() Mac bug on ifstream::open() call
  * @since 2014/10/08
  */
 
@@ -31,8 +31,8 @@
 
 namespace {
     /*
-     * 给定状态码，确定它是否表示成功。
-     * 所有成功的 HTTP 状态码均为 2xx 形式。
+     * Given a status code, determines whether it's successful.
+     * All successful HTTP status codes are of the form 2xx.
      */
     bool isHttpSuccess(int code) {
         return code >= 200 && code <= 299;
@@ -42,7 +42,7 @@ namespace {
 iurlstream::iurlstream()
         : _url(""),
           _httpStatusCode(0) {
-    // 空
+    // empty
 }
 
 iurlstream::iurlstream(const std::string& url)
@@ -52,7 +52,7 @@ iurlstream::iurlstream(const std::string& url)
 }
 
 void iurlstream::close() {
-    // 空
+    // empty
 }
 
 int iurlstream::getErrorCode() const {
@@ -64,7 +64,7 @@ std::string iurlstream::getErrorMessage() const {
 }
 
 int iurlstream::getHttpStatusCode() const {
-    /* 所有 HTTP 状态码都在 1xx 到 5xx（含）之间。 */
+    /* All HTTP status codes are between 1xx and 5xx, inclusive. */
     return _httpStatusCode >= 100 && _httpStatusCode <= 599? _httpStatusCode : 0;
 }
 
@@ -90,10 +90,10 @@ void iurlstream::open(const std::string& url) {
     }
     _errorMessage = "";
     
-    // GDownloader 为我们完成下载文件的繁重工作
+    // GDownloader does the heavy lifting of downloading the file for us
     GDownloader downloader;
 
-    // 如果需要，插入/发送标头
+    // insert/send headers if needed
     if (!_headers.isEmpty()) {
         for (std::string headerName : _headers) {
             downloader.setHeader(headerName, _headers[headerName]);

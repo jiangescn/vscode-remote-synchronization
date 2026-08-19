@@ -1,15 +1,15 @@
 /*
- * 文件：os.cpp
+ * File: os.cpp
  * ------------
- * 此文件实现 os.h 中声明的 OS 类。
+ * This file implements the OS class declared in os.h.
  * 
  * @author Marty Stepp
  * @version 2018/11/22
- * - 添加无界面（非 Qt）模式支持
+ * - added headless (non-Qt) mode support
  * @version 2018/09/23
- * - 修复 isMac 的错误
+ * - bug fix for isMac
  * @version 2018/09/17
- * - 初始版本
+ * - initial version
  */
 
 #include "os.h"
@@ -20,12 +20,12 @@
 #include "strlib.h"
 
 #if !defined(SPL_HEADLESS_MODE) && QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
-/*静态*/ std::string OS::getName() {
+/*static*/ std::string OS::getName() {
     std::string productName = QSysInfo::prettyProductName().toStdString();
     return productName;
 }
 
-/*静态*/ std::string OS::getVersion() {
+/*static*/ std::string OS::getVersion() {
     std::string productVersion = QSysInfo::productVersion().toStdString();
     return productVersion;
 }
@@ -56,11 +56,11 @@ bool OS::isWindows() {
             || stringContains(productType, "windows");
 }
 #else
-/*静态*/ std::string OS::getName() {
+/*static*/ std::string OS::getName() {
     return "unknown";
 }
 
-/*静态*/ std::string OS::getVersion() {
+/*static*/ std::string OS::getVersion() {
     return "unknown";
 }
 
@@ -73,10 +73,10 @@ bool OS::isMac() {
 }
 
 bool OS::isWindows() {
-    return true;   // 大多数旧版 Qt 出现在旧 Windows 安装中
+    return true;   // most old versions of Qt occur on old Windows installs
 }
 #endif // QT_VERSION
 
 OS::OS() {
-    // 空
+    // empty
 }

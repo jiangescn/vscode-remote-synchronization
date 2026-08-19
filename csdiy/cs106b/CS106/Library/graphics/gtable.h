@@ -1,13 +1,13 @@
 /*
- * 文件：gtable.h
+ * File: gtable.h
  * --------------
- * 此文件导出用于图形化可编辑二维表格的 GTable 类。
+ * This file exports the GTable class for a graphical editable 2D table.
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 gtable.h，以替代 Java 版本
+ * - renamed to gtable.h to replace Java version
  * @version 2018/07/17
- * - 初始版本，基于 gtable.h
+ * - initial version, based on gtable.h
  * @since 2018/07/17
  */
 
@@ -32,42 +32,42 @@
 class _Internal_QTableWidget;
 
 /**
- * GTable 表示可编辑的二维图形表格，类似一个较为粗糙的
- * Excel 电子表格。
+ * A GTable represents a graphical editable 2D table, like a mediocre facsimile
+ * of an Excel spreadsheet.
  *
- * 创建 GTable 后，可以监听表格事件，以便在以下情况收到通知：
- * 用户在表格单元格中输入新值时，可调用 setTableListener。
+ * After creating a GTable, you can listen for table events to be notified
+ * when the user types a new value into a table cell by calling setTableListener.
  *
- * 可编辑表格具有较复杂的编辑模型，用户可以开始
- * 通过高亮并输入来修改单元格，这会替换现有
- * 值，或双击它来编辑现有值。
- * 也可以在单元格上按 F2 进行编辑，等同于双击。
- * 编辑期间，可以按 Esc 取消编辑，或按 Tab/Enter
- * 完成编辑并移动到下一个单元格。
+ * An editable table has a semi-complex editing model where the user can begin
+ * modifying a cell by highlighting it and typing, which replaces the existing
+ * value, or by double-clicking it, which edits the existing value.
+ * You can also press F2 on a cell to edit it, equivalent to a double-click.
+ * During editing, you can press Esc to cancel editing, or Tab or Enter to
+ * complete editing and move to the next cell.
  *
- * 此类中的所有行/列索引均从 0 开始。
+ * All row/column indexes in this class are 0-based.
  */
 class GTable : public GInteractor {
 public:
     /**
-     * 可显示的列标题标签样式。
-     * “Excel”样式使用列名 A-Z，然后 AA-AZ、BA-BZ、……
-     * ZA-ZZ，然后是 AAA、AAB，依此类推。
-     * “numeric”样式使用 1、2、3、……这样的简单数字
-     * “none”样式表示完全不使用任何列标题。
+     * Styles of column header labels that can be shown.
+     * The "Excel" style is to use column names A-Z, then AA-AZ, BA-BZ, ...,
+     * ZA-ZZ, then AAA, AAB, and so on.
+     * The "numeric" style is to use simple numbers like 1, 2, 3, ...
+     * The "none" style means not to use any column headers at all.
      */
     enum ColumnHeaderStyle {
-        COLUMN_HEADER_NONE,     // 标题不会显示
+        COLUMN_HEADER_NONE,     // headers will not show
         COLUMN_HEADER_EXCEL,    // A, B, ..., Z, AA, AB, ...
         COLUMN_HEADER_NUMERIC   // 1, 2, 3, ...
     };
 
     /**
-     * 构造具有给定尺寸和可选大小的新表。
-     * 如果省略 x、y、width 或 height，它们将由以下内容自动设置
-     * 放置该表格的 GWindow 的布局管理器。
-     * 这通常正是你想要的。
-     * @throw 如果行数、列数、宽度或高度为负数，则抛出 ErrorException。
+     * Constructs a new table with the given dimensions and (optional) size.
+     * If x, y, width, or height are omitted, they are set automatically by
+     * the layout manager of the GWindow into which the table is placed.
+     * This is often what you want.
+     * @throw ErrorException if the number of rows, columns, width, or height is negative.
      */
     GTable(int rows = 0, int columns = 0, double width = 0, double height = 0,
             QWidget* parent = nullptr);
@@ -75,59 +75,59 @@ public:
     ~GTable() override;
 
     /**
-     * 更改所有列的宽度，使其恰好足够大
-     * 适应其内容。
+     * Changes widths of all columns to be perfectly large enough
+     * to fit their contents.
      */
     virtual void autofitColumnWidths();
 
     /**
-     * 将表格中的所有单元格设为空字符串值。
+     * Sets all cells in the table to store an empty string value.
      */
     virtual void clear();
 
     /**
-     * 将给定单元格设为空字符串值。
-     * @throw 如果给定行/列索引越界，则抛出 ErrorException
+     * Sets the given cell to store an empty string value.
+     * @throw ErrorException if the given row/column index is out of bounds
      */
     virtual void clearCell(int row, int column);
 
     /**
-     * 删除应用于表格的所有单元格/列/行格式。
+     * Removes any per-cell/column/row formatting that has been applied to the table.
      */
     virtual void clearFormatting();
 
     /**
-     * 删除应用于给定单元格的所有格式。
+     * Removes any formatting that has been applied to the given cell.
      */
     virtual void clearCellFormatting(int row, int column);
 
     /**
-     * 取消选择当前选中的任何单元格。
-     * 如果未选中单元格，调用此函数不会产生任何效果。
+     * Deselects any currently selected cell.
+     * If no cell is selected, calling this has no effect.
      */
     virtual void clearSelection();
 
     /**
-     * 将表格中的每个单元格设为给定值。
+     * Sets every cell in the table to have the given value.
      */
     virtual void fill(const std::string& text);
 
     /**
-     * 返回给定单元格中存储的文本。
-     * @throw 如果给定行或列越界，则抛出 ErrorException
+     * Returns the text stored in the given cell.
+     * @throw ErrorException if the given row or column are out of bounds
      */
     virtual std::string get(int row, int column) const;
 
     /**
-     * 返回要使用给定样式的列标题。
-     * 默认无标题，但可设为 Excel 风格或数字形式。
+     * Returns the column headers to use the given style.
+     * Default is none, but can be set to Excel style or numeric instead.
      */
     virtual ColumnHeaderStyle getColumnHeaderStyle() const;
 
     /**
-     * 返回给定列索引的像素宽度。
-     * 构造表格时，所有列初始宽度相同。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
+     * Returns the width of the given column index in pixels.
+     * When a table is constructed, all columns initially have equal width.
+     * @throw ErrorException if the given column index is out of bounds
      */
     virtual double getColumnWidth(int column) const;
 
@@ -135,40 +135,40 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回给定行索引的像素高度。
-     * 构造表格时，所有行初始高度相同。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
+     * Returns the height of the given row index in pixels.
+     * When a table is constructed, all rows initially have equal height.
+     * @throw ErrorException if the given row index is out of bounds
      */
     virtual double getRowHeight(int row) const;
 
     /**
-     * 返回当前选中单元格的行和列。
-     * 如果当前未选择单元格，则将行和列都设置为 -1。
+     * Returns the row and column of the cell that is currently selected.
+     * Sets both row and column to -1 if no cell is currently selected.
      */
     virtual GridLocation getSelectedCell() const;
 
     /**
-     * 返回当前选中单元格的行和列
-     * 通过填充给定引用参数。
-     * 如果当前未选择单元格，则将行和列都设置为 -1。
+     * Returns the row and column of the cell that is currently selected
+     * by filling the given reference parameters.
+     * Sets both row and column to -1 if no cell is currently selected.
      */
     virtual void getSelectedCell(int& row, int& column) const;
 
     /**
-     * 返回当前选中单元格中的文本。
-     * 如果当前未选中单元格，则返回空字符串。
+     * Returns the text in the cell that is currently selected.
+     * If no cell is currently selected, returns an empty string.
      */
     virtual std::string getSelectedCellValue() const;
 
     /**
-     * 返回当前选中单元格的列；如果未选中单元格则为 -1
-     * 当前已选择。
+     * Returns the column of the cell that is currently selected, or -1 if no cell
+     * is currently selected.
      */
     virtual int getSelectedColumn() const;
 
     /**
-     * 返回当前选中单元格的行；如果未选中单元格则为 -1
-     * 当前已选择。
+     * Returns the row of the cell that is currently selected, or -1 if no cell
+     * is currently selected.
      */
     virtual int getSelectedRow() const;
 
@@ -179,44 +179,44 @@ public:
     QWidget* getWidget() const override;
 
     /**
-     * 如果当前选中了单元格，则返回 true。
+     * Returns true if a cell is currently selected.
      */
     virtual bool hasSelectedCell() const;
 
     /**
-     * 返回表格的行数。
-     * 等价于 numRows()。
+     * Returns the number of rows in the table.
+     * Equivalent to numRows().
      */
     virtual int height() const;
 
     /**
-     * 如果给定从 0 开始的行/列索引位于边界内，则返回 true
-     * 表格。换句话说，索引是否位于 (0, 0) 与
-     * 以及 (numRows-1, numCols-1)，包含两端。
+     * Returns true if the given 0-based row/column index is within the bounds
+     * of the table.  In other words, whether the index is between (0, 0)
+     * and (numRows-1, numCols-1) inclusive.
      */
     virtual bool inTableBounds(int row, int column) const;
 
     /**
-     * 返回表格单元格是否可编辑。
-     * 初始创建表格时默认为 true。
+     * Returns whether cells of the table can be edited.
+     * Defaults to true when a table is initially created.
      */
     virtual bool isEditable() const;
 
     /**
-     * 返回表格的列数。
-     * 等价于 width()。
+     * Returns the number of columns in the table.
+     * Equivalent to width().
      */
     virtual int numCols() const;
 
     /**
-     * 返回表格的行数。
-     * 等价于 height()。
+     * Returns the number of rows in the table.
+     * Equivalent to height().
      */
     virtual int numRows() const;
 
     /**
-     * 从此按钮删除表格监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the table listener from this button so that it will no longer
+     * call it when events occur.
      */
     virtual void removeTableListener();
 
@@ -224,305 +224,305 @@ public:
     void requestFocus() override;
 
     /**
-     * 修改表格，使其具有给定行数和列数。
-     * 保留所有现有数据，所有新单元格为空。
-     * @throw 如果 numRows 或 numCols 为负数，则抛出 ErrorException
+     * Modifies the table to have the given number of rows and columns.
+     * Any existing data is retained, and any new cells are empty.
+     * @throw ErrorException if numRows or numCols is negative
      */
     virtual void resize(int numRows, int numCols);
 
     /**
-     * 返回表格中是否显示行标题和列标题。
-     * 初始为 false。
+     * Returns whether row and column headers are shown in the table.
+     * Initially false.
      */
     virtual bool rowColumnHeadersVisible() const;
 
     /**
-     * 将给定单元格设为当前选中，
-     * 替换之前的任何选区。
-     * 请注意，用户之后可以点击其他单元格来选中它。
-     * 若要表示不选择任何单元格，请调用 clearSelection。
-     * @throw 如果给定行或列越界，则抛出 ErrorException
+     * Sets the given cell to become currently selected,
+     * replacing any previous selection.
+     * Note that the user can click a different cell to select it afterward.
+     * To indicate that you do not want to select any cell, call clearSelection.
+     * @throw ErrorException if the given row or column are out of bounds
      */
     virtual void select(int row, int column);
 
     /**
-     * 修改给定单元格中的值，使其存储给定文本。
-     * @throw 如果给定行或列越界，则抛出 ErrorException
+     * Modifies the value in the given cell to store the given text.
+     * @throw ErrorException if the given row or column are out of bounds
      */
     virtual void set(int row, int column, const std::string& text);
 
     /**
-     * 设置显示在每个单元格后面的背景色。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Sets the background color that appears behind each cell.
+     * See gcolor.h for more detail about colors.
      */
     void setBackground(int rgb) override;
 
     /**
-     * 设置显示在每个单元格后面的背景色。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Sets the background color that appears behind each cell.
+     * See gcolor.h for more detail about colors.
      */
     void setBackground(const std::string& color) override;
 
     /**
-     * 设置给定单元格的水平对齐方式。
-     * 行/列由从表格顶部/左侧开始、从 0 计数的行/列索引指定。
-     * @throw 如果给定行/列索引越界，则抛出 ErrorException
+     * Sets the horizontal alignment of the given cell.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * @throw ErrorException if the given row/column index is out of bounds
      */
     virtual void setCellAlignment(int row, int column, HorizontalAlignment alignment);
 
     /**
-     * 将给定单元格的背景色设置为给定颜色。
-     * 行/列由从表格顶部/左侧开始、从 0 计数的行/列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行/列索引越界，则抛出 ErrorException
+     * Sets the background color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
      */
     virtual void setCellBackground(int row, int column, int color);
 
     /**
-     * 将给定单元格的背景色设置为给定颜色。
-     * 行/列由从表格顶部/左侧开始、从 0 计数的行/列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行/列索引越界，则抛出 ErrorException
+     * Sets the background color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
      */
     virtual void setCellBackground(int row, int column, const std::string& color);
 
     /**
-     * 将给定单元格的文本字体设为给定 RGB 颜色。
-     * 行/列由从表格顶部/左侧开始、从 0 计数的行/列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行/列索引越界，则抛出 ErrorException
+     * Sets the text font of the given cell to the given RGB color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
      */
     virtual void setCellFont(int row, int column, const std::string& font);
 
     /**
-     * 将给定单元格的前景色/文本颜色设置为给定颜色。
-     * 行/列由从表格顶部/左侧开始、从 0 计数的行/列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行/列索引越界，则抛出 ErrorException
+     * Sets the foreground/text color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
      */
     virtual void setCellForeground(int row, int column, int color);
 
     /**
-     * 将给定单元格的前景色/文本颜色设置为给定颜色。
-     * 行/列由从表格顶部/左侧开始、从 0 计数的行/列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行/列索引越界，则抛出 ErrorException
+     * Sets the foreground/text color of the given cell to the given color.
+     * The row/column is specified by a 0-based row/column index from the top/left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row/column index is out of bounds
      */
     virtual void setCellForeground(int row, int column, const std::string& color);
 
     /**
-     * 设置显示每个单元格文本所用的颜色。
-     * 等价于 setForeground。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Sets the color used for the text of each cell.
+     * Equivalent to setForeground.
+     * See gcolor.h for more detail about colors.
      */
     void setColor(int rgb) override;
 
     /**
-     * 设置显示每个单元格文本所用的颜色。
-     * 等价于 setForeground。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Sets the color used for the text of each cell.
+     * Equivalent to setForeground.
+     * See gcolor.h for more detail about colors.
      */
     void setColor(const std::string& color) override;
 
     /**
-     * 设置给定列的水平对齐方式。
-     * 列由从表格左侧开始、从 0 计数的列索引指定。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
+     * Sets the horizontal alignment of the given column.
+     * The column is specified by a 0-based column index from the left of the table.
+     * @throw ErrorException if the given column index is out of bounds
      */
     virtual void setColumnAlignment(int column, HorizontalAlignment alignment);
 
     /**
-     * 将给定列的背景色设置为给定颜色。
-     * 列由从表格左侧开始、从 0 计数的列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
+     * Sets the background color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
      */
     virtual void setColumnBackground(int column, int color);
 
     /**
-     * 将给定列的背景色设置为给定颜色。
-     * 列由从表格左侧开始、从 0 计数的列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
+     * Sets the background color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
      */
     virtual void setColumnBackground(int column, const std::string& color);
 
     /**
-     * 将给定列的文本字体设为给定 RGB 颜色。
-     * 列由从表格左侧开始、从 0 计数的列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
+     * Sets the text font of the given column to the given RGB color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
      */
     virtual void setColumnFont(int column, const std::string& font);
 
     /**
-     * 将给定列的前景色/文本颜色设置为给定颜色。
-     * 列由从表格左侧开始、从 0 计数的列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
+     * Sets the foreground/text color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
      */
     virtual void setColumnForeground(int column, int color);
 
     /**
-     * 将给定列的前景色/文本颜色设置为给定颜色。
-     * 列由从表格左侧开始、从 0 计数的列索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
+     * Sets the foreground/text color of the given column to the given color.
+     * The column is specified by a 0-based column index from the left of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given column index is out of bounds
      */
     virtual void setColumnForeground(int column, const std::string& color);
 
     /**
-     * 将给定列索引设为给定像素宽度。
-     * @throw 如果给定列索引越界，则抛出 ErrorException
-     *        或宽度为负时
+     * Sets the given column index to have the given width in pixels.
+     * @throw ErrorException if the given column index is out of bounds
+     *        or if the width is negative
      */
     virtual void setColumnWidth(int column, double width);
 
     /**
-     * 将列标题设置为使用给定样式。
-     * 默认无标题，但可设为 Excel 风格或数字形式。
+     * Sets the column headers to use the given style.
+     * Default is none, but can be set to Excel style or numeric instead.
      */
     virtual void setColumnHeaderStyle(ColumnHeaderStyle style);
 
     /**
-     * 设置表格单元格是否可编辑。
-     * 初始为 true。
+     * Sets whether cells of the table can be edited.
+     * Initially true.
      */
     virtual void setEditable(bool editable);
 
     /**
-     * 修改当前正在编辑的单元格中的值，使其存储
-     * 给定的文本。这不会修改表格单元格中的值，而是
-     * 仅仅是编辑器控件中的值。
-     * @throw 如果给定行或列越界，则抛出 ErrorException
+     * Modifies the value in the cell that is currently being edited to store
+     * the given text. This does not modify the value in the table cell but
+     * merely the value in the editor widget.
+     * @throw ErrorException if the given row or column are out of bounds
      */
     virtual void setEditorValue(int row, int column, const std::string& text);
 
     /**
-     * 设置用于显示每个单元格文本的字体。
+     * Sets the font used to display each cell's text.
      */
     void setFont(const QFont& font) override;
 
     /**
-     * 设置用于显示每个单元格文本的字体。
-     * 有关字体的更多详细信息，请参阅 gfont.h。
+     * Sets the font used to display each cell's text.
+     * See gfont.h for more detail about fonts.
      */
     void setFont(const std::string& font) override;
 
     /**
-     * 设置显示每个单元格文本所用的颜色。
-     * 等价于 setColor。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Sets the color used for the text of each cell.
+     * Equivalent to setColor.
+     * See gcolor.h for more detail about colors.
      */
     void setForeground(int rgb) override;
 
     /**
-     * 设置显示每个单元格文本所用的颜色。
-     * 等价于 setColor。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Sets the color used for the text of each cell.
+     * Equivalent to setColor.
+     * See gcolor.h for more detail about colors.
      */
     void setForeground(const std::string& color) override;
 
     /**
-     * 设置表格所有单元格中文本的水平对齐方式。
-     * 对齐方式可以是 LEFT、CENTER 或 RIGHT，初始为 LEFT。
+     * Sets the horizontal alignment of the text in all cells in the table.
+     * The alignment can be LEFT, CENTER, or RIGHT and is initially LEFT.
      */
     virtual void setHorizontalAlignment(HorizontalAlignment alignment);
 
     /**
-     * 设置给定行的水平对齐方式。
-     * 行由从表格顶部开始、从 0 计数的行索引指定。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
+     * Sets the horizontal alignment of the given row.
+     * The row is specified by a 0-based row index from the top of the table.
+     * @throw ErrorException if the given row index is out of bounds
      */
     virtual void setRowAlignment(int row, HorizontalAlignment alignment);
 
     /**
-     * 将给定行的背景色设为给定 RGB 颜色。
-     * 行由从表格顶部开始、从 0 计数的行索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
+     * Sets the background color of the given row to the given RGB color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
      */
     virtual void setRowBackground(int row, int rgb);
 
     /**
-     * 将给定行的背景色设为给定颜色。
-     * 行由从表格顶部开始、从 0 计数的行索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
+     * Sets the background color of the given row to the given color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
      */
     virtual void setRowBackground(int row, const std::string& color);
 
     /**
-     * 将给定行的文本字体设为给定字体。
-     * 行由从表格顶部开始、从 0 计数的行索引指定。
-     * 有关字体的更多详细信息，请参阅 gfont.h。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
+     * Sets the text font of the given row to the given font.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gfont.h for more detail about fonts.
+     * @throw ErrorException if the given row index is out of bounds
      */
     virtual void setRowFont(int row, const std::string& font);
 
     /**
-     * 将给定行的前景色/文本颜色设置为给定颜色。
-     * 行由从表格顶部开始、从 0 计数的行索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
+     * Sets the foreground/text color of the given row to the given color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
      */
     virtual void setRowForeground(int row, int rgb);
 
     /**
-     * 将给定行的前景色/文本颜色设置为给定颜色。
-     * 行由从表格顶部开始、从 0 计数的行索引指定。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
+     * Sets the foreground/text color of the given row to the given color.
+     * The row is specified by a 0-based row index from the top of the table.
+     * See gcolor.h for more detail about colors.
+     * @throw ErrorException if the given row index is out of bounds
      */
     virtual void setRowForeground(int row, const std::string& color);
 
     /**
-     * 设置表格中是否显示行标题和列标题。
-     * 初始为 false。
+     * Sets whether row and column headers should be shown in the table.
+     * Initially false.
      */
     virtual void setRowColumnHeadersVisible(bool visible);
 
     /**
-     * 将给定行索引设为给定像素高度。
-     * @throw 如果给定行索引越界，则抛出 ErrorException
-     *        或高度为负时
+     * Sets the given row index to have the given height in pixels.
+     * @throw ErrorException if the given row index is out of bounds
+     *        or if the height is negative
      */
     virtual void setRowHeight(int row, double width);
 
     /**
-     * 设置当前选中单元格中的文本。
-     * 如果当前未选中单元格，则不执行任何操作。
+     * Sets the text in the cell that is currently selected.
+     * If no cell is currently selected, does nothing.
      */
     virtual void setSelectedCellValue(const std::string& text);
 
     /**
-     * 设置在此表中发生事件时要调用的给定函数。
-     * 任何现有的表格监听器都会被替换。
+     * Sets the given function to be called when events occur in this table.
+     * Any existing table listener will be replaced.
      */
     virtual void setTableListener(GEventListener func);
 
     /**
-     * 设置在此表中发生事件时要调用的给定函数。
-     * 任何现有的表格监听器都会被替换。
+     * Sets the given function to be called when events occur in this table.
+     * Any existing table listener will be replaced.
      */
     virtual void setTableListener(GEventListenerVoid func);
 
     /**
-     * 返回表格的列数。
-     * 等价于 numCols()。
+     * Returns the number of columns in the table.
+     * Equivalent to numCols().
      */
     virtual int width() const;
 
 private:
     Q_DISABLE_COPY(GTable)
 
-    // 表示单元格、行、列或表格上的级联样式。
+    // Represents cascading styles on a cell, row, column, or table.
     struct TableStyle {
         int background;
         int foreground;
         std::string font;
         HorizontalAlignment alignment;
-        // TODO：边框？
+        // TODO: borders?
 
         TableStyle() {
             background = 0;
@@ -569,17 +569,17 @@ private:
         }
     };
 
-    // 默认格式的静态变量：
-    // 背景色/前景色
-    // 字体
-    // 对齐方式
+    // static variables for default formatting:
+    // background/foreground colors
+    // font
+    // alignment
     static TableStyle _defaultCellStyle;
 
-    // 成员变量
+    // member variables
     _Internal_QTableWidget* _iqtableview;
     ColumnHeaderStyle _columnHeaderStyle;
 
-    // 表格、行、列、单元格上的样式
+    // styles on table, rows, columns, cells
     Map<int, TableStyle> _rowStyles;
     Map<int, TableStyle> _columnStyles;
     TableStyle _globalCellStyle;
@@ -587,19 +587,19 @@ private:
     void applyStyleToCell(int row, int column, const TableStyle& style);
 
     /*
-     * @throw 如果给定行/列值越界，则抛出 ErrorException。
+     * @throw ErrorException if the given row/column values are out of bounds.
      */
     void checkColumn(const std::string& member, int column) const;
     void checkIndex(const std::string& member, int row, int column) const;
     void checkRow(const std::string& member, int row) const;
 
     void ensureColumnStyle(int column);
-    void ensureDefaultFormatting() const;   // const 权宜处理
+    void ensureDefaultFormatting() const;   // const hack
     void ensureGlobalCellStyle();
     void ensureRowStyle(int row);
     TableStyle getMergedStyleForCell(int row, int column);
 
-    // 单元格格式的内部设置函数。
+    // Internal setters for cell formatting.
     virtual void setCellAlignmentInternal(int row, int column, HorizontalAlignment alignment);
     virtual void setCellBackgroundInternal(int row, int column, int color);
     virtual void setCellFontInternal(int row, int column, const std::string& font);
@@ -614,7 +614,7 @@ private:
 };
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QItemDelegate : public QStyledItemDelegate {
@@ -632,7 +632,7 @@ private:
 
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QTableWidget : public QTableWidget, public _Internal_QWidget {

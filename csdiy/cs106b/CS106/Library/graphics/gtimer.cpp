@@ -1,15 +1,15 @@
 /*
- * 文件：gtimer.cpp
+ * File: gtimer.cpp
  * ----------------
- * 此文件实现 gtimer.h 接口。
+ * This file implements the gtimer.h interface.
  * 
  * @version 2019/01/23
- * - 添加析构函数
+ * - added destructor
  * @version 2015/07/05
- * - 移除全局静态 Platform 变量，改为在需要时调用 getPlatform
+ * - removed static global Platform variable, replaced by getPlatform as needed
  * @version 2014/10/08
- * - 移除“using namespace”语句
- * - 移除不需要的 include 语句
+ * - removed 'using namespace' statement
+ * - removed unneeded include statements
  */
 
 #include "gtimer.h"
@@ -18,7 +18,7 @@
 #include "gwindow.h"
 #include "require.h"
 
-/* GTimer 类的实现 */
+/* Implementation of the GTimer class */
 
 GTimer::GTimer(double milliseconds)
         : _ms(0),

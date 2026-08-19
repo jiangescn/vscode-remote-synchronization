@@ -1,14 +1,14 @@
 /*
- * 文件：gdrawingsurface.h
+ * File: gdrawingsurface.h
  * -----------------------
  *
  * @author Marty Stepp
  * @version 2018/09/10
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gdrawingsurface.h，以替代 Java 版本
+ * - renamed to gdrawingsurface.h to replace Java version
  * @version 2018/07/11
- * - 初始版本
+ * - initial version
  */
 
 
@@ -24,693 +24,693 @@
 #include "gtypes.h"
 
 /**
- * GDrawingSurface 是允许绘制形状的类型的抽象超类
- * 并将像素绘制到自身，作为像素背景层。
- * 其中包括图形画布对象（GCanvas）以及窗口（GWindow）。
+ * GDrawingSurface is an abstract superclass for types that allow drawing shapes
+ * and pixels onto themselves as a pixel background layer.
+ * This includes graphical canvas objects (GCanvas) as well as windows (GWindow).
  */
 class GDrawingSurface {
 public:
     /**
-     * 擦除绘图表面的所有像素数据。
+     * Erases any pixel data from the drawing surface.
      */
     virtual void clear() = 0;
 
     /**
-     * 仅当交互控件内容发生变化时才重绘。
+     * Repaints the interactor only if its contents have changed.
      */
     virtual void conditionalRepaint();
 
     /**
-     * 仅当交互控件内容发生变化时，才重绘给定区域。
+     * Repaints the given region of the interactor only if its contents have changed.
      */
     virtual void conditionalRepaintRegion(int x, int y, int width, int height);
 
     /**
-     * 仅当交互控件内容发生变化时，才重绘给定区域。
+     * Repaints the given region of the interactor only if its contents have changed.
      */
     virtual void conditionalRepaintRegion(const GRectangle& bounds);
 
     /**
-     * 将给定图形对象绘制到此对象的背景像素层
-     * 交互控件。
-     * @throw 如果对象为空，则抛出 ErrorException
+     * Draws the given graphical object onto the background pixel layer of this
+     * interactor.
+     * @throw ErrorException if the object is null
      */
     virtual void draw(GObject* gobj) = 0;
 
     /**
-     * 将给定图形对象绘制到此对象的背景像素层
-     * 先将交互控件移动到给定 x/y 位置。
-     * @throw 如果对象为空，则抛出 ErrorException
+     * Draws the given graphical object onto the background pixel layer of this
+     * interactor, moving it to the given x/y location first.
+     * @throw ErrorException if the object is null
      */
     virtual void draw(GObject* gobj, double x, double y);
 
     /**
-     * 将给定图形对象绘制到此对象的背景像素层
-     * 交互控件。
+     * Draws the given graphical object onto the background pixel layer of this
+     * interactor.
      */
     virtual void draw(GObject& gobj);
 
     /**
-     * 将给定图形对象绘制到此对象的背景像素层
-     * 先将交互控件移动到给定 x/y 位置。
+     * Draws the given graphical object onto the background pixel layer of this
+     * interactor, moving it to the given x/y location first.
      */
     virtual void draw(GObject& gobj, double x, double y);
 
     /**
-     * 使用给定 Qt 画笔对象绘制此交互控件。
+     * Draws this interactor with the given Qt painter object.
      * @private
      */
     virtual void draw(QPainter* painter) = 0;
 
     /**
-     * 在背景像素层上绘制具有给定属性的未填充弧
-     * 此交互控件在当前颜色下的图层。
-     * 有关 GArc 参数的说明，请参阅 gobjects.h。
+     * Draws an unfilled arc with the given attributes onto the background pixel
+     * layer of this interactor in the current color.
+     * See gobjects.h for explanation of GArc parameters.
      */
     virtual void drawArc(double x, double y, double width, double height, double start, double sweep);
 
     /**
-     * 将从给定文件名加载的图像绘制到背景像素层
-     * 此交互控件在给定 x/y 位置的图层。
-     * 有关 GImage 参数的说明，请参阅 gobjects.h。
-     * @throw 如果找不到或无法加载给定文件，则抛出 ErrorException
-     *        作为有效图像文件
+     * Draws an image loaded from the given file name onto the background pixel
+     * layer of this interactor at the given x/y location.
+     * See gobjects.h for explanation of GImage parameters.
+     * @throw ErrorException if the given file is not found or cannot be loaded
+     *        as a valid image file
      */
     virtual void drawImage(const std::string& filename, double x = 0, double y = 0);
 
     /**
-     * 在给定两点之间绘制线段到背景像素层
-     * 在当前颜色下，设置此交互控件给定 x/y 位置的图层。
-     * 有关 GLine 参数的说明，请参阅 gobjects.h。
+     * Draws a line between the given two points onto the background pixel
+     * layer of this interactor at the given x/y location in the current color.
+     * See gobjects.h for explanation of GLine parameters.
      */
     virtual void drawLine(const GPoint& p0, const GPoint& p1);
 
     /**
-     * 在给定两点之间绘制线段到背景像素层
-     * 在当前颜色下，设置此交互控件给定 x/y 位置的图层。
-     * 有关 GLine 参数的说明，请参阅 gobjects.h。
+     * Draws a line between the given two points onto the background pixel
+     * layer of this interactor at the given x/y location in the current color.
+     * See gobjects.h for explanation of GLine parameters.
      */
     virtual void drawLine(double x0, double y0, double x1, double y1);
 
     /**
-     * 将具有给定边界框的空心椭圆绘制到背景像素层
-     * 在当前颜色下，设置此交互控件给定 x/y 位置的图层。
-     * 有关 GOval 参数的说明，请参阅 gobjects.h。
+     * Draws an unfilled oval with the given bounding box onto the background pixel
+     * layer of this interactor at the given x/y location in the current color.
+     * See gobjects.h for explanation of GOval parameters.
      */
     virtual void drawOval(const GRectangle& bounds);
 
     /**
-     * 将具有给定边界框的空心椭圆绘制到背景像素层
-     * 在当前颜色下，设置此交互控件给定 x/y 位置的图层。
-     * 有关 GOval 参数的说明，请参阅 gobjects.h。
+     * Draws an unfilled oval with the given bounding box onto the background pixel
+     * layer of this interactor at the given x/y location in the current color.
+     * See gobjects.h for explanation of GOval parameters.
      */
     virtual void drawOval(double x, double y, double width, double height);
 
     /**
-     * 使用极坐标绘制线段到背景像素层
-     * 此交互控件在当前颜色下的图层。
-     * 线段从给定 x/y 点开始，并从该点按以下增量延伸：
-     * 给定角度和半径。
-     * 返回与 p0 相对、线条结束处的端点。
-     * 有关 GLine 参数的说明，请参阅 gobjects.h。
+     * Draws a line using polar coordinates onto the background pixel
+     * layer of this interactor in the current color.
+     * The line begins at the given x/y point and extends from there by the
+     * given angle and radius.
+     * Returns the end point opposite p0 where the line ends.
+     * See gobjects.h for explanation of GLine parameters.
      */
     virtual GPoint drawPolarLine(const GPoint& p0, double r, double theta);
 
     /**
-     * 使用极坐标绘制线段到背景像素层
-     * 此交互控件在当前颜色下的图层。
-     * 线段从给定 x/y 点开始，并从该点按以下增量延伸：
-     * 给定角度和半径。
-     * 返回线条结束处的端点。
-     * 有关 GLine 参数的说明，请参阅 gobjects.h。
+     * Draws a line using polar coordinates onto the background pixel
+     * layer of this interactor in the current color.
+     * The line begins at the given x/y point and extends from there by the
+     * given angle and radius.
+     * Returns the end point where the line ends.
+     * See gobjects.h for explanation of GLine parameters.
      */
     virtual GPoint drawPolarLine(double x0, double y0, double r, double theta);
 
     /**
-     * 设置此交互控件背景层中给定 x/y 像素的颜色
-     * 使用交互控件当前的颜色。
+     * Colors the given x/y pixel of the background layer of this interactor
+     * using the interactor's current color.
      */
     virtual void drawPixel(double x, double y);
 
     /**
-     * 设置此交互控件背景层中给定 x/y 像素的颜色
-     * 使用给定颜色。
+     * Colors the given x/y pixel of the background layer of this interactor
+     * using the given color.
      */
     virtual void drawPixel(double x, double y, int color);
 
     /**
-     * 设置此交互控件背景层中给定 x/y 像素的颜色
-     * 使用给定颜色。
+     * Colors the given x/y pixel of the background layer of this interactor
+     * using the given color.
      */
     virtual void drawPixel(double x, double y, const std::string& color);
 
     /**
-     * 将包含给定点的空心多边形绘制到背景像素层
-     * 在当前颜色下设置此交互控件的像素层。
-     * 有关 GPolygon 参数的说明，请参阅 gobjects.h。
+     * Draws an unfilled polygon containing the given points onto the background
+     * pixel layer of this interactor in the current color.
+     * See gobjects.h for explanation of GPolygon parameters.
      */
     virtual void drawPolygon(std::initializer_list<double> coords);
 
     /**
-     * 将包含给定点的空心多边形绘制到背景像素层
-     * 在当前颜色下设置此交互控件的像素层。
-     * 有关 GPolygon 参数的说明，请参阅 gobjects.h。
+     * Draws an unfilled polygon containing the given points onto the background
+     * pixel layer of this interactor in the current color.
+     * See gobjects.h for explanation of GPolygon parameters.
      */
     virtual void drawPolygon(std::initializer_list<GPoint> points);
 
     /**
-     * 将给定尺寸的空心矩形绘制到背景像素层
-     * 在当前颜色下设置此交互控件的像素层。
-     * 有关 GRect 参数的说明，请参阅 gobjects.h。
+     * Draws an unfilled rectangle of the given dimensions onto the background
+     * pixel layer of this interactor in the current color.
+     * See gobjects.h for explanation of GRect parameters.
      */
     virtual void drawRect(const GRectangle& bounds);
 
     /**
-     * 将给定尺寸的空心矩形绘制到背景像素层
-     * 在当前颜色下设置此交互控件的像素层。
-     * 有关 GRect 参数的说明，请参阅 gobjects.h。
+     * Draws an unfilled rectangle of the given dimensions onto the background
+     * pixel layer of this interactor in the current color.
+     * See gobjects.h for explanation of GRect parameters.
      */
     virtual void drawRect(double x, double y, double width, double height);
 
     /**
-     * 在此交互控件的背景像素层上绘制文本字符串
-     * 在当前字体和颜色下绘制于给定 x/y 位置。
-     * 有关 GText 参数的说明，请参阅 gobjects.h。
+     * Draws a text string onto the background pixel layer of this interactor
+     * at the given x/y location in the current font and color.
+     * See gobjects.h for explanation of GText parameters.
      */
     virtual void drawString(const std::string& text, double x, double y);
 
     /**
-     * 在背景像素层上绘制具有给定属性的填充弧
-     * 使用当前颜色和填充色绘制此交互控件的图层。
-     * 有关 GArc 参数的说明，请参阅 gobjects.h。
+     * Draws a filled arc with the given attributes onto the background pixel
+     * layer of this interactor in the current color and fill color.
+     * See gobjects.h for explanation of GArc parameters.
      */
     virtual void fillArc(double x, double y, double width, double height, double start, double sweep);
 
     /**
-     * 将具有给定边界框的填充椭圆绘制到背景像素层
-     * 在当前颜色下设置此交互控件给定 x/y 位置的图层
-     * 以及填充颜色。
-     * 有关 GOval 参数的说明，请参阅 gobjects.h。
+     * Draws a filled oval with the given bounding box onto the background pixel
+     * layer of this interactor at the given x/y location in the current color
+     * and fill color.
+     * See gobjects.h for explanation of GOval parameters.
      */
     virtual void fillOval(const GRectangle& bounds);
 
     /**
-     * 将具有给定边界框的填充椭圆绘制到背景像素层
-     * 在当前颜色下设置此交互控件给定 x/y 位置的图层
-     * 以及填充颜色。
-     * 有关 GOval 参数的说明，请参阅 gobjects.h。
+     * Draws a filled oval with the given bounding box onto the background pixel
+     * layer of this interactor at the given x/y location in the current color
+     * and fill color.
+     * See gobjects.h for explanation of GOval parameters.
      */
     virtual void fillOval(double x, double y, double width, double height);
 
     /**
-     * 将包含给定点的填充多边形绘制到背景像素层
-     * 在当前颜色和填充颜色下设置此交互控件的像素层。
-     * 有关 GPolygon 参数的说明，请参阅 gobjects.h。
+     * Draws a filled polygon containing the given points onto the background
+     * pixel layer of this interactor in the current color and fill color.
+     * See gobjects.h for explanation of GPolygon parameters.
      */
     virtual void fillPolygon(std::initializer_list<double> coords);
 
     /**
-     * 将包含给定点的填充多边形绘制到背景像素层
-     * 在当前颜色和填充颜色下设置此交互控件的像素层。
-     * 有关 GPolygon 参数的说明，请参阅 gobjects.h。
+     * Draws a filled polygon containing the given points onto the background
+     * pixel layer of this interactor in the current color and fill color.
+     * See gobjects.h for explanation of GPolygon parameters.
      */
     virtual void fillPolygon(std::initializer_list<GPoint> coords);
 
     /**
-     * 将给定尺寸的填充矩形绘制到背景像素层
-     * 在当前颜色和填充颜色下设置此交互控件的像素层。
-     * 有关 GRect 参数的说明，请参阅 gobjects.h。
+     * Draws a filled rectangle of the given dimensions onto the background
+     * pixel layer of this interactor in the current color and fill color.
+     * See gobjects.h for explanation of GRect parameters.
      */
     virtual void fillRect(const GRectangle& bounds);
 
     /**
-     * 将给定尺寸的填充矩形绘制到背景像素层
-     * 在当前颜色和填充颜色下设置此交互控件的像素层。
-     * 有关 GRect 参数的说明，请参阅 gobjects.h。
+     * Draws a filled rectangle of the given dimensions onto the background
+     * pixel layer of this interactor in the current color and fill color.
+     * See gobjects.h for explanation of GRect parameters.
      */
     virtual void fillRect(double x, double y, double width, double height);
 
     /**
-     * 返回给定 x/y 位置处的像素颜色数据，
-     * 在高 8 位中保留 alpha 通道透明度。
+     * Returns the pixel color data at the given x/y location,
+     * retaining alpha-channel transparency in the top 8 bits.
      */
     virtual int getARGB(double x, double y) const;
 
     /**
-     * 以字符串返回交互控件当前背景色。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
+     * Returns the current background color of the interactor as a string.
+     * See gcolor.h for more detail about color strings.
      */
     virtual std::string getBackground() const;
 
     /**
-     * 以 RGB 整数返回交互控件当前背景色。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Returns the current background color of the interactor as an RGB integer.
+     * See gcolor.h for more detail about colors.
      */
     virtual int getBackgroundInt() const;
 
     /**
-     * 以字符串形式返回交互控件当前的前景轮廓颜色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
-     * 等价于 getForeground。
+     * Returns the current foreground outline color of the interactor as a string.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about color strings.
+     * Equivalent to getForeground.
      */
     virtual std::string getColor() const;
 
     /**
-     * 以 RGB 整数形式返回交互控件当前的前景轮廓颜色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * 等价于 getForegroundInt。
+     * Returns the current foreground outline color of the interactor as an RGB integer.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about colors.
+     * Equivalent to getForegroundInt.
      */
     virtual int getColorInt() const;
 
     /**
-     * 以字符串形式返回交互控件当前的填充颜色。
-     * 使用 fillXxx 方法绘制的形状会显示此颜色。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
+     * Returns the current fill color of the interactor as a string.
+     * This color will appear in shapes drawn using the fillXxx methods.
+     * See gcolor.h for more detail about color strings.
      */
     virtual std::string getFillColor() const;
 
     /**
-     * 以 RGB 整数返回交互控件当前填充色。
-     * 使用 fillXxx 方法绘制的形状会显示此颜色。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
+     * Returns the current fill color of the interactor as an RGB integer.
+     * This color will appear in shapes drawn using the fillXxx methods.
+     * See gcolor.h for more detail about color strings.
      */
     virtual int getFillColorInt() const;
 
     /**
-     * 以字体字符串返回交互控件当前文本字体。
-     * 使用 drawString 绘制文本字符串时采用此字体。
-     * 有关字体字符串的更多信息，请参阅 gfont.h。
+     * Returns the current text font of the interactor as a font string.
+     * This font will be used when drawing text strings using drawString.
+     * See gfont.h for more detail about font strings.
      */
     virtual std::string getFont() const;
 
     /**
-     * 以字符串形式返回交互控件当前的前景轮廓颜色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
-     * 等价于 getColor。
+     * Returns the current foreground outline color of the interactor as a string.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about color strings.
+     * Equivalent to getColor.
      */
     virtual std::string getForeground() const;
 
     /**
-     * 以 RGB 整数形式返回交互控件当前的前景轮廓颜色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
-     * 等价于 getColor。
+     * Returns the current foreground outline color of the interactor as an RGB integer.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about colors.
+     * Equivalent to getColor.
      */
     virtual int getForegroundInt() const;
 
     /**
-     * 返回绘制以下对象轮廓时使用的当前线型
-     * 形状和线条。
-     * 默认线型为实线（GObject::LINE_SOLID）。
+     * Returns the current line style which will be used to draw outlines of
+     * shapes and lines.
+     * The default line style is a solid line (GObject::LINE_SOLID).
      */
     virtual GObject::LineStyle getLineStyle() const;
 
     /**
-     * 返回绘制形状和线条轮廓时使用的粗细。
-     * 默认粗细为 1。
+     * Returns the thickness used when drawing outlines of shapes and lines.
+     * The default thickness is 1.
      */
     virtual double getLineWidth() const;
 
     /**
-     * 返回给定 x/y 坐标处像素的颜色，该像素属于
-     * 交互控件背景层的颜色，以类似 0xff00cc 的整数表示。
+     * Returns the color of the pixel at the given x/y coordinates of the
+     * background layer of the interactor as an integer such as 0xff00cc.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
      *
-     * 等价于 getRGB。
+     * Equivalent to getRGB.
      *
-     * @throw 如果给定 x/y 值越界，则抛出 ErrorException。
+     * @throw ErrorException if the given x/y values are out of bounds.
      */
     virtual int getPixel(double x, double y) const = 0;
 
     /**
-     * 返回给定 x/y 坐标处像素的颜色，该像素属于
-     * 交互控件背景层的颜色，以 0xffff00cc 这样的整数表示。
-     * 它与 getPixel 的不同之处在于会显式保留并返回
-     * 该像素的 alpha 通道位于高 8 位，从而允许
-     * 透明效果。
+     * Returns the color of the pixel at the given x/y coordinates of the
+     * background layer of the interactor as an integer such as 0xffff00cc.
+     * This differs from getPixel in that it explicitly retains and returns
+     * the alpha channel of the pixel in the top 8 bits, allowing for
+     * transparency effects.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
      *
-     * @throw 如果给定 x/y 值越界，则抛出 ErrorException。
+     * @throw ErrorException if the given x/y values are out of bounds.
      */
     virtual int getPixelARGB(double x, double y) const = 0;
 
     /**
-     * 以 Grid 形式返回表面的所有像素，
-     * 其中行表示 y 值，列表示 x 值。
+     * Returns all pixels of the surface as a Grid,
+     * where rows represent y values and columns represent x values.
      */
     virtual Grid<int> getPixels() const = 0;
 
     /**
-     * 以 Grid 形式返回表面背景层的所有像素，
-     * 其中行表示 y 值，列表示 x 值。
-     * 它与 getPixels 的不同之处在于会显式保留并返回
-     * 每个像素的 alpha 通道位于高 8 位，从而允许
-     * 透明效果。
+     * Returns all pixels of the background layer of the surface as a Grid,
+     * where rows represent y values and columns represent x values.
+     * This differs from getPixels in that it explicitly retains and returns
+     * the alpha channel of each pixel in the top 8 bits, allowing for
+     * transparency effects.
      */
     virtual Grid<int> getPixelsARGB() const = 0;
 
     /**
-     * 返回图像给定 x/y 坐标处像素的颜色
-     * 以类似“#ff00cc”的字符串形式。
-     * 返回的字符串来自 <code>GWindow</code> 函数
-     * <code>convertRGBToColor</code>；请参阅该函数的文档。
-     * 如果给定 x/y 值越界，则抛出错误。
+     * Returns the color of the pixel at the given x/y coordinates of the image
+     * as a string such as "#ff00cc".
+     * The string that is returned comes from the <code>GWindow</code> function
+     * <code>convertRGBToColor</code>; see documentation of that function.
+     * Throws an error if the given x/y values are out of bounds.
      */
     virtual std::string getPixelString(double x, double y) const;
 
     /**
-     * 返回给定 x/y 坐标处像素的颜色，该像素属于
-     * 交互控件背景层的颜色，以类似 0xff00cc 的整数表示。
+     * Returns the color of the pixel at the given x/y coordinates of the
+     * background layer of the interactor as an integer such as 0xff00cc.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
      *
-     * 等价于 getPixel。
+     * Equivalent to getPixel.
      *
-     * @throw 如果给定 x/y 值越界，则抛出 ErrorException。
+     * @throw ErrorException if the given x/y values are out of bounds.
      */
     virtual int getRGB(double x, double y) const;
 
     /**
-     * 返回给定 x/y 坐标处像素的颜色，该像素属于
-     * 交互控件背景层的颜色，以“#ff00cc”这样的颜色字符串表示。
+     * Returns the color of the pixel at the given x/y coordinates of the
+     * background layer of the interactor as a color string such as "#ff00cc".
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
      *
-     * @throw 如果给定 x/y 值越界，则抛出 ErrorException。
+     * @throw ErrorException if the given x/y values are out of bounds.
      */
     virtual std::string getRGBString(double x, double y) const;
 
     /**
-     * 如果交互控件应在每次以下情况发生时自动重绘自身，则返回 true
-     * 其图形数据发生任何变化时。
-     * 但若调用 setAutoRepaint(false)，则必须手动重绘交互控件
-     * 才能看到更改。如果计划进行大批量修改，这会很有用
-     * 一系列更改，并希望仅在全部完成后重绘。
-     * 等价于 isRepaintImmediately。
+     * Returns true if the interactor should repaint itself automatically whenever
+     * any change is made to its graphical data.
+     * But if you call setAutoRepaint(false), you must manually repaint the interactor
+     * to see any changes. This can be desirable if you plan to make a large batch
+     * of changes and want to repaint only after all of them are done.
+     * Equivalent to isRepaintImmediately.
      */
     virtual bool isAutoRepaint() const;
 
     /**
-     * 如果交互控件应在每次以下情况发生时自动重绘自身，则返回 true
-     * 其图形数据发生任何变化时。
-     * 但若调用 setAutoRepaint(false)，则必须手动重绘交互控件
-     * 才能看到更改。如果计划进行大批量修改，这会很有用
-     * 一系列更改，并希望仅在全部完成后重绘。
-     * 等价于 isAutoRepaint。
+     * Returns true if the interactor should repaint itself automatically whenever
+     * any change is made to its graphical data.
+     * But if you call setAutoRepaint(false), you must manually repaint the interactor
+     * to see any changes. This can be desirable if you plan to make a large batch
+     * of changes and want to repaint only after all of them are done.
+     * Equivalent to isAutoRepaint.
      */
     virtual bool isRepaintImmediately() const;
 
     /**
-     * 指示交互控件在屏幕上重绘自身。
-     * 默认情况下，只要进行以下操作，交互控件就会自动重绘自身：
-     * 更改其图形数据。
-     * 但若调用 setAutoRepaint(false)，则必须手动重绘交互控件
-     * 才能看到更改。如果计划进行大批量修改，这会很有用
-     * 一系列更改，并希望仅在全部完成后重绘。
+     * Instructs the interactor to redraw itself on the screen.
+     * By default the interactor will automatically repaint itself whenever you
+     * make any change to its graphical data.
+     * But if you call setAutoRepaint(false), you must manually repaint the interactor
+     * to see any changes. This can be desirable if you plan to make a large batch
+     * of changes and want to repaint only after all of them are done.
      */
     virtual void repaint() = 0;
 
     /**
-     * 指示交互控件重绘给定像素数据区域。
-     * 如果你有以下情况，出于性能考虑，这可能比 repaint() 更合适
-     * 进行了一项仅影响给定矩形区域的小改动，该区域位于
-     * 该交互控件。
+     * Instructs the interactor to repaint the given region of pixel data.
+     * This can be preferable to repaint() for performance purposes if you have
+     * made a small change that affects only the given rectangular region of
+     * the interactor.
      */
     virtual void repaintRegion(int x, int y, int width, int height) = 0;
 
     /**
-     * 指示交互控件重绘给定像素数据区域。
-     * 如果你有以下情况，出于性能考虑，这可能比 repaint() 更合适
-     * 进行了一项仅影响给定矩形区域的小改动，该区域位于
-     * 该交互控件。
+     * Instructs the interactor to repaint the given region of pixel data.
+     * This can be preferable to repaint() for performance purposes if you have
+     * made a small change that affects only the given rectangular region of
+     * the interactor.
      */
     virtual void repaintRegion(const GRectangle& bounds);
 
     /**
-     * 设置交互控件是否应在每次以下情况发生时自动重绘自身
-     * 其图形数据发生任何变化时。
-     * 默认为 true。
-     * 但若调用 setAutoRepaint(false)，则必须手动重绘交互控件
-     * 才能看到更改。如果计划进行大批量修改，这会很有用
-     * 一系列更改，并希望仅在全部完成后重绘。
-     * 等价于 setRepaintImmediately。
+     * Sets whether the interactor should repaint itself automatically whenever
+     * any change is made to its graphical data.
+     * By default this is true.
+     * But if you call setAutoRepaint(false), you must manually repaint the interactor
+     * to see any changes. This can be desirable if you plan to make a large batch
+     * of changes and want to repaint only after all of them are done.
+     * Equivalent to setRepaintImmediately.
      */
     virtual void setAutoRepaint(bool autoRepaint);
 
     /**
-     * 以 RGB 整数设置交互控件当前背景色。
-     * 有关颜色的更多详细信息，请参阅 gcolor.h。
+     * Sets the current background color of the interactor as an RGB integer.
+     * See gcolor.h for more detail about colors.
      */
     virtual void setBackground(int color);
 
     /**
-     * 以字符串设置交互控件当前背景色。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
+     * Sets the current background color of the interactor as a string.
+     * See gcolor.h for more detail about color strings.
      */
     virtual void setBackground(const std::string& color);
 
     /**
-     * 以 RGB 整数设置交互控件当前前景轮廓色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
-     * 等价于 setForeground。
+     * Sets the current foreground outline color of the interactor as as RGB integer.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about color strings.
+     * Equivalent to setForeground.
      */
     virtual void setColor(int color);
 
     /**
-     * 以字符串形式设置交互控件当前的前景轮廓颜色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
-     * 等价于 setForeground。
+     * Sets the current foreground outline color of the interactor as a string.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about color strings.
+     * Equivalent to setForeground.
      */
     virtual void setColor(const std::string& color);
 
     /**
-     * 以 RGB 整数设置交互控件当前填充色。
-     * 使用 fillXxx 方法绘制的形状会显示此颜色。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
+     * Sets the current fill color of the interactor as an RGB integer.
+     * This color will appear in shapes drawn using the fillXxx methods.
+     * See gcolor.h for more detail about color strings.
      */
     virtual void setFillColor(int color);
 
     /**
-     * 以字符串形式返回交互控件当前的填充颜色。
-     * 使用 fillXxx 方法绘制的形状会显示此颜色。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
+     * Returns the current fill color of the interactor as a string.
+     * This color will appear in shapes drawn using the fillXxx methods.
+     * See gcolor.h for more detail about color strings.
      */
     virtual void setFillColor(const std::string& color);
 
     /**
-     * 使用 Qt 字体对象返回交互控件当前文本字体。
-     * 使用 drawString 绘制文本字符串时采用此字体。
+     * Returns the current text font of the interactor using a Qt font object.
+     * This font will be used when drawing text strings using drawString.
      * @private
      */
     virtual void setFont(const QFont& font);
 
     /**
-     * 以字体字符串设置交互控件当前文本字体。
-     * 使用 drawString 绘制文本字符串时采用此字体。
-     * 有关字体字符串的更多信息，请参阅 gfont.h。
+     * Sets the current text font of the interactor as a font string.
+     * This font will be used when drawing text strings using drawString.
+     * See gfont.h for more detail about font strings.
      */
     virtual void setFont(const std::string& font);
 
     /**
-     * 以 RGB 整数设置交互控件当前前景轮廓色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
-     * 等价于 setColor。
+     * Sets the current foreground outline color of the interactor as an RGB integer.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about color strings.
+     * Equivalent to setColor.
      */
     virtual void setForeground(int color);
 
     /**
-     * 以字符串形式设置交互控件当前的前景轮廓颜色。
-     * 使用该颜色绘制通过以下方法所绘形状的轮廓：
-     * 使用 drawXxx 和 fillXxx 方法绘制时，也作为默认颜色
-     * 调用 setPixel 或 setRGB。
-     * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
-     * 等价于 setColor。
+     * Sets the current foreground outline color of the interactor as a string.
+     * This color will be used to draw the outlines of shapes drawn using the
+     * drawXxx and fillXxx methods, as well as being the default color used when
+     * calling setPixel or setRGB.
+     * See gcolor.h for more detail about color strings.
+     * Equivalent to setColor.
      */
     virtual void setForeground(const std::string& color);
 
     /**
-     * 设置绘制形状和线条轮廓时使用的粗细。
-     * 默认粗细为 1。
+     * Sets the thickness used when drawing outlines of shapes and lines.
+     * The default thickness is 1.
      */
     virtual void setLineWidth(double lineWidth);
 
     /**
-     * 设置绘制以下对象轮廓时使用的当前线型
-     * 形状和线条。
-     * 默认线型为实线（GObject::LINE_SOLID）。
+     * Sets the current line style which will be used to draw outlines of
+     * shapes and lines.
+     * The default line style is a solid line (GObject::LINE_SOLID).
      */
     virtual void setLineStyle(GObject::LineStyle lineStyle);
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设置为给定 RGB 值。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given RGB values.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
-     * 等价于 setRGB。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
+     * Equivalent to setRGB.
      *
-     * @throw 如果 x/y 超出范围，或 rgb 不是有效颜色，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range or rgb is an invalid color
      */
     virtual void setPixel(double x, double y, int rgb) = 0;
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设置为给定 RGB 值。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given RGB values.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
-     * 等价于 setRGB。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
+     * Equivalent to setRGB.
      *
-     * @throw 如果 x/y 超出范围，或 r、g、b 不在 0-255 之间，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range or r,g,b are not between 0-255
      */
     virtual void setPixel(double x, double y, int r, int g, int b);
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设为给定颜色。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given color.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
-     * 等价于 setRGB。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
+     * Equivalent to setRGB.
      *
-     * @throw 如果 x/y 超出范围，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range
      */
     virtual void setPixel(double x, double y, const std::string& color);
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设为给定 ARGB 值。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given ARGB value.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixelsARGB 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixelsARGB 提交所有更改。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixelsARGB to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixelsARGB to submit all of your changes.
      *
-     * @throw 如果 x/y 超出范围，或 argb 不是有效颜色，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range or argb is an invalid color
      */
     virtual void setPixelARGB(double x, double y, int argb) = 0;
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设为给定 ARGB 值。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given ARGB value.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixelsARGB 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixelsARGB 提交所有更改。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixelsARGB to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixelsARGB to submit all of your changes.
      *
-     * @throw 如果 x/y 超出范围，或 a、r、g、b 不在 0-255 之间，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range or a,r,g,b are not between 0-255
      */
     virtual void setPixelARGB(double x, double y, int a, int r, int g, int b);
 
     /**
-     * 设置以下对象背景层中所有像素的颜色：
-     * 将交互控件设为给定 RGB 值，其中行作为 y 值，列作为
-     * x 值。任何现有背景层像素都会被替换。
-     * 若给定网格大小与此交互控件不同，则交互控件
-     * 将调整大小以匹配网格。
+     * Sets the color of the all pixels in the background layer of the
+     * interactor to the given RGB values, using rows as y-values and columns as
+     * x-values.  Any existing background layer pixels will be replaced.
+     * If the given grid is not the same size as this interactor, the interactor
+     * will be resized to match the grid.
      */
     virtual void setPixels(const Grid<int>& pixels) = 0;
 
     /**
-     * 设置以下对象背景层中所有像素的颜色：
-     * 将交互控件设为给定 ARGB 值，其中行作为 y 值，列作为
-     * x 值。任何现有背景层像素都会被替换。
-     * 若给定网格大小与此交互控件不同，则交互控件
-     * 将调整大小以匹配网格。
+     * Sets the color of the all pixels in the background layer of the
+     * interactor to the given ARGB values, using rows as y-values and columns as
+     * x-values.  Any existing background layer pixels will be replaced.
+     * If the given grid is not the same size as this interactor, the interactor
+     * will be resized to match the grid.
      */
     virtual void setPixelsARGB(const Grid<int>& pixelsARGB) = 0;
 
     /**
-     * 设置交互控件是否应在每次以下情况发生时自动重绘自身
-     * 其图形数据发生任何变化时。
-     * 默认为 true。
-     * 但若调用 setAutoRepaint(false)，则必须手动重绘交互控件
-     * 才能看到更改。如果计划进行大批量修改，这会很有用
-     * 一系列更改，并希望仅在全部完成后重绘。
-     * 等价于 setAutoRepaint。
+     * Sets whether the interactor should repaint itself automatically whenever
+     * any change is made to its graphical data.
+     * By default this is true.
+     * But if you call setAutoRepaint(false), you must manually repaint the interactor
+     * to see any changes. This can be desirable if you plan to make a large batch
+     * of changes and want to repaint only after all of them are done.
+     * Equivalent to setAutoRepaint.
      */
     virtual void setRepaintImmediately(bool autoRepaint);
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设置为给定 RGB 值。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given RGB values.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
-     * 等价于 setPixel。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
+     * Equivalent to setPixel.
      *
-     * @throw 如果 x/y 超出范围，或 rgb 不是有效颜色，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range or rgb is an invalid color
      */
     virtual void setRGB(double x, double y, int rgb);
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设置为给定 RGB 值。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given RGB values.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
-     * 等价于 setPixel。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
+     * Equivalent to setPixel.
      *
-     * @throw 如果 x/y 超出范围，或 r、g、b 不在 0-255 之间，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range or r,g,b are not between 0-255
      */
     virtual void setRGB(double x, double y, int r, int g, int b);
 
     /**
-     * 设置背景层中给定 x/y 像素的颜色，该背景层属于
-     * 将交互控件设为给定颜色。
+     * Sets the color of the given x/y pixel in the background layer of the
+     * interactor to the given color.
      *
-     * 请注意，如果你打算在背景中设置许多像素，并且
-     * 若要获得最高性能，应改为调用 getPixels 提取
-     * 将所有像素读入一个 Grid，然后在该 Grid 中操作所有需要修改的像素，
-     * 然后调用 setPixels 提交所有更改。
-     * 等价于 setPixel。
+     * Note that if you are planning to set many pixels in the background and
+     * want maximum performance, you should instead call getPixels to extract
+     * all pixels into a Grid, then manipulate all desired pixels in that Grid,
+     * then call setPixels to submit all of your changes.
+     * Equivalent to setPixel.
      *
-     * @throw 如果 x/y 超出范围，则抛出 ErrorException
+     * @throw ErrorException if x/y is out of range
      */
     virtual void setRGB(double x, double y, const std::string& color);
 
@@ -731,49 +731,49 @@ protected:
     bool _autoRepaint;
 
     /**
-     * 如果给定 x/y 值越界，则抛出错误。
+     * Throws an error if the given x/y values are out of bounds.
      */
     void checkBounds(const std::string& member, double x, double y, double width, double height) const;
 
     /**
-     * 如果给定 rgb 值不是有效颜色，则抛出错误。
+     * Throws an error if the given rgb value is not a valid color.
      */
     void checkColor(const std::string& member, int rgb) const;
 
     /**
-     * 如果给定的宽度/高度值越界，则抛出错误。
+     * Throws an error if the given width/height values are out of bounds.
      */
     void checkSize(const std::string& member, double width, double height) const;
 
     /**
-     * 初始化要绘制的新图形对象。
-     * 作为便捷方法，用于设置颜色、填充颜色、轮廓样式，
-     * 根据以下对象的设置调整图形对象的字体及其他设置：
-     * 绘图表面。
+     * Initializes a new graphical object to be drawn.
+     * Used as a convenience method to set the color, fill color, outline style,
+     * font, and other settings of graphical objects based on the settings of
+     * the drawing surface.
      */
     virtual void initializeGObject(GObject& obj, bool filled = false);
 
     /**
-     * 初始化要绘制的新图形对象。
-     * 作为便捷方法，用于设置颜色、填充颜色、轮廓样式，
-     * 根据以下对象的设置调整图形对象的字体及其他设置：
-     * 绘图表面。
+     * Initializes a new graphical object to be drawn.
+     * Used as a convenience method to set the color, fill color, outline style,
+     * font, and other settings of graphical objects based on the settings of
+     * the drawing surface.
      */
     virtual void initializeGObject(GObject* obj, bool filled = false);
 
     /**
-     * 设置绘图调用应发送到的转发目标。
-     * 供 GForwardDrawingSurface 使用。
+     * Sets a forward target to which drawing calls should be sent.
+     * Used by GForwardDrawingSurface.
      * @private
      */
     virtual void setDrawingForwardTarget(GDrawingSurface* forwardTarget);
 };
 
 /**
- * 一个绘图表面，它会将收到的所有调用转发给另一个
- * 绘图表面。
- * 在我们的库中，此类主要用于让 GWindow 转发
- * 将 drawRect 和 fillOval 等绘图调用转发到其内部 GCanvas 实例。
+ * A drawing surface that just forwards any calls it receives to another
+ * drawing surface.
+ * In our library this class is primarily used so that a GWindow can pass on
+ * drawing calls like drawRect and fillOval on to its internal GCanvas instance.
  * @private
  */
 class GForwardDrawingSurface : public virtual GDrawingSurface {

@@ -11,7 +11,7 @@
 using namespace std;
 
 namespace {
-    /* 创建给定大小的空白网格迷宫。 */
+    /* Creates a blank grid maze of the given size. */
     Grid<MazeCell*> blankMaze(int numRows, int numCols) {
         Grid<MazeCell*> result(numRows, numCols);
         for (int row = 0; row < numRows; row++) {
@@ -22,30 +22,30 @@ namespace {
         return result;
     }
 
-    /* 表示迷宫中一条可能边的类型。两个 MazeCell 各自
-     * 也包含在这里，以及用于链接它们的字段。
+    /* Type representing a possible edge in a maze. Two MazeCells are each
+     * included here, along with the fields that would link them.
      */
     struct EdgeBuilder {
-        /* 要连接哪两条边。 */
+        /* Which two edges to link. */
         MazeCell* first;
         MazeCell* second;
 
-        /* 如何链接它们。 */
+        /* How to link them. */
         MazeCell* MazeCell::* firstField;
         MazeCell* MazeCell::* secondField;
     };
 
-    /* 在指定范围内生成随机数。我们使用它代替
-     * 使用 std::uniform_int_distribution，因为 std::uniform_int_distribution
-     * 不具备跨平台兼容性。
+    /* Generates a random number in the specified range. We use this instead of
+     * std::uniform_int_distribution because std::uniform_int_distribution is
+     * not cross-platform compatible.
      */
     int mtRandomBetween(int low, int high, mt19937& generator) {
         return low + generator() % (high - low + 1);
     }
 
-    /* 生成 0 到 1 之间的随机实数。我们使用它代替
-     * 使用 std::uniform_real_distribution，因为 std::uniform_real_distribution
-     * 不具备跨平台兼容性。
+    /* Generates a random real number between 0 and 1. We use this instead of
+     * std::uniform_real_distribution because std::uniform_real_distribution is
+     * not cross-platform compatible.
      */
     double mtRandomProbability(mt19937& generator) {
         while (true) {
@@ -58,7 +58,7 @@ namespace {
         }
     }
 
-    /* 返回网格迷宫中可能出现的所有边。 */
+    /* Returns all possible edges that could appear in a grid maze. */
     vector<EdgeBuilder> allPossibleEdgesFor(const Grid<MazeCell*>& maze) {
         vector<EdgeBuilder> result;
         for (int row = 0; row < maze.numRows(); row++) {
@@ -74,7 +74,7 @@ namespace {
         return result;
     }
 
-    /* 并查集 FIND 操作。 */
+    /* Union-find FIND operation. */
     MazeCell* repFor(const map<MazeCell*, MazeCell*>& reps, MazeCell* cell) {
         while (reps.at(cell) != cell) {
             cell = reps.at(cell);
@@ -82,9 +82,9 @@ namespace {
         return cell;
     }
 
-    /* 使用 Fischer-Yates 洗牌算法打乱边。我们提供自己的
-     * 实现，因为 Windows、Mac 上的 std::shuffle 实现
-     * Windows 和 Linux 上不保证具有相同的行为。
+    /* Shuffles the edges using the Fischer-Yates shuffle. We provide our own
+     * implementation because the std::shuffle implementations on Windows, Mac,
+     * and Linux are not guaranteed to work in the same way.
      */
     void shuffleEdges(vector<EdgeBuilder>& edges, mt19937& generator) {
         for (size_t i = 0; i < edges.size(); i++) {
@@ -93,9 +93,9 @@ namespace {
         }
     }
 
-    /* 使用随机化 Kruskal 算法创建给定大小的随机迷宫
-     * 算法。边会被打乱并逐条加回，前提是
-     * 使每次插入都连接两个不连通区域。
+    /* Creates a random maze of the given size using a randomized Kruskal's
+     * algorithm. Edges are shuffled and added back in one at a time, provided
+     * that each insertion links two disconnected regions.
      */
     Grid<MazeCell*> makeMaze(int numRows, int numCols, mt19937& generator) {
         auto maze = blankMaze(numRows, numCols);
@@ -103,22 +103,22 @@ namespace {
         auto edges = allPossibleEdgesFor(maze);
         shuffleEdges(edges, generator);
 
-        /* 并查集结构；由于 N 很小，因此未使用路径压缩。 */
+        /* Union-find structure, done without path compression because N is small. */
         map<MazeCell*, MazeCell*> representatives;
         for (auto* elem: maze) {
             representatives[elem] = elem;
         }
 
-        /* 运行随机化 Kruskal 算法构建迷宫。 */
+        /* Run a randomized Kruskal's algorithm to build the maze. */
         int edgesLeft = numRows * numCols - 1;
         for (size_t i = 0; edgesLeft > 0 && i < edges.size(); i++) {
             auto edge = edges[i];
 
-            /* 查看它们是否已经链接。 */
+            /* See if they're linked already. */
             auto* rep1 = repFor(representatives, edge.first);
             auto* rep2 = repFor(representatives, edge.second);
 
-            /* 如果尚未链接，则链接它们。 */
+            /* If not, link them. */
             if (rep1 != rep2) {
                 representatives[rep1] = rep2;
 
@@ -133,15 +133,15 @@ namespace {
         return maze;
     }
 
-    /* 清除给定节点组之间的所有链接。 */
+    /* Clears all the links between the given group of nodes. */
     void clearGraph(Vector<MazeCell*>& nodes) {
         for (auto* node: nodes) {
             *node = MazeCell();
         }
     }
 
-    /* 从给定节点返回随机未分配链接；如果没有则返回 nullptr
-     * 它们都已赋值。
+    /* Returns a random unassigned link from the given node, or nullptr if
+     * they are all assigned.
      */
     MazeCell* MazeCell::* randomFreePortOf(MazeCell* cell, mt19937& generator) {
         Vector<MazeCell* MazeCell::*> ports;
@@ -155,14 +155,14 @@ namespace {
         return ports[port];
     }
 
-    /* 使用 Erdos-Renyi 随机图模型的变体。我们设置
-     * 任意节点对连通的概率为 ln(n) / n，
-     * 然后人为约束图，使任何节点的度数都不
-     * 四个或更多。我们以此方式生成迷宫，直到找到一个
-     * 已连接。
+    /* Use a variation of the Erdos-Renyi random graph model. We set the
+     * probability of any pair of nodes being connected to be ln(n) / n,
+     * then artificially constrain the graph so that no node has degree
+     * four or more. We generate mazes this way until we find one that's
+     * conencted.
      */
     bool erdosRenyiLink(Vector<MazeCell*>& nodes, mt19937& generator) {
-        /* 所有内容连通的概率很高。 */
+        /* High probability that everything is connected. */
         double threshold = log(nodes.size()) / nodes.size();
 
         for (int i = 0; i < nodes.size(); i++) {
@@ -171,7 +171,7 @@ namespace {
                     auto iLink = randomFreePortOf(nodes[i], generator);
                     auto jLink = randomFreePortOf(nodes[j], generator);
 
-                    /* 糟糕，没有空闲链接。 */
+                    /* Oops, no free links. */
                     if (iLink == nullptr || jLink == nullptr) {
                         return false;
                     }
@@ -185,7 +185,7 @@ namespace {
         return true;
     }
 
-    /* 返回给定迷宫是否完全连通。 */
+    /* Returns whether the given maze is fully connected. */
     bool isConnected(const Vector<MazeCell*>& maze) {
         HashSet<MazeCell*> visited;
         Queue<MazeCell*> frontier;
@@ -207,8 +207,8 @@ namespace {
         return visited.size() == maze.size();
     }
 
-    /* 生成随机曲折迷宫。其工作方式是反复生成
-     * 不断生成随机图，直到找到连通图。
+    /* Generates a random twisty maze. This works by repeatedly generating
+     * random graphs until a connected one is found.
      */
     Vector<MazeCell*> makeTwistyMaze(int numNodes, mt19937& generator) {
         Vector<MazeCell*> result;
@@ -216,7 +216,7 @@ namespace {
             result += new MazeCell();
         }
 
-        /* 不断生成迷宫，直到得到连通迷宫。 */
+        /* Keep generating mazes until we get a connected one. */
         do {
             clearGraph(result);
         } while (!erdosRenyiLink(result, generator) || !isConnected(result));
@@ -224,7 +224,7 @@ namespace {
         return result;
     }
 
-    /* 返回两个节点是否相邻。 */
+    /* Returns if two nodes are adjacent. */
     bool areAdjacent(MazeCell* first, MazeCell* second) {
         return first->east  == second ||
                first->west  == second ||
@@ -232,20 +232,20 @@ namespace {
                first->south == second;
     }
 
-    /* 使用 Floyd-Warshall 算法计算所有
-     * 迷宫中的节点对。结果是一个表，其中 table[i][j] 为
-     * maze[i] 与 maze[j] 之间的最短路径距离。
+    /* Uses the Floyd-Warshall algorithm to compute the shortest paths between all
+     * pairs of nodes in the maze. The result is a table where table[i][j] is the
+     * shortest path distance between maze[i] and maze[j].
      */
     Grid<int> allPairsShortestPaths(const Vector<MazeCell*>& maze) {
-        /* Floyd-Warshall 算法。用“无穷大”值填充网格。 */
+        /* Floyd-Warshall algorithm. Fill the grid with "infinity" values. */
         Grid<int> result(maze.size(), maze.size(), maze.size() + 1);
 
-        /* 将节点到自身的距离设为 0。 */
+        /* Set distances of nodes to themselves at 0. */
         for (int i = 0; i < maze.size(); i++) {
             result[i][i] = 0;
         }
 
-        /* 将边的距离设为 1。 */
+        /* Set distances of edges to 1. */
         for (int i = 0; i < maze.size(); i++) {
             for (int j = 0; j < maze.size(); j++) {
                 if (areAdjacent(maze[i], maze[j])) {
@@ -254,8 +254,8 @@ namespace {
             }
         }
 
-        /* 动态规划步骤。通过允许以下路径继续扩展路径
-         * 节点之间。
+        /* Dynamic programming step. Keep expanding paths by allowing for paths
+         * between nodes.
          */
         for (int i = 0; i < maze.size(); i++) {
             Grid<int> next(result.numRows(), result.numCols());
@@ -270,9 +270,9 @@ namespace {
         return result;
     }
 
-    /* 给定不同节点列表，返回其距离“分数”，
-     * 它是按排序顺序表示两两距离的数字序列
-     * 顺序。
+    /* Given a list of distinct nodes, returns the "score" for their distances,
+     * which is a sequence of numbers representing pairwise distances in sorted
+     * order.
      */
     Vector<int> scoreOf(const Vector<int>& nodes, const Grid<int>& distances) {
         Vector<int> result;
@@ -287,15 +287,15 @@ namespace {
         return result;
     }
 
-    /* 给定网格，返回四个节点的组合，使其总分
-     * （两两距离的有序列表）在某种意义下尽可能大
-     * 字典序意义上。
+    /* Given a grid, returns a combination of four nodes whose overall score
+     * (sorted list of pairwise distances) is as large as possible in a
+     * lexicographical sense.
      */
     Vector<int> remoteLocationsIn(const Grid<int>& distances) {
         Vector<int> result = {0, 1, 2, 3};
 
-        /* 可以递归完成此操作，但由于“只有”四层循环
-         * 那我们就直接这样做。:-)
+        /* We could do this recursively, but since it's "only" four loops
+         * we'll just do that instead. :-)
          */
         for (int i = 0; i < distances.numRows(); i++) {
             for (int j = i + 1; j < distances.numRows(); j++) {
@@ -313,11 +313,11 @@ namespace {
         return result;
     }
 
-    /* 将文本迷宫中的项目复制到网格迷宫。 */
+    /* Copies items from the text maze over to the grid maze. */
     void fillItems(Grid<MazeCell*>& maze, const Vector<string>& textMaze) {
         for (int row = 0; row < maze.numRows(); row++) {
             for (int col = 0; col < maze.numCols(); col++) {
-                /* 奇数编号的位置是间隙位置。 */
+                /* Odd-numbered positions are interstitial positions. */
                 switch (textMaze[2 * row][2 * col]) {
                 case 'S':
                     maze[row][col]->whatsHere = Item::SPELLBOOK;
@@ -338,16 +338,16 @@ namespace {
         }
     }
 
-    /* 根据文本模式填充迷宫中的墙。 */
+    /* Fills in the walls in maze given a text pattern. */
     void addWalls(Grid<MazeCell*>& maze, const Vector<string>& textMaze) {
         for (int row = 0; row < maze.numRows(); row++) {
             for (int col = 0; col < maze.numCols(); col++) {
-                /* 如果可以，则向下查看。 */
+                /* Look down if that's possible. */
                 if (row + 1 < maze.numRows() && textMaze[2 * row + 1][2 * col] == '|') {
                     maze[row][col]->south = maze[row + 1][col];
                     maze[row + 1][col]->north = maze[row][col];
                 }
-                /* 如果可以，则向左查看。 */
+                /* Look left if that's possible. */
                 if (col + 1 < maze.numCols() && textMaze[2 * row][2 * col + 1] == '-') {
                     maze[row][col]->east = maze[row][col + 1];
                     maze[row][col + 1]->west = maze[row][col];
@@ -356,10 +356,10 @@ namespace {
         }
     }
 
-    /* 验证文本迷宫的结构是否正确。 */
+    /* Validates that a text maze is structured correctly. */
     void validateMaze(const Vector<string>& textMaze) {
-        /* 行数应为奇数，因为每隔一个位置才是一个地点。
-         * 列数同样如此。
+        /* Number of rows should be odd since every other space is a location.
+         * Same with the number of columns.
          */
         if (textMaze.size() % 2 != 1) {
             error("Maze should have an odd number of rows.");
@@ -377,7 +377,7 @@ namespace {
             }
         }
 
-        /* 确认所有奇数/奇数坐标对处都是空格。 */
+        /* Confirm that there are blank spaces at all odd/odd pairs. */
         for (int row = 0; row + 1 < numRows; row++) {
             for (int col = 0; col + 1 < numCols; col++) {
                 if (textMaze[2 * row + 1][2 * col + 1] != ' ') {
@@ -386,12 +386,12 @@ namespace {
             }
         }
 
-        /* 确认每个位置都是 *、S、P 或 W。 */
+        /* Confirm each location is either *, S, P, or W. */
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
                 switch (textMaze[2 * row][2 * col]) {
                 case 'P': case 'S': case 'W': case '*':
-                    /* 不执行任何操作。 */
+                    /* Do nothing. */
                     break;
                 default:
                     error("Unknown character found at lattice point.");
@@ -399,7 +399,7 @@ namespace {
             }
         }
 
-        /* 确认每面墙都是 -、| 或空白。 */
+        /* Confirm each wall is either -, |, or blank. */
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
                 if (row + 1 < numRows &&
@@ -421,13 +421,13 @@ const int kNumRows = 4;
 const int kNumCols = 4;
 
 MazeCell* mazeFor(const string& name) {
-    /* 使用提供的种子初始化生成器。从此时起，只
-     * 使用此来源生成随机数。
+    /* Seed a generator using the provided seed. From this point forward, only
+     * use random numbers from this source.
      */
     mt19937 generator(hashCode(name, kNumRows, kNumCols));
     auto maze = makeMaze(kNumRows, kNumCols, generator);
 
-    /* 将物品和起始位置彼此远离放置。 */
+    /* Place the items and start locations far away from one another. */
     Vector<MazeCell*> linearMaze;
     for (MazeCell* cell: maze) {
         linearMaze += cell;
@@ -435,33 +435,33 @@ MazeCell* mazeFor(const string& name) {
     auto distances = allPairsShortestPaths(linearMaze);
     auto locations = remoteLocationsIn(distances);
 
-    /* 放置物品。 */
+    /* Place the items. */
     linearMaze[locations[1]]->whatsHere = Item::SPELLBOOK;
     linearMaze[locations[2]]->whatsHere = Item::POTION;
     linearMaze[locations[3]]->whatsHere = Item::WAND;
 
-    /* 我们从位置 0 开始。 */
+    /* We begin in position 0. */
     return linearMaze[locations[0]];
 }
 
 const int kNumTwistyRooms = 12;
 
 MazeCell* twistyMazeFor(const string& name) {
-    /* 使用提供的种子初始化生成器。从此时起，只
-     * 使用此来源生成随机数。
+    /* Seed a generator using the provided seed. From this point forward, only
+     * use random numbers from this source.
      */
     mt19937 generator(hashCode(name, kNumTwistyRooms));
     auto maze = makeTwistyMaze(kNumTwistyRooms, generator);
 
-    /* 找出所有节点对之间的距离。 */
+    /* Find the distances between all pairs of nodes. */
     auto distances = allPairsShortestPaths(maze);
 
-    /* 选择一个四元组，使各点之间的最小距离最大，
-     * 并将其用作物品/起始位置。
+    /* Select a 4-tuple maximizing the minimum distances between points,
+     * and use that as our item/start locations.
      */
     auto locations = remoteLocationsIn(distances);
 
-    /* 将物品放在那里。 */
+    /* Place the items there. */
     maze[locations[1]]->whatsHere = Item::SPELLBOOK;
     maze[locations[2]]->whatsHere = Item::POTION;
     maze[locations[3]]->whatsHere = Item::WAND;
@@ -469,7 +469,7 @@ MazeCell* twistyMazeFor(const string& name) {
     return maze[locations[0]];
 }
 
-/* 将迷宫的文本表示转换为 Grid<MazeCell*> 对象。 */
+/* Converts a text representation of a maze into a Grid<MazeCell*> objects. */
 Grid<MazeCell*> toMaze(const Vector<string>& textMaze) {
     validateMaze(textMaze);
 

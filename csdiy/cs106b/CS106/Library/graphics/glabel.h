@@ -1,24 +1,24 @@
 /*
- * 文件：glabel.h
+ * File: glabel.h
  * --------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 将部分事件处理代码移到 GInteractor 父类
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
- * - 添加接受 QIcon 和 QPixmap 的 setIcon
+ * - added setIcon with QIcon and QPixmap
  * @version 2018/10/04
- * - 添加 get/setWordWrap
+ * - added get/setWordWrap
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/09/04
- * - 添加双击事件支持
+ * - added double-click event support
  * @version 2018/09/03
- * - 为可单击标签添加 addActionListener 方法
+ * - added addActionListener methods for clickable labels
  * @version 2018/08/23
- * - 重命名为 glabel.h，以替代 Java 版本
+ * - renamed to glabel.h to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 
@@ -31,37 +31,37 @@
 #include "ginteractor.h"
 #include "gobjects.h"
 
-// 前向声明
+// forward declaration
 class _Internal_QLabel;
 class GWindow;
 
 /**
- * GLabel 表示文本字符串。
- * 标签可以包含文本和/或图像图标。
+ * A GLabel represents a text string.
+ * A label can contain text and/or an image icon.
  *
- * 可以通过设置动作、单击或双击监听器使 GLabel 可单击
- * 监听器，但通常如果你想要带文本的可点击交互控件，
- * 你可能更适合使用 GButton。
+ * GLabels can be made clickable by setting an action, click, or double-click
+ * listener, but generally if you want a clickable interactor with text on it,
+ * you may prefer a GButton.
  */
 class GLabel : public GInteractor {
 public:
     /**
-     * 创建具有指定文本标签和可选图标的标签。
+     * Creates a label with the specified text label and optional icon.
      */
     GLabel(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
 
     /**
-     * 创建具有指定文本标签和图标的标签。
+     * Creates a label with the specified text label and icon.
      */
     GLabel(const std::string& text, const QIcon& icon, QWidget* parent = nullptr);
 
     /**
-     * 创建具有指定文本标签和图标的标签。
+     * Creates a label with the specified text label and icon.
      */
     GLabel(const std::string& text, const QPixmap& icon, QWidget* parent = nullptr);
 
     /**
-     * 释放标签内部分配的内存。
+     * Frees memory allocated internally by the label.
      */
     ~GLabel() override;
 
@@ -69,21 +69,21 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回标签显示的字符串。
-     * 等价于 getText。
+     * Returns the string displayed by the label.
+     * Equivalent to getText.
      */
     virtual std::string getLabel() const;
 
     /**
-     * 返回标签显示的字符串。
-     * 等价于 getLabel。
+     * Returns the string displayed by the label.
+     * Equivalent to getLabel.
      */
     virtual std::string getText() const;
 
     /**
-     * 返回标签文本相对于图标的位置。
-     * 默认值为 TEXT_BESIDE_ICON，但可以改为 TEXT_UNDER_ICON
-     * 通过调用 setTextPosition 方法。
+     * Returns the label's text position relative to its icon.
+     * The default is TEXT_BESIDE_ICON, but it can be changed to TEXT_UNDER_ICON
+     * by calling the setTextPosition method.
      */
     virtual GInteractor::TextPosition getTextPosition() const;
 
@@ -94,8 +94,8 @@ public:
     QWidget* getWidget() const override;
 
     /**
-     * 返回标签文本过长时是否应自动换行。
-     * 默认为 false。
+     * Returns whether the label should wrap if its text is too long.
+     * Default false.
      */
     virtual bool isWordWrap() const;
 
@@ -136,8 +136,8 @@ public:
     void setIcon(const std::string& filename, bool retainIconSize = true) override;
 
     /**
-     * 将标签上的文本设置为给定文本。
-     * 等价于 setText。
+     * Sets the text on the label to be the given text.
+     * Equivalent to setText.
      */
     virtual void setLabel(const std::string& text);
 
@@ -151,14 +151,14 @@ public:
     void setSize(const GDimension& size) override;
 
     /**
-     * 将标签上的文本设置为给定文本。
-     * 等价于 setLabel。
+     * Sets the text on the label to be the given text.
+     * Equivalent to setLabel.
      */
     virtual void setText(const std::string& text);
 
     /**
-     * 设置标签文本相对于图标的位置。
-     * 默认值为 TEXT_BESIDE_ICON，但可以改为 TEXT_UNDER_ICON。
+     * Sets the label's text position relative to its icon.
+     * The default is TEXT_BESIDE_ICON, but it can be changed to TEXT_UNDER_ICON.
      */
     virtual void setTextPosition(GInteractor::TextPosition position);
 
@@ -169,8 +169,8 @@ public:
     void setWidth(double width) override;
 
     /**
-     * 设置标签文本过长时是否自动换行。
-     * 默认为 false。
+     * Sets whether the label should wrap if its text is too long.
+     * Default false.
      */
     virtual void setWordWrap(bool wrap);
 
@@ -193,12 +193,12 @@ private:
     friend class GWindow;
 };
 
-// 为向后兼容，将 GTextLabel 作为 GLabel 的别名
+// alias GTextLabel for GLabel for backward compatibility
 typedef GLabel GTextLabel;
 
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QLabel : public QLabel, public _Internal_QWidget {

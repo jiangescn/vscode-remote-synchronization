@@ -5,44 +5,44 @@
 #include "gobjects.h"
 #include <string>
 
-/* 表示生命周期很短的图形对象的类型。该对象
- * 在创建 Temporary 时创建并安装，并且它会
- * 在销毁 Temporary 时移除并释放。
+/* A type representing a graphics object with a short lifetime. The object
+ * is created and installed when the Temporary is created, and it is
+ * removed and deallocated when the Temporary is destroyed.
  */
 template <typename Component> class Temporary {
 public:
-    /* 构造函数安装新组件。 */
+    /* Constructor installs the new component. */
     Temporary(Component* component, GWindow& window, const std::string& location);
 
-    /* 默认构造函数不执行任何操作。 */
+    /* Default constructor does nothing. */
     Temporary() = default;
 
-    /* 析构函数将其移除。 */
+    /* Destructor removes it. */
     ~Temporary();
 
-    /* 访问底层组件。 */
+    /* Access underlying component. */
     Component* get() const;
     Component& operator*  () const;
     Component* operator-> () const;
 
-    /* 释放底层组件。 */
+    /* Release underlying component. */
     void release();
 
-    /* 不允许复制。 */
+    /* Copying is not allowed. */
     Temporary(const Temporary &) = delete;
 
-    /* 允许移动。 */
+    /* Moving is allowed. */
     Temporary(Temporary &&);
     Temporary& operator= (Temporary);
 
 private:
-    /* 底层组件、窗口和位置。 */
+    /* Underlying component, window, and location. */
     Component* component   = nullptr;
     GWindow*   window      = nullptr;
     std::string location;
 };
 
-/* 用于创建新 Temporary 的实用函数。 */
+/* Utility function to make a new Temporary. */
 template <typename Component, typename... Args>
 Temporary<Component> make_temporary(GWindow& window, const std::string& region, Args&&... args) {
     return Temporary<Component>(new Component(std::forward<Args>(args)...), window, region);
@@ -68,7 +68,7 @@ bool operator!= (const Pointer* lhs, const Temporary<Component>& rhs) {
     return rhs != lhs;
 }
 
-/* * * * * 此处以下为实现部分 * * * * */
+/* * * * * Implementation Below This Point * * * * */
 template <typename Component>
 Temporary<Component>::Temporary(Component* component,
                                 GWindow& window,
@@ -77,21 +77,21 @@ Temporary<Component>::Temporary(Component* component,
     window.addToRegion(component, location);
 }
 
-/* 析构函数移除并释放组件（前提是组件原本存在）。 */
+/* Destructor removes and frees the component, assuming that there is one to begin with. */
 template <typename Component>
 Temporary<Component>::~Temporary() {
     release();
 }
 
-/* release 将组件从其所属窗口中移除。 */
+/* Release removes the component from its containing window. */
 template <typename Component>
 void Temporary<Component>::release() {
     if (component != nullptr) {
         window->removeFromRegion(component, location);
         delete component;
 
-        /* 中心区域比较特殊，因为画布应当放在那里。
-         * 若从中间移除了某项，则需要恢复画布。
+        /* The center region is unusual in that the canvas is supposed to go there.
+         * If we removed something out of the center, we need to restore the canvas.
          */
         if (location == "CENTER") {
             window->addToRegion(window->getCanvas(), "CENTER");
@@ -99,13 +99,13 @@ void Temporary<Component>::release() {
     }
 }
 
-/* 访问器直接返回底层组件。 */
+/* Accessor just hands back the underlying component. */
 template <typename Component>
 Component* Temporary<Component>::get() const {
     return component;
 }
 
-/* 星号和箭头运算符。 */
+/* Star and arrow operators. */
 template <typename Component>
 Component& Temporary<Component>::operator *() const {
     return *component;
@@ -115,10 +115,10 @@ Component* Temporary<Component>::operator->() const {
     return &**this;
 }
 
-/* 移动支持。 */
+/* Move support. */
 template <typename Component>
 Temporary<Component>::Temporary(Temporary&& rhs) {
-    /* 交换全部内容。 */
+    /* Swap everything over. */
     std::swap(component, rhs.component);
     std::swap(window,    rhs.window);
     std::swap(location,  rhs.location);

@@ -5,17 +5,17 @@
 #include <string>
 
 /**
- * 表示迷宫中物品的类型。
+ * Type representing an item in the maze.
  */
 enum class Item {
     NOTHING, SPELLBOOK, POTION, WAND
 };
 
 /**
- * 表示迷宫中单元格的类型。
+ * Type representing a cell in the maze.
  */
 struct MazeCell {
-    Item whatsHere; // 存在的是哪个物品（如果有）。
+    Item whatsHere; // Which item, if any, is present.
 
     MazeCell* north;
     MazeCell* south;
@@ -24,12 +24,12 @@ struct MazeCell {
 };
 
 /**
- * 给定迷宫中的位置，返回给定移动序列是否
- * 这些步骤将让你逃出迷宫。
+ * Given a location in a maze, returns whether the given sequence of
+ * steps will let you escape the maze.
  *
- * 要逃离迷宫，你需要找到药水、法术书和
- * 魔杖。你只能沿四个基本方向移动，
- * 不能朝迷宫中不存在的方向移动。
+ * To escape the maze, you need to find the Potion, the Spellbook, and
+ * the Wand. You can only take steps in the four cardinal directions,
+ * and you can't move in directions that don't exist in the maze.
  */
 bool isPathToFreedom(MazeCell* start, const std::string& moves);
 
@@ -37,8 +37,8 @@ bool isPathToFreedom(MazeCell* start, const std::string& moves);
 
 
 /**
- * 我们为你提供此函数，以便你可以按需
- * 将 Item 变量存储在 HashMap 或 HashSet 中。
+ * We provide this function for you so that, if you so choose, you can
+ * store Item variables in a HashMap or HashSet.
  */
 inline int hashCode(Item item) {
     return static_cast<int>(item);

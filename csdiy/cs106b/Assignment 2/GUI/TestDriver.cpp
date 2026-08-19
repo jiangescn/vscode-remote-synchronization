@@ -4,29 +4,29 @@
 using namespace std;
 
 namespace {
-    /* 给定文件路径，返回不含路径部分的文件名。 */
+    /* Given a file path, returns the name of the file, excluding the path to it. */
     string tailOf(const string& path) {
-        /* 查找文件名中最后一个 / 或 \。 */
+        /* Find the last / or \ in the filename. */
         size_t index = path.find_last_of("\\/");
         return index == string::npos? path : path.substr(index + 1);
     }
 
-    /* 运行单个测试。 */
+    /* Runs a single test. */
     void runSingleTest(SimpleTest::Test& test, SimpleTest::TestGroup& group) {
         try {
-            /* 重置内存计数器，避免测试之间遗留状态。 */
+            /* Reset memory counters so we don't have carryover across tests. */
             MemoryDiagnostics::clear();
 
-            /* 运行测试。 */
+            /* Run the test. */
             test.callback();
 
-            /* 检查是否存在内存泄漏。 */
+            /* See if there were any memory leaks. */
             auto errors = MemoryDiagnostics::typesWithErrors();
             if (errors.empty()) {
                 test.result = SimpleTest::TestResult::PASS;
                 group.numPassed++;
             } else {
-                /* 存在内存泄漏。 */
+                /* We have memory leaks. */
                 test.result = SimpleTest::TestResult::LEAK;
 
                 ostringstream out;
@@ -87,13 +87,13 @@ namespace {
         }
     }
 
-    /* 根据测试系统的原始数据生成可视化 TestGroup。 */
+    /* Given raw data from the testing system, produce a visual TestGroup for that data. */
     SimpleTest::TestGroup testsToGroup(const pair<const SimpleTest::Internal::TestKey, multimap<int, SimpleTest::Internal::TestCase>>& entry,
                                        SimpleTest::TestFilter filter) {
-        /* 将原始测试组转换为规范的 TestGroup 对象。 */
+        /* Convert the raw testing group into a proper TestGroup object. */
         SimpleTest::TestGroup result;
 
-        /* 测试组名称是文件完整路径。这里只需要末尾文件名。 */
+        /* The test group's name is the full path to the file. We just want the tail. */
         result.name = tailOf(entry.first);
         result.numPassed = 0;
         result.numTests = entry.second.size();
@@ -103,10 +103,10 @@ namespace {
             test.name = rawTest.second.name;
             test.type = rawTest.second.type;
             test.lineNumber = rawTest.second.lineNumber;
-            test.result = SimpleTest::TestResult::WAITING; // 它尚未运行
+            test.result = SimpleTest::TestResult::WAITING; // It hasn't run yet
             test.callback = rawTest.second.callback;
 
-            /* 若不应运行该测试，则将其排除。 */
+            /* Exclude the test if it's not supposed to be run. */
             if (filter(result.name, test)) {
                 result.tests += test;
             }
@@ -115,7 +115,7 @@ namespace {
         return result;
     }
 
-    /* 默认过滤器和比较器。 */
+    /* Default filter and comparator. */
     SimpleTest::TestFilter defaultFilter() {
         return [](const string&, const SimpleTest::Test&) {
             return true;
@@ -127,26 +127,26 @@ namespace {
 }
 
 namespace SimpleTest{
-    /* 运行指定测试，并随执行进度更新显示。 */
+    /* Runs the specified tests, updating the display as things progress. */
     void run(TestReporter reporter, TestFilter filter, TestGroupComparator comparator) {
-        /* 将原始测试转换为规范的测试组列表。 */
+        /* Convert from raw tests to a proper list of test groups. */
         Vector<TestGroup> displayedTests;
         for (const auto& entry: Internal::rawTests()) {
             displayedTests += testsToGroup(entry, filter);
         }
 
-        /* 对各组排序。 */
+        /* Sort the groups. */
         sort(displayedTests.begin(), displayedTests.end(), [&](const TestGroup& lhs, const TestGroup& rhs) {
             return comparator(lhs.name, rhs.name);
         });
 
-        /* 显示所有内容，以便提供一些基本数据。 */
+        /* Show everything so there's some basic data available. */
         reporter(displayedTests);
 
-        /* 现在运行测试。 */
+        /* Now, go run the tests. */
         for (auto& group: displayedTests) {
             for (auto& test: group.tests) {
-                /* 明确显示当前正在运行测试。 */
+                /* Make clear that we're running the test. */
                 test.result = TestResult::RUNNING;
                 reporter(displayedTests);
 

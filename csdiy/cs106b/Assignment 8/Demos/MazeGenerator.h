@@ -7,11 +7,11 @@
 #include <string>
 
 /**
- * 给定迷宫的图形表示，返回 Grid<MazeCell*>
- * 包含该迷宫的内容。
+ * Given a graphical representation of a maze, returns a Grid<MazeCell*>
+ * contining the contents of that maze.
  *
- * 例如，以下是表示第一个示例时应提供的输入
- * 讲义中的迷宫：
+ * For example, here's the input you'd give to represent the first example
+ * maze from the handout:
  *
  *         {"* *-W *",
  *          "| |   |",
@@ -21,35 +21,35 @@
  *          "|   | |",
  *          "*-*-* P"}
  *
- * 这里，星号表示空位，其余字母表示
- * 魔杖、法术书和药水所在的位置。（由于我们将整个迷宫
- * 返回给你，你可以选择从何处开始。）| 和 - 符号
- * 用于表示哪些单元格链接到哪些其他单元格。
+ * Here, stars indicate empty spots and the remaining letters indicate where
+ * the Wand, Spellbook, and Potion are. (Since we're handing the whole maze
+ * back to you, you can choose where you want to begin.) The | and - symbols
+ * are used to indicate which cells link to which other cells.
  *
- * 迷宫可以具有任意大小和任意数量的物品副本，尽管
- * “真正的”迷宫中每种物品只会有一个。
+ * Mazes can have any size and any number of copies of the items, even though
+ * a "real" maze would only have one of each item.
  */
 Grid<MazeCell*> toMaze(const Vector<std::string>& textMaze);
 
 /**
- * 返回大小为 numRows x numCols、专门针对以下内容定制的迷宫
- * 给定的名称。
+ * Returns a maze of size numRows x numCols, specifically tailored to
+ * the given name.
  *
- * 我们已经为你实现此函数。你无需编写它
- * 你自己。
+ * We've implemented this function for you. You don't need to write it
+ * yourself.
  *
- * 请不要对此函数进行任何更改——我们将使用自己的
- * 在测试你的代码时使用参考版本；如果
- * 你解决的迷宫并不是我们希望你解决的迷宫！
+ * Please don't make any changes to this function - we'll be using our
+ * reference version when testing your code, and it would be a shame if
+ * the maze you solved wasn't the maze we wanted you to solve!
  */
 MazeCell* mazeFor(const std::string& name);
 
 /**
- * 返回具有指定节点数的 Twisty Maze。
+ * Returns a Twisty Maze with the specified number of nodes.
  *
- * 请不要对此函数进行任何更改——我们将使用自己的
- * 在测试你的代码时使用参考版本；如果
- * 你解决的迷宫并不是我们希望你解决的迷宫！
+ * Please don't make any changes to this function - we'll be using our
+ * reference version when testing your code, and it would be a shame if
+ * the maze you solved wasn't the maze we wanted you to solve!
  */
 MazeCell* twistyMazeFor(const std::string& name);
 

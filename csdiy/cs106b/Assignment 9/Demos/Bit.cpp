@@ -4,7 +4,7 @@
 using namespace std;
 
 Bit::Bit(int value) {
-    /* 检查字符值的使用情况。 */
+    /* Check for use of chararacter values. */
     if (value == '0' || value == '1') {
         error("You have attempted to create a bit equal to the character '0' or '1'. "
               "The characters '0' and '1' are not the same as the numbers 0 and 1. "

@@ -1,12 +1,12 @@
 /*
- * 文件：gdrawingsurface.cpp
+ * File: gdrawingsurface.cpp
  * -------------------------
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 gdrawingsurface.cpp，以替代 Java 版本
+ * - renamed to gdrawingsurface.cpp to replace Java version
  * @version 2018/07/11
- * - 初始版本
+ * - initial version
  */
 
 #include "gdrawingsurface.h"
@@ -27,7 +27,7 @@ GDrawingSurface::GDrawingSurface()
           _lineStyle(GObject::LINE_SOLID),
           _lineWidth(1),
           _autoRepaint(true) {
-    // 空
+    // empty
 }
 
 GDrawingSurface::~GDrawingSurface() {
@@ -38,21 +38,21 @@ void GDrawingSurface::checkBounds(const std::string& member, double x, double y,
     require::inRange2D(x, y, width - 1, height - 1, member);
 }
 
-void GDrawingSurface::checkColor(const std::string& /* 成员 */, int /* RGB */) const {
-    // 我认为这段代码有误；它忽略了 alpha 值的可能性
-    // 或 Qt 库默认将高位设置为 255（全为 1）
+void GDrawingSurface::checkColor(const std::string& /* member */, int /* rgb */) const {
+    // I think this code is wrong; it ignores the possibility of alpha values
+    // or of the top bits being set to 255 (all 1) by default by Qt libraries
 //    if (rgb < 0x0 || rgb > 0xffffff) {
-//        error(member + ": 颜色超出 0x000000 到 0xffffff 的范围");
+//        error(member + ": color is outside of range 0x000000 through 0xffffff");
 //    }
 }
 
-void GDrawingSurface::checkSize(const std::string& /* 成员 */, double /* 宽度 */, double /* 高度 */) const {
+void GDrawingSurface::checkSize(const std::string& /* member */, double /* width */, double /* height */) const {
 //    if (width < 0 || height < 0) {
-//        error(member + ": 宽度/高度不能为负数");
+//        error(member + ": width/height cannot be negative");
 //    }
 //    if (width > GCanvas::WIDTH_HEIGHT_MAX
 //            || height > GCanvas::WIDTH_HEIGHT_MAX) {
-//        error(getType() + "::" + member + ": 宽度/高度过大（不能超过 "
+//        error(getType() + "::" + member + ": width/height too large (cannot exceed "
 //              + std::to_string(GCanvas::WIDTH_HEIGHT_MAX));
 //    }
 }
@@ -178,7 +178,7 @@ void GDrawingSurface::drawString(const std::string& text, double x, double y) {
 
 void GDrawingSurface::fillArc(double x, double y, double width, double height, double start, double sweep) {
     GArc arc(x, y, width, height, start, sweep);
-    initializeGObject(arc, /* 已填充 */ true);
+    initializeGObject(arc, /* filled */ true);
     draw(arc);
 }
 
@@ -188,19 +188,19 @@ void GDrawingSurface::fillOval(const GRectangle& bounds) {
 
 void GDrawingSurface::fillOval(double x, double y, double width, double height) {
     GOval oval(x, y, width, height);
-    initializeGObject(oval, /* 已填充 */ true);
+    initializeGObject(oval, /* filled */ true);
     draw(oval);
 }
 
 void GDrawingSurface::fillPolygon(std::initializer_list<double> coords) {
     GPolygon polygon(coords);
-    initializeGObject(polygon, /* 已填充 */ true);
+    initializeGObject(polygon, /* filled */ true);
     draw(polygon);
 }
 
 void GDrawingSurface::fillPolygon(std::initializer_list<GPoint> points) {
     GPolygon polygon(points);
-    initializeGObject(polygon, /* 已填充 */ true);
+    initializeGObject(polygon, /* fllled */ true);
     draw(polygon);
 }
 
@@ -210,7 +210,7 @@ void GDrawingSurface::fillRect(const GRectangle& bounds) {
 
 void GDrawingSurface::fillRect(double x, double y, double width, double height) {
     GRect rect(x, y, width, height);
-    initializeGObject(rect, /* 已填充 */ true);
+    initializeGObject(rect, /* filled */ true);
     draw(rect);
 }
 
@@ -372,7 +372,7 @@ void GDrawingSurface::setBackground(const std::string& color) {
 }
 
 void GDrawingSurface::setColor(int color) {
-    // 同时设置 color 和 fillColor
+    // sets both color and fillColor
     if (_forwardTarget) {
         _forwardTarget->setColor(color);
         _forwardTarget->setFillColor(color);
@@ -385,7 +385,7 @@ void GDrawingSurface::setColor(int color) {
 }
 
 void GDrawingSurface::setColor(const std::string& color) {
-    // 同时设置 color 和 fillColor
+    // sets both color and fillColor
     if (_forwardTarget) {
         _forwardTarget->setColor(color);
         _forwardTarget->setFillColor(color);
@@ -521,8 +521,8 @@ void GForwardDrawingSurface::draw(QPainter* painter) {
 
 void GForwardDrawingSurface::ensureForwardTargetConstHack() const {
     if (!_forwardTarget) {
-        // 你的一生都是谎言。
-        // 另外，这段代码很糟，我应该反省。
+        // Your whole life has been a lie.
+        // Also, this code is bad and I should feel bad.
         GForwardDrawingSurface* hack = (GForwardDrawingSurface*) this;
         hack->ensureForwardTarget();
     }

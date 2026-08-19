@@ -1,12 +1,12 @@
 /*
- * 文件：gevent.cpp
+ * File: gevent.cpp
  * ----------------
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 gevent.cpp，以替代 Java 版本
+ * - renamed to gevent.cpp to replace Java version
  * @version 2018/07/06
- * - 初始版本
+ * - initial version
  */
 
 #include "gevent.h"
@@ -16,7 +16,7 @@
 #include "strlib.h"
 
 static void __emptyEventListener(GEvent) {
-    // 空
+    // empty
 }
 
 static void __logEventListener(GEvent event) {
@@ -46,7 +46,7 @@ GEvent::GEvent(EventClass eventClass,
           _row(0),
           _col(0),
           _internalQtEvent(nullptr) {
-    // 空
+    // empty
 }
 
 GEvent::~GEvent() {

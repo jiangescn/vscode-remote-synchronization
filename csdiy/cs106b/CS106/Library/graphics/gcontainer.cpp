@@ -1,21 +1,21 @@
 /*
- * 文件：gcontainer.cpp
+ * File: gcontainer.cpp
  * --------------------
  *
  * @author Marty Stepp
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/11/27
- * - 添加代码，使控件在添加/插入流式容器后可见
- *   （需要它才能看到窗口显示后添加到容器中的控件）
+ * - added code to set a widget visible after adding/inserting it to flow container
+ *   (needed to see widgets added to container after window is showing on screen)
  * @version 2018/09/19
- * - 添加 contains、regionContains 方法
- * - 使用 require.h 添加参数检查
+ * - added contains, regionContains methods
+ * - added argument checking with require.h
  * @version 2018/09/05
- * - 线程安全改进
- * - 向子交互控件添加 setContainer 逻辑
+ * - thread safety improvements
+ * - added setContainer logic to child interactors
  * @version 2018/08/29
- * - 初始版本
+ * - initial version
  */
 
 #include "gcontainer.h"
@@ -26,15 +26,15 @@
 #include "require.h"
 #include "strlib.h"
 
-// margin——位于容器周围，但在其背景色区域之外（类似 CSS）
-// padding——位于容器周围，但在其背景色区域内部（类似 CSS）
-// spacing——容器中相邻控件之间的间距
+// margin  - around container, but outside of its background color area (like CSS)
+// padding - around container, but within its background color area (like CSS)
+// spacing - between neighboring widgets in container
 
 const int GContainer::MARGIN_DEFAULT = 5;
 const int GContainer::SPACING_DEFAULT = 8;
 
-// JDZ：交互控件列表似乎更像集合，而不是按索引访问的 vector
-// 这是在此模块中临时使用的自定义实现
+// JDZ: list of interactors seems to be used more as set than indexed/vector
+// this is a custom for use within this module as stop gap
 
 template <typename ValueType>
 void removeValue(Vector<ValueType> &v, const ValueType& value) {
@@ -51,20 +51,20 @@ GContainer::GContainer(Layout layout, QWidget* parent)
     GThread::runOnQtGuiThread([this, layout, parent]() {
         _iqcontainer = new _Internal_QContainer(this, layout, getInternalParent(parent));
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
-GContainer::GContainer(Layout /*布局*/, int rows, int cols, QWidget* parent)
+GContainer::GContainer(Layout /*layout*/, int rows, int cols, QWidget* parent)
         : _iqcontainer(nullptr),
           _layout(LAYOUT_GRID) {
     GThread::runOnQtGuiThread([this, rows, cols, parent]() {
         _iqcontainer = new _Internal_QContainer(this, rows, cols, getInternalParent(parent));
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GContainer::~GContainer() {
-    // TODO：delete _iqcontainer;
+    // TODO: delete _iqcontainer;
     _iqcontainer->detach();
     _iqcontainer = nullptr;
 }
@@ -112,7 +112,7 @@ void GContainer::addToRegion(GInteractor* interactor, Region region) {
         return;
     }
 
-    // 特殊情况：如果是 center，先删除该区域中的所有其他控件
+    // special case: if center, remove all other widgets in that region first
     if (region == REGION_CENTER) {
         clearRegion(region);
     }
@@ -182,13 +182,13 @@ bool GContainer::contains(GInteractor& interactor) const {
 Vector<GInteractor*> GContainer::getDescendents(const std::string& type) const {
     Vector<GInteractor*> result;
     for (GInteractor* interactor : _interactors) {
-        // 前序遍历；先添加父节点，再访问子节点
+        // pre-order traversal; add parent and then visit children
         if (type.empty() || type == "*" || equalsIgnoreCase(type, interactor->getType())) {
             result.add(interactor);
         }
 
         if (equalsIgnoreCase(interactor->getType(), "GContainer")) {
-            // 递归获取此子节点的所有后代
+            // recursively get all descendents of this child
             GContainer* subcontainer = static_cast<GContainer*>(interactor);
             Vector<GInteractor*> descendents = subcontainer->getDescendents(type);
             result.addAll(descendents);
@@ -580,7 +580,7 @@ _Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, GContainer::L
     }
 }
 
-_Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int /*行*/, int cols, QWidget* parent)
+_Internal_QContainer::_Internal_QContainer(GContainer* gcontainer, int /*rows*/, int cols, QWidget* parent)
         : QWidget(parent),
           _gcontainer(gcontainer),
           _layoutType(GContainer::LAYOUT_NONE),
@@ -624,9 +624,9 @@ void _Internal_QContainer::add(QWidget* widget) {
         }
         case GContainer::LAYOUT_FLOW_HORIZONTAL:
         case GContainer::LAYOUT_FLOW_VERTICAL: {
-            // 添加到此区域控件列表末尾
+            // add to end of the list of widgets in this region
             QBoxLayout* boxLayout = (QBoxLayout*) getQLayout();
-            boxLayout->insertWidget(/* 索引 */ boxLayout->count() - 1, widget);
+            boxLayout->insertWidget(/* index */ boxLayout->count() - 1, widget);
             widget->setVisible(true);
             GLayout::forceUpdate(this);
             break;
@@ -642,7 +642,7 @@ void _Internal_QContainer::addToGrid(QWidget* widget, int row, int col, int rows
     if (_layoutType == GContainer::LAYOUT_GRID) {
         QGridLayout* gridLayout = (QGridLayout*) getQLayout();
         gridLayout->addWidget(widget, row, col, rowspan, colspan);
-        _currentIndex = row * _cols + col;   // 近似值
+        _currentIndex = row * _cols + col;   // approximate
         widget->setVisible(true);
         GLayout::forceUpdate(this);
     } else {
@@ -654,7 +654,7 @@ void _Internal_QContainer::addToRegion(QWidget* widget, GContainer::Region regio
     if (_layoutType == GContainer::LAYOUT_BORDER) {
         QBoxLayout* layout = (QBoxLayout*) layoutForRegion(region);
         if (region == GContainer::REGION_CENTER) {
-            // 中心区域最多容纳一个控件
+            // center holds at most one widget
             GLayout::clearLayout(layout);
 
             // http://doc.qt.io/qt-5/qsizepolicy.html
@@ -665,15 +665,15 @@ void _Internal_QContainer::addToRegion(QWidget* widget, GContainer::Region regio
             sizePolicy.setVerticalStretch(999);
             widget->setSizePolicy(sizePolicy);
 
-            layout->addWidget(widget, /* 伸缩项 */ 999);
+            layout->addWidget(widget, /* stretch */ 999);
         } else {
-            // 添加到此区域控件列表末尾
+            // add to end of the list of widgets in this region
             widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-            layout->insertWidget(/* 索引 */ layout->count() - 1, widget, /* 伸缩项 */ 0);
+            layout->insertWidget(/* index */ layout->count() - 1, widget, /* stretch */ 0);
         }
         widget->setVisible(true);
 
-        // 设置控件的对齐方式
+        // set alignment of widget
         fixAlignment(widget, region);
         fixMargin(layout, /* hasStretch */ region != GContainer::REGION_CENTER);
         GLayout::forceUpdate(this);
@@ -721,12 +721,12 @@ bool _Internal_QContainer::contains(QWidget* widget) const {
 }
 
 void _Internal_QContainer::detach() {
-    // TODO：将各区域置空/删除
+    // TODO: nullify/delete regions
     _gcontainer = nullptr;
 }
 
 void _Internal_QContainer::fixAlignment(QWidget* widget, GContainer::Region region) {
-    // 需要在 GUI 线程上运行
+    // needs to be run on GUI thread
     if (_layoutType == GContainer::LAYOUT_BORDER) {
         QLayout* layout = layoutForRegion(region);
         if (_halignMap.containsKey(region) && _valignMap.containsKey(region)) {
@@ -768,7 +768,7 @@ int _Internal_QContainer::getMargin() const {
 }
 
 QSize _Internal_QContainer::getPreferredSize() const {
-    // 确保布局已经计算出所有对象的位置/大小
+    // make sure the layout has calculated everybody's position/size
     // GLayout::forceUpdate((QWidget*) this);
 
     if (_layoutType == GContainer::LAYOUT_BORDER) {
@@ -821,9 +821,9 @@ void _Internal_QContainer::insert(int i, QWidget* widget) {
         case GContainer::LAYOUT_FLOW_HORIZONTAL:
         case GContainer::LAYOUT_FLOW_VERTICAL:
         default: {
-            // 由于首尾存在“stretch”控件，索引偏移 1
+            // index is off by 1 because of 'stretch' widgets at start/end
             QBoxLayout* boxLayout = (QBoxLayout*) getQLayout();
-            boxLayout->insertWidget(/* 索引 */ i - 1, widget);
+            boxLayout->insertWidget(/* index */ i - 1, widget);
             widget->setVisible(true);
             GLayout::forceUpdate(this);
             break;
@@ -835,18 +835,18 @@ void _Internal_QContainer::insertToRegion(int i, QWidget* widget, GContainer::Re
     if (_layoutType == GContainer::LAYOUT_BORDER) {
         QLayout* layout = layoutForRegion(region);
         if (region == GContainer::REGION_CENTER) {
-            // 中心区域最多容纳一个控件
+            // center holds at most one widget
             GLayout::clearLayout(layout);
             layout->addWidget(widget);
             widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         } else {
-            // 由于首尾存在“stretch”控件，索引偏移 1
-            ((QBoxLayout*) layout)->insertWidget(/* 索引 */ i + 1, widget);
+            // index is off by 1 because of 'stretch' widgets at start/end
+            ((QBoxLayout*) layout)->insertWidget(/* index */ i + 1, widget);
             widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         }
         widget->setVisible(true);
 
-        // 设置控件的对齐方式
+        // set alignment of widget
         fixAlignment(widget, region);
         fixMargin(layout, /* hasStretch */ region != GContainer::REGION_CENTER);
 
@@ -919,7 +919,7 @@ void _Internal_QContainer::remove(int i) {
         if (widget) {
             widget->setVisible(false);
         }
-        // 索引加 1，以计入开头的“stretch”
+        // add +1 to the index to account for the 'stretch' at start
         layout()->removeItem(layout()->itemAt(i + 1));
         layout()->update();
         GLayout::forceUpdate(this);
@@ -934,7 +934,7 @@ void _Internal_QContainer::removeFromRegion(int i, GContainer::Region region) {
         if (layout == _centerLayout) {
             layout->removeItem(layout->itemAt(i));
         } else {
-            // 索引加 1，以计入开头的“stretch”
+            // add +1 to the index to account for the 'stretch' at start
             layout->removeItem(layout->itemAt(i + 1));
         }
         layout->update();
@@ -950,7 +950,7 @@ void _Internal_QContainer::setPadding(int padding) {
 }
 
 void _Internal_QContainer::setPadding(int top, int right, int bottom, int left) {
-    QWidget::setContentsMargins(left, top, right, bottom);   // 调用父类实现
+    QWidget::setContentsMargins(left, top, right, bottom);   // call super
     if (_layoutType == GContainer::LAYOUT_BORDER) {
         _northLayout->setContentsMargins(left, top, right, bottom);
         _southLayout->setContentsMargins(left, top, right, bottom);
@@ -966,27 +966,27 @@ void _Internal_QContainer::setPadding(int top, int right, int bottom, int left) 
 void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
     switch (_layoutType) {
         case GContainer::LAYOUT_FLOW_HORIZONTAL: {
-            // 若要左对齐，限制第一个伸缩项；
-            // 若要右对齐，限制最后一个伸缩项
+            // to align "left", limit first stretch;
+            // to align "right", limit last stretch
             QHBoxLayout* layout = (QHBoxLayout*) getQLayout();
             if (layout->count() >= 2) {
                 layout->removeItem(layout->itemAt(0));
                 layout->removeItem(layout->itemAt(layout->count() - 1));
             }
             if (halign == ALIGN_LEFT) {
-                layout->insertStretch(0, /* 伸缩项 */ 0);
-                layout->addStretch(/* 伸缩项 */ 99);
+                layout->insertStretch(0, /* stretch */ 0);
+                layout->addStretch(/* stretch */ 99);
             } else if (halign == ALIGN_RIGHT) {
-                layout->insertStretch(0, /* 伸缩项 */ 99);
-                layout->addStretch(/* 伸缩项 */ 0);
+                layout->insertStretch(0, /* stretch */ 99);
+                layout->addStretch(/* stretch */ 0);
             } else {   // halign == ALIGN_CENTER
-                layout->insertStretch(0, /* 伸缩项 */ 99);
-                layout->addStretch(/* 伸缩项 */ 99);
+                layout->insertStretch(0, /* stretch */ 99);
+                layout->addStretch(/* stretch */ 99);
             }
             break;
         }
         case GContainer::LAYOUT_FLOW_VERTICAL: {
-            // 分别设置每个控件的水平对齐方式
+            // set each widget's horizontal alignment individually
             QVBoxLayout* layout = (QVBoxLayout*) getQLayout();
             Qt::Alignment qtAlign = toQtAlignment(halign);
             for (int i = 1; i < layout->count() - 1; i++) {
@@ -998,7 +998,7 @@ void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
             break;
         }
         case GContainer::LAYOUT_GRID: {
-            // 分别设置每个控件的水平对齐方式
+            // set each widget's horizontal alignment individually
             QGridLayout* layout = (QGridLayout*) getQLayout();
             Qt::Alignment qtAlign = toQtAlignment(halign);
             for (int i = 0; i < layout->count(); i++) {
@@ -1010,7 +1010,7 @@ void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
             break;
         }
         case GContainer::LAYOUT_BORDER: {
-            // - 在对齐映射中设置所有区域的对齐方式
+            // - set align of ALL regions in align map
             setRegionHorizontalAlignment(GContainer::REGION_CENTER, halign);
             setRegionHorizontalAlignment(GContainer::REGION_NORTH, halign);
             setRegionHorizontalAlignment(GContainer::REGION_SOUTH, halign);
@@ -1026,12 +1026,12 @@ void _Internal_QContainer::setHorizontalAlignment(HorizontalAlignment halign) {
 
 void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
     if (layoutType == _layoutType) {
-        return;   // 如果布局相同，则不执行工作
+        return;   // don't do work if it's the same layout
     }
 
     if (_layoutType == GContainer::LAYOUT_BORDER
             && layoutType != GContainer::LAYOUT_BORDER) {
-        // 移除现在不再需要的内部布局
+        // get rid of the now-unneeded inner layouts
         _overallLayout = nullptr;
         _northLayout   = nullptr;
         _southLayout   = nullptr;
@@ -1044,7 +1044,7 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
     _layoutType = layoutType;
     switch (layoutType) {
         case GContainer::LAYOUT_BORDER: {
-            // 设置边界区域
+            // set up border regions
             _overallLayout = new QVBoxLayout;
             _overallLayout->setObjectName(QString::fromStdString("_overallLayout_" + std::to_string(_gcontainer->getID())));
             _northLayout   = new QHBoxLayout;
@@ -1060,7 +1060,7 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
             _middleLayout  = new QHBoxLayout;
             _middleLayout->setObjectName(QString::fromStdString("_middleLayout_" + std::to_string(_gcontainer->getID())));
 
-            // 压缩边距/内边距
+            // squish margins/padding
             _overallLayout->setSpacing(0);
             _northLayout->setSpacing(getSpacing());
             _southLayout->setSpacing(getSpacing());
@@ -1077,8 +1077,8 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
             _centerLayout->setContentsMargins(0, 0, 0, 0);
             _middleLayout->setContentsMargins(0, 0, 0, 0);
 
-            // 在 N/S/W/E 区域的起点和终点添加“伸展项”
-            // 将每个单元中的实际控件居中并移除间距
+            // add "stretches" at start and end of N/S/W/E regions
+            // to center and un-space the actual widgets in each
             _northLayout->addStretch(99);
             _northLayout->addStretch(99);
             _southLayout->addStretch(99);
@@ -1088,15 +1088,15 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
             _eastLayout->addStretch(99);
             _eastLayout->addStretch(99);
 
-            // 使用虚假的空中央控件作为占位符，直到添加中心控件
+            // fake empty central widget as placeholder until center widget added
             _centerLayout->addStretch(999);
 
-            _overallLayout->addLayout(_northLayout, /* 伸缩项 */ 0);
-            _middleLayout->addLayout(_westLayout, /* 伸缩项 */ 0);
-            _middleLayout->addLayout(_centerLayout, /* 伸缩项 */ 99);
-            _middleLayout->addLayout(_eastLayout, /* 伸缩项 */ 0);
-            _overallLayout->addLayout(_middleLayout, /* 伸缩项 */ 99);
-            _overallLayout->addLayout(_southLayout, /* 伸缩项 */ 0);
+            _overallLayout->addLayout(_northLayout, /* stretch */ 0);
+            _middleLayout->addLayout(_westLayout, /* stretch */ 0);
+            _middleLayout->addLayout(_centerLayout, /* stretch */ 99);
+            _middleLayout->addLayout(_eastLayout, /* stretch */ 0);
+            _overallLayout->addLayout(_middleLayout, /* stretch */ 99);
+            _overallLayout->addLayout(_southLayout, /* stretch */ 0);
             setLayout(_overallLayout);
             if (layout()) {
                 layout()->setSpacing(0);
@@ -1111,7 +1111,7 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
         case GContainer::LAYOUT_GRID: {
             QGridLayout* qlayout = new QGridLayout;
             if (layout()) {
-                // 从之前的布局转移过来
+                // transfer over from previous layout
                 for (int i = 1; i < layout()->count() - 1; i++) {
 //                    QWidget* widget = layout()->itemAt(i)->widget();
 //                    qlayout->addWidget(widget);
@@ -1125,9 +1125,9 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
             qlayout->setSpacing(getSpacing());
             auto m = getMargin();
             qlayout->setContentsMargins(m,m,m,m);
-            qlayout->addStretch(99);   // 顶部伸缩项
+            qlayout->addStretch(99);   // top side stretch
             if (layout()) {
-                // 从之前的布局转移过来
+                // transfer over from previous layout
                 for (int i = 1; i < layout()->count() - 1; i++) {
                     QWidget* widget = layout()->itemAt(i)->widget();
                     if (widget) {
@@ -1135,7 +1135,7 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
                     }
                 }
             }
-            qlayout->addStretch(99);   // 底边伸展项
+            qlayout->addStretch(99);   // bottom side stretch
             setLayout(qlayout);
             setHorizontalAlignment(getHorizontalAlignment());
             setVerticalAlignment(getVerticalAlignment());
@@ -1147,15 +1147,15 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
             qlayout->setSpacing(getSpacing());
             auto m = getMargin();
             qlayout->setContentsMargins(m,m,m,m);
-            qlayout->addStretch(99);   // 左侧拉伸
+            qlayout->addStretch(99);   // left side stretch
             if (layout()) {
-                // 从之前的布局转移过来
+                // transfer over from previous layout
                 for (int i = 1; i < layout()->count() - 1; i++) {
                     QWidget* widget = layout()->itemAt(i)->widget();
                     qlayout->addWidget(widget);
                 }
             }
-            qlayout->addStretch(99);   // 右侧拉伸
+            qlayout->addStretch(99);   // right side stretch
             setLayout(qlayout);
             setHorizontalAlignment(getHorizontalAlignment());
             setVerticalAlignment(getVerticalAlignment());
@@ -1172,7 +1172,7 @@ void _Internal_QContainer::setMargin(int margin) {
             fixMargin(_southLayout, /* hasStretch */ true);
             fixMargin(_westLayout, /* hasStretch */ true);
             fixMargin(_eastLayout, /* hasStretch */ true);
-            // fixMargin(_centerLayout, /* 是否伸展 */ false);
+            // fixMargin(_centerLayout, /* hasStretch */ false);
             // _centerLayout->setMargin(margin);
         } else {
             layout()->setContentsMargins(margin,margin,margin,margin);
@@ -1201,7 +1201,7 @@ void _Internal_QContainer::setRegionHorizontalAlignment(GContainer::Region regio
     }
 
     if (layout == _westLayout || layout == _eastLayout || layout == _centerLayout) {
-        // 分别设置每个控件的水平对齐方式
+        // set each widget's horizontal alignment individually
         Qt::Alignment qtAlign = toQtAlignment(halign);
         QSizePolicy::Policy hSizePolicy = ((qtAlign & Qt::AlignJustify) != 0) ? QSizePolicy::Expanding : QSizePolicy::Preferred;
         for (int i = 0; i < layout->count(); i++) {
@@ -1211,12 +1211,12 @@ void _Internal_QContainer::setRegionHorizontalAlignment(GContainer::Region regio
             }
             layout->setAlignment(widget, qtAlign);
             widget->setSizePolicy(
-                    /* 水平 */ hSizePolicy,
-                    /* 垂直 */   widget->sizePolicy().verticalPolicy());
+                    /* horizontal */ hSizePolicy,
+                    /* vertical */   widget->sizePolicy().verticalPolicy());
         }
     } else if (layout == _northLayout || layout == _southLayout) {
-        // 若要左对齐，限制第一个伸缩项；
-        // 若要右对齐，限制最后一个伸缩项
+        // to align "left", limit first stretch;
+        // to align "right", limit last stretch
         QHBoxLayout* boxLayout = (QHBoxLayout*) layout;
         boxLayout->removeItem(layout->itemAt(0));
         boxLayout->removeItem(layout->itemAt(layout->count() - 1));
@@ -1233,7 +1233,7 @@ void _Internal_QContainer::setRegionHorizontalAlignment(GContainer::Region regio
 void _Internal_QContainer::setRegionStretch(GContainer::Region region, bool stretch) {
     _regionStretchMap[region] = stretch;
 
-    // 拉伸/取消拉伸该区域中的所有控件
+    // stretch / de-stretch any widgets in that region
 
 }
 
@@ -1251,8 +1251,8 @@ void _Internal_QContainer::setRegionVerticalAlignment(GContainer::Region region,
     }
 
     if (layout == _westLayout || layout == _eastLayout) {
-        // 若要顶部对齐，限制第一个伸缩项；
-        // 若要底部对齐，限制最后一个伸缩项
+        // to align "top", limit first stretch;
+        // to align "bottom", limit last stretch
         QVBoxLayout* boxLayout = (QVBoxLayout*) layout;
         boxLayout->removeItem(layout->itemAt(0));
         boxLayout->removeItem(layout->itemAt(layout->count() - 1));
@@ -1261,7 +1261,7 @@ void _Internal_QContainer::setRegionVerticalAlignment(GContainer::Region region,
         boxLayout->insertStretch(0, beforeStretch);
         boxLayout->addStretch(afterStretch);
     } else if (layout == _northLayout || layout == _southLayout || layout == _centerLayout) {
-        // 分别设置每个控件的垂直对齐方式
+        // set each widget's vertical alignment individually
         Qt::Alignment qtAlign = toQtAlignment(valign);
         QSizePolicy::Policy vSizePolicy = ((qtAlign & Qt::AlignJustify) != 0) ? QSizePolicy::Expanding : QSizePolicy::Preferred;
         for (int i = 0; i < layout->count(); i++) {
@@ -1271,8 +1271,8 @@ void _Internal_QContainer::setRegionVerticalAlignment(GContainer::Region region,
             }
             layout->setAlignment(widget, qtAlign);
             widget->setSizePolicy(
-                    /* 水平 */ widget->sizePolicy().horizontalPolicy(),
-                    /* 垂直 */   vSizePolicy);
+                    /* horizontal */ widget->sizePolicy().horizontalPolicy(),
+                    /* vertical */   vSizePolicy);
         }
     }
 
@@ -1298,7 +1298,7 @@ void _Internal_QContainer::setSpacing(int spacing) {
 void _Internal_QContainer::setVerticalAlignment(VerticalAlignment valign) {
     switch (_layoutType) {
         case GContainer::LAYOUT_FLOW_HORIZONTAL: {
-            // 分别设置每个控件的垂直对齐方式
+            // set each widget's vertical alignment individually
             QVBoxLayout* layout = (QVBoxLayout*) getQLayout();
             Qt::Alignment qtAlign = toQtAlignment(valign);
             for (int i = 1; i < layout->count() - 1; i++) {
@@ -1311,27 +1311,27 @@ void _Internal_QContainer::setVerticalAlignment(VerticalAlignment valign) {
             break;
         }
         case GContainer::LAYOUT_FLOW_VERTICAL: {
-            // 若要左对齐，限制第一个伸缩项；
-            // 若要右对齐，限制最后一个伸缩项
+            // to align "left", limit first stretch;
+            // to align "right", limit last stretch
             QVBoxLayout* layout = (QVBoxLayout*) getQLayout();
             if (layout->count() >= 2) {
                 layout->removeItem(layout->itemAt(0));
                 layout->removeItem(layout->itemAt(layout->count() - 1));
             }
             if (valign == ALIGN_TOP) {
-                layout->insertStretch(0, /* 伸缩项 */ 0);
-                layout->addStretch(/* 伸缩项 */ 99);
+                layout->insertStretch(0, /* stretch */ 0);
+                layout->addStretch(/* stretch */ 99);
             } else if (valign == ALIGN_BOTTOM) {
-                layout->insertStretch(0, /* 伸缩项 */ 99);
-                layout->addStretch(/* 伸缩项 */ 0);
+                layout->insertStretch(0, /* stretch */ 99);
+                layout->addStretch(/* stretch */ 0);
             } else {   // halign == ALIGN_MIDDLE
-                layout->insertStretch(0, /* 伸缩项 */ 99);
-                layout->addStretch(/* 伸缩项 */ 99);
+                layout->insertStretch(0, /* stretch */ 99);
+                layout->addStretch(/* stretch */ 99);
             }
             break;
         }
         case GContainer::LAYOUT_GRID: {
-            // 分别设置每个控件的垂直对齐方式
+            // set each widget's vertical alignment individually
             QGridLayout* layout = (QGridLayout*) getQLayout();
             Qt::Alignment qtAlign = toQtAlignment(valign);
             for (int i = 0; i < layout->count(); i++) {
@@ -1344,7 +1344,7 @@ void _Internal_QContainer::setVerticalAlignment(VerticalAlignment valign) {
             break;
         }
         case GContainer::LAYOUT_BORDER: {
-            // - 在对齐映射中设置所有区域的对齐方式
+            // - set align of ALL regions in align map
             setRegionVerticalAlignment(GContainer::REGION_CENTER, valign);
             setRegionVerticalAlignment(GContainer::REGION_NORTH, valign);
             setRegionVerticalAlignment(GContainer::REGION_SOUTH, valign);

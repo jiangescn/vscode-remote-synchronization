@@ -1,20 +1,20 @@
 /*
- * 文件：console.cpp
+ * File: console.cpp
  * -----------------
- * 此文件实现 console .h 接口。
+ * This file implements the console .h interface.
  *
  * @author Marty Stepp
  * @version 2019/04/12
- * - 在无界面模式中添加 pause() 实现（空实现）
+ * - added pause() implementation (empty) in headless mode
  * @version 2018/11/22
- * - 添加无界面模式支持
+ * - added headless mode support
  * @version 2018/10/01
- * - 修复即使未包含图形控制台也会弹出的错误
+ * - bug fix for graphical console popping up even if not included
  * @version 2018/08/23
- * - 重命名为 console .cpp/h，以替代 Java 版本
- * - 将 gconsolewindow.h/cpp 独立拆分
+ * - renamed to console .cpp/h to replace Java version
+ * - separated out gconsolewindow.h/cpp
  * @version 2018/07/15
- * - 初始版本，基于 io/console .cpp
+ * - initial version, based on io/console .cpp
  */
 
 #include "consoletext.h"
@@ -26,15 +26,15 @@
 #include "gthread.h"
 #include "private/static.h"
 
-// 可以通过显式调用 setConsoleBlah 覆盖默认值
-static const int DEFAULT_X = -1, DEFAULT_Y = -1; // 将居中
+// Default can be overridden with explicit call to setConsoleBlah
+static const int DEFAULT_X = -1, DEFAULT_Y = -1; // will center
 static const int DEFAULT_WIDTH = 900, DEFAULT_HEIGHT = 500;
 static const bool DEFAULT_ECHO = true, DEFAULT_EXIT_ON_CLOSE = true;
 
 #ifdef SPL_HEADLESS_MODE
 
 void clearConsole() {
-    // 空
+    // empty
 }
 
 bool getConsoleClearEnabled() {
@@ -85,64 +85,64 @@ std::string getConsoleWindowTitle() {
     return "";
 }
 
-void pause(double /*毫秒*/) {
-    // 空
+void pause(double /*milliseconds*/) {
+    // empty
 }
 
-void setConsoleClearEnabled(bool /*值*/) {
-    // 空
+void setConsoleClearEnabled(bool /*value*/) {
+    // empty
 }
 
 void setConsoleCloseOperation(int /*op*/) {
-    // 空
+    // empty
 }
 
-void setConsoleEcho(bool /*回显*/) {
-    // 空
+void setConsoleEcho(bool /*echo*/) {
+    // empty
 }
 
-void setConsoleEnabled(bool /*已启用*/) {
-    // 空
+void setConsoleEnabled(bool /*enabled*/) {
+    // empty
 }
 
-void setConsoleErrorColor(const std::string& /*颜色*/) {
-    // 空
+void setConsoleErrorColor(const std::string& /*color*/) {
+    // empty
 }
 
 void setConsoleExitProgramOnClose(bool /*exitOnClose*/) {
-    // 空
+    // empty
 }
 
-void setConsoleFont(const std::string& /*字体*/) {
-    // 空
+void setConsoleFont(const std::string& /*font*/) {
+    // empty
 }
 
 void setConsoleLocation(double /*x*/, double /*y*/) {
-    // 空
+    // empty
 }
 
-void setConsoleLocationSaved(bool /*值*/) {
-    // 空
+void setConsoleLocationSaved(bool /*value*/) {
+    // empty
 }
 
-void setConsoleOutputColor(const std::string& /*颜色*/) {
-    // 空
+void setConsoleOutputColor(const std::string& /*color*/) {
+    // empty
 }
 
-void setConsoleSettingsLocked(bool /*值*/) {
-    // 空
+void setConsoleSettingsLocked(bool /*value*/) {
+    // empty
 }
 
-void setConsoleSize(double /*宽度*/, double /*高度*/) {
-    // 空
+void setConsoleSize(double /*width*/, double /*height*/) {
+    // empty
 }
 
-void setConsoleWindowTitle(const std::string& /*标题*/) {
-    // 空
+void setConsoleWindowTitle(const std::string& /*title*/) {
+    // empty
 }
 
 void shutdownConsole() {
-    // 空
+    // empty
 }
 
 #else // SPL_HEADLESS_MODE
@@ -295,8 +295,8 @@ void shutdownConsole() {
 #endif // SPL_HEADLESS_MODE
 
 /*
- * 设置控制台选项，例如窗口大小、位置、关闭时退出等。
- * 恢复为默认值
+ * Sets up console settings like window size, location, exit-on-close, etc.
+ * to default values
  */
 void setConsolePropertiesQt() {
 
@@ -308,20 +308,20 @@ void setConsolePropertiesQt() {
 
 void initializeQtGraphicalConsole() {
 #ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-    // 确保控制台只初始化一次
+    // ensure that console is initialized only once
     static bool _initialized = false;
     if (_initialized) {
         return;
     }
     _initialized = true;
 
-    // 声明此对象可确保 std::cin、cout、cerr 已初始化
-    // 在库尝试处理/重定向之前正确初始化它们
+    // declaring this object ensures that std::cin, cout, cerr are initialized
+    // properly before our lib tries to mess with them / redirect them
     static std::ios_base::Init ios_base_init;
 
 #ifndef SPL_HEADLESS_MODE
     if (GConsoleWindow::consoleEnabled()) {
-        GConsoleWindow::instance();   // 确保控制台窗口已就绪
+        GConsoleWindow::instance();   // ensure that console window is ready
         setConsolePropertiesQt();
     }
 #endif // SPL_HEADLESS_MODE

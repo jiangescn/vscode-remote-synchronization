@@ -1,14 +1,14 @@
 /*
- * 文件：gclipboard.h
+ * File: gclipboard.h
  * ------------------
  *
  * @author Marty Stepp
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gclipboard.h，以替代 Java 版本
+ * - renamed to gclipboard.h to replace Java version
  * @version 2018/07/19
- * - 初始版本
+ * - initial version
  */
 
 
@@ -19,42 +19,42 @@
 #include <string>
 
 /**
- * GClipboard 类包含可用于获取和设置的静态方法
- * 系统剪贴板的内容。
+ * The GClipboard class contains static methods you can use to get and set
+ * the contents of the system clipboard.
  */
 class GClipboard {
 public:
     /**
-     * 返回系统剪贴板的当前内容。
+     * Returns the current contents of the system clipboard.
      */
     static std::string get();
 
     /**
-     * 如果给定事件表示“复制”操作，则返回 true。
-     * @throw 如果事件为空，则抛出 ErrorException
+     * Returns true if the given event represents a "copy" operation.
+     * @throw ErrorException if the event is null
      */
     static bool isCopy(QKeyEvent* event);
 
     /**
-     * 如果给定事件表示“剪切”操作，则返回 true。
-     * @throw 如果事件为空，则抛出 ErrorException
+     * Returns true if the given event represents a "cut" operation.
+     * @throw ErrorException if the event is null
      */
     static bool isCut(QKeyEvent* event);
 
     /**
-     * 如果给定事件表示“粘贴”操作，则返回 true。
-     * @throw 如果事件为空，则抛出 ErrorException
+     * Returns true if the given event represents a "paste" operation.
+     * @throw ErrorException if the event is null
      */
     static bool isPaste(QKeyEvent* event);
 
     /**
-     * 设置系统剪贴板以存储给定文本。
-     * 等价于“复制”操作。
+     * Sets the system clipboard to store the given text.
+     * Equivalent to a "copy" operation.
      */
     static void set(const std::string& text);
 
 private:
-    GClipboard();   // 阻止构造
+    GClipboard();   // prevent construction
 };
 
 #endif // _gclipboard_h

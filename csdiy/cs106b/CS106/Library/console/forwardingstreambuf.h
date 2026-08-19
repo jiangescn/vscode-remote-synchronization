@@ -1,12 +1,12 @@
 /*
- * 文件：forwardingstreambuf.h
+ * File: forwardingstreambuf.h
  * ---------------------------
- * 此文件定义 <code>ForwardingStreambuf</code> 类，该类
- * 表示一个仅包装另一个流缓冲区的流缓冲区。
- * 这主要用于将 cout 和 cerr 合并到同一个输出目标。
+ * This file defines the <code>ForwardingStreambuf</code> class, which
+ * represents a stream buffer that just wraps another stream buffer.
+ * We mostly use this to merge cout and cerr into a single output target.
  *
  * @version 2016/10/04
- * - 初始版本
+ * - initial version
  */
 
 #ifndef _forwardingstreambuf_h
@@ -21,8 +21,8 @@
 
 namespace stanfordcpplib {
 /*
- * 仅“包装”另一个流缓冲区的流缓冲区。
- * 这里用它来区分 cout（黑色文本）与 cerr（红色文本）。
+ * A stream buffer that just "wraps" another stream buffer.
+ * This is used here to distinguish cout (black text) from cerr (red text).
  */
 class ForwardingStreambuf : public std::streambuf {
 private:
@@ -32,7 +32,7 @@ private:
 public:
     ForwardingStreambuf(ConsoleStreambuf& del, bool err = false)
             : delegate(del), isStderr(err) {
-        // 空
+        // empty
     }
 
     virtual bool isBlocked() {
@@ -59,8 +59,8 @@ public:
         return delegate.underflow();
     }
 
-    // 为完整性而重写以下函数，
-    // 但都只是委托给底层 ConsoleStreambuf
+    // functions below are overridden for completeness,
+    // but all just delegate to underlying ConsoleStreambuf
     virtual std::streamsize in_avail() {
         return delegate.in_avail();
     }

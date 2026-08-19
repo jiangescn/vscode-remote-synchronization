@@ -1,9 +1,9 @@
 /*
- * 文件：require.h
+ * File: require.h
  * ---------------
  *
- * 此文件包含用于在
- * Stanford C++ 库自身的代码。
+ * This file contains assertion functions for argument checking within the
+ * code of the Stanford C++ library itself.
  */
 
 
@@ -34,6 +34,6 @@ void positive(double value, const std::string& caller = "", const std::string& v
 void positive(int value, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
 void require(bool test, const std::string& caller = "", const std::string& details = "");
 
-} // 命名空间 require
+} // namespace require
 
 #endif // _require_h

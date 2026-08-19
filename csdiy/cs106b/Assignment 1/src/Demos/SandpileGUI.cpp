@@ -31,16 +31,16 @@ namespace {
     const double kFontHeight = 24;
 
 
-    /* 帧之间的暂停时间。 */
+    /* Time to pause between frames. */
     const double kPauseTime = 100;
 
-    /* 世界内边距。 */
+    /* World padding. */
     const double kPadding = 30;
 
-    /* 最大单元格尺寸。 */
+    /* Maximum cell size. */
     const double kMaxCellSize = 10;
 
-    /* 世界尺寸。 */
+    /* World sizes. */
     const vector<string> kSizeClasses = {
         "Tiny",
         "Small",
@@ -49,7 +49,7 @@ namespace {
         "Huge"
     };
 
-    /* 尺寸类别。 */
+    /* Size classes. */
     const HashMap<string, pair<int, int>> kSizes = {
         { "Tiny",   {  15,  15 } },
         { "Small",  {  31,  31 } },
@@ -58,7 +58,7 @@ namespace {
         { "Huge",   { 255, 255 } },
     };
 
-    /* 背景色和单元格颜色。 */
+    /* Background color and cell colors. */
     const string kBackgroundColor = "#727472"; // Nickel
     const Vector<string> kColors = {
         "#000000",
@@ -73,7 +73,7 @@ namespace {
     };
 
     Geometry geometryFor(const Grid<int>& world, GWindow& window) {
-        /* 计算缩放到窗口宽度和高度所需的缩放因子。 */
+        /* Computing the scaling factors needed to scale to the window width and window height. */
         double width  = window.getCanvasWidth()  - 2 * kPadding;
         double height = window.getCanvasHeight() - 2 * kPadding;
 
@@ -81,7 +81,7 @@ namespace {
         double scaleY = height / world.numRows();
         double scale = min({ scaleX, scaleY, kMaxCellSize });
 
-        /* 根据缩放比例计算基础 x 和 y。 */
+        /* Compute base x and y based on the scale. */
         double baseX = kPadding + (width  - world.numCols() * scale) / 2.0;
         double baseY = kPadding + (height - world.numRows() * scale) / 2.0;
 
@@ -92,13 +92,13 @@ namespace {
     }
 
     void drawWorld(const Grid<int>& world, GWindow& window) {
-        /* 清空整个显示区域。 */
+        /* Clear the entire display. */
         window.setColor(kBackgroundColor);
         window.fillRect(0, 0, window.getCanvasWidth(), window.getCanvasHeight());
 
         auto g = geometryFor(world, window);
 
-        /* 优化：不绘制空单元格。 */
+        /* Optimization: Don't draw empty cells. */
         window.setColor(kColors[0]);
         window.fillRect(g.baseX, g.baseY, world.numCols() * g.cellSize, world.numRows() * g.cellSize);
 
@@ -107,7 +107,7 @@ namespace {
 
         for (int row = 0; row < world.numRows(); row++) {
             for (int col = 0; col < world.numCols(); col++) {
-                /* 优化：不绘制空单元格。 */
+                /* Optimization: don't draw empty cells. */
                 if (world[row][col] == 0) continue;
 
                 double x = col * g.cellSize + g.baseX;
@@ -121,20 +121,20 @@ namespace {
         }
     }
 
-    /* 在数字字符串中插入逗号。 */
+    /* Inserts commas into a numeric string. */
     string addCommasTo(int val) {
         string asStr = to_string(val);
         const int length = int(asStr.length());
 
         string result;
         for (int i = 0; i < length; i++) {
-            /* 从源字符串末尾向前遍历，以确定逗号应放在何处
-             * 会简单得多。
+            /* Run backwards through the source string so determining where commas go
+             * becomes a lot easier.
              */
             result = asStr[length - 1 - i] + result;
 
-            /* 若已添加三个字符但尚未
-             * 即将用完所有数字。
+            /* Put commas in provided we've already added three characters, but aren't
+             * about to use all the digits up.
              */
             if (i % 3 == 2 && i < length - 1) {
                 result = ',' + result;
@@ -143,7 +143,7 @@ namespace {
         return result;
     }
 
-    /* 渲染说明已投放沙粒数量的图例。 */
+    /* Renders a legend describing how many grains of sand have been dropped. */
     void drawLegend(int grainsDropped, GWindow& window) {
         GRectangle bounds {
             0, window.getCanvasHeight() - kFontHeight,
@@ -158,7 +158,7 @@ namespace {
         render->draw(window);
     }
 
-    /* 用于可视化不断增长沙堆的问题处理程序。 */
+    /* Problem handler for visualizing a growing sandpile. */
     class SandpileGUI: public ProblemHandler {
     public:
         SandpileGUI(GWindow& window);
@@ -169,34 +169,34 @@ namespace {
         void repaint() override;
 
     private:
-        /* 世界的当前状态。 */
+        /* Current state of the world. */
         Grid<int> world;
 
-        /* 用于驱动操作的计时器。 */
+        /* Timer to drive things. */
         unique_ptr<GTimer> timer;
 
-        /* 用于控制世界大小的按钮。 */
+        /* Buttons to control the world size. */
         Temporary<GLabel> sizeLabel;
         vector<Temporary<GButton>> sizeButtons;
 
-        /* 用于控制速度的滑块。 */
+        /* Slider to control speed. */
         Temporary<GLabel> speedLabel;
         Temporary<GSlider> speedControl;
 
-        /* 我们已经投放的沙粒数量。 */
+        /* How many grains of sand we've dropped. */
         int grainsDropped = 0;
     };
 
     SandpileGUI::SandpileGUI(GWindow& window) : ProblemHandler(window) {
         world.resize(kSizes["Medium"].first, kSizes["Medium"].second);
 
-        /* 尺寸按钮。 */
+        /* Size buttons. */
         sizeLabel = Temporary<GLabel>(new GLabel("World Size: "), window, "SOUTH");
         for (const auto& size: kSizeClasses) {
             sizeButtons.emplace_back(new GButton(size), window, "SOUTH");
         }
 
-        /* 速度控制。 */
+        /* Speed control. */
         speedLabel = Temporary<GLabel>(new GLabel("Drop rate: "), window, "SOUTH");
         GSlider* slider = new GSlider(0, kAdvanceRates.size() - 1, 0);
         slider->setPaintTicks(true);
@@ -212,7 +212,7 @@ namespace {
     }
 
     void SandpileGUI::actionPerformed(GObservable* source) {
-        /* 如果来源是我们的某个按钮，则更改世界大小。 */
+        /* If the source is one of our buttons, change the world size. */
         auto itr = find(sizeButtons.begin(), sizeButtons.end(), source);
         if (itr != sizeButtons.end()) {
             auto size = kSizes[(*itr)->getText()];

@@ -1,12 +1,12 @@
 /*
- * 文件：gtypes.cpp
+ * File: gtypes.cpp
  * ----------------
- * 此文件实现 gtypes.h 接口中的类。
+ * This file implements the classes in the gtypes.h interface.
  *
  * @version 2019/05/16
- * - 为 GRectangle 添加 contains(GRectangle)、intersects
+ * - added GRectangle contains(GRectangle), intersects
  * @version 2018/07/14
- * - 初始版本，基于 gtypes.cpp
+ * - initial version, based on gtypes.cpp
  */
 
 #include "gtypes.h"
@@ -20,17 +20,17 @@
 #include "strlib.h"
 
 /*
- * 实现说明：GDimension 类
+ * Implementation notes: GDimension class
  * --------------------------------------
- * GDimension 类本身完全简单明了。
- * 关系运算符先比较宽度，再比较高度。
- * hashCode 函数计算各个字的异或值。
+ * The GDimension class itself is entirely straightforward.  The
+ * relational operators compare the width first, followed by the height.
+ * The hashCode function computes the exclusive-or of the individual words.
  */
 
 GDimension::GDimension(double w, double h)
         : width(w),
           height(h) {
-    // 空
+    // empty
 }
 
 GDimension::GDimension() : GDimension(0, 0) {}
@@ -140,17 +140,17 @@ VerticalAlignment toVerticalAlignment(const std::string& alignmentStr) {
 }
 
 /*
- * 实现说明：GPoint 类
+ * Implementation notes: GPoint class
  * ----------------------------------
- * GPoint 类本身完全简单明了。关系
- * 运算符先比较 x 分量，再比较 y 分量。
- * hashCode 函数计算各个字的异或值。
+ * The GPoint class itself is entirely straightforward.  The relational
+ * operators compare the x components first, followed by the y component.
+ * The hashCode function computes the exclusive-or of the individual words.
  */
 
 GPoint::GPoint(double xVal, double yVal)
         : x(xVal),
           y(yVal) {
-    // 空
+    // empty
 }
 
 GPoint::GPoint() : GPoint(0, 0) {}
@@ -199,12 +199,12 @@ int hashCode(const GPoint& pt) {
 }
 
 /*
- * 实现说明：GRectangle 类
+ * Implementation notes: GRectangle class
  * --------------------------------------
- * GRectangle 类本身完全简单明了。
- * 关系运算符按以下顺序比较各分量：
- * x、y、宽度、高度。hashCode 函数计算异或值
- * 各个单词。
+ * The GRectangle class itself is entirely straightforward.  The
+ * relational operators compare the components in the following order:
+ * x, y, width, height.  The hashCode function computes the exclusive-or
+ * of the individual words.
  */
 
 GRectangle::GRectangle(double xVal, double yVal, double w, double h)
@@ -212,7 +212,7 @@ GRectangle::GRectangle(double xVal, double yVal, double w, double h)
           y(yVal),
           width(w),
           height(h) {
-    // 空
+    // empty
 }
 
 GRectangle::GRectangle(double xVal, double yVal, const GDimension& size)
@@ -220,7 +220,7 @@ GRectangle::GRectangle(double xVal, double yVal, const GDimension& size)
           y(yVal),
           width(size.width),
           height(size.height) {
-    // 空
+    // empty
 }
 
 GRectangle::GRectangle(const GPoint& p, double w, double h)
@@ -228,7 +228,7 @@ GRectangle::GRectangle(const GPoint& p, double w, double h)
           y(p.y),
           width(w),
           height(h) {
-    // 空
+    // empty
 }
 
 GRectangle::GRectangle(const GPoint& p, const GDimension& size)
@@ -236,7 +236,7 @@ GRectangle::GRectangle(const GPoint& p, const GDimension& size)
           y(p.y),
           width(size.width),
           height(size.height) {
-    // 空
+    // empty
 }
 
 bool GRectangle::contains(double x, double y) const {
@@ -259,11 +259,11 @@ GRectangle GRectangle::enlargedBy(double amount) {
 }
 
 bool GRectangle::intersects(const GRectangle& other) const {
-    // 检查 x 坐标不相交的情况
-    return !(x + width < other.x            // 它完全位于 other 左侧
-          || x > other.x + other.width      // 它完全位于 other 右侧
-          || y + height < other.y           // 它完全位于 other 上方
-          || y > other.y + other.height);   // 它完全位于 other 下方
+    // check for non-intersecting x coordinates
+    return !(x + width < other.x            // this is entirely left of other
+          || x > other.x + other.width      // this is entirely right of other
+          || y + height < other.y           // this is entirely above other
+          || y > other.y + other.height);   // this is entirely below other
 }
 
 bool GRectangle::isEmpty() const {

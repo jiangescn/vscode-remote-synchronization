@@ -1,7 +1,7 @@
 /*
- * 文件：timer.cpp
+ * File: timer.cpp
  * ---------------
- * timer.h 中声明的 Timer 类的实现。
+ * Implementation of the Timer class as declared in timer.h.
  */
 
 #include "timer.h"
@@ -33,7 +33,7 @@ void Timer::start() {
 long Timer::stop() {
     _stopMS = currentTimeMS();
     if (!_isStarted) {
-        // error("计时器未启动");
+        // error("Timer is not started");
         _startMS = _stopMS;
     }
     _isStarted = false;

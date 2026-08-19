@@ -3,7 +3,7 @@
 #include <string>
 
 namespace MiniGUI {
-    /* 可用字体族。 */
+    /* Families of available fonts. */
     enum class FontFamily {
         SERIF,
         SANS_SERIF,
@@ -13,7 +13,7 @@ namespace MiniGUI {
         UNICODE_MONOSPACE
     };
 
-    /* 字体样式。 */
+    /* Font styles. */
     enum class FontStyle {
         NORMAL,
         BOLD,
@@ -21,22 +21,22 @@ namespace MiniGUI {
         BOLD_ITALIC
     };
 
-    /* 表示带样式字体的类型，由字体、字体效果和
-     * 字号和字体颜色。
+    /* Type representing a styled font, a combination of a font, font effects,
+     * font size, and font color.
      *
-     * 考虑到跨平台环境下某些字体可能不受支持，或
-     * 某些字体需要满足特定要求，而渲染这些字体的代码
-     * 文本应使用此类型，以确保运行时不产生警告。
+     * Due to cross-platform concerns with certain fonts not being supported or
+     * certain fonts being needed to meet certain requirements, code that renders
+     * text should use this type to ensure no warnings are generated at runtime.
      *
-     * 此类型不可变。
+     * This type is immutable.
      */
     class Font {
     public:
-        /* 默认字体设置。 */
+        /* Default font settings. */
         Font();
         Font(FontFamily family, FontStyle style, int size, const std::string& color);
 
-        /* 访问属性，或生成具有指定属性的新字体。 */
+        /* Access attributes, or produce a new font with the specified property. */
         FontFamily family() const;
         Font family(FontFamily family) const;
 
@@ -49,9 +49,9 @@ namespace MiniGUI {
         std::string color() const;
         Font color(const std::string& color) const;
 
-        /* 原始字体字符串，用于与 StanfordCPPLib 通信。此字符串
-         * 主要用于与 MiniGUI 中其他类型通信，并且
-         * 不供客户端使用。
+        /* Raw font string, used for communication with StanfordCPPLib. This
+         * is primarily for communication with other types in MiniGUI and is
+         * not meant to be used by the client.
          */
         std::string stanfordCPPLibFontString() const;
 

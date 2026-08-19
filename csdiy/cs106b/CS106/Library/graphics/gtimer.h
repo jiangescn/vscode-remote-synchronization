@@ -1,14 +1,14 @@
 /*
- * 文件：gtimer.h
+ * File: gtimer.h
  * --------------
- * 此文件定义 <code>GTimer</code> 类，该类实现一个
- * 通用间隔计时器。
+ * This file defines the <code>GTimer</code> class, which implements a
+ * general interval timer.
  *
  * @version 2019/01/23
- * - 添加析构函数
+ * - added destructor
  * @version 2018/09/09
- * - 更新以使用新的 Qt GUI 计时器接口
- * - 添加用于生成新文档的文档注释
+ * - updated to use new Qt GUI timer interface
+ * - added doc comments for new documentation generation
  */
 
 
@@ -18,68 +18,68 @@
 #include <string>
 
 /**
- * 此类实现了一个简单的间隔计时器，可生成
- * 具有指定频率的 <code>GTimerEvent</code>。
+ * This class implements a simple interval timer that generates a
+ * <code>GTimerEvent</code> with a specified frequency.
  */
 class GTimer {
 public:
     /**
-     * 创建生成 <code>GTimerEvent</code> 的计时器对象
-     * 每当经过指定毫秒数时。不会
-     * 在客户端调用 <code>start</code> 前不会生成事件
-     * 在计时器上。
+     * Creates a timer object that generates a <code>GTimerEvent</code>
+     * each time the specified number of milliseconds has elapsed.  No
+     * events are generated until the client calls <code>start</code>
+     * on the timer.
      *
-     * 由于实现细节，必须至少创建一个 GWindow
-     * 在 start() GTimer 对象之前。
+     * Due to implementation details, you must create at least one GWindow
+     * before you can start() a GTimer object.
      *
-     * @throw 如果 milliseconds 为负，则抛出 ErrorException
+     * @throw ErrorException if milliseconds is negative
      */
     GTimer(double milliseconds);
 
     /**
-     * 销毁计时器；如果它当前正在运行，则将其停止。
+     * Destroys the timer, stopping it if it's currently running.
      */
     ~GTimer();
 
     /**
-     * 返回此计时器每次滴答之间的延迟毫秒数。
+     * Returns the delay in milliseconds between each tick of this timer.
      */
     double getDelay() const;
 
     /**
-     * 方法：isStarted
-     * 用法：if (timer.isStarted()) { ... }
+     * Method: isStarted
+     * Usage: if (timer.isStarted()) { ... }
      * -------------------------------------
-     * 如果给定计时器已通过 start() 启动，则返回 true。
-     * 如果停止计时器或尚未启动它，
-     * 此方法将返回 false。
+     * Returns true if the given timer has been started (via start()).
+     * If you stop the timer or have not started it yet,
+     * this method will return false.
      */
     bool isStarted() const;
 
     /**
-     * 停止计时器（如果已启动），然后重新启动。
+     * Stops the timer (if it was started) and then starts it again.
      */
     void restart();
 
     /**
-     * 更改此计时器每次滴答之间的毫秒延迟。
-     * 如果计时器当前正在运行，调用此方法会停止
-     * 并以新延迟重新启动计时器。
+     * Changes the delay in milliseconds between each tick of this timer.
+     * If the timer is currently running, calling this method will stop
+     * and restart the timer with the new delay.
      *
-     * @throw 如果 milliseconds 为负，则抛出 ErrorException
+     * @throw ErrorException if milliseconds is negative
      */
     void setDelay(double ms);
 
     /**
-     * 启动计时器。计时器会持续生成计时器事件，直到
-     * 停止；要实现单次计时器效果，最简单的方式
-     * 方法是在事件内部调用 <code>stop</code> 方法
-     * 处理程序。
+     * Starts the timer.  A timer continues to generate timer events until it
+     * is stopped; to achieve the effect of a one-shot timer, the simplest
+     * approach is to call the <code>stop</code> method inside the event
+     * handler.
      */
     void start();
 
     /**
-     * 停止计时器，使其停止生成事件，直到再次启动。
+     * Stops the timer so that it stops generating events until it is restarted.
      */
     void stop();
 

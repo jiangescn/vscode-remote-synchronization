@@ -2,45 +2,45 @@
 using namespace std;
 
 MyOptionalHashTable::MyOptionalHashTable(HashFunction<string> hashFn) {
-    /* 可选：删除此注释及下一行，然后实现此函数。 */
+    /* OPTIONAL: Delete this comment and the next line, then implement this function. */
     (void) hashFn;
 }
 
 MyOptionalHashTable::~MyOptionalHashTable() {
-    /* 可选：删除此注释，然后实现此函数。 */
+    /* OPTIONAL: Delete this comment, then implement this function. */
 }
 
 int MyOptionalHashTable::size() const {
-    /* 可选：删除此注释及接下来的几行，然后实现此函数。 */
+    /* OPTIONAL: Delete this comment and the next lines, then implement this function. */
     return -1;
 }
 
 bool MyOptionalHashTable::isEmpty() const {
-    /* 可选：删除此注释及接下来的几行，然后实现此函数。 */
+    /* OPTIONAL: Delete this comment and the next lines, then implement this function. */
     return false;
 }
 
 bool MyOptionalHashTable::insert(const string& elem) {
-    /* 可选：删除此注释及接下来的几行，然后实现此函数。 */
+    /* OPTIONAL: Delete this comment and the next lines, then implement this function. */
     (void) elem;
     return false;
 }
 
 bool MyOptionalHashTable::contains(const string& elem) const {
-    /* 可选：删除此注释及接下来的几行，然后实现此函数。 */
+    /* OPTIONAL: Delete this comment and the next lines, then implement this function. */
     (void) elem;
     return false;
 }
 
 bool MyOptionalHashTable::remove(const string& elem) {
-    /* 可选：删除此注释及接下来的几行，然后实现此函数。 */
+    /* OPTIONAL: Delete this comment and the next lines, then implement this function. */
     (void) elem;
     return false;
 }
 
 void MyOptionalHashTable::printDebugInfo() const {
-    /* 可选：删除此注释并实现此函数。 */
+    /* OPTIONAL: Remove this comment and implement this function. */
 }
 
-/* 可选：在此处下方添加自定义测试用例。 */
+/* OPTIONAL: Add custom test cases below this point. */
 #include "GUI/SimpleTest.h"

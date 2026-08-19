@@ -1,27 +1,27 @@
-/* 共享配置信息。供以下对象使用：
- * 程序驱动代码，不供客户端使用。
+/* Shared configuration information. This is meant for use by the
+ * program drivers and isn't meant to be used by clients.
  */
 
 #pragma once
 
-/* 宏：GRAPHICS_HANDLER("演示名称", GWindow& window) {
+/* Macro: GRAPHICS_HANDLER("Name of demo", GWindow& window) {
  *    ...
  * }
  *
- * 定义一个在图形模式菜单中显示的图形处理程序。
- * 此函数应返回 std::shared_ptr<T> 类型，其中 T 是某种
- * ProblemHandler 的派生类。
+ * Defines a graphics handler that appears in the menu when in graphics mode.
+ * This function should return a std::shared_ptr<T> type, where T is some
+ * derived class of ProblemHandler.
  */
-#define GRAPHICS_HANDLER(name, argument) /* ……某些内部内容…… */
+#define GRAPHICS_HANDLER(name, argument) /* ... something internal ... */
 
-/* 宏：CONSOLE_HANDLER("演示名称") {
+/* Macro: CONSOLE_HANDLER("Name of demo") {
  *    ...
  * }
  *
- * 定义一个在控制台模式菜单中显示的演示。此函数
- * 应按需与 stdin/stdout 交互。
+ * Defines a demo that appears in the menu when in console mode. This function
+ * should interact with stdin/stdout as appropriate.
  */
-#define CONSOLE_HANDLER(name) /* ……某些内部内容…… */
+#define CONSOLE_HANDLER(name) /* ... something internal ... */
 
 
 
@@ -29,7 +29,7 @@
 
 
 
-/***** 此处以下为实现部分 *****/
+/***** Implementation Below This Point *****/
 
 #include <string>
 #include <vector>
@@ -38,23 +38,23 @@
 #include "ProblemHandler.h"
 
 namespace MiniGUI {
-    /* 具名菜单回调函数。 */
+    /* Named menu callback functions. */
     struct MenuOption {
         std::string name;
         std::function<void()> callback;
     };
 
     namespace Config {
-        /* 程序标题。 */
+        /* Title of the program. */
         std::string programTitle();
 
-        /* 菜单选项列表。 */
+        /* List of menu options. */
         std::vector<MenuOption> menuOptions();
 
-        /* 测试用例所使用的文件顺序。 */
+        /* Order of files to use in test cases. */
         std::vector<std::string> testOrder();
 
-        /* 当前是否处于控制台模式。 */
+        /* Whether we're in console mode. */
         bool isConsoleMode();
     }
 

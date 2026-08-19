@@ -1,26 +1,26 @@
 /*
- * 文件：gobjects.h
+ * File: gobjects.h
  * ----------------
- * 此文件导出一个基于
- * 为 ACM Java Graphics 开发的模型。
+ * This file exports a hierarchy of graphical shapes based on
+ * the model developed for the ACM Java Graphics.
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
  * @author Marty Stepp
  * @version 2019/05/05
- * - 添加可预测的 GLine 点顺序
+ * - added predictable GLine point ordering
  * @version 2019/04/23
- * - 修复 Windows 上因 istream 更改导致的从文件加载 GImage 问题
+ * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
- * - 添加直接从 istream 加载 GImage 的支持（htiek）
+ * - added support for loading a GImage directly from istream (htiek)
  * @version 2018/09/14
- * - 添加不透明度支持
- * - 添加 GCanvas 到 GImage 的转换支持
+ * - added opacity support
+ * - added GCanvas-to-GImage conversion support
  * @version 2018/09/08
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gobjects.h，以替代 Java 版本
+ * - renamed to gobjects.h to replace Java version
  * @version 2018/06/30
- * - 初始版本
+ * - initial version
  */
 
 
@@ -43,25 +43,25 @@ class GCompound;
 class GDiffImage;
 
 /**
- * 此类是所有可
- * 显示在图形窗口上。类 <code>GObject</code>
- * 其本身是一个<b><i>抽象类</i></b>，这意味着你不能
- * 不允许直接构造 <code>GObject</code>，而必须
- * 构造其中一个具体子类。
+ * This class is the common superclass of all graphical objects that can
+ * be displayed on a graphical window.  The class <code>GObject</code>
+ * itself is an <b><i>abstract class</i></b>, which means that you are not
+ * allowed to construct a <code>GObject</code> directly but must instead
+ * construct one of the concrete subclasses.
  * <include src="pictures/ClassHierarchies/GObjectHierarchy.html">
  *
- * 大多数图形方法接受指向 <code>GObject</code> 的指针
- * 而不是 <code>GObject</code> 本身。使用以下功能的应用程序
- * 因此，<code>GObject</code> 指针使用箭头运算符
- * 使用 (<code>-&gt;</code>) 将方法应用到对象指针。
- * 有关 <code>GObject</code> 类用法示例，请参阅
- * 各个子类的说明。
+ * Most methods used for graphics take a pointer to a <code>GObject</code>
+ * rather than the <code>GObject</code> itself.  Applications that use
+ * <code>GObject</code> pointers therefore use the arrow operator
+ * (<code>-&gt;</code>) to apply methods to the object pointer.
+ * For examples illustrating the use of the <code>GObject</code> class, see
+ * the descriptions of the individual subclasses.
  */
 class GObject {
 public:
     /**
-     * 可用于各种形状周围轮廓的样式。
-     * 对 GObject 调用 setLineStyle，并传入这些值之一。
+     * Styles that can be used for the outline around various shapes.
+     * Call setLineStyle on a GObject and pass one of these values.
      */
     enum LineStyle {
         LINE_NONE,
@@ -73,568 +73,568 @@ public:
     };
 
     /**
-     * 释放对象的存储空间。
+     * Frees the storage for the object.
      */
     virtual ~GObject();
 
     /**
-     * 若指定点位于对象内部，则返回 <code>true</code>。
+     * Returns <code>true</code> if the specified point is inside the object.
      */
     virtual bool contains(double x, double y) const;
 
     /**
-     * 若指定点位于对象内部，则返回 <code>true</code>。
+     * Returns <code>true</code> if the specified point is inside the object.
      */
     virtual bool contains(const GPoint& pt) const;
 
     /**
-     * 将此对象绘制到给定表面。
-     * 每个 GObject 子类都必须重写此方法。
+     * Draws this object onto the given surface.
+     * Each GObject subclass must override this method.
      * @private
      */
     virtual void draw(QPainter* painter) = 0;
 
     /**
-     * 返回对象右下角的 x/y 坐标。
+     * Returns the x/y coordinates of the bottom/right corner of the object.
      */
     virtual GPoint getBottomRightLocation() const;
 
     /**
-     * 返回对象底部的 <i>y</i> 坐标。
-     * 等价于顶部 y 坐标加对象高度。
+     * Returns the <i>y</i>-coordinate of the bottom of the object.
+     * Equivalent to the top y-coordinate plus the object's height.
      */
     virtual double getBottomY() const;
 
     /**
-     * 返回此对象的边界框，其定义为
-     * 覆盖图形所绘制全部内容的最小矩形。
-     * 此矩形的坐标不一定与以下对象的位置匹配：
-     * 由 <code>getLocation</code> 返回。给定一个 <code>GText</code>
-     * 对象，例如 <code>getLocation</code> 返回坐标
-     * 字符串开始处的基线点；
-     * 相比之下，<code>getBounds</code> 方法返回一个矩形，该矩形
-     * 覆盖字符串占据的整个窗口区域。
+     * Returns the bounding box of this object, which is defined to be the
+     * smallest rectangle that covers everything drawn by the figure.  The
+     * coordinates of this rectangle do not necessarily match the location
+     * returned by <code>getLocation</code>.  Given a <code>GText</code>
+     * object, for example, <code>getLocation</code> returns the coordinates
+     * of the point on the baseline at which the string begins; the
+     * <code>getBounds</code> method, by contrast, returns a rectangle that
+     * covers the entire window area occupied by the string.
      */
     virtual GRectangle getBounds() const;
 
     /**
-     * 返回对象中心的 x/y 坐标。
-     * 等价于左上角加对象尺寸的一半。
+     * Returns the x/y-coordinates of the center of the object.
+     * Equivalent to the top/left plus half the object's size.
      */
     virtual GPoint getCenterLocation() const;
 
     /**
-     * 返回对象中心的 <i>x</i> 坐标。
-     * 等价于左上角加对象宽度的一半。
+     * Returns the <i>x</i>-coordinate of the center of the object.
+     * Equivalent to the top/left plus half the object's width.
      */
     virtual double getCenterX() const;
 
     /**
-     * 返回对象中心的 <i>y</i> 坐标。
-     * 等价于左上角加对象高度的一半。
+     * Returns the <i>y</i>-coordinate of the center of the object.
+     * Equivalent to the top/left plus half the object's height.
      */
     virtual double getCenterY() const;
 
     /**
-     * 返回用于显示此对象的颜色。此颜色
-     * 始终以 <code>"#rrggbb"</code> 形式的字符串返回，
-     * 其中 <code>rr</code>、<code>gg</code> 和 <code>bb</code> 是
-     * 颜色的红、绿、蓝分量，表示为
-     * 两位十六进制值。
+     * Returns the color used to display this object.  This color is
+     * always returned as a string in the form <code>"#rrggbb"</code>,
+     * where <code>rr</code>, <code>gg</code>, and <code>bb</code> are
+     * the red, green, and blue components of the color, expressed as
+     * two-digit hexadecimal values.
      */
     virtual std::string getColor() const;
 
     /**
-     * 返回用于显示此对象填充区域的颜色。
-     * 如果尚未设置，则返回空字符串。
+     * Returns the color used to display the filled region of this object.
+     * If none has been set, returns the empty string.
      */
     virtual std::string getFillColor() const;
 
     /**
-     * 返回此对象的高度，它与以下高度相同
-     * 其边界框。
+     * Returns the height of this object, which is the same as the height
+     * of its bounding box.
      */
     virtual double getHeight() const;
 
     /**
-     * 返回对象的线型，例如实线或虚线。
+     * Returns the object's style such as solid or dashed.
      */
     virtual LineStyle getLineStyle() const;
 
     /**
-     * 返回绘制此对象所用线条的宽度。
-     * @return 默认值为 1
+     * Returns the width of the line used to draw this object.
+     * @return default 1
      */
     virtual double getLineWidth() const;
 
     /**
-     * 返回对象左上角的位置。
+     * Returns the location of the top-left corner of object.
      */
     virtual GPoint getLocation() const;
 
     /**
-     * 返回此对象显示时的不透明度（非透明度），范围从 0.0
-     * （完全透明）到 1.0（完全不透明，默认）。
+     * Returns how opaque (non-transparent) this object will appear from 0.0
+     * (completely transparent) to 1.0 (completely opaque, default).
      */
     virtual double getOpacity() const;
 
     /**
-     * 返回指向包含此对象的 <code>GCompound</code> 的指针
-     * 对象。每个 <code>GWindow</code> 初始化时都包含一个
-     * 与窗口对齐的 <code>GCompound</code>。添加
-     * 向窗口添加对象会将它们添加到该 <code>GCompound</code>，
-     * 这意味着添加到窗口的每个对象都有父对象。
-     * 对顶层 <code>GCompound</code> 调用 <code>getParent</code>
-     * 返回 <code>nullptr</code>。
+     * Returns a pointer to the <code>GCompound</code> that contains this
+     * object.  Every <code>GWindow</code> is initialized to contain a single
+     * <code>GCompound</code> that is aligned with the window.  Adding
+     * objects to the window adds them to that <code>GCompound</code>,
+     * which means that every object you add to the window has a parent.
+     * Calling <code>getParent</code> on the top-level <code>GCompound</code>
+     * returns <code>nullptr</code>.
      */
     virtual GCompound* getParent() const;
 
     /**
-     * 返回对象右侧的 <i>x</i> 坐标。
-     * 等价于左侧 x 坐标加对象宽度。
+     * Returns the <i>x</i>-coordinate of the right side of the object.
+     * Equivalent to the left x-coordinate plus the object's width.
      */
     virtual double getRightX() const;
 
     /**
-     * 以 <code>GDimension</code> 返回对象大小。
+     * Returns the size of the object as a <code>GDimension</code>.
      */
     virtual GDimension getSize() const;
 
     /**
-     * 以字符串返回对象类型，例如
-     * <code>"GOval"</code> 或 <code>"GRect"</code>。
-     * 每个 GObject 子类型都必须重写此方法。
+     * Returns the type of the object as a string, such as
+     * <code>"GOval"</code> or <code>"GRect"</code>.
+     * Each GObject subtype must override this method.
      */
     virtual std::string getType() const = 0;
 
     /**
-     * 返回此对象的宽度，它等于以下对象的宽度
-     * 边界框。
+     * Returns the width of this object, which is equal to the width of
+     * the bounding box.
      */
     virtual double getWidth() const;
 
     /**
-     * 返回对象最左侧的 <i>x</i> 坐标。
+     * Returns the leftmost <i>x</i>-coordinate of the object.
      */
     virtual double getX() const;
 
     /**
-     * 返回对象最上方的 <i>y</i> 坐标。
+     * Returns the topmost <i>y</i>-coordinate of the object.
      */
     virtual double getY() const;
 
     /**
-     * 返回是否应全局对图形对象使用抗锯齿。
-     * 默认开启。
+     * Returns whether we should globally anti-alias graphical objects.
+     * On by default.
      */
     static bool isAntiAliasing();
 
     /**
-     * 如果对象已填充颜色，则返回 <code>true</code>。
+     * Returns <code>true</code> if the object is filled with color.
      */
     virtual bool isFilled() const;
 
     /**
-     * 如果此对象已被变换，则返回 <code>true</code>
-     * 通过调用 rotate() 或 scale() 等方法。
-     * 某些操作（例如 setSize）在以下情况后无法执行：
-     * 图形对象已被变换。
+     * Returns <code>true</code> if this object has been transformed
+     * by calling methods such as rotate() or scale() on it.
+     * Certain operations (such as setSize) cannot be performed after
+     * a graphical object has been transformed.
      */
     virtual bool isTransformed() const;
 
     /**
-     * 如果此对象在屏幕上可见，则返回 <code>true</code>。
+     * Returns <code>true</code> if this object is visible on screen.
      */
     virtual bool isVisible() const;
 
     /**
-     * 使用位移量在屏幕上移动对象
-     * <code>dx</code> 和 <code>dy</code>。
+     * Moves the object on the screen using the displacements
+     * <code>dx</code> and <code>dy</code>.
      */
     virtual void move(double dx, double dy);
 
     /**
-     * 指示对象在屏幕上重绘自身。
+     * Instructs the object to redraw itself on screen.
      */
     virtual void repaint();
 
     /**
-     * 撤销此前对该对象进行的所有缩放/旋转变换。
+     * Undoes any previous scale/rotate transformations on this object.
      */
     virtual void resetTransform();
 
     /**
-     * 将对象旋转 <code>theta</code> 度来变换它
-     * 绕其原点逆时针方向。
-     * 对图形对象调用此方法后，<code>isTransformed</code>
-     * 会为该对象返回 <code>true</code>，除非随后调用
-     * 对其调用 <code>resetTransform</code>。
+     * Transforms the object by rotating it <code>theta</code> degrees
+     * counterclockwise around its origin.
+     * After calling this method on a graphical object, <code>isTransformed</code>
+     * will return <code>true</code> for that object unless you subsequently
+     * call <code>resetTransform</code> on it.
      */
     virtual void rotate(double theta);
 
     /**
-     * 按指定缩放系数缩放对象。此形式
-     * 在两个维度上按 <code>sf</code> 缩放对象，使得
-     * 调用 <code>gobj->scale(2);</code> 会将对象大小加倍。
-     * 对图形对象调用此方法后，<code>isTransformed</code>
-     * 会为该对象返回 <code>true</code>，除非随后调用
-     * 对其调用 <code>resetTransform</code>。
+     * Scales the object by the specified scale factor.  This form
+     * scales the object by <code>sf</code> in both dimensions, so that
+     * invoking <code>gobj->scale(2);</code> doubles the size of the object.
+     * After calling this method on a graphical object, <code>isTransformed</code>
+     * will return <code>true</code> for that object unless you subsequently
+     * call <code>resetTransform</code> on it.
      */
     virtual void scale(double sf);
 
     /**
-     * 按指定缩放系数缩放对象。例如，
-     * <code>gobj->scale(2, 2);</code> 将对象大小加倍。
-     * 此形式分别对 <i>x</i> 和 <i>y</i> 应用独立缩放因子
-     * 尺寸。
-     * 对图形对象调用此方法后，<code>isTransformed</code>
-     * 会为该对象返回 <code>true</code>，除非随后调用
-     * 对其调用 <code>resetTransform</code>。
+     * Scales the object by the specified scale factors.  For example,
+     * <code>gobj->scale(2, 2);</code> doubles the size of the object.
+     * This form applies independent scale factors to the <i>x</i> and <i>y</i>
+     * dimensions.
+     * After calling this method on a graphical object, <code>isTransformed</code>
+     * will return <code>true</code> for that object unless you subsequently
+     * call <code>resetTransform</code> on it.
      */
     virtual void scale(double sx, double sy);
 
     /**
-     * 在 <i>z</i> 维度中将此对象向后移动一步。
-     * 如果它已位于栈的末尾，则不执行任何操作。
+     * Moves this object one step toward the back in the <i>z</i> dimension.
+     * If it was already at the back of the stack, nothing happens.
      */
     void sendBackward();
 
     /**
-     * 在 <i>z</i> 维度中将此对象向前移动一步。
-     * 如果它已位于栈的开头，则不执行任何操作。
+     * Moves this object one step toward the front in the <i>z</i> dimension.
+     * If it was already at the front of the stack, nothing happens.
      */
     void sendForward();
 
     /**
-     * 在 <i>z</i> 维度中将此对象移到显示区域最后面。
-     * 将其移到后面后，该对象会看起来位于其他对象之后
-     * 显示区域中的图形对象，并且可能被其他对象遮挡
-     * 在前面。
+     * Moves this object to the back of the display in the <i>z</i> dimension.
+     * By moving it to the back, this object will appear to be behind the other
+     * graphical objects on the display and may be obscured by other objects
+     * in front.
      */
     void sendToBack();
 
     /**
-     * 在 <i>z</i> 维度中将此对象移到显示区域最前面。
-     * 将其移到前面后，该对象会看起来位于其他对象之上
-     * 显示区域中的其他图形对象，并可能遮住任何
-     * 位于更后方。
+     * Moves this object to the front of the display in the <i>z</i> dimension.
+     * By moving it to the front, this object will appear to be on top of the
+     * other graphical objects on the display and may hide any objects that
+     * are further back.
      */
     void sendToFront();
 
     /**
-     * 全局开启/关闭抗锯齿功能，用于平滑
-     * 屏幕形状的边缘。默认开启。
-     * 调用时不会重绘任何屏幕对象；你必须自行重绘。
+     * Globally turns on/off the anti-aliasing feature that smooths out the
+     * edges of onscreen shapes.  On by default.
+     * Does not repaint any onscreen objects when called; you must do this yourself.
      */
     static void setAntiAliasing(bool value);
 
     /**
-     * 将此对象的边界更改为指定值。
+     * Changes the bounds of this object to the specified values.
      */
     virtual void setBounds(double x, double y, double width, double height);
 
     /**
-     * 将此对象的边界更改为指定矩形。
+     * Changes the bounds of this object to the specified rectangle.
      */
     virtual void setBounds(const GRectangle& size);
 
     /**
-     * 设置此对象底部 y 坐标的位置。
+     * Sets the location of the bottom y-coordinate of this object.
      */
     virtual void setBottomY(double y);
 
     /**
-     * 设置此对象最右侧 x 坐标的位置。
+     * Sets the location of the rightmost x-coordinate of this object.
      */
     virtual void setRightX(double x);
 
     /**
-     * 设置此对象右下角的位置。
+     * Sets the location of the bottom/right of this object.
      */
     virtual void setBottomRightLocation(double x, double y);
 
     /**
-     * 设置此对象右下角的位置。
+     * Sets the location of the bottom/right of this object.
      */
     virtual void setBottomRightLocation(const GPoint& pt);
 
     /**
-     * 设置此对象中心的 x 坐标。
+     * Sets the x-coordinate of the center of this object.
      */
     virtual void setCenterX(double x);
 
     /**
-     * 设置此对象中心的 y 坐标。
+     * Sets the y-coordinate of the center of this object.
      */
     virtual void setCenterY(double y);
 
     /**
-     * 设置此对象中心的位置。
+     * Sets the location of the center of this object.
      */
     virtual void setCenterLocation(double x, double y);
 
     /**
-     * 设置此对象中心的位置。
+     * Sets the location of the center of this object.
      */
     virtual void setCenterLocation(const GPoint& pt);
 
     /**
-     * 设置显示此对象所用的颜色。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
+     * Sets the color used to display this object.
+     * See gcolor.h for more detail about how to specify colors.
      *
-     * 等价于 setForeground。
+     * Equivalent to setForeground.
      *
-     * @param r 0-255 范围内的红色分量
-     * @param g 0-255 范围内的绿色分量
-     * @param b 0-255 范围内的蓝色分量
+     * @param r redness from 0-255
+     * @param g greenness from 0-255
+     * @param b blueness from 0-255
      */
     virtual void setColor(int r, int g, int b);
 
     /**
-     * 设置显示此对象所用的颜色。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
+     * Sets the color used to display this object.
+     * See gcolor.h for more detail about how to specify colors.
      *
-     * 等价于 setForeground。
+     * Equivalent to setForeground.
      *
-     * @param rgb RGB 整数值，例如 0x7700ff
+     * @param rgb an RGB integer value such as 0x7700ff
      */
     virtual void setColor(int rgb);
 
     /**
-     * 设置显示此对象所用的颜色。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
+     * Sets the color used to display this object.
+     * See gcolor.h for more detail about how to specify colors.
      *
-     * 等价于 setForeground。
+     * Equivalent to setForeground.
      *
-     * @param color 颜色字符串，例如 "#7700ff" 或 "purple"
+     * @param color color string such as "#7700ff" or "purple"
      */
     virtual void setColor(const std::string& color);
 
     /**
-     * 设置此对象填充区域的显示颜色（若存在）。
-     * 作为副作用，将此对象设为填充状态（setFilled(true)）。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
-     * 若传入空字符串，则将 filled 设为 false。
+     * Sets the color used to display the filled region of this object, if any.
+     * As a side effect, sets this object to be filled (setFilled(true)).
+     * See gcolor.h for more detail about how to specify colors.
+     * If an empty string is passed, sets filled to false.
      *
-     * @param r 0-255 范围内的红色分量
-     * @param g 0-255 范围内的绿色分量
-     * @param b 0-255 范围内的蓝色分量
+     * @param r redness from 0-255
+     * @param g greenness from 0-255
+     * @param b blueness from 0-255
      */
     virtual void setFillColor(int r, int g, int b);
 
     /**
-     * 设置此对象填充区域的显示颜色（若存在）。
-     * 作为副作用，将此对象设为填充状态（setFilled(true)）。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
+     * Sets the color used to display the filled region of this object, if any.
+     * As a side effect, sets this object to be filled (setFilled(true)).
+     * See gcolor.h for more detail about how to specify colors.
      *
-     * @param rgb RGB 整数值，例如 0x7700ff
+     * @param rgb an RGB integer value such as 0x7700ff
      */
     virtual void setFillColor(int rgb);
 
     /**
-     * 设置此对象填充区域的显示颜色（若存在）。
-     * 作为副作用，将此对象设为填充状态（setFilled(true)）。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
-     * 若传入空字符串，则将 filled 设为 false。
+     * Sets the color used to display the filled region of this object, if any.
+     * As a side effect, sets this object to be filled (setFilled(true)).
+     * See gcolor.h for more detail about how to specify colors.
+     * If an empty string is passed, sets filled to false.
      *
-     * @param color 颜色字符串，例如 "#7700ff" 或 "purple"
+     * @param color color string such as "#7700ff" or "purple"
      */
     virtual void setFillColor(const std::string& color);
 
     /**
-     * 设置对象的填充状态，其中 <code>false</code> 表示
-     * false 表示仅描边，<code>true</code> 表示填充。
+     * Sets the fill status for the object, where <code>false</code> is
+     * outlined and <code>true</code> is filled.
      */
     virtual void setFilled(bool flag);
 
     /**
-     * 按以下内容更改显示对象所用的字体：
-     * 给定的 Qt 字体。
-     * 有关如何指定字体的更多详细信息，请参阅 gfont.h。
+     * Changes the font used to display the object as specified by
+     * the given Qt font.
+     * See gfont.h for more detail about how to specify fonts.
      */
     virtual void setFont(const QFont& font);
 
     /**
-     * 按以下内容更改显示对象所用的字体：
-     * 字符串 <code>font</code>，其格式如下：
+     * Changes the font used to display the object as specified by
+     * the string <code>font</code>, which has the following format:
      *
      * <pre>
-     * "字体族-样式-大小"
+     * "family-style-size"
      * </pre>
      *
-     * 其中 <code>style</code> 和 <code>size</code> 都是可选的。
-     * 若缺少任一元素，或以星号指定，
-     * 保留现有值。
-     * 有关如何指定字体的更多详细信息，请参阅 gfont.h。
+     * where both <code>style</code> and <code>size</code> are optional.
+     * If any of these elements are missing or specified as an asterisk,
+     * the existing value is retained.
+     * See gfont.h for more detail about how to specify fonts.
      */
     virtual void setFont(const std::string& font);
 
     /**
-     * 设置显示此对象所用的颜色。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
+     * Sets the color used to display this object.
+     * See gcolor.h for more detail about how to specify colors.
      *
-     * 等价于 setColor。
+     * Equivalent to setColor.
      *
-     * @param r 0-255 范围内的红色分量
-     * @param g 0-255 范围内的绿色分量
-     * @param b 0-255 范围内的蓝色分量
+     * @param r redness from 0-255
+     * @param g greenness from 0-255
+     * @param b blueness from 0-255
      */
     virtual void setForeground(int r, int g, int b);
 
     /**
-     * 设置显示此对象所用的颜色。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
+     * Sets the color used to display this object.
+     * See gcolor.h for more detail about how to specify colors.
      *
-     * 等价于 setColor。
+     * Equivalent to setColor.
      *
-     * @param rgb RGB 整数值，例如 0x7700ff
+     * @param rgb an RGB integer value such as 0x7700ff
      */
     virtual void setForeground(int rgb);
 
     /**
-     * 设置显示此对象所用的颜色。
-     * 有关指定颜色的方法，请参阅 gcolor.h。
+     * Sets the color used to display this object.
+     * See gcolor.h for more detail about how to specify colors.
      *
-     * 等价于 setColor。
+     * Equivalent to setColor.
      *
-     * @param color 颜色字符串，例如 "#7700ff" 或 "purple"
+     * @param color color string such as "#7700ff" or "purple"
      */
     virtual void setForeground(const std::string& color);
 
     /**
-     * 将此对象的高度更改为指定高度
-     * 而不改变其宽度。
+     * Changes the height of this object to the specified height
+     * without changing its width.
      */
     virtual void setHeight(double height);
 
     /**
-     * 设置对象的线型，例如实线（GObject::LINE_SOLID）或虚线
-     * （GObject::LINE_DASH）。
+     * Sets the object's style such as solid (GObject::LINE_SOLID) or dashed
+     * (GObject::LINE_DASH).
      */
     virtual void setLineStyle(LineStyle lineStyle);
 
     /**
-     * 设置绘制此对象所用线条的宽度。
-     * 默认线宽为 1。
+     * Sets the width of the line used to draw this object.
+     * The default line width is 1.
      */
     virtual void setLineWidth(double lineWidth);
 
     /**
-     * 将此对象左上角的位置设置为
-     * 指定坐标。
+     * Sets the location of the top-left corner of this object to the
+     * specified coordinates.
      */
     virtual void setLocation(double x, double y);
 
     /**
-     * 将此对象左上角的位置设置为
-     * 指定点。
+     * Sets the location of the top-left corner of this object to the
+     * specified point.
      */
     virtual void setLocation(const GPoint& pt);
 
     /**
-     * 设置此对象显示时的不透明度（非透明度），范围从 0.0
-     * （完全透明）到 1.0（完全不透明，默认）。
-     * @throw 如果 opacity 超出 [0.0, 1.0] 范围，则抛出 ErrorException
+     * Sets how opaque (non-transparent) this object will appear from 0.0
+     * (completely transparent) to 1.0 (completely opaque, default).
+     * @throw ErrorException if opacity is out of range [0.0, 1.0]
      */
     virtual void setOpacity(double opacity);
 
     /**
-     * 将此对象大小更改为指定宽度和高度。
+     * Changes the size of this object to the specified width and height.
      */
     virtual void setSize(double width, double height);
 
     /**
-     * 将此对象大小更改为指定宽度和高度。
+     * Changes the size of this object to the specified width and height.
      */
     virtual void setSize(const GDimension& size);
 
     /**
-     * 设置此对象是否可见。
-     * 图形对象创建时默认可见。
+     * Sets whether this object is visible.
+     * Graphical objects are initially visible when created.
      */
     virtual void setVisible(bool flag);
 
     /**
-     * 将此对象的宽度更改为指定宽度
-     * 而不改变其高度。
+     * Changes the width of this object to the specified width
+     * without changing its height.
      */
     virtual void setWidth(double width);
 
     /**
-     * 设置此对象左侧的 x 位置。
+     * Sets the x location of the left side of this object.
      */
     virtual void setX(double x);
 
     /**
-     * 设置此对象顶部的 y 位置。
+     * Sets the y location of the top of this object.
      */
     virtual void setY(double y);
 
     /**
-     * 返回对象的可打印表示形式。
+     * Returns a printable representation of the object.
      */
     virtual std::string toString() const;
 
-// 私有部分
+// Private section
 private:
-    // 禁止对象之间赋值
+    // forbid assignment between objects
     const GObject& operator =(const GObject&) {
         return *this;
     }
 
-    // 禁止复制构造
+    // forbid copy construction
     GObject(const GObject&) {
-        // 空
+        // empty
     }
 
-    // 是否对图形对象启用抗锯齿；默认为 true
+    // whether to anti-alias graphical objects; default true
     static bool _sAntiAliasing;
 
-    /* 实例变量 */
+    /* Instance variables */
 protected:
-    double _x;                       // 原点的 x 坐标
-    double _y;                       // 原点的 y 坐标
-    double _width;                   // 边界矩形的宽度
-    double _height;                  // 边界矩形的高度
-    double _lineWidth;               // 线条的像素宽度
-    double _opacity;                 // 0.0（透明）- 1.0（不透明，默认）
-    LineStyle _lineStyle;            // 线型，例如实线或虚线
-    std::string _color;              // 对象的颜色
+    double _x;                       // the x coordinate of the origin
+    double _y;                       // the y coordinate of the origin
+    double _width;                   // the width of the bounding rectangle
+    double _height;                  // the height of the bounding rectangle
+    double _lineWidth;               // the width of the line in pixels
+    double _opacity;                 // 0.0 (transparent) - 1.0 (opaque, default)
+    LineStyle _lineStyle;            // line style such as solid or dashed
+    std::string _color;              // the color of the object
     int _colorInt;
-    std::string _fillColor;          // 用于填充对象的颜色
+    std::string _fillColor;          // color used to fill the object
     int _fillColorInt;
-    std::string _font;               // 标签的字体字符串
-    bool _fillFlag;                  // 表示对象是否已填充
-    bool _visible;                   // 表示对象是否可见
-    bool _transformed;               // 表示对象是否已变换
-    GCompound* _parent;             // 指向父节点的指针
-    QPen _pen;                       // 用于轮廓
-    QBrush _brush;                   // 用于填充
-    QTransform _transform;           // 用于变换（旋转、缩放）
+    std::string _font;               // the font string of the label
+    bool _fillFlag;                  // indicates whether the object is filled
+    bool _visible;                   // indicates if object is visible
+    bool _transformed;               // indicates if object is transformed
+    GCompound* _parent;             // pointer to the parent
+    QPen _pen;                       // for outlines
+    QBrush _brush;                   // for filling
+    QTransform _transform;           // for transformations (rotate, scale)
 
 protected:
     /**
-     * 在给定位置构造图形对象。
+     * Constructs a graphical object at the given location.
      * @private
      */
     GObject(double x = 0, double y = 0, double width = 0, double height = 0);
 
     /**
-     * 初始化 Qt 画刷和画笔，以使用以下设置绘制此对象
-     * 给定的绘制器。
+     * Initializes the Qt brush and pen to draw this object with
+     * the given painter.
      * @private
      */
     virtual void initializeBrushAndPen(QPainter* painter = nullptr);
 
     /**
-     * 将我们的线型枚举转换为用于绘制的 Qt 画笔样式。
+     * Converts our line style enums into Qt pen styles for drawing.
      * @private
      */
     static Qt::PenStyle toQtPenStyle(LineStyle lineStyle);
 
     /**
-     * 返回包含有关此对象的任何额外唯一信息的字符串
-     * 图形对象的类型。
+     * Returns a string containing any extra unique information about this
+     * type of graphical object.
      */
     virtual std::string toStringExtra() const;
 
@@ -651,34 +651,34 @@ protected:
 };
 
 /**
- * 此图形对象子类表示一段椭圆弧。
- * 弧由以下参数指定：
+ * This graphical object subclass represents an elliptical arc.  The
+ * arc is specified by the following parameters:
  *
  * <p><ul>
- *   <li>边界矩形的坐标（<code>x</code>，
- *       <code>y</code>、<code>width</code>、<code>height</code>）
- *   <li>弧开始的角度（<code>start</code>）
- *   <li>弧覆盖的角度数（<code>sweep</code>）
+ *   <li>The coordinates of the bounding rectangle (<code>x</code>,
+ *       <code>y</code>, <code>width</code>, <code>height</code>)
+ *   <li>The angle at which the arc starts (<code>start</code>)
+ *   <li>The number of degrees that the arc covers (<code>sweep</code>)
  * </ul>
  *
- * <p><code>GArc</code> 描述中的所有角度均以以下方式测量：
- * 从 +<i>x</i> 轴逆时针移动的角度。负数
- * <code>start</code> 或 <code>sweep</code> 的值表示
- * 顺时针方向的运动。
+ * <p>All angles in a <code>GArc</code> description are measured in
+ * degrees moving counterclockwise from the +<i>x</i> axis.  Negative
+ * values for either <code>start</code> or <code>sweep</code> indicate
+ * motion in a clockwise direction.
  * <include src="pictures/GObjectDiagrams/GArcGeometry.html">
  */
 class GArc : public GObject {
 public:
     /**
-     * 创建由椭圆弧组成的新 <code>GArc</code> 对象。
-     * 此形式创建一个原点为 (0, 0) 的 <code>GArc</code>。
+     * Creates a new <code>GArc</code> object consisting of an elliptical arc.
+     * This form creates a <code>GArc</code> whose origin is the point (0, 0).
      */
     GArc(double width = 0, double height = 0, double start = 0, double sweep = 0);
 
     /**
-     * 创建由椭圆弧组成的新 <code>GArc</code> 对象。
-     * 此形式创建一个 <code>GArc</code>，其原点为
-     * （<code>x</code>，<code>y</code>）。
+     * Creates a new <code>GArc</code> object consisting of an elliptical arc.
+     * This form creates a <code>GArc</code> whose origin is the point
+     * (<code>x</code>, <code>y</code>).
      */
     GArc(double x, double y, double width, double height, double start, double sweep);
 
@@ -686,7 +686,7 @@ public:
     bool contains(double x, double y) const override;
 
     /**
-     * 使用给定 Qt 画笔在屏幕上绘制此弧。
+     * Draws this arc on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
@@ -695,27 +695,27 @@ public:
     GRectangle getBounds() const override;
 
     /**
-     * 返回弧结束处的点。
+     * Returns the point at which the arc ends.
      */
     virtual GPoint getEndPoint() const;
 
     /**
-     * 返回用于框定弧的矩形边界。
+     * Returns the boundaries of the rectangle used to frame the arc.
      */
     virtual GRectangle getFrameRectangle() const;
 
     /**
-     * 返回此弧的起始角度（度）。
+     * Returns the starting angle for this arc in degrees.
      */
     virtual double getStartAngle() const;
 
     /**
-     * 返回弧开始处的点。
+     * Returns the point at which the arc starts.
      */
     virtual GPoint getStartPoint() const;
 
     /**
-     * 返回此弧的扫过角度（度）。
+     * Returns the sweep angle for this arc in degrees.
      */
     virtual double getSweepAngle() const;
 
@@ -723,22 +723,22 @@ public:
     std::string getType() const override;
 
     /**
-     * 更改用于框定弧的矩形边界。
+     * Changes the boundaries of the rectangle used to frame the arc.
      */
     virtual void setFrameRectangle(const GRectangle& rect);
 
     /**
-     * 更改用于框定弧的矩形边界。
+     * Changes the boundaries of the rectangle used to frame the arc.
      */
     virtual void setFrameRectangle(double x, double y, double width, double height);
 
     /**
-     * 设置此弧的起始角度（度）。
+     * Sets the starting angle for this arc in degrees.
      */
     virtual void setStartAngle(double start);
 
     /**
-     * 设置此弧的扫过角度（度）。
+     * Sets the sweep angle for this arc in degrees.
      */
     virtual void setSweepAngle(double start);
 
@@ -749,75 +749,75 @@ private:
     virtual bool containsAngle(double theta) const;
     virtual GPoint getArcPoint(double theta) const;
 
-    /* 实例变量 */
-    double _start;                   /* 弧的起始角度       */
-    double _sweep;                   /* 弧跨越的角度数   */
+    /* Instance variables */
+    double _start;                   /* Starting angle of the arc       */
+    double _sweep;                   /* How many degrees the arc runs   */
 };
 
 /**
- * 此图形对象子类由一组其他
- * 图形对象。组装完成后，可以操作内部对象
- * 作为一个整体。复合对象记录自身位置，所有项目
- * 其中的内容相对于该位置绘制。
+ * This graphical object subclass consists of a collection of other
+ * graphical objects.  Once assembled, the internal objects can be manipulated
+ * as a unit.  The compound keeps track of its own position, and all items
+ * within it are drawn relative to that location.
  */
 class GCompound : public GObject {
 public:
     /**
-     * 创建不含内部组件的复合对象。
+     * Creates a compound with no internal components.
      */
     GCompound();
 
     /**
-     * 若该图形对象尚未存在于复合对象中，则将其添加到复合对象
-     * 已存在于复合对象中。
-     * 若对象已存储在此复合对象中，则不产生任何效果。
-     * @throw 如果对象为空，则抛出 ErrorException
+     * Adds a new graphical object to the compound, if that object was not
+     * already present in the compound.
+     * If the object is already stored in this compound, has no effect.
+     * @throw ErrorException if the object is null
      */
     virtual void add(GObject* gobj);
 
     /**
-     * 若该图形对象尚未存在于复合对象中，则将其添加到复合对象
-     * 已存在于复合对象中。
-     * 此形式会先将对象移动到点 (<code>x</code>, <code>y</code>)。
-     * 若对象已存储在此复合对象中，则不产生任何效果。
-     * @throw 如果对象为空，则抛出 ErrorException
+     * Adds a new graphical object to the compound, if that object was not
+     * already present in the compound.
+     * This form moves the object to the point (<code>x</code>, <code>y</code>) first.
+     * If the object is already stored in this compound, has no effect.
+     * @throw ErrorException if the object is null
      */
     virtual void add(GObject* gobj, double x, double y);
 
     /**
-     * 向复合对象添加新的图形对象。
+     * Adds a new graphical object to the compound.
      */
     virtual void add(GObject& gobj);
 
     /**
-     * 若该图形对象尚未存在于复合对象中，则将其添加到复合对象
-     * 已存在于复合对象中。
-     * 此形式会先将对象移动到点 (<code>x</code>, <code>y</code>)。
-     * 若对象已存储在此复合对象中，则不产生任何效果。
+     * Adds a new graphical object to the compound, if that object was not
+     * already present in the compound.
+     * This form moves the object to the point (<code>x</code>, <code>y</code>) first.
+     * If the object is already stored in this compound, has no effect.
      */
     virtual void add(GObject& gobj, double x, double y);
 
     /**
-     * 移除复合对象中的所有图形对象。
-     * 等价于 removeAll。
+     * Removes all graphical objects from the compound.
+     * Equivalent to removeAll.
      */
     virtual void clear();
 
     /**
-     * 仅在 compound 需要重绘时才重绘
-     * （如果其任何内容已发生变化）。
+     * Repaints the compound only if it needs to be repainted
+     * (if any of its contents have changed).
      */
     virtual void conditionalRepaint();
 
     /**
-     * 仅当复合对象需要重绘时，才重绘给定矩形区域
-     * 需要重绘（如果其任何内容已发生变化）。
+     * Repaints the given rectangular region of the compound only if it needs
+     * to be repainted (if any of its contents have changed).
      */
     virtual void conditionalRepaintRegion(int x, int y, int width, int height);
 
     /**
-     * 仅当复合对象需要重绘时，才重绘给定矩形区域
-     * 需要重绘（如果其任何内容已发生变化）。
+     * Repaints the given rectangular region of the compound only if it needs
+     * to be repainted (if any of its contents have changed).
      */
     virtual void conditionalRepaintRegion(const GRectangle& bounds);
 
@@ -825,7 +825,7 @@ public:
    bool contains(double x, double y) const override;
 
     /**
-     * 使用给定画笔绘制此复合对象中存储的所有对象。
+     * Draws all objects stored in this compound using the given painter pen.
      * @private
      */
     void draw(QPainter* painter) override;
@@ -834,20 +834,20 @@ public:
     GRectangle getBounds() const override;
 
     /**
-     * 返回指向指定索引处图形对象的指针，
-     * 在 <i>z</i> 维度中从后向前编号。
-     * @throw 如果索引超出范围，则抛出 ErrorException
+     * Returns a pointer to the graphical object at the specified index,
+     * numbering from back to front in the <i>z</i> dimension.
+     * @throw ErrorException if the index is out of range
      */
     virtual GObject* getElement(int index) const;
 
     /**
-     * 返回指向包含给定位置的第一个图形对象的指针
-     * (x, y) 点；如果此复合对象中没有对象接触该点，则返回空指针。
+     * Returns a pointer to the first graphical object that contains the given
+     * (x, y) point, or a null pointer if no object in this compound touches it.
      */
     virtual GObject* getElementAt(double x, double y) const;
 
     /**
-     * 返回 compound 中存储的图形对象数量。
+     * Returns the number of graphical objects stored in the compound.
      */
     virtual int getElementCount() const;
 
@@ -855,72 +855,72 @@ public:
     std::string getType() const override;
 
     /**
-     * 返回与此 compound 关联的 Qt 控件；若没有则返回空指针
-     * 若此复合对象未与任何控件关联。
-     * 最初，compound 不与任何控件关联，直到
-     * 调用 setWidget 方法。
-     * 客户端通常无需使用此方法。
+     * Returns the Qt widget associated with this compound, or a null pointer
+     * if this compound is not associated with any widget.
+     * Initially a compound is not associated with any widget until the
+     * setWidget method is called.
+     * Clients generally do not need to use this method.
      * @private
      */
     virtual QWidget* getWidget() const;
 
     /**
-     * 返回 compound 在其内容变化时是否自动重绘自身
-     * 内容发生变化。
+     * Returns whether the compound automatically repaints itself when its
+     * contents change.
      */
     virtual bool isAutoRepaint() const;
 
     /**
-     * 如果 compound 不包含任何图形对象，则返回 true。
+     * Returns true if the compound does not contain any graphical objects.
      */
     virtual bool isEmpty() const;
 
     /**
-     * 从复合对象中移除指定对象。
-     * @throw 如果对象为空，则抛出 ErrorException
+     * Removes the specified object from the compound.
+     * @throw ErrorException if the object is null
      */
     virtual void remove(GObject* gobj);
 
     /**
-     * 从复合对象中移除指定对象。
+     * Removes the specified object from the compound.
      */
     virtual void remove(GObject& gobj);
 
     /**
-     * 移除复合对象中的所有图形对象。
-     * 等价于 clear。
+     * Removes all graphical objects from the compound.
+     * Equivalent to clear.
      */
     virtual void removeAll();
 
     /**
-     * 指示 compound 重绘其所有图形对象。
+     * Instructs the compound to redraw all of its graphical objects.
      */
     void repaint() override;
 
     /**
-     * 指示复合对象重绘其内部给定矩形区域，
-     * 包括接触该区域的任何图形对象。
+     * Instructs the compound to redraw the given rectangular region within itself,
+     * including any graphical objects that touch that region.
      */
     virtual void repaintRegion(int x, int y, int width, int height);
 
     /**
-     * 指示复合对象重绘其内部给定矩形区域，
-     * 包括接触该区域的任何图形对象。
+     * Instructs the compound to redraw the given rectangular region within itself,
+     * including any graphical objects that touch that region.
      */
     virtual void repaintRegion(const GRectangle& bounds);
 
     /**
-     * 设置 compound 在其内容变化时是否自动重绘自身
-     * 内容发生变化。
+     * Sets whether the compound automatically repaints itself when its
+     * contents change.
      */
     virtual void setAutoRepaint(bool autoRepaint);
 
     /**
-     * 设置与此 compound 关联的 Qt 控件，或设置为空指针
-     * 若此复合对象未与任何控件关联。
-     * 最初，compound 不与任何控件关联，直到此
-     * 调用 Widget 方法。
-     * 客户端通常无需使用此方法。
+     * Sets the Qt widget associated with this compound, or a null pointer
+     * if this compound is not associated with any widget.
+     * Initially a compound is not associated with any widget until this
+     * Widget method is called.
+     * Clients generally do not need to use this method.
      * @private
      */
     virtual void setWidget(QWidget* widget);
@@ -929,7 +929,7 @@ public:
     std::string toString() const override;
 
 private:
-    // 用于在 z 顺序中移动对象的方法
+    // methods to move an object in the z-ordering
     void sendBackward(GObject* gobj);
     void sendForward(GObject* gobj);
     void sendToBack(GObject* gobj);
@@ -937,67 +937,67 @@ private:
     virtual int findGObject(GObject* gobj) const;
     virtual void removeAt(int index);
 
-    // 实例变量
+    // instance variables
     Vector<GObject*> _contents;
-    QWidget* _widget = nullptr;    // 包含此复合对象的控件
-    bool _autoRepaint;   // 任何更改时自动重绘；默认为 true
+    QWidget* _widget = nullptr;    // widget containing this compound
+    bool _autoRepaint;   // automatically repaint on any change; default true
 
     friend class GObject;
 };
 
 /**
- * 此图形对象子类表示来自文件的图像。
+ * This graphical object subclass represents an image from a file.
  */
 class GImage : public GObject {
 public:
     /**
-     * 通过从指定文件加载图像构造新图像。
-     * 默认情况下，图像左上角位于原点，
-     * 但可以传入坐标，将其移动到该点
-     * （<code>x</code>，<code>y</code>）。
-     * @throw 如果找不到或无法加载给定文件，则抛出 ErrorException
-     *        作为有效图像文件
+     * Constructs a new image by loading the image from the specified file.
+     * By default, the upper left corner of the image appears at the origin,
+     * but you can pass coordinates to move it to the point
+     * (<code>x</code>, <code>y</code>).
+     * @throw ErrorException if the given file is not found or cannot be loaded
+     *        as a valid image file
      */
     GImage(const std::string& filename = "", double x = 0, double y = 0);
 
     /**
-     * 通过从指定输入流加载图像构造新图像。
-     * 默认情况下，图像左上角位于原点，
-     * 但可以传入坐标，将其移动到该点
-     * （<code>x</code>，<code>y</code>）。
-     * @throw 如果找不到或无法加载给定文件，则抛出 ErrorException
-     *        作为有效图像文件
+     * Constructs a new image by loading the image from the specified input stream.
+     * By default, the upper left corner of the image appears at the origin,
+     * but you can pass coordinates to move it to the point
+     * (<code>x</code>, <code>y</code>).
+     * @throw ErrorException if the given file is not found or cannot be loaded
+     *        as a valid image file
      */
     GImage(std::istream& source, double x = 0, double y = 0);
 
     /**
-     * 创建给定宽度和高度的空白 GImage。
-     * GCanvas 转换为图像时调用。
+     * Creates a blank GImage of the given width and height.
+     * Called by GCanvas when converting to an image.
      */
     GImage(double width, double height);
 
     /**
-     * 释放图像内部分配的内存。
+     * Frees memory allocated internally by the image.
      */
     virtual ~GImage();
 
 
 
     /**
-     * 使用给定 Qt 画笔在屏幕上绘制此图像。
+     * Draws this image on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
 
     /**
-     * 返回用于加载图像的文件名，
-     * 与传递给构造函数的内容相同。
+     * Returns the file name used to load the image,
+     * as was passed to the constructor.
      */
     virtual std::string getFileName() const;
 
     /**
-     * 以 RGB 整数返回给定 x/y 位置处像素的颜色。
-     * @throw 如果 x/y 超出范围，则抛出 ErrorException
+     * Returns the color of the pixel at the given x/y location as an RGB integer.
+     * @throw ErrorException if x/y is out of range
      */
     virtual int getPixel(int x, int y) const;
 
@@ -1005,9 +1005,9 @@ public:
     std::string getType() const override;
 
     /**
-     * 将给定 x/y 位置的像素设置为给定颜色，
-     * 表示为 RGB 整数。
-     * @throw 如果 x/y 超出范围，则抛出 ErrorException
+     * Sets the pixel at the given x/y location to the given color,
+     * represented as an RGB integer.
+     * @throw ErrorException if x/y is out of range
      */
     virtual void setPixel(int x, int y, int rgb);
 
@@ -1016,26 +1016,26 @@ public:
 
 protected:
     /**
-     * 创建包装给定 Qt 图像的 GImage。
-     * GCanvas 转换画布为图像时调用。
+     * Creates a GImage wrapping the given Qt image.
+     * Called by GCanvas when converting canvas to an image.
      */
     GImage(QImage* qimage);
 
     /**
-     * 返回所包装的内部 Qt QImage 对象。
+     * Returns the inner Qt QImage object being wrapped.
      */
     QImage* getQImage() const;
 
 private:
     /**
-     * 从给定文件读取图像像素内容。
-     * @return 加载成功时为 true，加载失败时为 false
+     * Reads the image's pixel contents from the given file.
+     * @return true if loaded successfully and false if the load failed
      */
     bool load(const std::string& filename);
 
     /**
-     * 从给定流读取图像像素内容。
-     * @return 加载成功时为 true，加载失败时为 false
+     * Reads the image's pixel contents from the given stream.
+     * @return true if loaded successfully and false if the load failed
      */
     bool loadFromStream(std::istream& input);
 
@@ -1047,22 +1047,22 @@ private:
 };
 
 /**
- * 此图形对象子类表示一条线段。
+ * This graphical object subclass represents a line segment.
  */
 class GLine : public GObject {
 public:
     /**
-     * 根据端点构造线段。
-     * 点 (<code>x0</code>,&nbsp;<code>y0</code>) 定义
-     * 该直线与点 (<code>x1</code>,&nbsp;<code>y1</code>) 定义
-     * 末尾。
+     * Constructs a line segment from its endpoints.
+     * The point (<code>x0</code>,&nbsp;<code>y0</code>) defines the start of
+     * the line and the point (<code>x1</code>,&nbsp;<code>y1</code>) defines
+     * the end.
      */
     GLine(double x0 = 0, double y0 = 0, double x1 = 0, double y1 = 0, LineStyle lineStyle = LINE_SOLID);
 
     /**
-     * 根据端点构造线段。
-     * 点 <code>p0</code> 定义直线的起点，而
-     * 点 <code>p1</code> 定义终点。
+     * Constructs a line segment from its endpoints.
+     * The point <code>p0</code> defines the start of the line and
+     * the point <code>p1</code> defines the end.
      */
     GLine(const GPoint& p0, const GPoint& p1);
 
@@ -1070,7 +1070,7 @@ public:
     bool contains(double x, double y) const override;
 
     /**
-     * 使用给定 Qt 画笔在屏幕上绘制此线段。
+     * Draws this line on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
@@ -1079,17 +1079,17 @@ public:
     GRectangle getBounds() const override;
 
     /**
-     * 返回线条结束处的点。
+     * Returns the point at which the line ends.
      */
     virtual GPoint getEndPoint() const;
 
     /**
-     * 返回线条终点的 x 坐标。
+     * Returns the x-coordinate of the point at which the line ends.
      */
     virtual double getEndX() const;
 
     /**
-     * 返回线条终点的 y 坐标。
+     * Returns the y-coordinate of the point at which the line ends.
      */
     virtual double getEndY() const;
 
@@ -1097,20 +1097,20 @@ public:
     double getHeight() const override;
 
     /**
-     * 返回线条开始处的点。
-     * 等价于 getLocation。
+     * Returns the point at which the line starts.
+     * Equivalent to getLocation.
      */
     virtual GPoint getStartPoint() const;
 
     /**
-     * 返回线条起点的 x 坐标。
-     * 等价于 getX。
+     * Returns the x-coordinate of the point at which the line starts.
+     * Equivalent to getX.
      */
     virtual double getStartX() const;
 
     /**
-     * 返回线条起点的 y 坐标。
-     * 等价于 getY。
+     * Returns the y-coordinate of the point at which the line starts.
+     * Equivalent to getY.
      */
     virtual double getStartY() const;
 
@@ -1121,46 +1121,46 @@ public:
     double getWidth() const override;
 
     /**
-     * 将线的终点设置为 (<code>x1</code>,&nbsp;<code>y1</code>)，
-     * 并保持起点不变。因此此方法不同于
-     * <code>setLocation</code>，它会移动线段的两个端点。
+     * Sets the end point in the line to (<code>x1</code>,&nbsp;<code>y1</code>),
+     * leaving the start point unchanged.  This method is therefore different from
+     * <code>setLocation</code>, which moves both components of the line segment.
      */
     virtual void setEndPoint(double x1, double y1);
 
     /**
-     * 将线的终点设置为 p，
-     * 并保持起点不变。因此此方法不同于
-     * <code>setLocation</code>，它会移动线段的两个端点。
+     * Sets the end point in the line to p,
+     * leaving the start point unchanged.  This method is therefore different from
+     * <code>setLocation</code>, which moves both components of the line segment.
      */
     virtual void setEndPoint(const GPoint& p);
 
     /**
-     * 将此线条的两个端点设置为 (x0, y0) 和 (x1, y1)。
-     * 这些点会重新排列为 x 优先、y 次优先顺序；也就是说，如果
-     * 如果 x1 < x0，或（x1 == x0 且 y1 < y0），则交换两个点。
-     * 这样做是为了提高绘制线条时的一致性。
+     * Sets this line's two end points to (x0, y0) and (x1, y1).
+     * The points are rearranged into x-major, y-minor order; that is, if
+     * x1 < x0 or (x1 == x0 and y1 < y0), the points are swapped.
+     * This is done to improve consistency when drawing lines.
      */
     virtual void setPoints(double x0, double y0, double x1, double y1);
 
     /**
-     * 将此线条的两个端点设置为 p0 和 p1。
-     * 这些点会重新排列为 x 优先、y 次优先顺序；也就是说，如果
-     * 如果 x1 < x0，或（x1 == x0 且 y1 < y0），则交换两个点。
-     * 这样做是为了提高绘制线条时的一致性。
+     * Sets this line's two end points to p0 and p1.
+     * The points are rearranged into x-major, y-minor order; that is, if
+     * x1 < x0 or (x1 == x0 and y1 < y0), the points are swapped.
+     * This is done to improve consistency when drawing lines.
      */
     virtual void setPoints(const GPoint& p0, const GPoint& p1);
 
     /**
-     * 将线的起点设置为 (<code>x0</code>,&nbsp;<code>y0</code>)，
-     * 并保持终点不变。因此此方法不同于
-     * <code>setLocation</code>，它会移动线段的两个端点。
+     * Sets the initial point in the line to (<code>x0</code>,&nbsp;<code>y0</code>),
+     * leaving the end point unchanged.  This method is therefore different from
+     * <code>setLocation</code>, which moves both components of the line segment.
      */
     virtual void setStartPoint(double x0, double y0);
 
     /**
-     * 将线的起点设置为 p，
-     * 并保持终点不变。因此此方法不同于
-     * <code>setLocation</code>，它会移动线段的两个端点。
+     * Sets the initial point in the line to p,
+     * leaving the end point unchanged.  This method is therefore different from
+     * <code>setLocation</code>, which moves both components of the line segment.
      */
     virtual void setStartPoint(const GPoint& p);
 
@@ -1168,21 +1168,21 @@ public:
     std::string toStringExtra() const override;
 
 protected:
-    /* 实例变量 */
-    double _dx;   // 直线的 x 方向位移
-    double _dy;   // 直线的 y 方向位移
+    /* Instance variables */
+    double _dx;   // the x displacement of the line
+    double _dy;   // the y displacement of the line
 };
 
 /**
- * 此图形对象子类表示内接于
- * 矩形框。
+ * This graphical object subclass represents an oval inscribed in
+ * a rectangular box.
  */
 class GOval : public GObject {
 public:
     /**
-     * 构造内接于指定矩形的新椭圆。
-     * 默认情况下，椭圆位于原点，但可以传入
-     * 坐标 <code>x</code> 和 <code>y</code>。
+     * Constructs a new oval inscribed in the specified rectangle.
+     * By default, the oval is positioned at the origin, but you can pass
+     * coordinates <code>x</code> and <code>y</code>.
      */
     GOval(double x = 0, double y = 0, double width = 0, double height = 0);
 
@@ -1190,7 +1190,7 @@ public:
    bool contains(double x, double y) const override;
 
     /**
-     * 使用给定 Qt 画笔在屏幕上绘制此椭圆。
+     * Draws this oval on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
@@ -1200,85 +1200,85 @@ public:
 };
 
 /**
- * 此图形对象子类表示由
- * 线段。<code>GPolygon</code> 构造函数创建一个
- * 空多边形。要完成图形，需要添加顶点
- * 使用 <code>addVertex</code> 等方法添加到多边形中，
- * <code>addEdge</code> 和 <code>addPolarEdge</code>。
+ * This graphical object subclass represents a polygon bounded by
+ * line segments.  The <code>GPolygon</code> constructor creates an
+ * empty polygon.  To complete the figure, you need to add vertices
+ * to the polygon using the methods <code>addVertex</code>,
+ * <code>addEdge</code>, and <code>addPolarEdge</code>.
  */
 class GPolygon : public GObject {
 public:
     /**
-     * 在原点构造新的空多边形。
+     * Constructs a new empty polygon at the origin.
      */
     GPolygon();
 
     /**
-     * 使用给定顶点坐标构造新多边形。
+     * Constructs a new polygon with the given vertex coordinates.
      */
     GPolygon(std::initializer_list<double> coords);
     GPolygon(std::initializer_list<GPoint> points);
 
     /**
-     * 向多边形添加一条边，其分量由以下位移给出：
-     * 从最后一个顶点起的 <code>dx</code> 和 <code>dy</code>。
+     * Adds an edge to the polygon whose components are given by the displacements
+     * <code>dx</code> and <code>dy</code> from the last vertex.
      */
     virtual void addEdge(double dx, double dy);
 
     /**
-     * 向多边形添加一条边，其相对于最后一个顶点的位移
-     * 被指定为给定点的 x/y 值。
+     * Adds an edge to the polygon where the displacements from the last vertex
+     * are specified as the x/y values of the given point.
      */
     virtual void addEdge(const GPoint& pt);
 
     /**
-     * 向多边形添加多条边，其各分量由以下内容给出：
-     * 相对于上一个顶点的位移 <code>dx</code> 和 <code>dy</code>。
+     * Adds multiple edges to the polygon whose components are given by the
+     * displacements <code>dx</code> and <code>dy</code> from the last vertex.
      */
     virtual void addEdges(std::initializer_list<double> coords);
 
     /**
-     * 向多边形添加多条边，其各分量由以下内容给出：
-     * 相对于上一个顶点的位移 <code>dx</code> 和 <code>dy</code>。
+     * Adds multiple edges to the polygon whose components are given by the
+     * displacements <code>dx</code> and <code>dy</code> from the last vertex.
      */
     virtual void addEdges(std::initializer_list<GPoint> points);
 
     /**
-     * 以极坐标指定方式向多边形添加边。
-     * 边的长度由 <code>r</code> 给出，并且该边延伸
-     * 沿 <code>theta</code> 方向，以逆时针角度计量
-     * 从 +x 轴。
+     * Adds an edge to the polygon specified in polar coordinates.
+     * The length of the edge is given by <code>r</code>, and the edge extends
+     * in direction <code>theta</code>, measured in degrees counterclockwise
+     * from the +x axis.
      */
     virtual void addPolarEdge(double r, double theta);
 
     /**
-     * 在相对于多边形的 (<code>x</code>, <code>y</code>) 处添加顶点
-     * 原点。
+     * Adds a vertex at (<code>x</code>, <code>y</code>) relative to the polygon
+     * origin.
      */
     virtual void addVertex(double x, double y);
 
     /**
-     * 在给定的 (<code>x</code>, <code>y</code>) 点添加顶点
-     * 相对于多边形原点。
+     * Adds a vertex at the given (<code>x</code>, <code>y</code>) point
+     * relative to the polygon origin.
      */
     virtual void addVertex(const GPoint& pt);
 
     /**
-     * 向多边形添加多条边，其各分量由以下内容给出：
-     * 相对于多边形的坐标 <code>dx</code> 和 <code>dy</code>
-     * 原点。
+     * Adds multiple edges to the polygon whose components are given by the
+     * coordinates <code>dx</code> and <code>dy</code> relative to the polygon
+     * origin.
      */
     virtual void addVertexes(std::initializer_list<double> coords);
 
     /**
-     * 向多边形添加多条边，其各分量由以下内容给出：
-     * 相对于多边形的坐标 <code>dx</code> 和 <code>dy</code>
-     * 原点。
+     * Adds multiple edges to the polygon whose components are given by the
+     * coordinates <code>dx</code> and <code>dy</code> relative to the polygon
+     * origin.
      */
     virtual void addVertexes(std::initializer_list<GPoint> points);
 
     /**
-     * 从多边形中删除所有顶点。
+     * Removes all vertexes from the polygon.
      */
     virtual void clear();
 
@@ -1286,7 +1286,7 @@ public:
     bool contains(double x, double y) const override;
 
     /**
-     * 使用给定 Qt 画笔在屏幕上绘制此多边形。
+     * Draws this polygon on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
@@ -1301,18 +1301,18 @@ public:
     std::string getType() const override;
 
     /**
-     * 返回此多边形中给定从 0 开始索引处的顶点。
-     * @throw 如果索引越界，则抛出 ErrorException。
+     * Returns the vertex at the given 0-based index in this polygon.
+     * @throw ErrorException if the index is out of bounds.
      */
     virtual GPoint getVertex(int i) const;
 
     /**
-     * 返回此多边形中的顶点数量。
+     * Returns the number of vertexes in this polygon.
      */
     virtual int getVertexCount() const;
 
     /**
-     * 返回多边形中所有点的向量。
+     * Returns a vector of the points in the polygon.
      */
     virtual Vector<GPoint> getVertices() const;
 
@@ -1320,9 +1320,9 @@ public:
     double getWidth() const override;
 
     /**
-     * 将此多边形中给定从 0 开始索引处的顶点设置为
-     * 给定坐标。
-     * @throw 如果索引越界，则抛出 ErrorException。
+     * Sets the vertex at the given 0-based index in this polygon to the
+     * given coordinates.
+     * @throw ErrorException if the index is out of bounds.
      */
     virtual void setVertex(int i, GPoint point);
 
@@ -1330,27 +1330,27 @@ public:
     std::string toStringExtra() const override;
 
 private:
-    /* 实例变量 */
-    QVector<QPointF> _vertices;   // 多边形的各个顶点
-    double _cx;                   // 最近一次的 x 坐标
-    double _cy;                   // 最近一次的 y 坐标
+    /* Instance variables */
+    QVector<QPointF> _vertices;   // the vertices of the polygon
+    double _cx;                   // the most recent x coordinate
+    double _cy;                   // the most recent y coordinate
 };
 
 /**
- * GRect 是外观由以下内容组成的图形对象：
- * 矩形框。
+ * A GRect is a graphical object whose appearance consists of
+ * a rectangular box.
  */
 class GRect : public GObject {
 public:
     /**
-     * 构造具有指定宽度和高度的矩形。第一个
-     * 一种形式位于原点；第二种位于坐标
-     * 由 <code>x</code> 和 <code>y</code> 给出。
+     * Constructs a rectangle with the specified width and height.  The first
+     * form is positioned at the origin; the second at the coordinates
+     * given by <code>x</code> and <code>y</code>.
      */
     GRect(double x = 0, double y = 0, double width = 0, double height = 0);
 
     /**
-     * 使用给定 Qt painter 在屏幕上绘制此矩形。
+     * Draws this rectangle on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
@@ -1360,45 +1360,45 @@ public:
 };
 
 /**
- * GRoundRect 表示外观由以下内容组成的图形对象
- * 带圆角的矩形框。
+ * A GRoundRect represents a graphical object whose appearance consists
+ * of a rectangular box with rounded corners.
  */
 class GRoundRect : public GRect {
 public:
     /**
-     * 未指定时圆角矩形拐角的默认直径
-     * 提供给构造函数。
+     * The default diameter of corners on rounded rectangles if none is
+     * supplied to the constructor.
      */
     static const double DEFAULT_CORNER;
 
     /**
-     * 构造具有指定宽度和高度的新矩形，
-     * 位于 (0, 0)。<code>corner</code> 参数指定
-     * 形成圆角的弧的直径。
+     * Constructs a new rectangle with the specified width and height,
+     * located at (0, 0). The <code>corner</code> parameter specifies the
+     * diameter of the arc forming the corner.
      */
     GRoundRect(double width = 0, double height = 0, double corner = DEFAULT_CORNER);
 
     /**
-     * 构造具有指定宽度和高度的新矩形，
-     * 其左上角位于 (x, y)。<code>corner</code> 参数
-     * 指定构成拐角的弧直径。
+     * Constructs a new rectangle with the specified width and height,
+     * with its top/left corner at (x, y).  The <code>corner</code> parameter
+     * specifies the diameter of the arc forming the corner.
      */
     GRoundRect(double x, double y, double width, double height, double corner = DEFAULT_CORNER);
 
     /**
-     * 若指定点位于对象内部，则返回 <code>true</code>。
+     * Returns <code>true</code> if the specified point is inside the object.
      */
     bool contains(double x, double y) const override;
 
     /**
-     * 使用给定 Qt painter 在屏幕上绘制此矩形。
+     * Draws this rectangle on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
 
     /**
-     * 返回构成此圆角对象拐角的弧直径
-     * 矩形。
+     * Returns the diameter of the arc forming the corner of this rounded
+     * rectangle.
      */
     virtual double getCorner() const;
 
@@ -1406,8 +1406,8 @@ public:
     std::string getType() const override;
 
     /**
-     * 设置构成此圆角对象拐角的弧直径
-     * 矩形。
+     * Sets the diameter of the arc forming the corner of this rounded
+     * rectangle.
      */
     virtual void setCorner(double corner);
 
@@ -1419,37 +1419,37 @@ protected:
 };
 
 /**
- * 此图形对象子类表示一个文本字符串。
+ * This graphical object subclass represents a text string.
  *
- * 控制 <code>GText</code> 的外观和位置
- * 取决于对以下术语的理解：
+ * Controlling the appearance and positioning of a <code>GText</code>
+ * depends on understanding the following terms:
  *
  * <ul>
- *   <li><b><i>基线</i></b>是以下内容所在的水平线：
- *       字符保持不变。
- *   <li><b><i>原点</i></b>是基线上以下对象所在的点：
- *       标签开始的位置。
- *   <li><b><i>高度</i></b>是分隔两个对象的距离
- *       连续各行。
- *   <li><b><i>上升部</i></b>是字符可达到的最大距离
- *       此字体中伸到基线以上的部分。
- *   <li><b><i>下降部</i></b>是字符可达到的最大距离
- *       此字体中伸到基线以下的部分。
+ *   <li>The <b><i>baseline</i></b> is the horizontal line on which the
+ *       characters rest.
+ *   <li>The <b><i>origin</i></b> is the point on the baseline at which
+ *       the label begins.
+ *   <li>The <b><i>height</i></b> is the distance that separate two
+ *       successive lines.
+ *   <li>The <b><i>ascent</i></b> is the maximum distance a character
+ *       in this font extends above the baseline.
+ *   <li>The <b><i>descent</i></b> is the maximum distance a character
+ *       in this font extends below the baseline.
  * </ul>
  */
 class GText : public GObject {
 public:
 
     /**
-     * 创建包含指定字符串的 <code>GText</code> 对象。
-     * 默认情况下，第一个字符的基线位于原点；
-     * 第二种形式会自动重置
-     * 将 <code>GText</code> 移动到点 (<code>x</code>, <code>y</code>)。
+     * Creates a <code>GText</code> object containing the specified string.
+     * By default, the baseline of the first character appears at the origin;
+     * the second form automatically resets the location of the
+     * <code>GText</code> to the point (<code>x</code>, <code>y</code>).
      */
     GText(const std::string& str = "", double x = 0, double y = 0);
 
     /**
-     * 使用给定 Qt 画笔在屏幕上绘制此文本标签。
+     * Draws this text label on screen using the given Qt painter.
      * @private
      */
     void draw(QPainter* painter) override;
@@ -1458,31 +1458,31 @@ public:
     GRectangle getBounds() const override;
 
     /**
-     * 返回标签的当前字体。
+     * Returns the current font for the label.
      */
     virtual std::string getFont() const;
 
     /**
-     * 返回此字体中字符串向基线上方延伸的最大距离
-     * 基线。
+     * Returns the maximum distance strings in this font extend above
+     * the baseline.
      */
     virtual double getFontAscent() const;
 
     /**
-     * 返回此字体中字符串向基线下方延伸的最大距离
-     * 基线。
+     * Returns the maximum distance strings in this font descend below
+     * the baseline.
      */
     virtual double getFontDescent() const;
 
     /**
-     * 返回此对象显示的字符串。
-     * 等价于 getLabel。
+     * Returns the string displayed by this object.
+     * Equivalent to getLabel.
      */
     virtual std::string getLabel() const;
 
     /**
-     * 返回此对象显示的字符串。
-     * 等价于 getLabel。
+     * Returns the string displayed by this object.
+     * Equivalent to getLabel.
      */
     virtual std::string getText() const;
 
@@ -1496,16 +1496,16 @@ public:
     void setFont(const std::string& font) override;
 
     /**
-     * 更改文本标签中保存的字符串，使
-     * 显示区域出现新的文本字符串。
-     * 等价于 setText。
+     * Changes the string stored within the text label, so that
+     * a new text string appears on the display.
+     * Equivalent to setText.
      */
     virtual void setLabel(const std::string& str);
 
     /**
-     * 更改文本标签中保存的字符串，使
-     * 显示区域出现新的文本字符串。
-     * 等价于 setText。
+     * Changes the string stored within the text label, so that
+     * a new text string appears on the display.
+     * Equivalent to setText.
      */
     virtual void setText(const std::string& str);
 
@@ -1513,16 +1513,16 @@ public:
     std::string toStringExtra() const override;
 
 private:
-    /* 实例变量 */
-    std::string _text;   // 标签显示的字符串
+    /* Instance variables */
+    std::string _text;   // the string displayed by the label
     QFont _qfont;
 
-    // 字体或文本变化时更新宽度和高度
+    // update width and height when font or text changes
     void updateSize();
 };
 
 /**
- * 将给定图形对象打印到输出流。
+ * Prints the given graphical object to an output stream.
  */
 std::ostream& operator <<(std::ostream& out, const GObject& obj);
 

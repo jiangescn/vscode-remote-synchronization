@@ -1,25 +1,25 @@
 /*
- * 文件：gthread.cpp
+ * File: gthread.cpp
  * -----------------
  *
- * 此文件实现在 gthread.h 中声明的成员。
+ * This file implements the members declared in gthread.h.
  *
  * @version 2019/04/13
- * - 重新实现 GThread，以包装 QThread 或 std::thread
- * - 添加用于线程抽象的 GThread 抽象基类
- * - 添加 GThreadQt 和 GThreadStd 子类
- * - 将 GFunctionThread 重命名为 QFunctionThread，以减少名称混淆
- * - 移除 GStudentThread 子类，并将其功能合并到 GThread
+ * - reimplement GThread to wrap either QThread or std::thread
+ * - add GThread abstract base class for thread abstractions
+ * - add GThreadQt and GThreadStd subclasses
+ * - rename GFunctionThread to QFunctionThread to reduce name confusion
+ * - remove GStudentThread subclass and combine functionality into GThread
  * @version 2018/10/18
- * - 改进线程名称
+ * - improved thread names
  * @version 2018/10/01
- * - 修复 main 结束太快时输出不会显示在控制台上的问题
+ * - bug fix where output wasn't showing up on the console if main ended too soon
  * @version 2018/09/23
- * - 修复程序结束时关闭控制台的问题
+ * - bug fix to shut down console at end of program
  * @version 2018/08/23
- * - 重命名为 gthread.h，以替代 Java 版本
+ * - renamed to gthread.h to replace Java version
  * @version 2018/07/28
- * - 初始版本
+ * - initial version
  */
 
 #include "gthread.h"
@@ -38,16 +38,16 @@ void native_set_thread_name(const char *name)
 #elif defined _WIN32
     pthread_setname_np(pthread_self(), name);
 #else
-    // 在其他平台上忽略
-    // JDZ：Linux 上可能与 Windows 相同
-    // 但我没有 Linux 系统可供测试确认
+    // ignored for other platforms
+    // JDZ: likely same on linux as windows
+    // but I don't have linux system to test to be sure
 #endif
 }
 
 void native_thread_exit()
 {
     pthread_exit(nullptr);
-    // JDZ：Mac+Windows，但 Linux 也是吗？需要测试
+    // JDZ:  Mac+Windows, but also linux? Need test
 }
 
 
@@ -55,14 +55,14 @@ QFunctionThread::QFunctionThread(GThunk func)
         : _func(func),
           _hasReturn(false),
           _returnValue(0) {
-    // 空
+    // empty
 }
 
 QFunctionThread::QFunctionThread(GThunkInt func)
         : _funcInt(func),
           _hasReturn(true),
           _returnValue(0) {
-    // 空
+    // empty
 }
 
 int QFunctionThread::returnValue() const {
@@ -78,23 +78,23 @@ void QFunctionThread::run() {
 }
 
 
-/*静态*/ GThread* GThread::_qtGuiThread = nullptr;
-/*静态*/ GThread* GThread::_studentThread = nullptr;
+/*static*/ GThread* GThread::_qtGuiThread = nullptr;
+/*static*/ GThread* GThread::_studentThread = nullptr;
 Map<QThread*, GThread*> GThread::_allGThreadsQt;
 Map<std::thread*, GThread*> GThread::_allGThreadsStd;
 
 GThread::GThread() {
-    // 空
+    // empty
 }
 
-/*静态*/ void GThread::ensureThatThisIsTheQtGuiThread(const std::string& message) {
+/*static*/ void GThread::ensureThatThisIsTheQtGuiThread(const std::string& message) {
     if (!iAmRunningOnTheQtGuiThread()) {
         error((message.empty() ? "" : (message + ": "))
               + "Qt GUI system must be initialized from the application's main thread.");
     }
 }
 
-/*静态*/ GThread* GThread::getCurrentThread() {
+/*static*/ GThread* GThread::getCurrentThread() {
     QThread* currentQtThread = QThread::currentThread();
     if (_allGThreadsQt.containsKey(currentQtThread)) {
         return _allGThreadsQt[currentQtThread];
@@ -103,27 +103,27 @@ GThread::GThread() {
     }
 }
 
-/*静态*/ GThread* GThread::getQtGuiThread() {
+/*static*/ GThread* GThread::getQtGuiThread() {
     return _qtGuiThread;
 }
 
-/*静态*/ GThread* GThread::getStudentThread() {
+/*static*/ GThread* GThread::getStudentThread() {
     return _studentThread;
 }
 
-/*静态*/ bool GThread::iAmRunningOnTheQtGuiThread() {
+/*static*/ bool GThread::iAmRunningOnTheQtGuiThread() {
     return _qtGuiThread && _qtGuiThread == getCurrentThread();
 }
 
-/*静态*/ bool GThread::iAmRunningOnTheStudentThread() {
+/*static*/ bool GThread::iAmRunningOnTheStudentThread() {
     return _studentThread && _studentThread == getCurrentThread();
 }
 
-/*静态*/ bool GThread::qtGuiThreadExists() {
+/*static*/ bool GThread::qtGuiThreadExists() {
     return _qtGuiThread != nullptr;
 }
 
-/*静态*/ void GThread::runInNewThread(GThunk func, const std::string& threadName) {
+/*static*/ void GThread::runInNewThread(GThunk func, const std::string& threadName) {
     GThread* currentThread = getCurrentThread();
     GThreadQt* thread = new GThreadQt(func, threadName);
     thread->start();
@@ -133,15 +133,15 @@ GThread::GThread() {
     delete thread;
 }
 
-/*静态*/ GThread* GThread::runInNewThreadAsync(GThunk func, const std::string& threadName) {
+/*static*/ GThread* GThread::runInNewThreadAsync(GThunk func, const std::string& threadName) {
     GThreadQt* thread = new GThreadQt(func, threadName);
     thread->start();
     return thread;
 }
 
-/*静态*/ void GThread::runOnQtGuiThread(GThunk func) {
+/*static*/ void GThread::runOnQtGuiThread(GThunk func) {
     if (iAmRunningOnTheQtGuiThread()) {
-        // 已经位于 Qt GUI 线程；直接运行函数！
+        // already on Qt GUI thread; just run the function!
         func();
     } else if (qtGuiThreadExists()) {
         GEventQueue::instance()->runOnQtGuiThreadSync(func);
@@ -152,9 +152,9 @@ GThread::GThread() {
     }
 }
 
-/*静态*/ void GThread::runOnQtGuiThreadAsync(GThunk func) {
+/*static*/ void GThread::runOnQtGuiThreadAsync(GThunk func) {
     if (iAmRunningOnTheQtGuiThread()) {
-        // 已经位于 Qt GUI 线程；直接运行函数！
+        // already on Qt GUI thread; just run the function!
         func();
     } else if (qtGuiThreadExists()) {
         GEventQueue::instance()->runOnQtGuiThreadAsync(func);
@@ -165,25 +165,25 @@ GThread::GThread() {
     }
 }
 
-/*静态*/ void GThread::setGuiThread() {
+/*static*/ void GThread::setGuiThread() {
     if (!_qtGuiThread) {
         _qtGuiThread = new GThreadQt(QThread::currentThread());
         _qtGuiThread->setName("Qt GUI Thread");
     }
 }
 
-/*静态*/ void GThread::startStudentThread(GThunkInt mainFunc) {
+/*static*/ void GThread::startStudentThread(GThunkInt mainFunc) {
     if (!_studentThread) {
         _studentThread = new GThreadStd(mainFunc, "Student main()");
         _studentThread->start();
     }
 }
 
-/*静态*/ bool GThread::studentThreadExists() {
+/*static*/ bool GThread::studentThreadExists() {
     return _studentThread != nullptr;
 }
 
-/*静态*/ bool GThread::wait(GThread* thread, long ms) {
+/*static*/ bool GThread::wait(GThread* thread, long ms) {
     GThread* currentThread = getCurrentThread();
     if (currentThread == thread) {
         error("GThread::wait: a thread cannot wait for itself");
@@ -194,7 +194,7 @@ GThread::GThread() {
     while (thread && thread->isRunning()) {
         currentThread->sleep(msToSleep);
 
-        // 如果已经等待至少给定时间，则停止
+        // stop if we have waited at least the given amount of time
         if (ms > 0 && GEvent::getCurrentTimeMS() - startTime >= ms) {
             break;
         }
@@ -239,7 +239,7 @@ GThreadQt::GThreadQt(QThread* qthread)
 }
 
 GThreadQt::~GThreadQt() {
-    // TODO：delete _qThread;
+    // TODO: delete _qThread;
     _allGThreadsQt.remove(_qThread);
     _qThread = nullptr;
 }
@@ -258,9 +258,9 @@ void GThreadQt::join() {
     }
 }
 
-// 实现说明：此行为可能不正确。
-// 我认为当前行为会让此线程暂停自身，
-// 而期望行为是让调用线程等待此线程。
+// Implementation note: This may be the wrong behavior.
+// I think the current behavior tells this thread to pause itself,
+// while the desired behavior is to have the calling thread wait for this thread.
 bool GThreadQt::join(long ms) {
     require::nonNegative(ms, "GThread::join", "ms");
     return _qThread->wait(ms);
@@ -312,11 +312,11 @@ void GThreadQt::start() {
 }
 
 void GThreadQt::stop() {
-    _qThread->terminate();   // 注意：尽可能不要调用此函数！
+    _qThread->terminate();   // note: don't call this if possible!
 }
 
 void GThreadQt::yield() {
-    QThread::yieldCurrentThread();   // 一般
+    QThread::yieldCurrentThread();   // meh
 }
 
 
@@ -352,7 +352,7 @@ GThreadStd::GThreadStd(std::thread* stdThread)
 }
 
 GThreadStd::~GThreadStd() {
-    // TODO：delete _stdThread;
+    // TODO: delete _stdThread;
     _allGThreadsStd.remove(_stdThread);
     _running = false;
     _stdThread = nullptr;
@@ -366,18 +366,18 @@ bool GThreadStd::isRunning() const {
     return _stdThread != nullptr && _running;
 }
 
-// 实现说明：此行为可能不正确。
-// 我认为当前行为会让此线程暂停自身，
-// 而期望行为是让调用线程等待此线程。
+// Implementation note: This may be the wrong behavior.
+// I think the current behavior tells this thread to pause itself,
+// while the desired behavior is to have the calling thread wait for this thread.
 void GThreadStd::join() {
     if (isRunning() && _stdThread->joinable()) {
         _stdThread->join();
     }
 }
 
-// 实现说明：此行为可能不正确。
-// 我认为当前行为会让此线程暂停自身，
-// 而期望行为是让调用线程等待此线程。
+// Implementation note: This may be the wrong behavior.
+// I think the current behavior tells this thread to pause itself,
+// while the desired behavior is to have the calling thread wait for this thread.
 bool GThreadStd::join(long ms) {
     require::nonNegative(ms, "GThread::join", "ms");
     long elapsed = 0;
@@ -401,7 +401,7 @@ int GThreadStd::priority() const {
 
 void GThreadStd::run() {
     native_set_thread_name(_name.c_str());
-    // 运行给定函数
+    // run the given function
     _running = true;
     if (_hasReturn) {
         _returnValue = _funcInt();
@@ -415,8 +415,8 @@ void GThreadStd::setName(const std::string& name) {
     _name = name;
 }
 
-void GThreadStd::setPriority(int /*优先级*/) {
-    // 不支持
+void GThreadStd::setPriority(int /*priority*/) {
+    // unsupported
 }
 
 void GThreadStd::sleep(double ms) {
@@ -425,14 +425,14 @@ void GThreadStd::sleep(double ms) {
 }
 
 void GThreadStd::start() {
-    // 不需要；std::thread 创建时会隐式自动启动
+    // not needed; std::thread implicitly auto-starts on creation
     _stdThread = new std::thread([&] {
         run();
     });
 }
 
 void GThreadStd::stop() {
-    // 不支持
+    // not supported
 }
 
 void GThreadStd::yield() {

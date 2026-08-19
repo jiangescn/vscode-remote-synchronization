@@ -1,37 +1,19 @@
-/* 文件：OnlyConnect.cpp
+/* File: OnlyConnect.cpp
  *
- * TODO：编辑这些注释，说明实现中任何有趣或值得注意的内容。
+ * TODO: Edit these comments to describe anything interesting or noteworthy in your implementation.
  *
- * TODO：编辑这些注释，给你的助教留一道谜题！
+ * TODO: Edit these comments to leave a puzzle for your section leader to solve!
  */
 #include "OnlyConnect.h"
 #include "GUI/SimpleTest.h"
 using namespace std;
 
-
-bool isV(char ch)
-{
-    ch = toUpperCase(ch);
-    return ch == 'A' || ch == 'E' || ch == 'I' || ch == 'O' || ch == 'U';
-}
-
 string onlyConnectize(string phrase) {
-    /* TODO：下面几行仅用于确保你不会收到编译器警告消息
-     * 当此函数尚未实现时。删除这些行，然后实现此函数。
+    /* TODO: The next few lines just exist to make sure you don't get compiler warning messages
+     * when this function isn't implemented. Delete these lines, then implement this function.
      */
-    if(phrase.empty())
-    {
-        return "";
-    }
-
-    char first = phrase[0];
-    string remain = onlyConnectize(phrase.substr(1));
-
-    if(isalpha(first) && !isV(first))
-    {
-        return char(toupper(first)) + remain;
-    }
-    return remain;
+    (void) phrase;
+    return "";
 }
 
 
@@ -39,7 +21,7 @@ string onlyConnectize(string phrase) {
 
 
 
-/* * * * * * 提供的测试用例 * * * * * */
+/* * * * * * Provided Test Cases * * * * * */
 
 PROVIDED_TEST("Converts lower-case to upper-case.") {
     EXPECT_EQUAL(onlyConnectize("lowercase"), "LWRCS");
@@ -57,19 +39,19 @@ PROVIDED_TEST("Handles single-character inputs.") {
     EXPECT_EQUAL(onlyConnectize("Q"), "Q");
 }
 
-/* TODO：需要在此测试套件中添加自己的测试。思考以下类型：
- * 我们在此测试了哪些输入；更重要的是，哪些输入*没有*测试。有些
- * 测试的一般规则：
+/* TODO: You will need to add your own tests into this suite of test cases. Think about the sorts
+ * of inputs we tested here, and, importantly, what sorts of inputs we *didn't* test here. Some
+ * general rules of testing:
  *
- *    1. 尝试极端情况。有哪些很大的情况需要检查？有哪些很小的情况？
+ *    1. Try extreme cases. What are some very large cases to check? What are some very small cases?
  *
- *    2. 保持多样性。可能的输入很多，确保测试能够覆盖
- *       针对并非彼此简单变体的不同情况。
+ *    2. Be diverse. There are a lot of possible inputs out there. Make sure you have tests that account
+ *       for cases that aren't just variations of one another.
  *
- *    3. 尝试刁钻情况。不要只测试标准输入，还要测试一般人想不到的异常输入
- *       实际输入，但仍然完全合法。
+ *    3. Be sneaky. Don't just try standard inputs. Try weird ones that you wouldn't expect anyone to
+ *       actually enter, but which are still perfectly legal.
  *
- * 祝测试顺利！
+ * Happy testing!
  */
 
 

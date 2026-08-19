@@ -17,21 +17,21 @@ namespace {
 
         Temporary<GColorConsole> display;
 
-        /* 用于清空控制台的按钮。 */
+        /* Button to clear the console. */
         Temporary<GButton> clear;
     };
 
     OnlyConnectGUI::OnlyConnectGUI(GWindow& window) : ProblemHandler(window) {
-        /* 标准按钮。 */
+        /* Standard buttons. */
         clear = Temporary<GButton>(new GButton("Clear Console"),  window, "WEST");
 
-        /* 原始输入。 */
+        /* Raw input. */
         inputLabel = Temporary<GLabel>(new GLabel("Enter text to convert: "), window, "SOUTH");
 
         inputText = Temporary<GTextField>(new GTextField(), window, "SOUTH");
         go        = Temporary<GButton>(new GButton("Go!"), window, "SOUTH");
 
-        /* 显示。 */
+        /* Display. */
         display   = Temporary<GColorConsole>(new GColorConsole(), window, "CENTER");
     }
 

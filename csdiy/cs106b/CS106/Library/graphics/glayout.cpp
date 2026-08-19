@@ -1,12 +1,12 @@
 /*
- * 文件：glayout.cpp
+ * File: glayout.cpp
  * -----------------
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 glayout.cpp，以替代 Java 版本
+ * - renamed to glayout.cpp to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "glayout.h"
@@ -14,7 +14,7 @@
 #include "strlib.h"
 
 GLayout::GLayout() {
-    // 空
+    // empty
 }
 
 void GLayout::clearLayout(QLayout* layout) {
@@ -25,7 +25,7 @@ void GLayout::clearLayout(QLayout* layout) {
     // http://doc.qt.io/qt-5/qlayout.html#takeAt
     QLayoutItem* child;
     while ((child = layout->takeAt(0))) {
-        // TODO：delete child;
+        // TODO: delete child;
     }
     layout->update();
 }
@@ -53,15 +53,15 @@ void GLayout::forceUpdate(GInteractor* interactor) {
 }
 
 /**
- * 强制更新给定控件，即使它处于隐藏状态。
- * 来源：https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
+ * Forces the given widget to update, even if it's hidden.
+ * from https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
  */
 void GLayout::forceUpdate(QWidget* widget) {
     if (!widget) {
         return;
     }
 
-    // 更新所有子控件。
+    // Update all child widgets.
     for (int i = 0; i < widget->children().size(); i++) {
         QObject* child = widget->children()[i];
         if (child->isWidgetType()) {
@@ -72,12 +72,12 @@ void GLayout::forceUpdate(QWidget* widget) {
     widget->updateGeometry();
     widget->update();
 
-    // 使控件布局失效。
+    // Invalidate the layout of the widget.
     if (widget->layout()) {
         invalidateLayout(widget->layout());
     }
 
-    widget->setAttribute(Qt::WA_DontShowOnScreen, true);   // TODO：删除？
+    widget->setAttribute(Qt::WA_DontShowOnScreen, true);   // TODO: remove?
     widget->setAttribute(Qt::WA_DontShowOnScreen, false);
     widget->show();
 }
@@ -110,15 +110,15 @@ QSize GLayout::getProperSize(QWidget* widget) {
 }
 
 /**
- * forceUpdate() 的辅助函数。不能独立使用！
- * 来源：https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
+ * Helper function for forceUpdate(). Not self-sufficient!
+ * from https://stackoverflow.com/questions/2427103/qt-how-to-force-a-hidden-widget-to-calculate-its-layout
  */
 void GLayout::invalidateLayout(QLayout* layout) {
     if (!layout) {
         return;
     }
 
-    // 重新计算给定布局及其所有子布局。
+    // Recompute the given layout and all its child layouts.
     for (int i = 0; i < layout->count(); i++) {
         QLayoutItem* item = layout->itemAt(i);
         if (item->layout()) {
@@ -142,7 +142,7 @@ GLayout::Position GLayout::toPosition(const std::string& positionName) {
     } else if (regionU == "WEST" || regionU == "LEFT") {
         return GLayout::West;
     } else {
-        // “CENTER”“MIDDLE”或“NONE”
+        // "CENTER" or "MIDDLE" or "NONE"
         return GLayout::Center;
     }
 }
@@ -213,7 +213,7 @@ void GBorderLayout::setGeometry(const QRect& rect) {
 
     QLayout::setGeometry(rect);
 
-    // 首先调整/放置北侧/南侧控件
+    // size/place north/south widgets first
     for (int i = 0; i < list.size(); ++i) {
         ItemWrapper* wrapper = list.at(i);
         QLayoutItem* item = wrapper->item;
@@ -246,7 +246,7 @@ void GBorderLayout::setGeometry(const QRect& rect) {
 
     centerHeight = rect.height() - northHeight - southHeight;
 
-    // 其次调整/放置西侧/东侧控件
+    // size/place west/east widgets second
     for (int i = 0; i < list.size(); ++i) {
         ItemWrapper* wrapper = list.at(i);
         QLayoutItem* item = wrapper->item;
@@ -275,7 +275,7 @@ void GBorderLayout::setGeometry(const QRect& rect) {
         }
     }
 
-    // 最后调整/放置中央控件
+    // size/place central widget last
     if (center) {
         QRect geom(westWidth,
                    northHeight,

@@ -1,16 +1,16 @@
 /*
- * 文件：gcolorchooser.cpp
+ * File: gcolorchooser.cpp
  * -----------------------
- * 此文件实现 gfilechooser.h 中声明的操作。
- * 各成员的文档请参阅 gfilechooser.h。
+ * This file implements the operations declared in the gfilechooser.h file.
+ * See gfilechooser.h for documentation of each member.
  * 
  * @author Marty Stepp
  * @version 2018/09/07
- * - 添加接受 GWindow* parent 的重载
+ * - added overloads that accept GWindow* parent
  * @version 2018/08/23
- * - 重命名为 gcolorchooser.cpp，以替代 Java 版本
+ * - renamed to gcolorchooser.cpp to replace Java version
  * @version 2018/07/29
- * - 初始版本
+ * - initial version
  */
 
 #include "gcolorchooser.h"
@@ -19,11 +19,11 @@
 #include "gthread.h"
 
 GColorChooser::GColorChooser() {
-    // 空
+    // empty
 }
 
 std::string GColorChooser::showDialog(const std::string& title, int initialColor) {
-    return showDialog(/* 父级 */ (QWidget*) nullptr, title, initialColor);
+    return showDialog(/* parent */ (QWidget*) nullptr, title, initialColor);
 }
 
 std::string GColorChooser::showDialog(GWindow* parent, const std::string& title, int initialColor) {
@@ -35,7 +35,7 @@ std::string GColorChooser::showDialog(QWidget* parent, const std::string& title,
 }
 
 std::string GColorChooser::showDialog(const std::string& title, const std::string& initialColor) {
-    return showDialog(/* 父级 */ (QWidget*) nullptr, title, initialColor);
+    return showDialog(/* parent */ (QWidget*) nullptr, title, initialColor);
 }
 
 std::string GColorChooser::showDialog(GWindow* parent, const std::string& title, const std::string& initialColor) {

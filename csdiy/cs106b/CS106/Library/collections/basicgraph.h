@@ -1,13 +1,13 @@
 /*
- * 文件：basicgraph.h
+ * File: basicgraph.h
  * ------------------
- * 此文件包含一些实用图类型的声明，
- * 具体来说，是典型图中使用的 Vertex 和 Edge 结构。
- * 在课堂上一起完成。我们还声明 BasicGraph，它是
- * 使用 Vertex 和 Edge 作为类型参数的 Stanford Graph 类。
+ * This file contains the declaration of some useful graph types,
+ * specifically the Vertex and Edge structures used in the typical graph.
+ * together in lecture.  We also declare BasicGraph, an instantiation of
+ * Stanford's Graph class using Vertex and Edge as its type parameters.
  *
- * 由于该类是模板，大多数成员都在此文件中实现。
- * 某些非模板成员的实现见 BasicGraph.cpp。
+ * Most members are implemented in this file, since the class is a template.
+ * See BasicGraph.cpp for implementation of some non-template members.
  */
 
 
@@ -29,604 +29,604 @@
 #include "vector.h"
 
 /**
- * Vertex/Edge 结构的前向声明，使它们可以相互引用
- * 彼此互相连接。
+ * Forward declarations of Vertex/Edge structures so that they can refer
+ * to each other mutually.
  * @private
  */
 template <typename V = void*, typename E = void*>
 class EdgeGen;
 
 /**
- * Graph 类模板所需的标准 Vertex（Node）结构实现。
- * 每个 Vertex 结构表示图中的一个顶点。
+ * Canonical Vertex (Node) structure implementation needed by Graph class template.
+ * Each Vertex structure represents a single vertex in the graph.
  */
 template <typename V = void*, typename E = void*>
 class VertexGen : public Observable<int> {
 public:
     /**
-     * 顶点名称，以字符串表示。
+     * The vertex's name as a string.
      */
     std::string name;
 
     /**
-     * 从此顶点向邻居发出的边。
+     * The edges outbound from this vertex to its neighbors.
      */
-    Set<EdgeGen<V, E>*> arcs;     // Stanford Graph 所必需；
+    Set<EdgeGen<V, E>*> arcs;     // required by Stanford Graph;
 
     /**
-     * 从此顶点向邻居发出的边；
-     * “arcs”成员的别名。
+     * The edges outbound from this vertex to its neighbors;
+     * an alias of the 'arcs' member.
      */
     Set<EdgeGen<V, E>*>& edges;
 
 #ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     /**
-     * 到达此顶点的成本；初始为 0。
+     * The cost to reach this vertex; initially 0.
      */
     double cost;
 
     /**
-     * “cost”成员的别名。
+     * An alias for the 'cost' member.
      */
     double& weight;
 
     /**
-     * 此顶点此前是否访问过；初始为 false。
+     * Whether this vertex has been visited before; initally false.
      */
     bool visited;
 
     /**
-     * 此顶点之前的顶点；初始为 null。
+     * The vertex that comes before this one; initially null.
      */
     VertexGen* previous;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 
     /**
-     * 以下指针可指向顶点所需的任何额外数据。
-     * 此字段通常不需要，可以忽略。
+     * The following pointer can point to any extra data needed by the vertex.
+     * This field is generally not necessary and can be ignored.
      */
     V data;
 
     /**
      * @private
      */
-    V& extraData;       // data 的别名；它们是同一个字段
+    V& extraData;       // alias of data; they are the same field
 
     /**
-     * 构造具有给定名称的顶点。
+     * Constructs a vertex with the given name.
      */
     VertexGen(const std::string& name = "");
 
     /**
-     * 复制构造函数。
+     * Copy constructor.
      */
     VertexGen(const VertexGen& other);
 
     /**
-     * 释放此顶点动态分配的任何内存。
+     * Frees up any memory dynamically allocated by this vertex.
      */
     ~VertexGen();
 
     /**
-     * 返回此顶点的颜色（如果有）。初始为 WHITE。
+     * Returns the color of this vertex, if any.  Initially WHITE.
      */
-    /* 颜色 */ int getColor() const;
+    /* Color */ int getColor() const;
 
     /**
-     * 将此顶点的附加数据重置为初始状态。
-     * 具体来说，将 cost 设为 0、visited 设为 false、previous 设为 nullptr。
+     * Wipes the supplementary data of this vertex back to its initial state.
+     * Specifically, sets cost to 0, visited to false, and previous to nullptr.
      */
     void resetData();
 
     /**
-     * 将此顶点的颜色设为给定颜色。
-     * 颜色必须是 WHITE、GRAY、YELLOW 或 GREEN 之一。
-     * 之后调用 getColor 将返回你在此传入的颜色。
+     * Sets the color of this vertex to be the given color.
+     * The color must be one of WHITE, GRAY, YELLOW, or GREEN.
+     * Future calls to getColor will return the color you pass here.
      */
-    void setColor(/* 颜色 */ int c);
+    void setColor(/* Color */ int c);
 
     /**
-     * 返回此顶点用于调试的字符串表示，例如
-     * “Vertex{name=r13c42, cost=11, visited=true, previous=r12c41, neighbors={r12c41, r12c43}}”。
+     * Returns a string representation of this vertex for debugging, such as
+     * "Vertex{name=r13c42, cost=11, visited=true, previous=r12c41, neighbors={r12c41, r12c43}}".
      */
     std::string toString() const;
 
     /**
-     * 复制赋值运算符。
+     * Copy assignment operator.
      */
     VertexGen& operator =(const VertexGen& other);
 
     /**
-     * 移动赋值运算符。
+     * Move assignment operator.
      */
     VertexGen& operator =(VertexGen&& other);
 
 private:
-    /* 颜色 */ int _color;   // 传给 setColor 的顶点颜色
+    /* Color */ int _color;   // vertex's color as passed to setColor
 };
 
 /**
- * 使顶点可打印到输出流。
- * 有关输出格式示例，请参阅 toString。
- * 请注意，打印顶点不同于打印顶点指针。
- * 若尝试输出指针，只会看到其十六进制地址。
+ * Makes a vertex printable to an output stream.
+ * See toString for an example of the output format.
+ * Note that printing a vertex is not the same as printing a vertex pointer.
+ * If you try to print a pointer, you will just see its address in hex.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v);
 
 /**
- * Graph 类模板所需的标准 Edge（Arc）结构实现。
- * 每个 Edge 结构表示图中的一条边。
+ * Canonical Edge (Arc) structure implementation needed by Graph class template.
+ * Each Edge structure represents a single edge in the graph.
  */
 template <typename V, typename E>
 class EdgeGen {
 public:
     /**
-     * 边的起始顶点。
+     * The edge's starting vertex.
      */
     VertexGen<V, E>* start;
 
     /**
-     * 边的终止顶点。
+     * The edge's ending vertex.
      */
-    VertexGen<V, E>* finish;   // Stanford Graph 所必需；
+    VertexGen<V, E>* finish;   // required by Stanford Graph;
 
     /**
-     * finish 的别名；它们是同一个字段。
+     * An alias of finish; they are the same field.
      */
     VertexGen<V, E>*& end;
 
     /**
-     * 边的权重；默认为 0。
+     * The edge's weight; default 0.
      */
     double cost;
 
     /**
-     * “cost”成员的别名。
+     * An alias for the 'cost' member.
      */
     double& weight;
 
 #ifdef SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
     /**
-     * 此边此前是否访问过；初始为 false。
+     * Whether this edge has been visited before; initally false.
      */
     bool visited;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 
     /**
-     * 可指向顶点所需任何额外数据的指针。
-     * 此字段通常不需要，可以忽略。
+     * A pointer that can point to any extra data needed by the vertex.
+     * This field is generally not necessary and can be ignored.
      */
     void* data;
 
     /**
-     * “data”成员的别名。
+     * An alias for the 'data' member.
      */
     void*& extraData;
 
     /**
-     * 在给定起点/终点顶点之间构造具有以下属性的新边：
-     * 给定的成本。
+     * Constructs a new edge between the given start/end vertices with
+     * the given cost.
      */
     EdgeGen(VertexGen<V, E>* start = nullptr, VertexGen<V, E>* finish = nullptr, double cost = 0.0);
 
     /**
-     * 释放此边动态分配的任何内存。
+     * Frees up any memory dynamically allocated by this edge.
      */
     ~EdgeGen();
 
     /**
-     * 将此边的附加数据重置为初始状态。
+     * Wipes the supplementary data of this edge back to its initial state.
      */
     void resetData();
 
     /**
-     * 返回此边用于调试的字符串表示，例如
-     * “Arc{start=r12c42, finish=r12c41, cost=0.75}”。
+     * Returns a string representation of this edge for debugging, such as
+     * "Arc{start=r12c42, finish=r12c41, cost=0.75}".
      */
     std::string toString() const;
 
     /**
-     * 复制赋值运算符。
+     * Copy assignment operator.
      */
     EdgeGen& operator =(const EdgeGen& other);
 
     /**
-     * 移动赋值运算符。
+     * Move assignment operator.
      */
     EdgeGen& operator =(EdgeGen&& other);
 };
 
 /**
- * 使边可打印到输出流。
- * 有关输出格式示例，请参阅 toString。
- * 请注意，打印边不同于打印边指针。
- * 若尝试输出指针，只会看到其十六进制地址。
+ * Makes an edge printable to an output stream.
+ * See toString for an example of the output format.
+ * Note that printing an edge is not the same as printing an edge pointer.
+ * If you try to print a pointer, you will just see its address in hex.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge);
 
 
 /**
- * BasicGraph 基本上只是使用 Vertex 和 Edge 对 Graph 的实例化
- * 作为其模板参数。它还添加了一些便利函数，例如
- * 以及使用更熟悉的等价名称镜像“addArc”等成员
- * 例如 "addEdge"。
+ * BasicGraph is just basically an instantiation of Graph using Vertex and Edge
+ * as its template parameters.  It also adds a few convenience functions such
+ * as mirroring members like "addArc" with an equivalent more familiar name
+ * like "addEdge".
  *
- * 还有一些与邻居相关的便捷函数，例如 isNeighbor。
- * BasicGraph 包含一个名为 isReachable 的 DFS 实现，在以下位置找不到
- * 在标准 Stanford Graph 类中。
+ * There are a few convenience functions related to neighbors, like isNeighbor.
+ * BasicGraph contains a DFS implementation called isReachable, not found
+ * in the normal Stanford Graph class.
  *
- * 还添加了若干函数，使边更便于使用：
- * 使用 getEdge(v1, v2) 获取给定顶点对之间的边，
- * 并使用 getInverseEdge(edge) 获取给定边 v1 -> v2 的反向边 v2 -> v1。
+ * There are also a few functions added to make edges more convenient to work with:
+ * getEdge(v1, v2) to get the edge between a given pair of vertices,
+ * and getInverseEdge(edge) to get the edge v2 -> v1 for a given edge v1 -> v2.
  */
 template <typename V = void*, typename E = void*>
 class BasicGraphGen : public Graph<VertexGen<V, E>, EdgeGen<V, E>> {
 public:
     /**
-     * 构造新的空图。
+     * Constructs a new empty graph.
      * @bigoh O(1)
      */
     BasicGraphGen();
 
     /**
-     * 构造包含给定顶点的新图。
+     * Constructs a new graph containing the given vertexes.
      * @bigoh O(V)
      */
     BasicGraphGen(std::initializer_list<std::string> vertexList);
 
     /**
-     * 向图中添加一条从顶点 v1 到顶点 v2 的有向边。
-     * 注意，同一对顶点之间允许存在多条边。
+     * Adds a directed edge to the graph from vertex v1 to vertex v2.
+     * Note that it is allowed to have multiple edges between the same pair of vertexes.
      *
-     * 返回指向边的指针，但客户端无需保存该指针；
-     * 之后可调用 getEdge 并传入两个顶点，再次获取该指针。
+     * Returns a pointer to the edge, though clients need not store that pointer;
+     * you can get the pointer again later by calling getEdge and passing the two vertexes.
      *
-     * 等价于 addNode。
+     * Equivalent to addNode.
      *
-     * @return 指向所创建边的指针
+     * @return a pointer to the edge created
      * @bigoh O(log V + log E)
      */
     EdgeGen<V, E>* addEdge(const std::string& v1, const std::string& v2, double cost = 0.0, bool directed = true);
 
     /**
-     * 向图中添加一条从顶点 v1 到顶点 v2 的有向边。
-     * 若在图中找不到任一顶点，则将该顶点添加到图中。
-     * 注意，同一对顶点之间允许存在多条边。
+     * Adds a directed edge to the graph from vertex v1 to vertex v2.
+     * If either vertex is not found in the graph, said vertex will be added to the graph.
+     * Note that it is allowed to have multiple edges between the same pair of vertexes.
      *
-     * 返回指向边的指针，但客户端无需保存该指针；
-     * 之后可调用 getEdge 并传入两个顶点，再次获取该指针。
+     * Returns a pointer to the edge, though clients need not store that pointer;
+     * you can get the pointer again later by calling getEdge and passing the two vertexes.
      *
-     * 等价于 addNode。
+     * Equivalent to addNode.
      *
-     * @return 指向所创建边的指针
-     * @throw 如果任一顶点为空，则抛出 ErrorException
+     * @return a pointer to the edge created
+     * @throw ErrorException if either vertex is null
      * @bigoh O(log V + log E)
      */
     EdgeGen<V, E>* addEdge(VertexGen<V, E>* v1, VertexGen<V, E>* v2, double cost = 0.0, bool directed = true);
 
     /**
-     * 将给定有向边从顶点 v1 到顶点 v2 添加到图中。
-     * 若在图中找不到任一顶点，则将该顶点添加到图中。
-     * 注意，同一对顶点之间允许存在多条边。
+     * Adds the given directed edge to the graph from vertex v1 to vertex v2.
+     * If either vertex is not found in the graph, said vertex will be added to the graph.
+     * Note that it is allowed to have multiple edges between the same pair of vertexes.
      *
-     * 返回指向边的指针，但客户端无需保存该指针；
-     * 之后可调用 getEdge 并传入两个顶点，再次获取该指针。
+     * Returns a pointer to the edge, though clients need not store that pointer;
+     * you can get the pointer again later by calling getEdge and passing the two vertexes.
      *
-     * 等价于 addNode。
+     * Equivalent to addNode.
      *
-     * @return 指向所创建边的指针
-     * @throw 如果任一顶点为空，则抛出 ErrorException
+     * @return a pointer to the edge created
+     * @throw ErrorException if either vertex is null
      * @bigoh O(log V + log E)
      */
     EdgeGen<V, E>* addEdge(EdgeGen<V, E>* e, bool directed = true);
 
     /**
-     * 若图中尚不存在同名顶点，则向图中添加顶点。
-     * 此方法的这个版本接受字符串作为顶点名称，
-     * 创建适当类型的新顶点并初始化其字段。
-     * 返回指向顶点的指针，但客户端无需存储该指针；
-     * 之后可以通过调用 getVertex 并传入相同名称再次获取该指针。
+     * Adds a vertex to the graph, if no vertex with that name already exists in the graph.
+     * This version of this method accepts a string for the vertex's name,
+     * creates a new vertex of the appropriate type and initializes its fields.
+     * Returns a pointer to the vertex, though clients need not store that pointer;
+     * you can get the pointer again later by calling getVertex and passing the same name.
      *
-     * 图中的顶点必须具有唯一名称。
-     * 若此图已包含给定名称的顶点，
-     * 不会添加该顶点，并且图的状态不会改变。
+     * The vertexes in a graph must have unique names.
+     * If this graph already contains a vertex with the given name,
+     * the vertex will not be added and the graph's state will not change.
      *
-     * 等价于 addNode。
+     * Equivalent to addNode.
      *
-     * @return 指向所创建顶点的指针
+     * @return a pointer to the vertex created
      * @bigoh O(log V)
      */
     VertexGen<V, E>* addVertex(const std::string& name);
 
     /**
-     * 若图中尚不存在同名顶点，则向图中添加顶点。
-     * 此方法的这个版本接受字符串作为顶点名称，
-     * 创建适当类型的新顶点并初始化其字段。
-     * 另一个接受表示顶点及其数据的结构。
-     * 返回指向顶点的指针，但客户端无需存储该指针；
-     * 之后可以通过调用 getVertex 并传入相同名称再次获取该指针。
+     * Adds a vertex to the graph, if no vertex with that name already exists in the graph.
+     * This version of this method accepts a string for the vertex's name,
+     * creates a new vertex of the appropriate type and initializes its fields.
+     * The other accepts a structure representing the vertex and its data.
+     * Returns a pointer to the vertex, though clients need not store that pointer;
+     * you can get the pointer again later by calling getVertex and passing the same name.
      *
-     * 图中的顶点必须具有唯一名称。
-     * 若此图已包含给定名称的顶点，
-     * 不会添加该顶点，并且图的状态不会改变。
+     * The vertexes in a graph must have unique names.
+     * If this graph already contains a vertex with the given name,
+     * the vertex will not be added and the graph's state will not change.
      *
-     * 调用此函数时，你将放弃对 Vertex 的所有权
-     * 将该结构的生命周期绑定到图；图使用完后会释放它。
+     * When calling this function, you are relinquishing ownership of the Vertex
+     * structure's lifecycle to the graph; our graph will free it when done with it.
      *
-     * 等价于 addNode。
+     * Equivalent to addNode.
      *
-     * @return 指向所创建顶点的指针
-     * @throw 如果 vertex 为 null，则抛出 ErrorException
+     * @return a pointer to the vertex created
+     * @throw ErrorException if vertex is null
      * @bigoh O(log V)
      */
     VertexGen<V, E>* addVertex(VertexGen<V, E>* v);
 
     /**
-     * 从图中删除所有边。
-     * 释放内部作为堆存储分配的任何边对象。
+     * Removes all edges from the graph.
+     * Frees any edge objects that were internally allocated as heap storage.
      *
-     * 等价于 clearArcs。
+     * Equivalent to clearArcs.
      * @bigoh O(E log E)
      */
     void clearEdges();
 
     /**
-     * 从图中移除给定顶点的所有出边。
-     * 顶点本身不会被移除。
-     * 如果该顶点为 null 或在图中找不到，则不产生任何效果。
+     * Removes all outbound edges of the given vertex from the graph.
+     * The vertex itself is not removed.
+     * If the vertex is null or is not found in the graph, has no effect.
      *
-     * 等价于 clearArcs。
+     * Equivalent to clearArcs.
      * @bigoh O(E log E)
      * @bigoh O(log V + E)
      */
     void clearEdges(VertexGen<V, E>* v);
 
     /**
-     * 从图中移除给定顶点的所有出边。
-     * 顶点本身不会被移除。
-     * 如果在图中找不到该顶点，则不产生任何效果。
+     * Removes all outbound edges of the given vertex from the graph.
+     * The vertex itself is not removed.
+     * If the vertex is not found in the graph, has no effect.
      *
-     * 等价于 clearArcs。
+     * Equivalent to clearArcs.
      * @bigoh O(E log E)
      */
     void clearEdges(const std::string& v);
 
     /**
-     * 如果图中存在从 v1 到 v2 的边，则返回 true。
-     * 若任一所给顶点为空或在图中找不到，则返回 false。
+     * Returns true if the graph has an edge from v1 to v2 in the graph.
+     * If either of the vertexes supplied is null or is not found in the graph, returns false.
      *
-     * 等价于 containsArc。
+     * Equivalent to containsArc.
      * @bigoh O(log E)
      */
     bool containsEdge(VertexGen<V, E>* v1, VertexGen<V, E>* v2) const;
 
     /**
-     * 如果图中存在从 v1 到 v2 的边，则返回 true。
-     * 若在图中找不到任一所给顶点，则返回 false。
+     * Returns true if the graph has an edge from v1 to v2 in the graph.
+     * If either of the vertexes supplied is not found in the graph, returns false.
      *
-     * 等价于 containsArc。
+     * Equivalent to containsArc.
      * @bigoh O(log E)
      */
     bool containsEdge(const std::string& v1, const std::string& v2) const;
 
     /**
-     * 如果图包含给定边，则返回 true。
-     * 如果边结构为 null，则返回 false。
+     * Returns true if the graph contains the given edge.
+     * If the edge structure is null, returns false.
      *
-     * 等价于 containsArc。
+     * Equivalent to containsArc.
      * @bigoh O(log E)
      */
     bool containsEdge(EdgeGen<V, E>* edge) const;
 
     /**
-     * 返回图是否包含给定名称的顶点。
+     * Returns whether the graph contains a vertex with the given name.
      *
-     * 等价于 containsNode。
+     * Equivalent to containsNode.
      * @bigoh O(log V)
      */
     bool containsVertex(const std::string& name) const;
 
     /**
-     * 返回图是否包含给定顶点。
-     * 如果传入空指针，则返回 false。
+     * Returns whether the graph contains the given vertex.
+     * If a null pointer is passed, returns false.
      *
-     * 等价于 containsNode。
+     * Equivalent to containsNode.
      * @bigoh O(log V)
      */
     bool containsVertex(VertexGen<V, E>* v) const;
 
     /**
-     * 返回图中的边数量。
+     * Returns the number of edges in the graph.
      *
-     * 等价于 arcCount。
+     * Equivalent to arcCount.
      * @bigoh O(log V)
      */
     int edgeCount() const;
 
     /**
-     * 返回表示图中从 v1 到 v2 的边的结构。
-     * 如果提供的任一顶点为 null 或在图中找不到，函数将返回 nullptr。
-     * 若给定顶点对之间有多条边，返回哪一条边未作规定。
+     * Returns the structure representing the edge from v1 to v2 in the graph.
+     * If either of the vertexes supplied is null or is not found in the graph, the function will return nullptr.
+     * If there are multiple edges between the given pair of vertexes, which of the edges will be returned is unspecified.
      *
-     * 等价于 getArc。
+     * Equivalent to getArc.
      *
-     * @param v1 起始顶点
-     * @param v2 结束顶点
-     * @return 从 v1 到 v2 的边；若不存在，则为 nullptr
+     * @param v1 start vertex
+     * @param v2 end vertex
+     * @return edge from v1 to v2, or nullptr if there is no such edge
      * @bigoh O(log V + log E)
      */
     EdgeGen<V, E>* getEdge(VertexGen<V, E>* v1, VertexGen<V, E>* v2) const;
 
     /**
-     * 返回表示图中从 v1 到 v2 的边的结构。
-     * 如果提供的任一顶点在图中找不到，函数将返回 nullptr。
-     * 若给定顶点对之间有多条边，返回哪一条边未作规定。
+     * Returns the structure representing the edge from v1 to v2 in the graph.
+     * If either of the vertexes supplied is not found in the graph, the function will return nullptr.
+     * If there are multiple edges between the given pair of vertexes, which of the edges will be returned is unspecified.
      *
-     * 等价于 getArc。
+     * Equivalent to getArc.
      *
-     * @param v1 起始顶点
-     * @param v2 结束顶点
-     * @return 从 v1 到 v2 的边；若不存在，则为 nullptr
+     * @param v1 start vertex
+     * @param v2 end vertex
+     * @return edge from v1 to v2, or nullptr if there is no such edge
      * @bigoh O(log V + log E)
      */
     EdgeGen<V, E>* getEdge(const std::string& v1, const std::string& v2) const;
 
     /**
-     * 返回图中所有边的集合。
+     * Returns the set of all edges in the graph.
      *
-     * 等价于 getArcSet。
+     * Equivalent to getArcSet.
      * @bigoh O(1)
      */
     const Set<EdgeGen<V, E>*>& getEdgeSet() const;
 
     /**
-     * 返回从指定顶点出发的所有边的集合。
-     * 若提供的顶点为空或在图中找不到，
-     * 该函数会返回空集合。
+     * Returns the set of all edges that start at the specified vertex.
+     * If the vertex supplied is null or is not found in the graph,
+     * the function will return an empty set.
      *
-     * 等价于 getArcSet。
+     * Equivalent to getArcSet.
      * @bigoh O(1)
      */
     const Set<EdgeGen<V, E>*>& getEdgeSet(VertexGen<V, E>* v) const;
 
     /**
-     * 返回从指定顶点出发的所有边的集合。
-     * 如果提供的顶点在图中找不到，
-     * 该函数会返回空集合。
+     * Returns the set of all edges that start at the specified vertex.
+     * If the vertex supplied is not found in the graph,
+     * the function will return an empty set.
      *
-     * 等价于 getArcSet。
+     * Equivalent to getArcSet.
      * @bigoh O(1)
      */
     const Set<EdgeGen<V, E>*>& getEdgeSet(const std::string& v) const;
 
     /**
-     * 返回给定边的反向边；
-     * 也就是说，如果指定边 e 从 v1 开始并在 v2 结束，
-     * 将返回从 v2 开始并在 v1 结束的边，
-     * 若图中存在这样的边。
+     * Returns the edge that is the opposite of the given edge;
+     * that is, if the specified edge e starts at v1 and ends at v2,
+     * will return the edge that starts at v2 and ends at v1,
+     * if such an edge exists in the graph.
      *
-     * 若提供的边为 nullptr、在图中找不到，
-     * 或不存在逆矩阵，函数将返回 nullptr。
+     * If the edge supplied is nullptr, is not found in the graph,
+     * or has no inverse, the function will return nullptr.
      *
-     * 若给定顶点对之间有多条边，
-     * 未规定将返回其中哪条边。
+     * If there are multiple edges between the given pair of vertexes,
+     * which of the edges will be returned is unspecified.
      *
-     * 等价于 getInverseEdge。
+     * Equivalent to getInverseEdge.
      * @bigoh O(E)
      */
     EdgeGen<V, E>* getInverseArc(EdgeGen<V, E>* edge) const;
 
     /**
-     * 返回给定边的反向边；
-     * 也就是说，如果指定边 e 从 v1 开始并在 v2 结束，
-     * 将返回从 v2 开始并在 v1 结束的边，
-     * 若图中存在这样的边。
+     * Returns the edge that is the opposite of the given edge;
+     * that is, if the specified edge e starts at v1 and ends at v2,
+     * will return the edge that starts at v2 and ends at v1,
+     * if such an edge exists in the graph.
      *
-     * 若提供的边为 nullptr、在图中找不到，
-     * 或不存在逆矩阵，函数将返回 nullptr。
+     * If the edge supplied is nullptr, is not found in the graph,
+     * or has no inverse, the function will return nullptr.
      *
-     * 若给定顶点对之间有多条边，
-     * 未规定将返回其中哪条边。
+     * If there are multiple edges between the given pair of vertexes,
+     * which of the edges will be returned is unspecified.
      *
-     * 等价于 getInverseArc。
+     * Equivalent to getInverseArc.
      * @bigoh O(E)
      */
     EdgeGen<V, E>* getInverseEdge(EdgeGen<V, E>* edge) const;
 
     /**
-     * 返回图中终止于指定顶点的所有边的集合。
-     * 若提供的顶点为空或在图中找不到，
-     * 该函数会返回空集合。
+     * Returns the set of all edges in the graph that end at the specified vertex.
+     * If the vertex supplied is null or is not found in the graph,
+     * the function will return an empty set.
      *
-     * 等价于 getInverseArcSet。
+     * Equivalent to getInverseArcSet.
      * @bigoh O(E)
      */
     const Set<EdgeGen<V, E>*> getInverseEdgeSet(VertexGen<V, E>* v) const;
 
     /**
-     * 返回图中终止于指定顶点的所有边的集合。
-     * 若提供的顶点为空或在图中找不到，
-     * 该函数会返回空集合。
+     * Returns the set of all edges in the graph that end at the specified vertex.
+     * If the vertex supplied is null or is not found in the graph,
+     * the function will return an empty set.
      *
-     * 等价于 getInverseArcSet。
+     * Equivalent to getInverseArcSet.
      * @bigoh O(E)
      */
     const Set<EdgeGen<V, E>*> getInverseEdgeSet(const std::string& v) const;
 
     /**
-     * 按名称在图中查找顶点，并返回指向它的指针
-     * 其内部数据结构。
-     * 如果不存在指定名称的顶点，则返回 nullptr。
+     * Looks up a vertex in the graph by name and returns a pointer to
+     * its internal data structure.
+     * If no vertex with the specified name exists, returns nullptr.
      * @bigoh O(log V)
      */
     VertexGen<V, E>* getVertex(const std::string& name) const;
 
     /**
-     * 返回图中所有顶点名称的集合。
-     * 顶点将按名称以区分大小写的字母顺序排序。
+     * Returns a set of the names of all vertexes in the graph.
+     * The vertexes will be sorted by name in case-sensitive alphabetical order.
      * @bigoh O(V log V)
      */
     Set<std::string> getVertexNames() const;
 
     /**
-     * 返回图中所有顶点的集合。
-     * 顶点将按名称以区分大小写的字母顺序排序。
+     * Returns the set of all vertexes in the graph.
+     * The vertexes will be sorted by name in case-sensitive alphabetical order.
      * @bigoh O(V log V)
      */
     const Set<VertexGen<V, E>*>& getVertexSet() const;
 
     /**
-     * 从图中移除从 v1 到 v2 的边。
-     * 若有多条边连接指定端点，则全部移除。
-     * 如果提供的任一顶点在图中找不到，
-     * 调用此函数不会对图产生任何影响。
+     * Removes the edge from v1 to v2 from the graph.
+     * If more than one edge connects the specified endpoints, all of them are removed.
+     * If either of the vertexes supplied is not found in the graph,
+     * calling this function will have no effect on the graph.
      * @bigoh O(E + log V)
      */
     void removeEdge(const std::string& v1, const std::string& v2, bool directed = true);
 
     /**
-     * 从图中移除从 v1 到 v2 的边。
-     * 若有多条边连接指定端点，则全部移除。
-     * 如果提供的任一顶点为 null 或在图中找不到，
-     * 调用此函数不会对图产生任何影响。
+     * Removes the edge from v1 to v2 from the graph.
+     * If more than one edge connects the specified endpoints, all of them are removed.
+     * If either of the vertexes supplied is null or not found in the graph,
+     * calling this function will have no effect on the graph.
      * @bigoh O(E + log V)
      */
     void removeEdge(VertexGen<V, E>* v1, VertexGen<V, E>* v2, bool directed = true);
 
     /**
-     * 从图中删除给定边。
-     * 如果提供的边在图中找不到，
-     * 调用此函数不会对图产生任何影响。
+     * Removes the given edge from the graph.
+     * If the edge supplied is not found in the graph,
+     * calling this function will have no effect on the graph.
      * @bigoh O(log E + log V)
      */
     void removeEdge(EdgeGen<V, E>* e, bool directed = true);
 
     /**
-     * 从图中移除给定顶点。
-     * 如果在图中找不到该顶点，则调用不产生任何效果。
+     * Removes the given vertex from the graph.
+     * If the vertex is not found in the graph, the call has no effect.
      * @bigoh O(E + log V)
      */
     void removeVertex(const std::string& name);
 
     /**
-     * 从图中移除给定顶点。
-     * 如果该顶点为 null 或在图中找不到，则调用不产生任何效果。
+     * Removes the given vertex from the graph.
+     * If the vertex is null or is not found in the graph, the call has no effect.
      * @bigoh O(E + log V)
      */
     void removeVertex(VertexGen<V, E>* v);
 
     /**
-     * 将每个顶点和边中存储的数据恢复为原始值
-     * 通过对每个顶点和边调用 resetData。
+     * Sets the data stored in each vertex and edge back to its original value
+     * by calling resetData on every vertex and edge.
      * @private
      * @bigoh O(V + E)
      */
     void resetData();
 
     /**
-     * 设置 resetData 方法是否启用（默认 true）。
+     * Sets whether the resetData method is enabled (default true).
      * @private
      * @bigoh O(1)
      */
@@ -639,30 +639,30 @@ public:
     virtual void writeArcData(std::ostream& out, EdgeGen<V, E>* edge) const;
 
     /**
-     * 返回表示与此图等价的邻接表的 Map。
-     * 每个顶点的名称是映射中的键，其相邻顶点的名称
-     * 作为与该键关联的值存储在 Set 中。
-     * 需要注意，此成员不会保留边的权重
-     * 位于相邻顶点之间，因此不适合用于加权图。
+     * Returns a Map representing an adjacency list equivalent to this graph.
+     * Each vertex's name is a key in the map, and its neighboring vertexes' names
+     * are stored in a Set as the value associated with that key.
+     * It should be noted that this member does not preserve the weights of the edges
+     * between the neighboring vertexes, so it is not ideal for use with weighted graphs.
      * @bigoh O(V + E)
      */
     Map<std::string, Set<std::string>> toMap() const;
 
     /**
-     * 返回图中的顶点数量。
-     * 等价于 size。
+     * Returns the number of vertexes in the graph.
+     * Equivalent to size.
      * @bigoh O(1)
      */
     int vertexCount() const;
 
     /**
-     * 重载 <code>[]</code>，根据顶点名称返回顶点指针。
+     * Overloads <code>[]</code> to return vertex pointers by vertex name.
      * @bigoh O(log V)
      */
     VertexGen<V, E>* operator [](const std::string& name);
 
     /**
-     * 重载 <code>[]</code>，根据顶点名称返回顶点指针。
+     * Overloads <code>[]</code> to return vertex pointers by vertex name.
      * @bigoh O(log V)
      */
     const VertexGen<V, E>* operator [](const std::string& name) const;
@@ -672,50 +672,50 @@ private:
 };
 
 /**
- * BasicGraphGen 的哈希函数。
+ * Hash function for BasicGraphGen.
  */
 template <typename V, typename E>
 int hashCode(const BasicGraphGen<V, E>& graph);
 
 /*
- * 将 Vertex 定义为数据绑定为 void* 的 VertexGen。
- * 为向后兼容而保留。
+ * Defines a Vertex to be a VertexGen with its data bound to be a void*.
+ * Retained for backward compatibility.
  */
 typedef VertexGen<void*, void*> Vertex;
 #define VertexV VertexGen
 
 /*
- * 如有需要，可以将 Vertex 称为 Node。
+ * You can refer to a Vertex as a Node if you prefer.
  */
 #define Node Vertex
 
 /*
- * 将 Edge 定义为数据绑定为 void* 的 EdgeGen。
- * 为向后兼容而保留。
+ * Defines an Edge to be an EdgeGen with its data bound to be a void*.
+ * Retained for backward compatibility.
  */
 typedef EdgeGen<void*, void*> Edge;
 #define EdgeV EdgeGen
 
 /*
- * 如有需要，可以将 Edge 称为 Arc。
+ * You can refer to an Edge as an Arc if you prefer.
  */
 #define Arc Edge
 
 /*
- * 将 BasicGraph 定义为数据绑定为 void* 的 BasicGraphGen。
- * 为向后兼容而保留。
+ * Defines a BasicGraph to be a BasicGraphGen with its data bound to be a void*.
+ * Retained for backward compatibility.
  */
 typedef BasicGraphGen<void*, void*> BasicGraph;
 #define BasicGraphV BasicGraphGen
 
 /**
- * BasicGraph 的哈希函数。
+ * Hash function for BasicGraph.
  */
 int hashCode(const BasicGraph& graph);
 
 
 /*
- * Vertex 成员的实现
+ * Vertex member implementations
  */
 template <typename V, typename E>
 VertexGen<V, E>::VertexGen(const std::string& theName)
@@ -743,12 +743,12 @@ VertexGen<V, E>::VertexGen(const VertexGen& other)
       data(other.data),
       extraData(data),
       _color(other._color) {
-    // 空
+    // empty
 }
 
 template <typename V, typename E>
 VertexGen<V, E>::~VertexGen() {
-    // 空
+    // empty
 }
 
 template <typename V, typename E>
@@ -763,7 +763,7 @@ void VertexGen<V, E>::resetData() {
     previous = nullptr;
     visited = false;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
-    _color = /* 未着色 */ 0;
+    _color = /* UNCOLORED */ 0;
 }
 
 template <typename V, typename E>
@@ -823,7 +823,7 @@ std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v) {
     out << ", previous=" << (v.previous == nullptr ? std::string("nullptr") : v.previous->name);
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
 
-    // 打印邻居
+    // print neighbors
     out << ", neighbors={";
     int i = 0;
     for (EdgeGen<V, E>* edge : v.edges) {
@@ -837,15 +837,15 @@ std::ostream& operator <<(std::ostream& out, const VertexGen<V, E>& v) {
             out << "nullptr";
         }
     }
-    out << "}";   // 邻居结束
+    out << "}";   // end of neighbors
 
-    out << "}";   // Vertex 结束
+    out << "}";   // end of Vertex
     return out;
 }
 
 
 /*
- * Edge 成员实现
+ * Edge member implementations
  */
 template <typename V, typename E>
 EdgeGen<V, E>::EdgeGen(VertexGen<V, E>* theStart, VertexGen<V, E>* theFinish, double theCost)
@@ -911,7 +911,7 @@ EdgeGen<V, E>& EdgeGen<V, E>::operator =(EdgeGen&& other) {
 }
 
 /**
- * 将给定边结构写入给定输出流。
+ * Writes the given edge structure to the given output stream.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge) {
@@ -941,7 +941,7 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge) {
 
 
 /*
- * BasicGraph 成员实现
+ * BasicGraph member implementations
  */
 template <typename V, typename E>
 BasicGraphGen<V, E>::BasicGraphGen() : Graph<VertexGen<V, E>, EdgeGen<V, E>>() {
@@ -1179,7 +1179,7 @@ const VertexGen<V, E>* BasicGraphGen<V, E>::operator [](const std::string& name)
 
 template <typename V, typename E>
 void BasicGraphGen<V, E>::scanArcData(TokenScanner& scanner, EdgeGen<V, E>* edge, EdgeGen<V, E>* inverse) {
-    std::string colon = scanner.nextToken();   // “:”，跳过
+    std::string colon = scanner.nextToken();   // ":", skip over
     if (colon == ":") {
         std::string costStr = scanner.nextToken();
         edge->cost = stringToReal(costStr);
@@ -1187,8 +1187,8 @@ void BasicGraphGen<V, E>::scanArcData(TokenScanner& scanner, EdgeGen<V, E>* edge
             inverse->cost = edge->cost;
         }
     } else {
-        // 此边无成本（成本 0）；退回冒号令牌，因为
-        // 它实际上可能不是冒号
+        // no cost for this edge (cost 0); un-read the colon token because
+        // it probably wasn't actually a colon
         scanner.saveToken(colon);
     }
 }
@@ -1202,7 +1202,7 @@ void BasicGraphGen<V, E>::writeArcData(std::ostream& out, EdgeGen<V, E>* edge) c
 }
 
 /**
- * 用于图的模板哈希函数。
+ * Template hash function for graphs.
  */
 template <typename V, typename E>
 int hashCode(const BasicGraphGen<V, E>& graph) {
@@ -1218,11 +1218,11 @@ int hashCode(const BasicGraphGen<V, E>& graph) {
 }
 
 /**
- * 用于打印边指针集合的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a set of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const HashSet<EdgeGen<V, E>*>& sete) {
@@ -1256,11 +1256,11 @@ std::ostream& operator <<(std::ostream& out, const HashSet<EdgeGen<V, E>*>& sete
 }
 
 /**
- * 用于打印顶点指针集合的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a set of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const HashSet<VertexGen<V, E>*>& setv) {
@@ -1284,11 +1284,11 @@ std::ostream& operator <<(std::ostream& out, const HashSet<VertexGen<V, E>*>& se
 }
 
 /**
- * 用于打印边指针列表的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a list of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const LinkedList<EdgeGen<V, E>*>& liste) {
@@ -1322,11 +1322,11 @@ std::ostream& operator <<(std::ostream& out, const LinkedList<EdgeGen<V, E>*>& l
 }
 
 /**
- * 用于打印顶点指针列表的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a list of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const LinkedList<VertexGen<V, E>*>& lst) {
@@ -1350,11 +1350,11 @@ std::ostream& operator <<(std::ostream& out, const LinkedList<VertexGen<V, E>*>&
 }
 
 /**
- * 用于打印边指针集合的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a set of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const Set<EdgeGen<V, E>*>& sete) {
@@ -1388,11 +1388,11 @@ std::ostream& operator <<(std::ostream& out, const Set<EdgeGen<V, E>*>& sete) {
 }
 
 /**
- * 用于打印顶点指针集合的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a set of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const Set<VertexGen<V, E>*>& setv) {
@@ -1416,11 +1416,11 @@ std::ostream& operator <<(std::ostream& out, const Set<VertexGen<V, E>*>& setv) 
 }
 
 /**
- * 用于打印边指针向量的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a vector of edge pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const Vector<EdgeGen<V, E>*>& vece) {
@@ -1454,11 +1454,11 @@ std::ostream& operator <<(std::ostream& out, const Vector<EdgeGen<V, E>*>& vece)
 }
 
 /**
- * 用于打印顶点指针向量的重载运算符。
- * 通常不建议重载指针的输出运算符，
- * 因为该指针可能为空或包含无效值。
- * 但在此情况下，我们认为让学生的
- * 使顶点和边集合的输出易于阅读。
+ * Overloaded operator to print a vector of vertex pointers.
+ * Normally it is unwise to override operators for printing pointers,
+ * because the pointer could be null or garbage.
+ * But in this case we have decided that it is better for students if their
+ * attempts to print collections of vertexes and edges are easy to read.
  */
 template <typename V, typename E>
 std::ostream& operator <<(std::ostream& out, const Vector<VertexGen<V, E>*>& vec) {

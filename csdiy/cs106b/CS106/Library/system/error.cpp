@@ -1,12 +1,12 @@
 /*
- * 文件：error.cpp
+ * File: error.cpp
  * ---------------
- * error 函数的实现。
+ * Implementation of the error function.
  *
  * @version 2016/11/23
- * - 添加用于输出 ErrorException 的 operator <<
+ * - added operator << to print ErrorExceptions
  * @version 2014/10/08
- * - 移除“using namespace”语句
+ * - removed 'using namespace' statement
  */
 
 #include "error.h"
@@ -14,7 +14,7 @@
 #include "strlib.h"
 #include <sstream>
 
-/* ErrorException 类的定义 */
+/* Definitions for the ErrorException class */
 
 ErrorException::ErrorException(std::string msg)
         : _kind("error") {
@@ -34,9 +34,9 @@ void ErrorException::setKind(const std::string& kind) {
 }
 
 const char* ErrorException::what() const noexcept {
-    // stepp：原来的 "Error: " 前缀在此处被注释掉，
-    // 因为在许多错误情况下，尝试进行字符串拼接
-    // 最终会破坏字符串并产生垃圾异常文本
+    // stepp : The original "Error: " prefix is commented out here,
+    // because in many error cases, the attempt to do the string concatenation
+    // ends up garbling the string and leading to garbage exception text
     // return ("Error: " + msg).c_str();
     return _msg.c_str();
 }
@@ -47,12 +47,12 @@ std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
 }
 
 /*
- * 实现说明：error
+ * Implementation notes: error
  * ---------------------------
- * 早期的 error 实现至少在以下平台上允许
- * Macintosh，用于帮助调试器在以下位置生成回溯
- * 错误原因。遗憾的是，如果以下情况发生，这已无法做到
- * 错误可被捕获。
+ * Earlier implementations of error made it possible, at least on the
+ * Macintosh, to help the debugger generate a backtrace at the point
+ * of the error.  Unfortunately, doing so is no longer possible if
+ * the errors are catchable.
  */
 
 /* [[noreturn]] */ void error(const std::string& msg) {

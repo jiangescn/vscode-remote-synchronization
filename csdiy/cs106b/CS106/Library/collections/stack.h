@@ -1,8 +1,8 @@
 /*
- * 文件：stack.h
+ * File: stack.h
  * -------------
- * 此文件导出 <code>Stack</code> 类，该类实现
- * 按后进先出（LIFO）顺序处理值的集合。
+ * This file exports the <code>Stack</code> class, which implements
+ * a collection that processes values in a last-in/first-out (LIFO) order.
  */
 
 #ifndef _stack_h
@@ -15,154 +15,154 @@
 #include "vector.h"
 
 /*
- * 类：Stack<ValueType>
+ * Class: Stack<ValueType>
  * -----------------------
- * 此类对一种称为<b><i>栈</i></b>的线性结构建模
- * 其中值只从一端添加和移除。
- * 这种规则产生后进先出（LIFO）的行为
- * 这是栈的定义性特征。基本栈操作
- * 操作包括 <code>push</code>（添加到顶部）和 <code>pop</code>
- * （从顶部移除）。
+ * This class models a linear structure called a <b><i>stack</i></b>
+ * in which values are added and removed only from one end.
+ * This discipline gives rise to a last-in/first-out behavior (LIFO)
+ * that is the defining feature of stacks.  The fundamental stack
+ * operations are <code>push</code> (add to top) and <code>pop</code>
+ * (remove from top).
  */
 template <typename ValueType>
 class Stack {
 public:
     /*
-     * 构造函数：Stack
-     * 用法：Stack<ValueType> stack;
+     * Constructor: Stack
+     * Usage: Stack<ValueType> stack;
      * ------------------------------
-     * 初始化一个新的空栈。
+     * Initializes a new empty stack.
      */
     Stack() = default;
 
     /*
-     * 构造函数：Stack
-     * 用法：Stack<ValueType> stack {1, 2, 3};
+     * Constructor: Stack
+     * Usage: Stack<ValueType> stack {1, 2, 3};
      * ----------------------------------------
-     * 初始化一个按从底到顶顺序存储给定元素的新栈。
+     * Initializes a new stack that stores the given elements from bottom-top.
      */
     Stack(std::initializer_list<ValueType> list);
 
     /*
-     * 析构函数：~Stack
+     * Destructor: ~Stack
      * ------------------
-     * 释放与此栈关联的任何堆存储。
+     * Frees any heap storage associated with this stack.
      */
     virtual ~Stack() = default;
 
     /*
-     * 方法：clear
-     * 用法：stack.clear();
+     * Method: clear
+     * Usage: stack.clear();
      * ---------------------
-     * 从此栈中删除所有元素。
+     * Removes all elements from this stack.
      */
     void clear();
 
     /*
-     * 方法：equals
-     * 用法：if (stack.equals(stack2)) ...
+     * Method: equals
+     * Usage: if (stack.equals(stack2)) ...
      * ------------------------------------
-     * 如果此栈包含完全相同的值，则返回 <code>true</code>
-     * 与给定的另一个栈相同。
-     * 行为与 == 运算符相同。
+     * Returns <code>true</code> if this stack contains exactly the same values
+     * as the given other stack.
+     * Identical in behavior to the == operator.
      */
     bool equals(const Stack<ValueType>& stack2) const;
 
     /*
-     * 方法：isEmpty
-     * 用法：if (stack.isEmpty()) ...
+     * Method: isEmpty
+     * Usage: if (stack.isEmpty()) ...
      * -------------------------------
-     * 如果此栈不包含元素，则返回 <code>true</code>。
+     * Returns <code>true</code> if this stack contains no elements.
      */
     bool isEmpty() const;
 
     /*
-     * 方法：peek
-     * 用法：ValueType top = stack.peek();
+     * Method: peek
+     * Usage: ValueType top = stack.peek();
      * ------------------------------------
-     * 返回此栈顶部元素的值，但不移除
-     * 它。若在空栈上调用，此方法会报告错误。
+     * Returns the value of top element from this stack, without removing
+     * it.  This method signals an error if called on an empty stack.
      */
     const ValueType& peek() const;
 
     /*
-     * 方法：pop
-     * 用法：ValueType top = stack.pop();
+     * Method: pop
+     * Usage: ValueType top = stack.pop();
      * -----------------------------------
-     * 删除并返回此栈的顶部元素。此
-     * 若在空栈上调用，此方法会报告错误。
+     * Removes the top element from this stack and returns it.  This
+     * method signals an error if called on an empty stack.
      */
     ValueType pop();
 
     /*
-     * 方法：push
-     * 用法：stack.push(value);
+     * Method: push
+     * Usage: stack.push(value);
      * -------------------------
-     * 将指定值压入此栈顶部。
+     * Pushes the specified value onto the top of this stack.
      */
     void push(const ValueType& value);
 
     /*
-     * 方法：size
-     * 用法：int n = stack.size();
+     * Method: size
+     * Usage: int n = stack.size();
      * ----------------------------
-     * 返回此栈中的值数量。
+     * Returns the number of values in this stack.
      */
     int size() const;
 
     /*
-     * 方法：toString
-     * 用法：string str = stack.toString();
+     * Method: toString
+     * Usage: string str = stack.toString();
      * -------------------------------------
-     * 将栈转换为可打印的字符串表示。
+     * Converts the stack to a printable string representation.
      */
     std::string toString() const;
 
     /*
-     * 运算符：==
-     * 用法：stack1 == stack2
+     * Operator: ==
+     * Usage: stack1 == stack2
      * -----------------------
-     * 如果 <code>stack1</code> 和 <code>stack2</code>，则返回 <code>true</code>
-     * 包含相同元素。
+     * Returns <code>true</code> if <code>stack1</code> and <code>stack2</code>
+     * contain the same elements.
      */
     bool operator ==(const Stack& stack2) const;
 
     /*
-     * 运算符：!=
-     * 用法：stack1 != stack2
+     * Operator: !=
+     * Usage: stack1 != stack2
      * -----------------------
-     * 如果 <code>stack1</code> 和 <code>stack2</code>，则返回 <code>true</code>
-     * 不包含相同元素。
+     * Returns <code>true</code> if <code>stack1</code> and <code>stack2</code>
+     * do not contain the same elements.
      */
     bool operator !=(const Stack& stack2) const;
 
     /*
-     * 运算符：<、>、<=、>=
-     * 用法：if (stack1 < stack2) ...
+     * Operators: <, >, <=, >=
+     * Usage: if (stack1 < stack2) ...
      * -------------------------------
-     * 用于比较两个栈的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two stacks.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      */
     bool operator <(const Stack& stack2) const;
     bool operator <=(const Stack& stack2) const;
     bool operator >(const Stack& stack2) const;
     bool operator >=(const Stack& stack2) const;
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
     /*
-     * 实现说明：Stack 数据结构
+     * Implementation notes: Stack data structure
      * ------------------------------------------
-     * 实现栈最简单的方法是将元素存储在
-     * Vector。这样做意味着动态内存分配的问题
-     * 复制构造和复制赋值已由以下对象的实现解决：
-     * 底层 Vector 类。
+     * The easiest way to implement a stack is to store the elements in a
+     * Vector.  Doing so means that the problems of dynamic memory allocation
+     * and copy assignment are already solved by the implementation of the
+     * underlying Vector class.
      */
 
     template <typename T>
@@ -176,11 +176,11 @@ private:
 };
 
 /*
- * Stack 类实现
+ * Stack class implementation
  * --------------------------
- * Stack 在内部使用 Vector 管理。这种分层设计
- * 使实现极其简单，以至于大多数
- * 这些方法可以各用一行实现。
+ * The Stack is internally managed using a Vector.  This layered design
+ * makes the implementation extremely simple, to the point that most
+ * methods can be implemented in as single line.
  */
 
 template <typename ValueType>
@@ -277,12 +277,12 @@ template <typename ValueType>
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, stack, element, /* 描述符 */ "Stack::operator >>", readOne<ValueType>);
+    return stanfordcpplib::collections::readCollection(is, stack, element, /* descriptor */ "Stack::operator >>", readOne<ValueType>);
 }
 
 /*
- * 栈的模板哈希函数。
- * 要求 Stack 中的元素类型具有 hashCode 函数。
+ * Template hash function for stacks.
+ * Requires the element type in the Stack to have a hashCode function.
  */
 template <typename T>
 int hashCode(const Stack<T>& s) {

@@ -10,7 +10,7 @@
 #include <set>
 using namespace std;
 
-/* 从配置文件中读取所有 #define。 */
+/* Get all #defines out of the config file. */
 #define RUN_TESTS_MENU_OPTION()
 #define MENU_ORDER(...)
 #define WINDOW_TITLE(title)
@@ -19,12 +19,12 @@ using namespace std;
 #define INITIAL_HANDLER(demo)
 #include "../Demos/GUIConfig.h"
 
-/* 捕获所有 #define。 */
+/* Capture any #defines. */
 #ifdef MG_CONSOLE_MODE
     #define MG_INTERNAL_CONSOLE_MODE
     #undef MG_CONSOLE_MODE
 
-    /* 在控制台模式下启用控制台。 */
+    /* Activate the console in console mode. */
     #include "console.h"
 
     namespace MiniGUI::Config {
@@ -54,7 +54,7 @@ using namespace std;
     }
 #endif
 
-/* 取消定义所有 #define，以便未来可以再次导入。 */
+/* Undef any #defines so that we can import again in the future. */
 #undef WINDOW_TITLE
 #undef TEST_BARRIER
 #undef MENU_ORDER
@@ -62,7 +62,7 @@ using namespace std;
 #undef INITIAL_HANDLER
 #undef RUN_TESTS_MENU_OPTION
 
-/* 使用 X 宏技巧获取所有文件名的列表。 */
+/* Use X Macro Trick to get a list of all filenames. */
 namespace {
     const vector<string>& demoFileOrder() {
         static const vector<string> kAllFiles = {
@@ -114,21 +114,21 @@ namespace {
         return kAllFiles;
     }
 
-    /* 返回文件在文件名列表中的索引；若不存在，则返回一个较大值。 */
+    /* Returns the index of the file in the filename list, or a large value if it isn't present. */
     size_t fileIndex(const string& filename) {
         return find(demoFileOrder().begin(), demoFileOrder().end(), filename) - demoFileOrder().begin();
     }
 
-    /* 比较两个文件名，并按它们在演示文件列表中的出现顺序排序。 */
+    /* Compares two filenames, ordering by their appearance in the demo files list. */
     int demoFileCompare(const string& lhs, const string& rhs) {
-        /* 比较文件名顺序。 */
+        /* Compare filename ordering. */
         size_t leftIndex  = fileIndex(lhs);
         size_t rightIndex = fileIndex(rhs);
         if (leftIndex < rightIndex) return -1;
         if (leftIndex > rightIndex) return +1;
 
-        /* 若文件名具有相同索引，但文件名本身
-         * 若二者不同，则以此打破平局。
+        /* If the filenames have the same index but the filenames themselves
+         * are different, tiebreak on that.
          */
         if (lhs < rhs) return -1;
         if (lhs > rhs) return +1;
@@ -136,7 +136,7 @@ namespace {
     }
 }
 
-/* 图形处理程序。 */
+/* Graphics handlers. */
 namespace {
     struct GraphicsHandler {
         string filename;
@@ -144,18 +144,18 @@ namespace {
         string name;
         function<shared_ptr<ProblemHandler>(GWindow&)> callback;
 
-        /* 是否应将其包含在可见处理程序列表中？ */
+        /* Should this be included in the list of visible handlers? */
         bool isPublic;
     };
 
-    /* 所有图形处理程序的主列表；由静态初始化器填充。 */
+    /* Master list of all graphics handlers; populated by static initializers. */
     vector<GraphicsHandler>& graphicsHandlers() {
         static vector<GraphicsHandler> theRawHandlers;
         return theRawHandlers;
     };
 
     #ifndef MG_INTERNAL_CONSOLE_MODE
-        /* 先按文件名、再按行号对处理程序排序。 */
+        /* Sorts the handlers first by filename, then by line. */
         void sortGraphicsHandlers() {
             static bool sorted = false;
             if (!sorted) {
@@ -166,7 +166,7 @@ namespace {
                             return fileComp < 0;
                         }
 
-                        /* 文件顺序相同，文件也相同。现在按行号打破平局。 */
+                        /* Same file order, same file. Now tiebreak by line. */
                         return lhs.line < rhs.line;
                 });
 
@@ -176,7 +176,7 @@ namespace {
     #endif
 }
 
-/* 控制台处理程序。 */
+/* Console handlers. */
 namespace {
     struct ConsoleHandler {
         string filename;
@@ -184,18 +184,18 @@ namespace {
         string name;
         function<void()> callback;
 
-        /* 是否应将其包含在可见处理程序列表中？ */
+        /* Should this be included in the list of visible handlers? */
         bool isPublic;
     };
 
-    /* 所有图形处理程序的主列表；由静态初始化器填充。 */
+    /* Master list of all graphics handlers; populated by static initializers. */
     vector<ConsoleHandler>& consoleHandlers() {
         static vector<ConsoleHandler> theRawHandlers;
         return theRawHandlers;
     };
 
     #ifdef MG_INTERNAL_CONSOLE_MODE
-        /* 先按文件名、再按行号对处理程序排序。 */
+        /* Sorts the handlers first by filename, then by line. */
         void sortConsoleHandlers() {
             static bool sorted = false;
             if (!sorted) {
@@ -206,7 +206,7 @@ namespace {
                             return fileComp < 0;
                         }
 
-                        /* 文件顺序相同，文件也相同。现在按行号打破平局。 */
+                        /* Same file order, same file. Now tiebreak by line. */
                         return lhs.line < rhs.line;
                 });
 
@@ -216,7 +216,7 @@ namespace {
     #endif
 }
 
-/* 再次使用 X 宏技巧定义窗口标题。 */
+/* Use X Macro Trick a second time to define the window title. */
 static string kWindowTitle =
     #define MENU_ORDER(...)
     #define RUN_TESTS_MENU_OPTION()
@@ -241,13 +241,13 @@ static string kWindowTitle =
     #undef TEST_ORDER
 ;
 
-/* 安装器。 */
+/* Installers. */
 namespace MiniGUI {
     namespace Detail {
         GraphicsInstaller::GraphicsInstaller(FileKey key, const char* name,
                                              function<shared_ptr<ProblemHandler>(GWindow&)> callback) {
-            /* 确认目标文件存在于文件列表中；如果不存在，则不要将其包含在内
-             * 列入选项列表，因为它可能是私有的或已被禁用。
+            /* Confirm that the file in question exists in the file list. If not, don't include it
+             * in the list of options, since it may be private or disabled.
              */
             bool isPublic = find(demoFileOrder().begin(), demoFileOrder().end(), getTail(key.filename)) != demoFileOrder().end();
             graphicsHandlers().push_back({
@@ -261,8 +261,8 @@ namespace MiniGUI {
 
         ConsoleInstaller::ConsoleInstaller(FileKey key, const char* name,
                                            function<void()> callback) {
-            /* 确认目标文件存在于文件列表中；如果不存在，则不要将其包含在内
-             * 列入选项列表，因为它可能是私有的或已被禁用。
+            /* Confirm that the file in question exists in the file list. If not, don't include it
+             * in the list of options, since it may be private or disabled.
              */
             bool isPublic = find(demoFileOrder().begin(), demoFileOrder().end(), getTail(key.filename)) != demoFileOrder().end();
             consoleHandlers().push_back({
@@ -276,7 +276,7 @@ namespace MiniGUI {
     }
 }
 
-/* 测试屏障。 */
+/* Test barriers. */
 namespace {
     const map<string, set<string>> kTestBarriers = {
         #define MENU_ORDER(...)
@@ -303,7 +303,7 @@ namespace {
     };
 }
 
-/* 初始处理程序。 */
+/* Initial handler. */
 namespace {
     const char kInitialDemoFile[] = ""
         #define MENU_ORDER(...)
@@ -332,12 +332,12 @@ namespace {
 
 namespace MiniGUI {
     namespace Config {
-        /* 程序标题。 */
+        /* Title of the program. */
         std::string programTitle() {
             return kWindowTitle;
         }
 
-        /* 菜单选项列表。 */
+        /* List of menu options. */
         vector<MenuOption> menuOptions() {
             vector<MenuOption> result;
             #ifdef MG_INTERNAL_CONSOLE_MODE
@@ -358,13 +358,13 @@ namespace MiniGUI {
                     if (entry.isPublic) {
                         auto constructor = entry.callback;
 
-                        /* 若存在测试屏障，则在调用构造函数前将其启用。 */
+                        /* If we have a test barrier, put it up before invoking the constructor. */
                         auto itr = kTestBarriers.find(entry.filename);
                         if (itr != kTestBarriers.end()) {
                             constructor = ifPassedThen(itr->second, entry.callback);
                         }
 
-                        /* 将回调包装为可安装到图形窗口中的对象。 */
+                        /* Wrap callbacks into something that installs into the graphics window. */
                         result.push_back({ entry.name, [=]() {
                             MiniGUI::Detail::setActiveDemo(constructor(MiniGUI::Detail::graphicsWindow()));
                         }});
@@ -375,22 +375,22 @@ namespace MiniGUI {
             return result;
         }
 
-        /* 无回调函数的文件列表，以备需要。 */
+        /* List of files without callbacks, in case you want that. */
         vector<string> testOrder() {
             return testFileOrder();
         }
     }
 }
 
-/* 自动评分模式下没有演示。 */
+/* Autograder mode has no demos. */
 #ifndef MG_AUTOGRADER_MODE
 namespace {
-    /* 要运行的初始演示。控制台模式下默认为欢迎页面。
-     * 对于控制台，此项默认为空函数。
+    /* The initial demo to run. For console, this defaults to the landing screen.
+     * For console, this defaults to an null function.
      */
     function<void()> initialDemo() {
         #ifdef MG_INTERNAL_CONSOLE_MODE
-            /* 查找名称与演示文件匹配的第一个图形处理程序。 */
+            /* Find the first graphics handler whose name matches the demo file. */
             sortConsoleHandlers();
             auto itr = find_if(consoleHandlers().begin(), consoleHandlers().end(),[](const ConsoleHandler& handler) {
                 return handler.filename == kInitialDemoFile;
@@ -402,7 +402,7 @@ namespace {
                 return itr->callback;
             }
         #else
-            /* 查找名称与演示文件匹配的第一个图形处理程序。 */
+            /* Find the first graphics handler whose name matches the demo file. */
             sortGraphicsHandlers();
             auto itr = find_if(graphicsHandlers().begin(), graphicsHandlers().end(),[](const GraphicsHandler& handler) {
                 return handler.filename == kInitialDemoFile;

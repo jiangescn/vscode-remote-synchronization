@@ -1,18 +1,18 @@
 /*
- * 文件：simpio.cpp
+ * File: simpio.cpp
  * ----------------
- * 此文件实现 simpio.h 接口。
+ * This file implements the simpio.h interface.
  * 
  * @version 2016/09/29
- * - 添加 getDouble 方法
+ * - added getDouble method
  * @version 2015/07/05
- * - 提高各类 I/O 使用的 appendSpace 函数的可见性
- *   提示函数（不再是静态函数）
+ * - increased visibility of appendSpace function used by various IO
+ *   prompting functions (no longer static)
  * @version 2014/10/19
- * - 按字母顺序排列函数
- * - 为提高效率，将许多函数的参数由 string 改为 const string&
+ * - alphabetized functions
+ * - converted many funcs to take const string& rather than string for efficiency
  * @version 2014/10/08
- * - 移除“using namespace”语句
+ * - removed 'using namespace' statement
  */
 
 #include "simpio.h"
@@ -35,11 +35,11 @@ STATIC_CONST_VARIABLE_DECLARE(std::string, GETYESORNO_DEFAULT_PROMPT, "Try again
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETYESORNO_DEFAULT_REPROMPT, "Please type a word that starts with 'Y' or 'N'.")
 
 /*
- * 实现说明：getChar、getDouble、getInteger、getReal
+ * Implementation notes: getChar, getDouble, getInteger, getReal
  * -------------------------------------------------------------
- * 这些函数中的每一个都会读取完整输入行，然后使用
- * 使用 <sstream> 库将该行解析为所需类型的值。
- * 如果失败，实现会要求用户输入新值。
+ * Each of these functions reads a complete input line and then uses the
+ * <sstream> library to parse that line into a value of the desired type.
+ * If that fails, the implementation asks the user for a new value.
  */
 
 char getChar(const std::string& prompt,
@@ -121,13 +121,13 @@ int getIntegerBetween(const std::string& prompt, int min, int max) {
 }
 
 /*
- * 实现说明：getLine
+ * Implementation notes: getLine
  * -----------------------------
- * getLine 函数只是将显示
- * 提示并读取一行输入合并为一次调用。主要
- * 在库中包含此函数的原因是确保
- * 使读取整数、浮点数和
- * 使字符串尽可能保持一致。
+ * The getLine function simply combines the process of displaying a
+ * prompt and reading an input line into a single call.  The primary
+ * reason for including this function in the library is to ensure
+ * that the process of reading integers, floating-point numbers, and
+ * strings remains as consistent as possible.
  */
 std::string getLine(const std::string& prompt) {
     std::string line;

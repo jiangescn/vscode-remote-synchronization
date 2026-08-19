@@ -1,10 +1,10 @@
 /*
- * 文件：gscrollpane.cpp
+ * File: gscrollpane.cpp
  * ---------------------
  *
  * @author Marty Stepp
  * @version 2018/09/01
- * - 初始版本
+ * - initial version
  */
 
 #include "gscrollpane.h"
@@ -23,11 +23,11 @@ GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
         _iqscrollarea->setWidget(interactor->getWidget());
     });
     setInteractorStretch(true);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GScrollPane::~GScrollPane() {
-    // TODO：delete _iqscrollarea;
+    // TODO: delete _iqscrollarea;
     _iqscrollarea->detach();
     _iqscrollarea = nullptr;
 }

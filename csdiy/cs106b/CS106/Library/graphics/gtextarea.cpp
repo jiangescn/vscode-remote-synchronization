@@ -1,16 +1,16 @@
 /*
- * 文件：gtextarea.cpp
+ * File: gtextarea.cpp
  * -------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 将部分事件监听代码移到 GInteractor 父类
+ * - moved some event listener code to GInteractor superclass
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/08/23
- * - 重命名为 gtextarea.cpp，以替代 Java 版本
+ * - renamed to gtextarea.cpp to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "gtextarea.h"
@@ -28,7 +28,7 @@ GTextArea::GTextArea(int rows, int columns, QWidget* parent)
         _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
     });
     setRowsColumns(rows, columns);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextArea::GTextArea(const std::string& text, QWidget* parent)
@@ -37,11 +37,11 @@ GTextArea::GTextArea(const std::string& text, QWidget* parent)
         _iqtextedit = new _Internal_QTextEdit(this, getInternalParent(parent));
     });
     setText(text);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextArea::~GTextArea() {
-    // TODO：delete _iqtextedit;
+    // TODO: delete _iqtextedit;
     _iqtextedit->detach();
     _iqtextedit = nullptr;
 }
@@ -49,13 +49,13 @@ GTextArea::~GTextArea() {
 void GTextArea::appendFormattedText(const std::string& text, const std::string& color, const std::string& font) {
     moveCursorToEnd();
 
-    // 使用字体和颜色创建格式化块
+    // create a formatted block with the font and color
     QTextCharFormat format;
     if (!color.empty()) {
         format.setForeground(QBrush(GColor::convertColorToRGB(color)));
     }
     if (!font.empty()) {
-        // 只保留字体粗细，不保留大小/字体族
+        // carry over only the font's weight, not size/face
         QFont qfont = GFont::toQFont(_iqtextedit->font(), font);
         format.setFontWeight(qfont.weight());
     }
@@ -74,7 +74,7 @@ void GTextArea::appendFormattedText(const std::string& text, const std::string& 
 }
 
 void GTextArea::appendHtml(const std::string& html) {
-    // TODO：为提高速度使用 insertHtml？
+    // TODO: use insertHtml for speed?
     setHtml(getHtml() + html);
 }
 
@@ -146,7 +146,7 @@ int GTextArea::getSelectionEnd() const {
     if (end > start) {
         return end;
     } else {
-        // 没有选区；光标使选区起点和终点相等
+        // no selection; cursor sets selection start/end to be equal
         return -1;
     }
 }
@@ -348,7 +348,7 @@ _Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
 
 void _Internal_QTextEdit::contextMenuEvent(QContextMenuEvent* event) {
     if (!_gtextarea) {
-        QTextEdit::contextMenuEvent(event);   // 调用父类实现
+        QTextEdit::contextMenuEvent(event);   // call super
         return;
     }
     if (_gtextarea->isContextMenuEnabled()) {
@@ -365,12 +365,12 @@ void _Internal_QTextEdit::detach() {
 void _Internal_QTextEdit::handleScroll(int value) {
     if (_gtextarea && _gtextarea->isAcceptingEvent("scroll")) {
         GEvent scrollEvent(
-                    /* 类  */ SCROLL_EVENT,
-                    /* 类型   */ SCROLL_SCROLLED,
-                    /* 名称   */ "scroll",
-                    /* 来源 */ _gtextarea);
+                    /* class  */ SCROLL_EVENT,
+                    /* type   */ SCROLL_SCROLLED,
+                    /* name   */ "scroll",
+                    /* source */ _gtextarea);
         scrollEvent.setActionCommand(_gtextarea->getActionCommand());
-        scrollEvent.setY(value);   // 近似值
+        scrollEvent.setY(value);   // approximate
         _gtextarea->fireEvent(scrollEvent);
     }
 }
@@ -378,20 +378,20 @@ void _Internal_QTextEdit::handleScroll(int value) {
 void _Internal_QTextEdit::handleTextChange() {
     if (_gtextarea && _gtextarea->isAcceptingEvent("textchange")) {
         GEvent textChangeEvent(
-                    /* 类  */ KEY_EVENT,
-                    /* 类型   */ KEY_TYPED,
-                    /* 名称   */ "textchange",
-                    /* 来源 */ _gtextarea);
+                    /* class  */ KEY_EVENT,
+                    /* type   */ KEY_TYPED,
+                    /* name   */ "textchange",
+                    /* source */ _gtextarea);
         textChangeEvent.setActionCommand(_gtextarea->getActionCommand());
         _gtextarea->fireEvent(textChangeEvent);
 
-        // 错误修复：为向后兼容，同时触发 CHANGE_EVENT
-        // （仅发送给旧式 waitForEvent 函数）
+        // BUGFIX: for backward compatibility, also fire a CHANGE_EVENT
+        // (emits only to the old-style waitForEvent function)
         GEvent changeEvent(
-                    /* 类  */ CHANGE_EVENT,
-                    /* 类型   */ STATE_CHANGED,
-                    /* 名称   */ "statechange",
-                    /* 来源 */ _gtextarea);
+                    /* class  */ CHANGE_EVENT,
+                    /* type   */ STATE_CHANGED,
+                    /* name   */ "statechange",
+                    /* source */ _gtextarea);
         changeEvent.setActionCommand(_gtextarea->getActionCommand());
         _gtextarea->fireEvent(changeEvent);
     }
@@ -403,10 +403,10 @@ void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
         event->accept();
         _gtextarea->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
-            QTextEdit::keyPressEvent(event);   // 调用父类实现
+            QTextEdit::keyPressEvent(event);   // call super
         }
     } else {
-        QTextEdit::keyPressEvent(event);   // 调用父类实现
+        QTextEdit::keyPressEvent(event);   // call super
     }
 }
 
@@ -416,10 +416,10 @@ void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
         event->accept();
         _gtextarea->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
-            QTextEdit::keyReleaseEvent(event);   // 调用父类实现
+            QTextEdit::keyReleaseEvent(event);   // call super
         }
     } else {
-        QTextEdit::keyReleaseEvent(event);   // 调用父类实现
+        QTextEdit::keyReleaseEvent(event);   // call super
     }
 }
 
@@ -429,10 +429,10 @@ void _Internal_QTextEdit::mousePressEvent(QMouseEvent* event) {
         event->accept();
         _gtextarea->fireGEvent(event, MOUSE_PRESSED, "mousepress");
         if (event->isAccepted()) {
-            QTextEdit::mousePressEvent(event);   // 调用父类实现
+            QTextEdit::mousePressEvent(event);   // call super
         }
     } else {
-        QTextEdit::mousePressEvent(event);   // 调用父类实现
+        QTextEdit::mousePressEvent(event);   // call super
     }
 }
 
@@ -442,10 +442,10 @@ void _Internal_QTextEdit::mouseReleaseEvent(QMouseEvent* event) {
         event->accept();
         _gtextarea->fireGEvent(event, MOUSE_RELEASED, "mouserelease");
         if (event->isAccepted()) {
-            QTextEdit::mouseReleaseEvent(event);   // 调用父类实现
+            QTextEdit::mouseReleaseEvent(event);   // call super
         }
     } else {
-        QTextEdit::mouseReleaseEvent(event);   // 调用父类实现
+        QTextEdit::mouseReleaseEvent(event);   // call super
     }
 }
 

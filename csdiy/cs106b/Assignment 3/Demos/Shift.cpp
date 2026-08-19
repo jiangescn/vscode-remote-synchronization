@@ -13,8 +13,8 @@ namespace {
     }
 }
 
-/* 关系运算符和哈希码的实现。欢迎阅读此处
- * 如果愿意可以这样做，但绝非必要。
+/* Implementation of relational operators and hash codes. You're welcome to read over this
+ * if you'd like, but it's certainly not necessary.
  */
 bool operator< (const Shift& lhs, const Shift& rhs) {
     return threeWayCompareShifts(lhs, rhs) < 0;

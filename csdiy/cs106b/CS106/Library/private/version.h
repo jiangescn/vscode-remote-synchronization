@@ -1,8 +1,8 @@
 /*
- * 文件：version.h
+ * File: version.h
  * ---------------
- * 版本消息报告
- * Stanford C++ 库。
+ * version message reports the version/build info of the
+ * Stanford C++ library.
  *
  */
 

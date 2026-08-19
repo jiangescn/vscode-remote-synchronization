@@ -7,12 +7,12 @@
 using namespace std;
 
 namespace {
-    /* 你好！如果调试器将你带到这里，这意味着
-     * 你的代码中存在某种内存错误
-     * 程序。请查看以下位置的“应用程序输出”选项卡
-     * 在 Qt Creator 中查看刚刚出现的错误消息
-     * 打印后，沿调用栈向上查看
-     * 具体错误发生的位置。
+    /* Hello! If the debugger took you here, it means
+     * that there is some sort of memory error in your
+     * program. Check the "application output" tab of
+     * Qt Creator to see the error message that just
+     * printed, then walk up in the call stack to see
+     * where the specific error occurred.
      */
     [[ noreturn ]] void emergencyAbort(const char* message) {
         cerr << message << endl;
@@ -21,9 +21,9 @@ namespace {
 }
 
 namespace DataPointUtils {
-    /* 执行分配时，我们会在前面预留一个 DataPoint 的空间，并在后面预留一个 DataPoint
-     * 位于已分配区域之后。这些区域实际上不会保存 DataPoint，
-     * 而是保存以下结构体。
+    /* When we do an allocation, we prepend space for one DataPoint before and one DataPoint
+     * after the allocated region. Those regions are not actually going to hold DataPoints,
+     * and instead will hold the following struct.
      */
     struct BlockBoundary {
         size_t blockSize;
@@ -31,39 +31,39 @@ namespace DataPointUtils {
     };
     static_assert(sizeof(BlockBoundary) <= sizeof(DataPoint), "Internal error: contact course staff.");
 
-    /* 用于跟踪执行了向量初始化还是标量初始化的常量。 */
+    /* Constants used to track whether we did vector or scalar initialization. */
     const int kIsVector    = 0xA110C2;
     const int kIsScalar    = 0xA110C1;
     const int kDeallocated = 0xA110C0;
 
-    /* 分配一个比请求多包含一个 DataPoint 的内存块。
-     * 额外的 DataPoint 是哨兵，告诉我们是否使用了标量
-     * 或 vector 分配/释放函数。
+    /* Allocates a block of memory that contains one more DataPoint than requested.
+     * That extra DataPoint is a sentinel that tells us whether we used the scalar
+     * or vector alloc/dealloc function.
      */
     void* dataPointAlloc(size_t space, bool isVector) {
-        /* 获取比所需更多的空间。具体来说，需要所需空间加上
-         * 用于页眉和页脚。
+        /* Get more space than we need. Specifically, we want what we need, plus space
+         * for the header and footer.
          */
         char* fullBlock  = static_cast<char *>(operator new(2 * sizeof(DataPoint) + space));
         char* headerAddr = fullBlock;
-        char* footerAddr = fullBlock + sizeof(DataPoint) + space; // 跳过标头，跳过负载
+        char* footerAddr = fullBlock + sizeof(DataPoint) + space; // Skip header, skip payload
         void* result     = fullBlock + sizeof(DataPoint);
 
-        /* 构造页眉和页脚。 */
+        /* Construct header and footer. */
         ::new (headerAddr) BlockBoundary{space, isVector? kIsVector : kIsScalar};
         ::new (footerAddr) BlockBoundary{space, isVector? kIsVector : kIsScalar};
 
         return result;
     }
 
-    /* 释放一块内存，并检查释放方式的类型
-     * 所执行的操作是正确的。
+    /* Deallocates a block of memory, checking to make sure the type of deallocation
+     * performed was the right one.
      */
     void dataPointFree(void* memory, bool isVector) {\
-        /* 获取头部。它是内存块之前的 DataPoint。 */
+        /* Get the header. It's DataPoint before the block of memory. */
         BlockBoundary* header = reinterpret_cast<BlockBoundary *>(((DataPoint*) memory) - 1);
 
-        /* 确认此项具有正确类型。 */
+        /* Confirm this one has the correct type. */
         if (header->type == kIsVector) {
             if (!isVector) {
                 emergencyAbort("You are attempting to deallocate a block of memory that you allocated with "
@@ -100,10 +100,10 @@ namespace DataPointUtils {
                            "run the program again with the debugger and backtrace.");
         }
 
-        /* 找到页脚。 */
+        /* Find the footer. */
         BlockBoundary* footer = reinterpret_cast<BlockBoundary*>(static_cast<char *>(memory) + header->blockSize);
 
-        /* 确认页脚与页眉匹配。 */
+        /* Confirm that the footer matches the header. */
         if (footer->blockSize != header->blockSize || footer->type != header->type) {
             cerr << "Something went wrong when you tried to deallocate memory. Specifically, the "
                     "memory right after the end of the allocated space has been modified since when "
@@ -115,20 +115,20 @@ namespace DataPointUtils {
             abort();
         }
 
-        /* 清除页眉和页脚，以防将来再次使用。 */
+        /* Clear the header and footer in case we use it again in the future. */
         header->type = footer->type = kDeallocated;
         header->blockSize = footer->blockSize = kDeallocated;
 
-        /* 销毁页眉和页脚。 */
+        /* Destroy the header and footer. */
         header->~BlockBoundary();
         footer->~BlockBoundary();
 
-        /* 释放内存。 */
+        /* Free the memory. */
         operator delete(header);
     }
 }
 
-/* 使捕获内存错误更容易的自定义逻辑。 */
+/* Custom logic to make it easier to trap memory errors. */
 namespace {
     const uint64_t kInitialized = 0xC5106BA6DA1ADA1A; // CS106B, A6, DATA DATA
     const uint64_t kDestroyed   = 0xC5106BA6DEADDA1A; // CS106B, A6, DEAD DATA
@@ -142,10 +142,10 @@ namespace {
 }
 
 DataPoint::DataPoint() {
-    /* 若代码在紧接下方的一行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the line immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(_initializationFlag);
 
@@ -154,10 +154,10 @@ DataPoint::DataPoint() {
 }
 
 DataPoint::~DataPoint() {
-    /* 若代码在紧接下方的一行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the line immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(_initializationFlag);
 
@@ -166,10 +166,10 @@ DataPoint::~DataPoint() {
 }
 
 DataPoint::DataPoint(const DataPoint& rhs) {
-    /* 若代码在紧接下方的几行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the lines immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(_initializationFlag);
     checkInitializationFlag(rhs._initializationFlag);
@@ -179,10 +179,10 @@ DataPoint::DataPoint(const DataPoint& rhs) {
 }
 
 DataPoint::DataPoint(DataPoint&& rhs) {
-    /* 若代码在紧接下方的几行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the lines immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(_initializationFlag);
     checkInitializationFlag(rhs._initializationFlag);
@@ -192,10 +192,10 @@ DataPoint::DataPoint(DataPoint&& rhs) {
 }
 
 DataPoint& DataPoint::operator=(DataPoint data) {
-    /* 若代码在紧接下方的一行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the line immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(_initializationFlag);
 
@@ -209,7 +209,7 @@ DataPoint::DataPoint(const std::string& name, double weight) : name(name), weigh
 }
 
 namespace {
-    /* 空操作；这里只是为了强制复制参数。 */
+    /* No-op; just here to force the parameter to be copied. */
     void checkInitializationFlag(uint64_t) {
 
     }
@@ -269,10 +269,10 @@ namespace {
     }
 }
 
-/* 用于读写带引号字符串的实用工具。
+/* Utilities to read and write quoted strings.
  *
- * TODO：一旦满足以下条件，应将此处替换为使用 std::quoted：
- * Windows 上支持 C++14。
+ * TODO: This should be replaced with the use of std::quoted as soon as
+ * C++14 support is available on Windows.
  */
 namespace {
     string quotedVersionOf(const string& source) {
@@ -280,16 +280,16 @@ namespace {
         result << '"';
 
         for (char ch: source) {
-            /* 转义右引号。 */
+            /* Escape close quotes. */
             if (ch == '"') result << "\\\"";
 
-            /* 转义斜杠。 */
+            /* Escape slashes. */
             else if (ch == '\\') result << "\\\\";
 
-            /* 输出其他所有可打印字符。 */
+            /* Print out any other printable characters. */
             else if (isgraph(ch) || ch == ' ') result << ch;
 
-            /* 否则，对其进行转义。 */
+            /* Otherwise, escape it. */
             else {
                 result << "\\x" << hex << setfill('0') << setw(2) << +static_cast<unsigned char>(ch);
             }
@@ -299,49 +299,49 @@ namespace {
         return result.str();
     }
 
-    /* 读取带引号的字符串。 */
+    /* Reads a quoted version of a string. */
     bool readQuoted(istream& in, string& out) {
-        /* 读取一个字符；它必须是引号。 */
+        /* Read a character; it must be a quote. */
         char read;
         in >> read;
 
         if (!in || read != '"') return false;
 
-        /* 持续读取，直到遇到右引号。 */
+        /* Keep reading until we get a close quote. */
         string result;
         while (true) {
-            /* 无法读取？这是个问题！ */
+            /* Can't read? That's a problem! */
             if (!in.get(read)) return false;
 
-            /* 若这是引号，则处理完成。 */
+            /* If this is a quote, we're done. */
             else if (read == '"') break;
 
-            /* 否则，如果它是斜杠，则将其视为转义符。 */
+            /* Otherwise, if it's a slash, treat it as an escape. */
             else if (read == '\\') {
-                /* 获取下一个字符以确定应执行什么操作。 */
+                /* Get the next character to see what we're supposed to do. */
                 if (!in.get(read)) return false;
 
-                /* 输出斜杠和引号。 */
+                /* Output slashes and quotes. */
                 else if (read == '\\' || read == '"') result += read;
 
-                /* 十六进制？读取两个字符并解码。 */
+                /* Hex? Read two characters and decode them. */
                 else if (read == 'x') {
                     string hexCode;
                     in >> setw(2) >> hexCode;
                     if (!in) return false;
 
-                    /* 将其转换为数字。 */
+                    /* Convert this to a number. */
                     try {
                         result += static_cast<char>(stringToInteger(hexCode, 16));
                     } catch (const ErrorException& e) {
                         return false;
                     }
                 }
-                /* 否则，我们无法判断它是什么。 */
+                /* Otherwise, we have no idea what this is. */
                 else return false;
             }
 
-            /* 否则，直接追加它。 */
+            /* Otherwise, just append it. */
             else result += read;
         }
 
@@ -350,17 +350,17 @@ namespace {
     }
 }
 
-/* 相等性比较。 */
+/* Equality comparison. */
 bool operator== (const DataPoint& lhs, const DataPoint& rhs) {
-    /* 若代码在紧接下方的几行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the lines immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(lhs._initializationFlag);
     checkInitializationFlag(rhs._initializationFlag);
 
-    /* 如果代码在此处崩溃，也可能表明存在内存错误。 */
+    /* If your code crashes here, it may also indicate a memory error. */
     if (lhs._initializationFlag != kInitialized || rhs._initializationFlag != kInitialized) {
         emergencyAbort("You have tried comparing a nonexistent DataPoint "
                        "against another DataPoint. This likely indicates "
@@ -371,26 +371,26 @@ bool operator== (const DataPoint& lhs, const DataPoint& rhs) {
     return lhs.name == rhs.name && lhs.weight == rhs.weight;
 }
 
-/* 当两点不相等时，不等关系成立。 */
+/* Inequality holds when the two points aren't equal. */
 bool operator!= (const DataPoint& lhs, const DataPoint& rhs) {
     return !(lhs == rhs);
 }
 
-/* 将 DataPoint 打印到流。输出格式为
+/* Prints a DataPoint to a stream. The output format is
  *
- *   { "数据点名称，\"已正确转义\"", pt.weight }
+ *   { "name of the data point, \"properly escaped\"", pt.weight }
  */
 ostream& operator<< (ostream& out, const DataPoint& pt) {
-    /* 若代码在紧接下方的一行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the line immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(pt._initializationFlag);
 
 
-    /* 若代码在这里崩溃，说明存在内存错误
-     * 在代码中的某处。
+    /* If your code crashes here, it means there's a memory error
+     * somewhere in your code.
      */
     if (pt._initializationFlag != kInitialized) {
         emergencyAbort("You have attempted to print a nonexistent DataPoint "
@@ -405,18 +405,18 @@ ostream& operator<< (ostream& out, const DataPoint& pt) {
     return out << builder.str();
 }
 
-/* 从流中读取一个 DataPoint。 */
+/* Reads a DataPoint from a stream. */
 istream& operator>> (istream& in, DataPoint& result) {
-    /* 若代码在紧接下方的一行崩溃，
-     * 这通常表示使用了无效指针——可能是
-     * 未初始化的指针或空指针。请在调试器中查看回溯
-     * 在调试器中查看此代码发生的位置。
+    /* If your code crashes on the line immediately below this one,
+     * it likely indicates that you followed an invalid pointer - either
+     * one that wasn't initialized, or a null pointer. Backtrace in the
+     * debugger to see where the code this happened.
      */
     checkInitializationFlag(result._initializationFlag);
 
 
-    /* 若代码在这里崩溃，说明存在内存错误
-     * 在代码中的某处。
+    /* If your code crashes here, it means there's a memory error
+     * somewhere in your code.
      */
     if (result._initializationFlag != kInitialized) {
         emergencyAbort("You have attempted to read into a nonexistent DataPoint "
@@ -428,7 +428,7 @@ istream& operator>> (istream& in, DataPoint& result) {
 
     istream::sentry sentry(in);
     if (sentry) {
-        /* 获取下一个字符；它应当是左花括号。 */
+        /* Grab the next character; it should be an open brace. */
         char expected;
         in >> ws >> expected;
         if (!in || expected != '{') {
@@ -436,7 +436,7 @@ istream& operator>> (istream& in, DataPoint& result) {
             return in;
         }
 
-        /* 提取字符串。 */
+        /* Extract the string. */
         DataPoint read;
         in >> ws;
         if (!readQuoted(in, read.name) || !in) {
@@ -444,21 +444,21 @@ istream& operator>> (istream& in, DataPoint& result) {
             return in;
         }
 
-        /* 确认这里有逗号。 */
+        /* Confirm there's a comma here. */
         in >> ws >> expected;
         if (!in || expected != ',') {
             in.setstate(ios::failbit);
             return in;
         }
 
-        /* 读取权重。 */
+        /* Read the weight. */
         in >> ws >> read.weight;
         if (!in) {
             in.setstate(ios::failbit);
             return in;
         }
 
-        /* 读取右花括号。 */
+        /* Read the close brace. */
         in >> ws >> expected;
         if (!in || expected != '}') {
             in.setstate(ios::failbit);

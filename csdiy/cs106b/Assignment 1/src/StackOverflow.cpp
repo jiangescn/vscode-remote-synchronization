@@ -1,19 +1,19 @@
-/* 文件：StackOverflow.cpp
+/* File: StackOverflow.cpp
  *
- * 问题 1：运行程序时触发栈溢出，你会看到什么
- *     未启用调试器时？在下面写下你的答案。
+ * Q1: What do you see when you trigger a stack overflow when running the program
+ *     without the debugger enabled? Write your answer below.
  *
  *
  *
- * 问题 2：栈溢出中重复出现的值序列是什么？写下你的
- *     答案如下。
+ * Q2: What is the sequence of values that repeats in the stack overflow? Write your
+ *     answer below.
  */
 #include "StackOverflow.h"
 
-/* Stack Overflow 示例的“Goto Table”。它本质上是一个函数
- * 给定 0 到 1023 之间的数字，返回 0 到 1023 之间的数字。
- * 我们的函数使用此表，使测试时发生的情况难以预测
- * 下一步。使用调试器找出答案！
+/* The "Goto Table" for the Stack Overflow example. This is essentially a function
+ * that given a number between 0 and 1023 gives back a number between 0 and 1023.
+ * Our function uses this table to make it hard to predict what's going to happen
+ * next. Use the debugger to find out!
  */
 static constexpr int kGotoTable[] = {
     456,  841,  205,  326,  999,  935,   16,  497,  825,  218,  719,  204,  722,  792,  889,  779,  195, 1008,  776,  834,  587,  652,  498,  973,  428,  676,  876,  148,  126,  374,  190,   76,
@@ -51,13 +51,13 @@ static constexpr int kGotoTable[] = {
 };
 
 /**
- * 此函数会触发栈溢出。该函数接收其参数，
- * 将其用作表的索引，然后以该新索引递归调用自身。这
- * 递归永不停止，最终使程序崩溃。我们选择了
- * 使用上述特定数字，是因为程序最终会对以下对象调用此函数
- * 反复执行某个序列。你的任务是使用调试器，
- * 借助堆栈跟踪和变量窗口来弄清楚其中数字的含义
- * 序列分别是什么。
+ * This function is going to trigger a stack overflow. The function takes its argument,
+ * uses it as an index into the table, then calls itself using that new index. This
+ * recursion never stops, so it eventually crashes the program. We've chosen the
+ * particular numbers above because the program eventually calls this function on
+ * a certain sequence over and over and over again. Your job is to use the debugger,
+ * the stack trace, and the variables window to figure out what the numbers in
+ * the sequence are.
  */
 void triggerStackOverflow(int index) {
     triggerStackOverflow(kGotoTable[index]);

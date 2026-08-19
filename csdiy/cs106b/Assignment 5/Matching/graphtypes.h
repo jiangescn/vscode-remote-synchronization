@@ -24,19 +24,19 @@ namespace EdRothberg {
     Edge FindEdge(Graph graph, int i, int j);
     void FreeGraph(Graph graph);
     
-    /* 向图中添加一条边。如果该边已存在，则会创建
-     * 平行边。
+    /* Adds an edge to a graph. If the edge already exists, this creates a
+     * parallel edge.
      */
     void AddEdge (Graph g, int n, int m, int label);
 
-    /* 计算一般图中的最大权重匹配。返回值为
-     * 所有匹配对的列表，其中每个匹配恰好出现一次。
-     * 未匹配的顶点会被省略。
+    /* Compute a maximum weighted matching in a general graph. Return value is
+     * a list of all the matched pairs, with each match appearing exactly once.
+     * Unmatched vertices are omitted.
      *
-     * 此函数计算最大权匹配，但不一定是
-     * 完美匹配。可以通过缩放来强制匹配为完美匹配
-     * 边上的权重，使不选择某条边的惩罚
-     * 超过其他边可能的最大总和。
+     * This computes a maximum weighted match, which is not necessarily a
+     * perfect match. You can enforce that the matching is perfect by scaling
+     * the weights on the edges such that the penalty for not picking an edge
+     * exceeds the maximum possible sum of other edges.
      */
     std::vector<std::pair<int, int>> WeightedMatch (Graph gptr);
 }

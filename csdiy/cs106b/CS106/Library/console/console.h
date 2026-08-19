@@ -1,32 +1,32 @@
 /*
- * 文件：console.h
+ * File: console.h
  * ---------------
- * 此文件包含与库的图形控制台窗口相关的函数，
- * 使用原生 C++ 的 Qt 图形库实现，而不是 Java。
- * 通常，如果 #include 此文件，将隐式启用图形
- * 控制台。如果不希望这样做，应 #define 一个名为
- * 在包含此头文件之前定义 __DONT_ENABLE_QT_GRAPHICAL_CONSOLE。
- * 启用图形控制台后，很难再将其关闭
- * 再次用于该程序。
+ * This file contains functions related to the library's graphical console window,
+ * implemented using the Qt graphics library in native C++ instead of Java.
+ * In general if you #include this file, it will implicitly enable the graphical
+ * console.  If you don't want to do that, you should #define a flag named
+ * __DONT_ENABLE_QT_GRAPHICAL_CONSOLE right before #include'ing this header.
+ * Once the graphical console has been enabled, it cannot easily be turned off
+ * again for that program.
  *
  * @author Marty Stepp
  * @version 2018/11/22
- * - 添加无界面模式支持
+ * - added headless mode support
  * @version 2018/10/18
- * - 修复 include，避免意外启用 GUI
+ * - fixed includes to avoid accidentally enabling GUI unintentionally
  * @version 2018/09/08
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/27
- * - 清理注释
+ * - cleaned up comments
  * @version 2018/08/23
- * - 重命名为 console.h，以替代 Java 版本
- * - 将 gconsolewindow.h/cpp 独立拆分
+ * - renamed to console.h to replace Java version
+ * - separated out gconsolewindow.h/cpp
  * @version 2018/07/29
- * - 菜单、图标、快捷键
+ * - menu, icons, hotkeys
  * @version 2018/07/26
- * - 重构 GConsoleWindow 类
+ * - refactored GConsoleWindow class
  * @version 2018/07/15
- * - 初始版本，基于 io/console.h
+ * - initial version, based on io/console.h
  */
 
 
@@ -42,105 +42,105 @@ struct GPoint;
 #endif // SPL_HEADLESS_MODE
 
 /**
- * 擦除控制台窗口内容。
+ * Erases the contents of the console window.
  */
 void clearConsole();
 
 /**
- * 返回是否应启用控制台的“clear”函数。
- * 默认为 true。若为 false，clear() 只会输出一条消息
- * 而不是真正清空控制台。
+ * Returns whether the console's "clear" function should be enabled.
+ * Default true.  If false, clear() will just print a message
+ * rather than actually clearing the console.
  * @private
  */
 bool getConsoleClearEnabled();
 
 /**
- * 返回用户点击控制台“关闭”按钮时控制台将执行的操作。
- * 默认值为 CONSOLE_HIDE_ON_CLOSE，除非另有设置。
+ * Returns what the console will do when the user hits its "close" button.
+ * By default, this is CONSOLE_HIDE_ON_CLOSE unless set otherwise.
  */
 /* GWindow::CloseOperation */ int getConsoleCloseOperation();
 
 /**
- * 返回 Stanford 图形控制台的输入/输出是否
- * 控制台窗口内容正在镜像到操作系统标准终端
- * 窗口。初始值为 false，除非之前调用以下方法将其设为 true：
- * setConsoleEcho(true)。
+ * Returns whether or not the input/output from the Stanford graphical
+ * console window is being echoed onto the standard operating system terminal
+ * window. Initially this is false unless set to true by a previous call to
+ * setConsoleEcho(true).
  */
 bool getConsoleEcho();
 
 /**
- * 返回图形控制台窗口是否已启用。
- * 如果程序中包含了 "qconsole.h"，则此值为 true。
+ * Returns whether the graphical console window is enabled.
+ * This is true if you have included "qconsole.h" in your program.
  */
 bool getConsoleEnabled();
 
 /**
- * 返回控制台满足以下条件时整个 C++ 程序是否会终止
- * 窗口关闭。默认情况下初始值为 false。
+ * Returns whether the overall C++ program will terminate if the console
+ * window is closed.  By default this is false initially.
  */
 bool getConsoleExitProgramOnClose();
 
 /**
- * 返回控制台当前使用的字体。字体
- * 通常是形如 <code>family-style-size</code> 的字符串。
- * 在此字符串中，<code>family</code> 是字体族名称；
- * <code>style</code> 可以省略（表示普通字体），也可以是
- * 字符串 <code>Bold</code>、<code>Italic</code> 或
- * <code>BoldItalic</code>；<code>size</code> 是整数
- * 表示字号。
- * 有关字体字符串的更多信息，请参阅 gfont.h。
+ * Returns the font currently being used by the console.  The font
+ * is typically a string in the form <code>family-style-size</code>.
+ * In this string, <code>family</code> is the name of the font family;
+ * <code>style</code> is either missing (indicating a plain font) or one
+ * of the strings <code>Bold</code>, <code>Italic</code>, or
+ * <code>BoldItalic</code>; and <code>size</code> is an integer
+ * indicating the point size.
+ * See gfont.h for more information about font strings.
  */
 std::string getConsoleFont();
 
 /**
- * 返回控制台窗口的像素高度。
+ * Returns the height of the console window in pixels.
  */
 double getConsoleHeight();
 
 /**
- * 返回控制台窗口左上角的 x/y 位置。
+ * Returns the x/y position of the top-left corner of the console window.
  */
 #ifndef SPL_HEADLESS_MODE
 GPoint getConsoleLocation();
 #endif // SPL_HEADLESS_MODE
 
 /**
- * 返回控制台窗口的位置是否应被记住并
- * 在程序的多次运行之间恢复。初始为 false。
+ * Returns whether the location of the console window should be remembered and
+ * restored between runs of the program.  Initially false.
  */
 bool getConsoleLocationSaved();
 
 /**
- * 返回是否启用了会导致异常被以下方式处理的功能
- * 抛出时回显到 Stanford 图形控制台窗口。
- * 默认禁用（false）。
+ * Returns whether or not a feature is enabled that causes exceptions to be
+ * echoed to the Stanford graphical console window when they are thrown.
+ * Disabled (false) by default.
  */
 bool getConsolePrintExceptions();
 
 /**
- * 返回 setConsoleFont 或 setConsoleSize 等函数是否
- * 当前会被忽略。请参阅 setConsoleSettingsLocked。
- * 客户端通常不应调用此方法。
+ * Returns whether functions like setConsoleFont or setConsoleSize
+ * are currently ignored.  See setConsoleSettingsLocked.
+ * Clients should generally not call this method.
  * @private
  */
 bool getConsoleSettingsLocked();
 
 /**
- * 返回控制台窗口的像素尺寸。
+ * Returns the size of the console window in pixels.
  */
 #ifndef SPL_HEADLESS_MODE
 GDimension getConsoleSize();
 #endif // SPL_HEADLESS_MODE
 
 /**
- * 返回控制台窗口的像素宽度。
+ * Returns the width of the console window in pixels.
  */
 double getConsoleWidth();
 
 /**
- * 返回指向图形控制台窗口的指针，
- * 它是 GWindow 的子类，因此可像操作
- * 任何其他窗口。
+ * Returns a pointer to the graphical console window,
+ * which is a subclass of GWindow, so you can manipulate it as you would
+ * any other window.
  *
  * @private
  */
@@ -149,112 +149,112 @@ GConsoleWindow* getConsoleWindow();
 #endif // SPL_HEADLESS_MODE
 
 /**
- * 返回控制台窗口标题栏文本。
+ * Returns the title bar text of the console window.
  */
 std::string getConsoleWindowTitle();
 
 /**
- * 如果 Qt 图形控制台的状态尚未初始化，则进行初始化
- * 已初始化。
- * 客户端通常不应调用此方法。
+ * Initializes the state of the Qt graphical console, if it has not already
+ * been initialized.
+ * Clients should generally not call this method.
  * @private
  */
 void initializeQtGraphicalConsole();
 
-// 定义于 gwindow.h/cpp
+// defined in gwindow.h/cpp
 extern void pause(double milliseconds);
 
 /**
- * 返回是否应启用控制台的“clear”函数。
- * 默认为 true。若为 false，clear() 只会输出一条消息
- * 而不是真正清空控制台。
- * 这有时用于帮助创建自动评分脚本。
+ * Returns whether the console's "clear" function should be enabled.
+ * Default true.  If false, clear() will just print a message
+ * rather than actually clearing the console.
+ * This is sometimes used to facilitate creation of auto-grading scripts.
  * @private
  */
 void setConsoleClearEnabled(bool value);
 
 /**
- * 设置用户点击控制台“关闭”按钮时控制台应执行的操作。
+ * Sets what the console should do when the user hits its "close" button.
  */
 void setConsoleCloseOperation(/*GWindow::CloseOperation*/ int op);
 
 /**
- * 启用或禁用回显 Stanford 图形控制台的输入/输出
- * 将控制台窗口内容镜像到操作系统标准终端窗口。
- * 通常不需要这种回显，但如果你希望能够复制
- * 并将控制台交互粘贴到另一个窗口时，此功能很有用。
+ * Enables or disables echoing the input/output from the Stanford graphical
+ * console window onto the standard operating system terminal window.
+ * Normally you don't need this echoing, but if you want to be able to copy
+ * and paste your console interaction into another window, it is useful.
  */
 void setConsoleEcho(bool echo);
 
 /**
- * 设置用于在控制台窗口中显示文本的颜色。
- * 传入的颜色字符串应采用十六进制格式，例如“#ffa32f”；
- * 有关颜色和颜色字符串的更多详细信息，请参阅 gcolor.h。
+ * Sets the color used to display text in the console window.
+ * The color string passed should be in a hex format such as "#ffa32f";
+ * See gcolor.h for more detail about colors and color strings.
  */
 void setConsoleErrorColor(const std::string& color);
 
 /**
- * 设置控制台满足以下条件时整个 C++ 程序是否应终止
- * 窗口关闭。默认情况下初始值为 false。
+ * Sets whether the overall C++ program should terminate if the console
+ * window is closed.  By default this is false initially.
  */
 void setConsoleExitProgramOnClose(bool exitOnClose);
 
 /**
- * 更改控制台使用的字体。<code>font</code> 参数
- * 通常是形如 <code>family-style-size</code> 的字符串。
- * 在此字符串中，<code>family</code> 是字体族名称；
- * <code>style</code> 可以省略（表示普通字体），也可以是
- * 字符串 <code>Bold</code>、<code>Italic</code> 或
- * <code>BoldItalic</code>；<code>size</code> 是整数
- * 表示字号。如果其中任何组件
- * 指定为星号时，保留现有值。
- * <code>font</code> 参数也可以是一系列
- * 多个这样的规范以分号分隔，在这种情况下
- * 使用系统上第一个可用字体。
- * 有关字体字符串的更多信息，请参阅 gfont.h。
+ * Changes the font used for the console.  The <code>font</code> parameter
+ * is typically a string in the form <code>family-style-size</code>.
+ * In this string, <code>family</code> is the name of the font family;
+ * <code>style</code> is either missing (indicating a plain font) or one
+ * of the strings <code>Bold</code>, <code>Italic</code>, or
+ * <code>BoldItalic</code>; and <code>size</code> is an integer
+ * indicating the point size.  If any of these components is
+ * specified as an asterisk, the existing value is retained.
+ * The <code>font</code> parameter can also be a sequence of
+ * such specifications separated by semicolons, in which case the
+ * first available font on the system is used.
+ * See gfont.h for more detail about font strings.
  */
 void setConsoleFont(const std::string& font);
 
 /**
- * 将控制台左上角的 (x, y) 像素位置更改为
- * 指定坐标，相对于屏幕左上角。
+ * Changes the (x, y) pixel position of the top-left corner of the console to
+ * the specified coordinates, relative to the top/left of the screen.
  */
 void setConsoleLocation(double x, double y);
 
 /**
- * 设置控制台窗口的位置是否应被记住并
- * 在程序的多次运行之间恢复。默认为 false。
+ * Sets whether the location of the console window should be remembered and
+ * restored between runs of the program.  Default false.
  */
 void setConsoleLocationSaved(bool value);
 
 /**
- * 设置用于在控制台窗口中显示文本的颜色。
- * 传入的颜色字符串应采用十六进制格式，例如“#ffa32f”；
- * 有关颜色字符串的更多详细信息，请参阅 gcolor.h。
+ * Sets the color used to display text in the console window.
+ * The color string passed should be in a hex format such as "#ffa32f";
+ * See gcolor.h for more detail about color strings.
  */
 void setConsoleOutputColor(const std::string& color);
 
 /**
- * 如果设为 true，将禁用 setConsoleFont 或 setConsoleSize 等函数，
- * 通过否定其中的此类调用来帮助构建自动评分器
- * 学生的主程序。初始为 false。
- * 客户端通常不应调用此方法。
+ * If set to true, disables functions like setConsoleFont or setConsoleSize,
+ * to facilitate autograder construction by negating any such calls in the
+ * student's main program.  Initially false.
+ * Clients should generally not call this method.
  * @private
  */
 void setConsoleSettingsLocked(bool value);
 
 /**
- * 将控制台大小更改为指定像素尺寸。
+ * Changes the size of the console to the specified dimensions in pixels.
  */
 void setConsoleSize(double width, double height);
 
 /**
- * 将控制台窗口标题栏文本更改为指定文本。
+ * Changes the title bar text of the console window to the specified text.
  */
 void setConsoleWindowTitle(const std::string& title);
 
 /**
- * 关闭图形控制台窗口并将其停用。
+ * Closes the graphical console window and turns it off.
  */
 void shutdownConsole();
 
@@ -262,13 +262,13 @@ void shutdownConsole();
 
 
 /*
- * console.h 的特殊之处在于学生程序必须能够 #include 它
- * 然后神奇地获得图形控制台而不是标准控制台；
- * 但我们希望其他库文件能够包含 console.h，以获得
- * 函数原型，而不真正启用图形控制台。
- * 为实现这一点，我们提供了 __DONT_ENABLE_QT_GRAPHICAL_CONSOLE 标志，库
- * 文件可以在 #include console.h 之前定义。如果这样做，将会
- * 声明原型，但不初始化图形控制台。
+ * console.h is weird in that a student's program must be able to #include it
+ * and then magically receive the graphical console instead of the standard one;
+ * but we want other lib files to be able to include console.h to get the
+ * function prototypes without actually turning the graphical console on.
+ * To achieve this, we have the __DONT_ENABLE_QT_GRAPHICAL_CONSOLE flag that lib
+ * files can set right before #include'ing console.h.  If they do so, it will
+ * declare the prototypes but not initialize the graphical console.
  */
 #ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
@@ -285,10 +285,10 @@ namespace qtgui {
 class QtConsoleInitializer_private {
 public:
     /*
-     * 初始化库的代码。
-     * 以类构造函数的形式实现，以便它会在
-     * 静态初始化阶段，它发生在学生代码之前
-     * main 函数。
+     * Code to initialize the library.
+     * Implemented as a class constructor so that it will run during
+     * static initialization phase, which happens before the student's
+     * main function.
      */
     QtConsoleInitializer_private() {
         setConsoleEnabled(true);

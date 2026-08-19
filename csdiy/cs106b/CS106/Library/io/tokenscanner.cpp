@@ -1,15 +1,15 @@
 /*
- * 文件：tokenscanner.cpp
+ * File: tokenscanner.cpp
  * ----------------------
- * TokenScanner 类的实现。
+ * Implementation for the TokenScanner class.
  * 
  * @version 2016/11/26
- * - 添加 getInput 方法
- * - 为提高效率，将 string 出现处替换为 const string&
- * - 按字母顺序排列方法
- * - 添加用于输出扫描器的 operator <<
+ * - added getInput method
+ * - replaced occurrences of string with const string& for efficiency
+ * - alphabetized method ordering
+ * - added operator << for printing a scanner
  * @version 2014/10/08
- * - 移除“using namespace”语句
+ * - removed 'using namespace' statement
  */
 
 #include "tokenscanner.h"
@@ -276,7 +276,7 @@ void TokenScanner::verifyToken(const std::string& expected) {
     }
 }
 
-/* 私有方法 */
+/* Private methods */
 
 void TokenScanner::initScanner() {
     ignoreWhitespaceFlag = false;
@@ -287,12 +287,12 @@ void TokenScanner::initScanner() {
 }
 
 /*
- * 实现说明：isOperator、isOperatorPrefix
+ * Implementation notes: isOperator, isOperatorPrefix
  * --------------------------------------------------
- * 这些方法搜索运算符列表，并在
- * 指定运算符是否在列表中，或是否为某个运算符的前缀
- * 分别位于列表中。此代码可以大幅
- * 通过将运算符实现为 trie 来提高效率。
+ * These methods search the list of operators and return true if the
+ * specified operator is either in the list or a prefix of an operator
+ * in the list, respectively.  This code could be made considerably more
+ * efficient by implementing operators as a trie.
  */
 bool TokenScanner::isOperator(const std::string& op) {
     for (StringCell *cp = operators; cp != nullptr; cp = cp->link) {
@@ -313,13 +313,13 @@ bool TokenScanner::isOperatorPrefix(const std::string& op) {
 }
 
 /*
- * 实现说明：scanNumber
+ * Implementation notes: scanNumber
  * --------------------------------
- * 读取字符，直到扫描器到达合法数字末尾。
- * 该函数通过模拟计算机科学家所说的过程运行
- * 称为有限状态机。程序使用变量
- * 使用 <code>state</code> 记录过程历史，并
- * 确定此时哪些字符是合法的。
+ * Reads characters until the scanner reaches the end of a legal number.
+ * The function operates by simulating what computer scientists
+ * call a finite-state machine.  The program uses the variable
+ * <code>state</code> to record the history of the process and
+ * determine what characters would be legal at this point in time.
  */
 std::string TokenScanner::scanNumber() {
     std::string token = "";
@@ -400,11 +400,11 @@ std::string TokenScanner::scanNumber() {
 }
 
 /*
- * 实现说明：scanString
+ * Implementation notes: scanString
  * --------------------------------
- * 从扫描器读取并返回带引号字符串，持续到
- * 它会扫描匹配的分隔符。如果
- * 在输入结束前没有右引号。
+ * Reads and returns a quoted string from the scanner, continuing until
+ * it scans the matching delimiter.  The scanner generates an error if
+ * there is no closing quotation mark before the end of the input.
  */
 std::string TokenScanner::scanString() {
     std::string token = "";
@@ -426,10 +426,10 @@ std::string TokenScanner::scanString() {
 }
 
 /*
- * 实现说明：scanWord
+ * Implementation notes: scanWord
  * ------------------------------
- * 读取字符，直到扫描器到达一段序列的末尾
- * 单词字符。
+ * Reads characters until the scanner reaches the end of a sequence
+ * of word characters.
  */
 std::string TokenScanner::scanWord() {
     std::string token = "";
@@ -448,10 +448,10 @@ std::string TokenScanner::scanWord() {
 }
 
 /*
- * 实现说明：skipSpaces
+ * Implementation notes: skipSpaces
  * --------------------------------
- * 推进扫描器位置，直到当前字符为
- * 不是空白字符。
+ * Advances the position of the scanner until the current character is
+ * not a whitespace character.
  */
 void TokenScanner::skipSpaces() {
     while (true) {

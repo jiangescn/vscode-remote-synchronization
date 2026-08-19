@@ -1,20 +1,20 @@
 /*
- * 文件：gbrowserpane.cpp
+ * File: gbrowserpane.cpp
  * ----------------------
- * 此文件包含 <code>GBrowserPane</code> 类的实现
- * 如 gbrowserpane.h 中所声明。
+ * This file contains the implementation of the <code>GBrowserPane</code> class
+ * as declared in gbrowserpane.h.
  *
  * @version 2019/04/23
- * - 将部分事件处理代码移到 GInteractor 父类
+ * - moved some event-handling code to GInteractor superclass
  * @version 2018/12/28
- * - 添加文本选择、滚动、光标位置以及键盘/鼠标监听器方法
+ * - added methods for text selection, scrolling, cursor position, key/mouse listeners
  * @version 2018/09/17
- * - 修复线程安全问题
- * - 添加链接监听事件
+ * - fixed thread safety bugs
+ * - added link listener events
  * @version 2018/08/23
- * - 重命名为 gbrowserpane.h，以替代 Java 版本
+ * - renamed to gbrowserpane.h to replace Java version
  * @version 2018/07/15
- * - 初始版本
+ * - initial version
  */
 
 #include "gbrowserpane.h"
@@ -33,11 +33,11 @@ GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
     if (!url.empty()) {
         readTextFromUrl(url);
     }
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GBrowserPane::~GBrowserPane() {
-    // TODO：delete _iqtextbrowser;
+    // TODO: delete _iqtextbrowser;
     _iqtextbrowser->detach();
     _iqtextbrowser = nullptr;
 }
@@ -86,7 +86,7 @@ int GBrowserPane::getSelectionEnd() const {
     if (end > start) {
         return end;
     } else {
-        // 没有选区；光标使选区起点和终点相等
+        // no selection; cursor sets selection start/end to be equal
         return -1;
     }
 }
@@ -256,8 +256,8 @@ void GBrowserPane::setText(const std::string& text) {
     });
 }
 
-// JDZ：替换文本时，浏览器窗格会滚动到看似任意的位置
-// 真烦人！此版本在 true 时保留滚动位置，在 false 时滚动到末尾
+// JDZ: when replace text, browser pane scrolls to seemingly arbitrary location
+// Annoying! this version perserve scroll position (if true) or scrolls to end (if false)
 void GBrowserPane::setTextPreserveScroll(const std::string& text, bool preserve) {
     GThread::runOnQtGuiThread([this, text, preserve]() {
         QScrollBar* scrollbar = _iqtextbrowser->verticalScrollBar();
@@ -306,27 +306,27 @@ void _Internal_QTextBrowser::mousePressEvent(QMouseEvent* event) {
 
 void _Internal_QTextBrowser::mouseReleaseEvent(QMouseEvent* event) {
     if (!_gbrowserpane->isAcceptingEvent("linkclick")) {
-        QTextBrowser::mouseReleaseEvent(event);   // 调用父类实现
+        QTextBrowser::mouseReleaseEvent(event);   // call super
         return;
     }
     if (!(event->button() & Qt::LeftButton)) {
-        QTextBrowser::mouseReleaseEvent(event);   // 调用父类实现
+        QTextBrowser::mouseReleaseEvent(event);   // call super
         return;
     }
     QString clickedAnchor = anchorAt(event->pos());
     if (clickedAnchor.isEmpty() || _clickedLink.isEmpty()
             || clickedAnchor != _clickedLink) {
-        QTextBrowser::mouseReleaseEvent(event);   // 调用父类实现
+        QTextBrowser::mouseReleaseEvent(event);   // call super
         return;
     }
 
-    _clickedLink = QString::fromStdString("");   // 清除
+    _clickedLink = QString::fromStdString("");   // clear
 
     GEvent linkEvent(
-                /* 类  */ HYPERLINK_EVENT,
-                /* 类型   */ HYPERLINK_CLICKED,
-                /* 名称   */ "linkclick",
-                /* 来源 */ _gbrowserpane);
+                /* class  */ HYPERLINK_EVENT,
+                /* type   */ HYPERLINK_CLICKED,
+                /* name   */ "linkclick",
+                /* source */ _gbrowserpane);
     linkEvent.setButton(static_cast<int>(event->button()));
     linkEvent.setX(event->pos().x());
     linkEvent.setY(event->pos().y());

@@ -1,8 +1,8 @@
 /*
- * 文件：priorityqueue.h
+ * File: priorityqueue.h
  * ---------------------
- * 此文件导出 <code>PriorityQueue</code> 类，它是一种
- * 按优先级顺序处理值的集合。
+ * This file exports the <code>PriorityQueue</code> class, a
+ * collection in which values are processed in priority order.
  */
 
 #ifndef _priorityqueue_h
@@ -21,170 +21,170 @@
 #include "vector.h"
 
 /*
- * 类：PriorityQueue<ValueType>
+ * Class: PriorityQueue<ValueType>
  * -------------------------------
- * 此类对一种称为<b><i>优先队列</i></b>的结构建模
- * 其中值按优先级顺序处理。与传统方式一样
- * 按照英语惯例，较小的优先级数值表示更高的实际
- * 优先级，因此优先级为 1 的项目优先于
- * 优先级为 2 的项目。
+ * This class models a structure called a <b><i>priority&nbsp;queue</i></b>
+ * in which values are processed in order of priority.  As in conventional
+ * English usage, lower priority numbers correspond to higher effective
+ * priorities, so that a priority 1 item takes precedence over a
+ * priority 2 item.
  */
 
 template <typename ValueType>
 class PriorityQueue {
 public:
     /*
-     * 构造函数：PriorityQueue
-     * 用法：PriorityQueue<ValueType> pq;
+     * Constructor: PriorityQueue
+     * Usage: PriorityQueue<ValueType> pq;
      * -----------------------------------
-     * 初始化一个新的优先队列，其初始为空。
+     * Initializes a new priority queue, which is initially empty.
      */
     PriorityQueue() = default;
 
     /*
-     * 构造函数：PriorityQueue
-     * 用法：PriorityQueue<ValueType> pq {{1.0, "a"}, {2.0, "b"}, {3.0, "c"}};
+     * Constructor: PriorityQueue
+     * Usage: PriorityQueue<ValueType> pq {{1.0, "a"}, {2.0, "b"}, {3.0, "c"}};
      * -------------------------------------------------------------------------
-     * 初始化一个存储给定键值对的新优先队列。
-     * 请注意，键值对按优先级顺序存储，而不是
-     * 不一定与它们在初始化列表中的书写顺序相同。
+     * Initializes a new priority that stores the given pairs.
+     * Note that the pairs are stored in priority order and not
+     * necessarily the order in which they are written in the initializer list.
      */
     PriorityQueue(std::initializer_list<std::pair<double, ValueType>> list);
 
     /*
-     * 析构函数：~PriorityQueue
+     * Destructor: ~PriorityQueue
      * --------------------------
-     * 释放与此优先队列关联的任何堆存储。
+     * Frees any heap storage associated with this priority queue.
      */
     virtual ~PriorityQueue() = default;
 
     /*
-     * 方法：changePriority
-     * 用法：pq.changePriority(value, newPriority);
+     * Method: changePriority
+     * Usage: pq.changePriority(value, newPriority);
      * ---------------------------------------------
-     * 调整队列中的 <code>value</code>，使其具有指定的新优先级，
-     * 其紧急程度必须至少与该值此前的优先级相同（数字更小）
-     * 队列中的优先级。
-     * 如果队列中不存在该元素值，或者
-     * 传入的新优先级不至少与当前优先级同样紧急。
+     * Adjusts <code>value</code> in the queue to now have the specified new priority,
+     * which must be at least as urgent (lower number) than that value's previous
+     * priority in the queue.
+     * Throws an error if the element value is not present in the queue, or if the
+     * new priority passed is not at least as urgent as its current priority.
      */
     void changePriority(ValueType value, double newPriority);
 
     /*
-     * 方法：clear
-     * 用法：pq.clear();
+     * Method: clear
+     * Usage: pq.clear();
      * ------------------
-     * 从优先队列中删除所有元素。
+     * Removes all elements from the priority queue.
      */
     void clear();
 
     /*
-     * 方法：dequeue
-     * 用法：ValueType first = pq.dequeue();
+     * Method: dequeue
+     * Usage: ValueType first = pq.dequeue();
      * --------------------------------------
-     * 删除并返回最高优先级的值。如果有多个
-     * 队列中具有相同优先级的条目会
-     * 按入队时的相同顺序出队。
+     * Removes and returns the highest priority value.  If multiple
+     * entries in the queue have the same priority, those values are
+     * dequeued in the same order in which they were enqueued.
      */
     ValueType dequeue();
 
     /*
-     * 方法：enqueue
-     * 用法：pq.enqueue(value, priority);
+     * Method: enqueue
+     * Usage: pq.enqueue(value, priority);
      * -----------------------------------
-     * 以指定优先级将 <code>value</code> 添加到队列。
-     * 较小的优先级数字对应更高的优先级，这
-     * 表示所有优先级为 1 的元素都会在任何其他元素之前出队
-     * 优先级为 2 的元素。
+     * Adds <code>value</code> to the queue with the specified priority.
+     * Lower priority numbers correspond to higher priorities, which
+     * means that all priority 1 elements are dequeued before any
+     * priority 2 elements.
      */
     void enqueue(const ValueType& value, double priority);
 
     /*
-     * 方法：equals
-     * 用法：if (pq.equals(pq2)) ...
+     * Method: equals
+     * Usage: if (pq.equals(pq2)) ...
      * ------------------------------
-     * 比较两个优先队列是否相等。
-     * 如果此队列包含完全相同的内容，则返回 <code>true</code>
-     * 与给定另一个队列相同的值和优先级。
-     * 行为与 == 运算符相同。
+     * Compares two priority queues for equality.
+     * Returns <code>true</code> if this queue contains exactly the same
+     * values and priorities as the given other queue.
+     * Identical in behavior to the == operator.
      */
     bool equals(const PriorityQueue<ValueType>& pq2) const;
 
     /*
-     * 方法：isEmpty
-     * 用法：if (pq.isEmpty()) ...
+     * Method: isEmpty
+     * Usage: if (pq.isEmpty()) ...
      * ----------------------------
-     * 如果优先队列不包含元素，则返回 <code>true</code>。
+     * Returns <code>true</code> if the priority queue contains no elements.
      */
     bool isEmpty() const;
 
     /*
-     * 方法：peek
-     * 用法：ValueType first = pq.peek();
+     * Method: peek
+     * Usage: ValueType first = pq.peek();
      * -----------------------------------
-     * 返回队列中优先级最高的值，但不
-     * 将其移除。
+     * Returns the value of highest priority in the queue, without
+     * removing it.
      */
     const ValueType& peek() const;
 
     /*
-     * 方法：peekPriority
-     * 用法：double priority = pq.peekPriority();
+     * Method: peekPriority
+     * Usage: double priority = pq.peekPriority();
      * -------------------------------------------
-     * 返回队列中第一个元素的优先级，但不
-     * 将其移除。
+     * Returns the priority of the first element in the queue, without
+     * removing it.
      */
     double peekPriority() const;
 
     /*
-     * 方法：size
-     * 用法：int n = pq.size();
+     * Method: size
+     * Usage: int n = pq.size();
      * -------------------------
-     * 返回优先队列中的值数量。
+     * Returns the number of values in the priority queue.
      */
     int size() const;
 
     /*
-     * 方法：toString
-     * 用法：string str = pq.toString();
+     * Method: toString
+     * Usage: string str = pq.toString();
      * ----------------------------------
-     * 将队列转换为可打印的字符串表示。
+     * Converts the queue to a printable string representation.
      */
     std::string toString() const;
 
     /*
-     * 运算符：<<
-     * 将优先队列打印到给定输出流。
+     * Operator: <<
+     * Prints the priority queue to the given output stream.
      */
     template <typename T>
     friend std::ostream& operator <<(std::ostream& os, const PriorityQueue<T>& pq);
 
     /*
-     * 运算符：==、!=
-     * 用法：if (pq1 == pq2) ...
+     * Operators: ==, !=
+     * Usage: if (pq1 == pq2) ...
      * --------------------------
-     * 用于比较两个队列是否包含相同元素的关系运算符。
-     * ==、!= 运算符要求 ValueType 定义 == 运算符
-     * 以便测试元素是否相等。
+     * Relational operators to compare two queues to see if they have the same elements.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
      */
     bool operator ==(const PriorityQueue& pq2) const;
     bool operator !=(const PriorityQueue& pq2) const;
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
     /*
-     * 实现说明：PriorityQueue 数据结构
+     * Implementation notes: PriorityQueue data structure
      * --------------------------------------------------
-     * PriorityQueue 类使用一种称为
-     * 一个堆。
+     * The PriorityQueue class is implemented using a data structure called
+     * a heap.
      */
 private:
-    /* 用于每个堆条目的类型 */
+    /* Type used for each heap entry */
     struct HeapEntry {
         ValueType value;
         double priority;
@@ -193,12 +193,12 @@ private:
         bool operator < (const HeapEntry& rhs) const;
     };
 
-    /* 实例变量 */
+    /* Instance variables */
     Vector<HeapEntry> _heap;
     long _enqueueCount = 0;
 
 public:
-    /* 私有实现部分 */
+    /* private implentation section */
 
     template <typename Collection>
     friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
@@ -214,9 +214,9 @@ PriorityQueue<ValueType>::PriorityQueue(
 }
 
 /*
- * Marty Stepp 添加了 changePriority 函数。
- * 此实现的部分内容改编自 TrailblazerPQueue.h，
- * 由 Keith Schwarz 编写。
+ * changePriority function added by Marty Stepp.
+ * Parts of this implementation are adapted from TrailblazerPQueue.h,
+ * which was written by Keith Schwarz.
  */
 template <typename ValueType>
 void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriority) {
@@ -227,7 +227,7 @@ void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriorit
         newPriority = 0.0;
     }
 
-    /* 找到要更改的元素。 */
+    /* Find the element to change. */
     auto itr = std::find_if(_heap.begin(), _heap.end(), [&](const HeapEntry& entry) {
         return entry.value == value;
     });
@@ -245,14 +245,14 @@ void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriorit
 template <typename ValueType>
 void PriorityQueue<ValueType>::clear() {
     _heap.clear();
-    _enqueueCount = 0;   // BUG 修复 2014/10/10：之前使用了未赋值的垃圾值
+    _enqueueCount = 0;   // BUGFIX 2014/10/10: was previously using garbage unassigned value
 }
 
 /*
- * 实现说明：dequeue、peek、peekPriority
+ * Implementation notes: dequeue, peek, peekPriority
  * -------------------------------------------------
- * 这些方法必须检查空队列，并报告错误
- * 若不存在第一个元素。
+ * These methods must check for an empty queue and report an error
+ * if there is no first element.
  */
 template <typename ValueType>
 ValueType PriorityQueue<ValueType>::dequeue() {
@@ -281,7 +281,7 @@ void PriorityQueue<ValueType>::enqueue(const ValueType& value, double priority) 
 
 template <typename ValueType>
 bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const {
-    // 优化：如果确实是同一优先队列，则停止
+    // optimization: if literally same pq, stop
     if (this == &pq2) {
         return true;
     }
@@ -336,11 +336,11 @@ std::string PriorityQueue<ValueType>::toString() const {
 
 
 /*
- * 堆条目的比较函数。比较按字典序进行，首先按
- * 先按优先级，再按序列号。
+ * Comparison function for heap entries. The comparison is lexicographic, first by
+ * priority, then by sequence number.
  *
- * 因为 std::push_heap 和 std::pop_heap 尝试创建最大堆，而我们希望
- * 在最小堆中，优先级比较方向相反。
+ * Because std::push_heap and std::pop_heap try creating a max-heap whereas we want
+ * a min-heap, the priority comparisons are reversed.
  */
 template <typename ValueType>
 bool PriorityQueue<ValueType>::HeapEntry::operator < (const HeapEntry& rhs) const {
@@ -361,12 +361,12 @@ bool PriorityQueue<ValueType>::operator !=(const PriorityQueue& pq2) const {
 }
 
 /*
- * 优先队列的模板哈希函数。
- * 要求优先队列中的元素类型具有 hashCode 函数。
+ * Template hash function for priority queues.
+ * Requires the element type in the priority queue to have a hashCode function.
  */
 template <typename T>
 int hashCode(const PriorityQueue<T>& pq) {
-    // （缓慢且内存效率低的实现）：复制 pq，将所有元素出队，再组合哈希
+    // (slow, memory-inefficient) implementation: copy pq, dequeue all, and hash together
     PriorityQueue<T> backup = pq;
     int code = hashSeed();
     while (!backup.isEmpty()) {
@@ -382,9 +382,9 @@ std::ostream& operator <<(std::ostream& os,
                           const PriorityQueue<ValueType>& pq) {
     os << "{";
 
-    // 更快的实现：按堆顺序打印
-    // （唯一缺点：不会按“排序后”的优先级顺序打印，
-    //  这可能会让学生客户端感到困惑）
+    // faster implementation: print in heap order
+    // (only downside: doesn't print in 'sorted' priority order,
+    //  which might confuse student client)
     for (int i = 0, len = pq.size(); i < len; i++) {
         if (i > 0) {
             os << ", ";
@@ -403,7 +403,7 @@ template <typename ValueType>
 std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
     double priority;
     ValueType element;
-    return stanfordcpplib::collections::readPairedCollection(is, pq, priority, element, /* 描述符 */ "PriorityQueue::operator >>", readOne<ValueType>);
+    return stanfordcpplib::collections::readPairedCollection(is, pq, priority, element, /* descriptor */ "PriorityQueue::operator >>", readOne<ValueType>);
 }
 
 #endif // _priorityqueue_h

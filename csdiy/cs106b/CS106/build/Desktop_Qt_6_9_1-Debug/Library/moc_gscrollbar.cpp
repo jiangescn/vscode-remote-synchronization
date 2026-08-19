@@ -1,9 +1,9 @@
 /****************************************************************************
-** 读取 C++ 文件“gscrollbar.h”生成的元对象代码
+** Meta object code from reading C++ file 'gscrollbar.h'
 **
-** 创建工具：Qt 元对象编译器 69 版（Qt 6.9.1）
+** Created by: The Qt Meta Object Compiler version 69 (Qt 6.9.1)
 **
-** 警告！对此文件所做的所有更改都将丢失！
+** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
 #include "../../../Library/graphics/gscrollbar.h"
@@ -32,7 +32,7 @@ QT_WARNING_DISABLE_DEPRECATED
 QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
 struct qt_meta_tag_ZN20_Internal_QScrollBarE_t {};
-} // 未命名命名空间
+} // unnamed namespace
 
 template <> constexpr inline auto _Internal_QScrollBar::qt_create_metaobjectdata<qt_meta_tag_ZN20_Internal_QScrollBarE_t>()
 {
@@ -45,7 +45,7 @@ template <> constexpr inline auto _Internal_QScrollBar::qt_create_metaobjectdata
     };
 
     QtMocHelpers::UintData qt_methods {
-        // 槽 'handleValueChange'
+        // Slot 'handleValueChange'
         QtMocHelpers::SlotData<void(int)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
             { QMetaType::Int, 3 },
         }}),

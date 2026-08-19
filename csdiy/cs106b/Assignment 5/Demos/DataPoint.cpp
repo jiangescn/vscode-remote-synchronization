@@ -4,10 +4,10 @@
 #include <iomanip>
 using namespace std;
 
-/* 用于读写带引号字符串的实用工具。
+/* Utilities to read and write quoted strings.
  *
- * TODO：一旦满足以下条件，应将此处替换为使用 std::quoted：
- * Windows 上支持 C++14。
+ * TODO: This should be replaced with the use of std::quoted as soon as
+ * C++14 support is available on Windows.
  */
 namespace {
     string quotedVersionOf(const string& source) {
@@ -15,16 +15,16 @@ namespace {
         result << '"';
 
         for (char ch: source) {
-            /* 转义右引号。 */
+            /* Escape close quotes. */
             if (ch == '"') result << "\\\"";
 
-            /* 转义斜杠。 */
+            /* Escape slashes. */
             else if (ch == '\\') result << "\\\\";
 
-            /* 输出其他所有可打印字符。 */
+            /* Print out any other printable characters. */
             else if (isgraph(ch) || ch == ' ') result << ch;
 
-            /* 否则，对其进行转义。 */
+            /* Otherwise, escape it. */
             else {
                 result << "\\x" << hex << setfill('0') << setw(2) << +static_cast<unsigned char>(ch);
             }
@@ -34,49 +34,49 @@ namespace {
         return result.str();
     }
 
-    /* 读取带引号的字符串。 */
+    /* Reads a quoted version of a string. */
     bool readQuoted(istream& in, string& out) {
-        /* 读取一个字符；它必须是引号。 */
+        /* Read a character; it must be a quote. */
         char read;
         in >> read;
 
         if (!in || read != '"') return false;
 
-        /* 持续读取，直到遇到右引号。 */
+        /* Keep reading until we get a close quote. */
         string result;
         while (true) {
-            /* 无法读取？这是个问题！ */
+            /* Can't read? That's a problem! */
             if (!in.get(read)) return false;
 
-            /* 若这是引号，则处理完成。 */
+            /* If this is a quote, we're done. */
             else if (read == '"') break;
 
-            /* 否则，如果它是斜杠，则将其视为转义符。 */
+            /* Otherwise, if it's a slash, treat it as an escape. */
             else if (read == '\\') {
-                /* 获取下一个字符以确定应执行什么操作。 */
+                /* Get the next character to see what we're supposed to do. */
                 if (!in.get(read)) return false;
 
-                /* 输出斜杠和引号。 */
+                /* Output slashes and quotes. */
                 else if (read == '\\' || read == '"') result += read;
 
-                /* 十六进制？读取两个字符并解码。 */
+                /* Hex? Read two characters and decode them. */
                 else if (read == 'x') {
                     string hexCode;
                     in >> setw(2) >> hexCode;
                     if (!in) return false;
 
-                    /* 将其转换为数字。 */
+                    /* Convert this to a number. */
                     try {
                         result += static_cast<char>(stringToInteger(hexCode, 16));
                     } catch (const ErrorException& e) {
                         return false;
                     }
                 }
-                /* 否则，我们无法判断它是什么。 */
+                /* Otherwise, we have no idea what this is. */
                 else return false;
             }
 
-            /* 否则，直接追加它。 */
+            /* Otherwise, just append it. */
             else result += read;
         }
 
@@ -85,19 +85,19 @@ namespace {
     }
 }
 
-/* 相等性比较。 */
+/* Equality comparison. */
 bool operator== (const DataPoint& lhs, const DataPoint& rhs) {
     return lhs.name == rhs.name && lhs.weight == rhs.weight;
 }
 
-/* 当两点不相等时，不等关系成立。 */
+/* Inequality holds when the two points aren't equal. */
 bool operator!= (const DataPoint& lhs, const DataPoint& rhs) {
     return !(lhs == rhs);
 }
 
-/* 将 DataPoint 打印到流。输出格式为
+/* Prints a DataPoint to a stream. The output format is
  *
- *   { "数据点名称，\"已正确转义\"": pt.weight }
+ *   { "name of the data point, \"properly escaped\"": pt.weight }
  */
 ostream& operator<< (ostream& out, const DataPoint& pt) {
     ostringstream builder;
@@ -105,11 +105,11 @@ ostream& operator<< (ostream& out, const DataPoint& pt) {
     return out << builder.str();
 }
 
-/* 从流中读取一个 DataPoint。 */
+/* Reads a DataPoint from a stream. */
 istream& operator>> (istream& in, DataPoint& result) {
     istream::sentry sentry(in);
     if (sentry) {
-        /* 获取下一个字符；它应当是左花括号。 */
+        /* Grab the next character; it should be an open brace. */
         char expected;
         in >> ws >> expected;
         if (!in || expected != '{') {
@@ -117,7 +117,7 @@ istream& operator>> (istream& in, DataPoint& result) {
             return in;
         }
 
-        /* 提取字符串。 */
+        /* Extract the string. */
         DataPoint read;
         in >> ws;
         if (!readQuoted(in, read.name) || !in) {
@@ -125,21 +125,21 @@ istream& operator>> (istream& in, DataPoint& result) {
             return in;
         }
 
-        /* 确认这里有逗号。 */
+        /* Confirm there's a comma here. */
         in >> ws >> expected;
         if (!in || expected != ',') {
             in.setstate(ios::failbit);
             return in;
         }
 
-        /* 读取权重。 */
+        /* Read the weight. */
         in >> ws >> read.weight;
         if (!in) {
             in.setstate(ios::failbit);
             return in;
         }
 
-        /* 读取右花括号。 */
+        /* Read the close brace. */
         in >> ws >> expected;
         if (!in || expected != '}') {
             in.setstate(ios::failbit);

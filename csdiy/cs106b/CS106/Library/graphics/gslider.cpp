@@ -1,16 +1,16 @@
 /*
- * 文件：GSlider.cpp
+ * File: GSlider.cpp
  * ------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加按键事件
+ * - added key events
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/08/23
- * - 重命名为 gslider.cpp，以替代 Java 版本
+ * - renamed to gslider.cpp to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "gslider.h"
@@ -32,7 +32,7 @@ GSlider::GSlider(int min, int max, int value, QWidget* parent) {
         _iqslider->setRange(min, max);
         _iqslider->setValue(value);
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GSlider::GSlider(Orientation orientation, int min, int max, int value, QWidget* parent) {
@@ -45,11 +45,11 @@ GSlider::GSlider(Orientation orientation, int min, int max, int value, QWidget* 
         _iqslider->setRange(min, max);
         _iqslider->setValue(value);
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GSlider::~GSlider() {
-    // TODO：delete _iqslider;
+    // TODO: delete _iqslider;
     _iqslider->detach();
     _iqslider = nullptr;
 }
@@ -83,17 +83,17 @@ GSlider::Orientation GSlider::getOrientation() const {
 }
 
 bool GSlider::getPaintLabels() const {
-    // TODO（待办）
+    // TODO
     return false;
 }
 
 bool GSlider::getPaintTicks() const {
-    // TODO（待办）
+    // TODO
     return true;
 }
 
 bool GSlider::getSnapToTicks() const {
-    // TODO（待办）
+    // TODO
     return true;
 }
 
@@ -137,8 +137,8 @@ void GSlider::setMinorTickSpacing(int value) {
     });
 }
 
-void GSlider::setPaintLabels(bool /* 值 */) {
-    // 不支持
+void GSlider::setPaintLabels(bool /* value */) {
+    // not supported
 }
 
 void GSlider::setPaintTicks(bool value) {
@@ -154,8 +154,8 @@ void GSlider::setRange(int min, int max) {
     });
 }
 
-void GSlider::setSnapToTicks(bool /* 值 */) {
-    // TODO（待办）
+void GSlider::setSnapToTicks(bool /* value */) {
+    // TODO
 }
 
 void GSlider::setState(int min, int max, int value) {
@@ -187,15 +187,15 @@ void _Internal_QSlider::detach() {
     _gslider = nullptr;
 }
 
-void _Internal_QSlider::handleChange(int /* 值 */) {
+void _Internal_QSlider::handleChange(int /* value */) {
     if (!_gslider) {
         return;
     }
     GEvent changeEvent(
-                /* 类  */ CHANGE_EVENT,
-                /* 类型   */ STATE_CHANGED,
-                /* 名称   */ "change",
-                /* 来源 */ _gslider);
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gslider);
     changeEvent.setActionCommand(_gslider->getActionCommand());
     _gslider->fireEvent(changeEvent);
 }
@@ -206,10 +206,10 @@ void _Internal_QSlider::keyPressEvent(QKeyEvent* event) {
         event->accept();
         _gslider->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
-            QSlider::keyPressEvent(event);   // 调用父类实现
+            QSlider::keyPressEvent(event);   // call super
         }
     } else {
-        QSlider::keyPressEvent(event);   // 调用父类实现
+        QSlider::keyPressEvent(event);   // call super
     }
 }
 
@@ -219,10 +219,10 @@ void _Internal_QSlider::keyReleaseEvent(QKeyEvent* event) {
         event->accept();
         _gslider->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
-            QSlider::keyReleaseEvent(event);   // 调用父类实现
+            QSlider::keyReleaseEvent(event);   // call super
         }
     } else {
-        QSlider::keyReleaseEvent(event);   // 调用父类实现
+        QSlider::keyReleaseEvent(event);   // call super
     }
 }
 

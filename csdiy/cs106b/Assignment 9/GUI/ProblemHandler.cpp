@@ -2,12 +2,12 @@
 #include "gthread.h"
 using namespace std;
 
-/* 保存主窗口。 */
+/* Stores the main window. */
 ProblemHandler::ProblemHandler(GWindow& window) : mainWindow(&window) {
-    // 已在成员初始化列表中处理
+    // Handled in member initialization list
 }
 
-/* 必要时发起重绘。 */
+/* Issues a redraw, if necessary. */
 void ProblemHandler::draw() {
     if (isDirty) {
         GThread::runOnQtGuiThread([this] {
@@ -19,87 +19,87 @@ void ProblemHandler::draw() {
     }
 }
 
-/* 设置脏标记。 */
+/* Sets the dirty bit. */
 void ProblemHandler::requestRepaint() {
     isDirty = true;
 }
 
-/* 返回保存的窗口。 */
+/* Returns the stored window. */
 GWindow& ProblemHandler::window() const {
     return *mainWindow;
 }
 
-/* 默认绘制函数不执行任何操作。 */
+/* Default draw does nothing. */
 void ProblemHandler::repaint() {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::actionPerformed(GObservable *) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::changeOccurredIn(GObservable *) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::timerFired() {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::mouseMoved(double, double) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::mousePressed(double, double) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::mouseDragged(double, double) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::mouseReleased(double, double) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::mouseExited() {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::mouseClicked(double, double) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::mouseDoubleClicked(double, double) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::hyperlinkClicked(const string &) {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序允许关闭。 */
+/* Default handler permits the shutdown. */
 bool ProblemHandler::shuttingDown() {
     return true;
 }
 
-/* 默认处理程序不执行任何操作。 */
+/* Default handler does nothing. */
 void ProblemHandler::settingUp() {
-    // 不执行任何操作
+    // Do nothing
 }
 
-/* 默认处理程序请求重绘。 */
+/* Default handler requests a repaint. */
 void ProblemHandler::windowResized() {
     requestRepaint();
 }

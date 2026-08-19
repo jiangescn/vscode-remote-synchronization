@@ -7,27 +7,27 @@ using namespace MiniGUI;
 namespace {
     const string kBackgroundColor = "#FFFFFF";
 
-    /* 滑块选项。 */
+    /* Slider options. */
     const int kLowOrder     = 0;
     const int kHighOrder    = 8;
     const int kDefaultOrder = 0;
 
-    /* 头部信息。 */
+    /* Header information. */
     const string kHeader =
         "Use the slider to change the order of the "
         "triangle. Drag the red ovals to reposition the corners.";
 
-    const Font kHeaderFont(FontFamily::SERIF, FontStyle::ITALIC, 15, "#36454F"); // 炭灰色
+    const Font kHeaderFont(FontFamily::SERIF, FontStyle::ITALIC, 15, "#36454F"); // Charcoal
     const double kHeaderHeight = 100;
     const double kHeaderPadding   = 10;
 
-    /* 控制点。 */
-    const string kControlPointFillColor    = "#C41E3A"; // 基本方向
-    const string kControlPointBorderColor  = "#620F1C"; // 半基数方向
+    /* Control points. */
+    const string kControlPointFillColor    = "#C41E3A"; // Cardinal
+    const string kControlPointBorderColor  = "#620F1C"; // Half cardinal
     const double kControlPointRadius  = 10;
     const double kControlPointPadding = 25;
 
-    /* 返回 GOval 的中心点。 */
+    /* Returns the center point of a GOval. */
     GPoint centerOf(const GOval* oval) {
         return {
             oval->getX() + oval->getWidth()  / 2.0,
@@ -45,7 +45,7 @@ namespace {
         return expand({ x, y, width, height }, delta);
     }
 
-    /* 用于可视化不同阶数 Sierpinski 三角形的问题处理程序。 */
+    /* Problem handler to visualize the Sierpinski triangles of different orders. */
     class SierpinskiGUI: public ProblemHandler {
     public:
         SierpinskiGUI(GWindow& window);
@@ -64,19 +64,19 @@ namespace {
         Temporary<GSlider> mOrderSlider;
         int  mOrder;
 
-        /* 当前顶点。 */
+        /* Current corner points. */
         GOval* mCornerPoints[3];
 
-        /* 上次鼠标按下的位置。 */
+        /* Last mouse pushdown point. */
         GPoint mLastMouse;
 
-        /* 上次选中的椭圆。 */
+        /* Last selected oval. */
         GOval* mSelected = nullptr;
 
-        /* 可显示三角形的工作区。 */
+        /* Workspace area where the triangle can be displayed. */
         GRectangle mWorkspace;
 
-        /* 给定 {x, y} 点，将其限制到工作区内。 */
+        /* Given an {x, y} point, clamps it into the workspace. */
         GPoint clampToWorkspace(double x, double y) const;
 
         void calculateGeometry();
@@ -96,7 +96,7 @@ namespace {
 
         calculateGeometry();
 
-        /* 将控制点设置到窗口各角。 */
+        /* Set the control points to the window corners. */
         GPoint corners[3];
         corners[0] = { mWorkspace.x,                        mWorkspace.y + mWorkspace.height };
         corners[1] = { mWorkspace.x + mWorkspace.width,     mWorkspace.y + mWorkspace.height };
@@ -116,7 +116,7 @@ namespace {
 
     void SierpinskiGUI::changeOccurredIn(GObservable* source) {
         if (source == mOrderSlider) {
-            /* 检查值是否发生变化。如果是，则重绘。 */
+            /* See if the value changed. If so, redraw things. */
             int order = mOrderSlider->getValue();
             if (order != mOrder) {
                 mOrder = order;
@@ -126,7 +126,7 @@ namespace {
     }
 
     void SierpinskiGUI::repaint() {
-        /* 标题文本只需绘制一次。 */
+        /* We only need to draw the header text once. */
         clearDisplay(window(), kBackgroundColor);
 
         auto header = TextRender::construct(kHeader, {
@@ -137,7 +137,7 @@ namespace {
         header->alignCenterHorizontally();
         header->draw(window());
 
-        /* 重绘三角形。 */
+        /* Redraw the triangle. */
         auto p0 = centerOf(mCornerPoints[0]);
         auto p1 = centerOf(mCornerPoints[1]);
         auto p2 = centerOf(mCornerPoints[2]);
@@ -149,7 +149,7 @@ namespace {
     }
 
     void SierpinskiGUI::mousePressed(double x, double y) {
-        /* 查看是否点击了任何内容。 */
+        /* See if we hit anything. */
         GPoint mouse = {x, y};
         for (auto* oval: mCornerPoints) {
             if (magnitudeOf(centerOf(oval) - mouse) <= kControlPointRadius) {
@@ -159,16 +159,16 @@ namespace {
             }
         }
 
-        /* 糟糕——什么都没点中。 */
+        /* Oops - didn't hit anything. */
         mSelected = nullptr;
     }
 
     void SierpinskiGUI::mouseDragged(double x, double y) {
-        /* 如果没有选中任何内容，就无需执行操作。 */
+        /* If nothing is selected, there's nothing to do. */
         if (mSelected == nullptr) return;
 
-        /* 根据当前点和上一个点之间的增量移动选中的椭圆
-         * 点。
+        /* Shift the selected oval over by the delta between our current and last
+         * point.
          */
         GPoint mouse = clampToWorkspace(x, y);
         auto delta = mouse - mLastMouse;
@@ -187,7 +187,7 @@ namespace {
     }
 
     void SierpinskiGUI::calculateGeometry() {
-        /* 设置控制点。首先查看绘制标头需要多少空间。 */
+        /* Set up the control points. First, see how much space we'll need to draw the header. */
         auto headerArea = TextRender::construct(kHeader, {
                                                     kHeaderPadding, kHeaderPadding,
                                                     window().getCanvasWidth()  - 2 * kHeaderPadding,
@@ -199,14 +199,14 @@ namespace {
                             window().getCanvasHeight() - headerArea.y - headerArea.height,
                             -kControlPointPadding);
 
-        /* 如果空间已用尽，则使用头部下方的内容。 */
+        /* If we're out of space, use whatever is below the header. */
         if (mWorkspace.height < 0) mWorkspace.height = 0;
     }
 
     void SierpinskiGUI::windowResized() {
         calculateGeometry();
 
-        /* 移动角点使其位于窗口内，以防窗口缩小。 */
+        /* Shift the corner points to fit inside the window, in case it shrank. */
         for (int i = 0; i < 3; i++) {
             double dx = (mCornerPoints[i]->getX() + mCornerPoints[i]->getWidth())  - (mWorkspace.x + mWorkspace.width);
             double dy = (mCornerPoints[i]->getY() + mCornerPoints[i]->getHeight()) - (mWorkspace.y + mWorkspace.height);

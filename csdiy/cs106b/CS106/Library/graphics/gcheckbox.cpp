@@ -1,20 +1,20 @@
 /*
- * 文件：gcheckbox.cpp
+ * File: gcheckbox.cpp
  * -------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加按键事件支持
+ * - added key event support
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/10/06
- * - 添加 toggle()
+ * - added toggle()
  * @version 2018/09/04
- * - 添加双击事件支持
+ * - added double-click event support
  * @version 2018/08/23
- * - 重命名为 gcheckbox.cpp，以替代 Java 版本
+ * - renamed to gcheckbox.cpp to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "gcheckbox.h"
@@ -27,11 +27,11 @@ GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
         _iqcheckBox = new _Internal_QCheckBox(this, checked, getInternalParent(parent));
     });
     setText(text);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GCheckBox::~GCheckBox() {
-    // TODO：delete _iqcheckBox;
+    // TODO: delete _iqcheckBox;
     _iqcheckBox->detach();
     _iqcheckBox = nullptr;
 }
@@ -106,15 +106,15 @@ void _Internal_QCheckBox::detach() {
     _gcheckBox = nullptr;
 }
 
-void _Internal_QCheckBox::handleStateChange(int /* 状态 */) {
+void _Internal_QCheckBox::handleStateChange(int /* state */) {
     if (!_gcheckBox) {
         return;
     }
     GEvent changeEvent(
-                /* 类  */ CHANGE_EVENT,
-                /* 类型   */ STATE_CHANGED,
-                /* 名称   */ "change",
-                /* 来源 */ _gcheckBox);
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "change",
+                /* source */ _gcheckBox);
     changeEvent.setActionCommand(_gcheckBox->getActionCommand());
     _gcheckBox->fireEvent(changeEvent);
 }
@@ -125,10 +125,10 @@ void _Internal_QCheckBox::keyPressEvent(QKeyEvent* event) {
         event->accept();
         _gcheckBox->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
-            QCheckBox::keyPressEvent(event);   // 调用父类实现
+            QCheckBox::keyPressEvent(event);   // call super
         }
     } else {
-        QCheckBox::keyPressEvent(event);   // 调用父类实现
+        QCheckBox::keyPressEvent(event);   // call super
     }
 }
 
@@ -138,26 +138,26 @@ void _Internal_QCheckBox::keyReleaseEvent(QKeyEvent* event) {
         event->accept();
         _gcheckBox->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
-            QCheckBox::keyReleaseEvent(event);   // 调用父类实现
+            QCheckBox::keyReleaseEvent(event);   // call super
         }
     } else {
-        QCheckBox::keyReleaseEvent(event);   // 调用父类实现
+        QCheckBox::keyReleaseEvent(event);   // call super
     }
 }
 
 void _Internal_QCheckBox::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QCheckBox::mouseDoubleClickEvent");
-    QWidget::mouseDoubleClickEvent(event);   // 调用父类实现
+    QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
 
     if (!_gcheckBox || !_gcheckBox->isAcceptingEvent("doubleclick")) {
         return;
     }
     GEvent mouseEvent(
-                /* 类  */ MOUSE_EVENT,
-                /* 类型   */ MOUSE_DOUBLE_CLICKED,
-                /* 名称   */ "doubleclick",
-                /* 来源 */ _gcheckBox);
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _gcheckBox);
     mouseEvent.setActionCommand(_gcheckBox->getActionCommand());
     mouseEvent.setButton((int) event->button());
     mouseEvent.setX(event->pos().x());

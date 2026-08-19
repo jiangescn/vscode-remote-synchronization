@@ -1,22 +1,22 @@
 /*
- * 文件：gconsolewindow.h
+ * File: gconsolewindow.h
  * ----------------------
- * 此文件描述 GConsoleWindow 类，该类用于
- * 表示图形控制台。
- * 该类实现为单例，可使用以下方式访问
- * 静态方法 GConsoleWindow::instance()。
+ * This file describes the GConsoleWindow class, which is the class used to
+ * represent the graphical console.
+ * The class is implemented as a singleton which can be accessed using the
+ * static method GConsoleWindow::instance().
  *
  * @author Marty Stepp
  * @version 2019/04/25
- * - 添加 hasInputScript
+ * - added hasInputScript
  * @version 2019/04/10
- * - 支持使用图标条图像中的图标创建工具栏
+ * - toolbar support with icons from icon strip image
  * @version 2018/09/23
- * - 添加 getFont
+ * - added getFont
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 初始版本，从 console .cpp/h 中分离
+ * - initial version, separated out from console .cpp/h
  */
 
 
@@ -41,16 +41,16 @@
 #include "consolestreambuf.h"
 
 /**
- * GConsoleWindow 表示系统控制台。
- * 大多数学生/客户端无需直接使用此类。
- * 使用 cout/cerr 时，输出会隐式打印到控制台。
- * 但如果希望直接访问控制台窗口并与其交互
- * 像普通 GWindow 一样使用它，可以调用全局函数
- * getConsoleWindow。
+ * A GConsoleWindow represents the system console.
+ * Most students/clients do not need to utilize this class directly.
+ * Output is implicitly printed to the console when you use cout/cerr.
+ * But if you want to access the console window directly and interact with it
+ * as you would a normal GWindow, you can do so by calling the global function
+ * getConsoleWindow.
  *
  * @private
  *
- * TODO：编写文档
+ * TODO: document
  */
 class GConsoleWindow : public GWindow {
 public:

@@ -6,67 +6,67 @@
 #include "GUI/MemoryDiagnostics.h"
 #include <string>
 
-/* 可供你使用的可选额外哈希表。你不必
- * 实现此哈希表类型；它纯粹是为了在你想要时提供
- * 为基础作业添加扩展内容。
+/* An optional extra hash table for you to work with. You are not required to
+ * implement this hash table type; it's there purely in the event that you want
+ * to add extensions to the base assignment.
  *
- * 这里没有任何要求；你可以按自己喜欢的方式编写，或者
- * 将其完全留空。
+ * There are no requirements here; you can code this up however you'd like, or
+ * leave it entirely blank.
  */
 class MyOptionalHashTable {
 public:
     /**
-     * 使用给定哈希函数构造新的线性探测表
-     * 作为参数。（注意，哈希函数允许你决定
-     * 使用多少槽位；可调用 hashFn.numSlots() 获取。）
+     * Constructs a new linear probing table that uses the hash function given
+     * as the argument. (Note that the hash function lets you determine how
+     * many slots to use; you can get this by calling hashFn.numSlots().)
      */
     MyOptionalHashTable(HashFunction<std::string> hashFn);
 
     /**
-     * 释放此哈希表分配的所有内存。
+     * Cleans up all memory allocated by this hash table.
      */
     ~MyOptionalHashTable();
 
     /**
-     * 返回该表是否为空。
+     * Returns whether the table is empty.
      */
     bool isEmpty() const;
 
     /**
-     * 返回表中的元素数量。
+     * Returns the number of elements in the table.
      */
     int size() const;
 
     /**
-     * 将指定元素插入此哈希表，并返回是否
-     * 它曾经是
+     * Inserts the specified element into this hash table, returning whether
+     * it was
      */
     bool insert(const std::string& key);
 
     /**
-     * 返回此哈希表是否包含指定键。
+     * Returns whether the specified key is contained in this hash tasble.
      */
     bool contains(const std::string& key) const;
 
     /**
-     * 从此哈希表中移除指定元素。若该元素不
-     * 已存在于哈希表中，则此操作不执行任何动作。随后函数
-     * 返回是否删除了任何内容。
+     * Removes the specified element from this hash table. If the element is not
+     * present in the hash table, this operation is a no-op. The function then
+     * returns whether anything was removed.
      */
     bool remove(const std::string& key);
 
     /**
-     * 输出有助于调试的相关信息。
+     * Prints out relevant information to assist with debugging.
      */
     void printDebugInfo() const;
 
 private:
-    /* 这完全由你决定。 */
+    /* This is completely up to you. */
 
 
 
 
-    /* 使其与 C++ 正确配合所需的内部处理。 */
+    /* Internal shenanigans to make this play well with C++. */
     DISALLOW_COPYING_OF(MyOptionalHashTable);
     ALLOW_TEST_ACCESS();
 };

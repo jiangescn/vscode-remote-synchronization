@@ -16,7 +16,7 @@
 using namespace std;
 
 namespace {
-    /* 计时结果结构体。 */
+    /* Timing result struct. */
     struct TimingResult {
         double insertSuccessTime;
         double insertFailTime;
@@ -26,10 +26,10 @@ namespace {
         double removeFailTime;
     };
 
-    /* 哈希 traits。 */
+    /* Hash traits. */
     template <typename Table> struct HashTraits;
 
-    /* 用于导入定义的 X 宏。 */
+    /* X Macros to import definition. */
     #define HASH_TABLE(type, desc)                \
         template <> struct HashTraits<type> {     \
             static string name() { return desc; } \
@@ -39,13 +39,13 @@ namespace {
 
     template <typename...> struct TypeList {};
 
-    /* 用于将类型添加到类型列表开头的元函数。 */
+    /* Metafunction to prepend to a type list. */
     template <typename Type, typename List> struct Prepend;
     template <typename Type, typename... Types> struct Prepend<Type, TypeList<Types...>> {
         using type = TypeList<Type, Types...>;
     };
 
-    /* 用于从类型列表中删除最后一项的元函数。 */
+    /* Metafunction to remove the last item from a typelist. */
     template <typename...> struct RemoveLast;
     template <typename T> struct RemoveLast<T> {
         using type = TypeList<>;
@@ -54,7 +54,7 @@ namespace {
         using type = typename Prepend<First, typename RemoveLast<TypeList<Second, Rest...>>::type>::type;
     };
 
-    /* 所有可用表的列表。 */
+    /* List of all the available tables. */
     using AllHashTables = typename RemoveLast<TypeList<
         #define HASH_TABLE(type, desc) type,
         #include "TimeTestConfig.h"
@@ -62,19 +62,19 @@ namespace {
         void
     >>::type;
 
-    /* 对所有表格类型应用某项操作。 */
+    /* Applies something to all table types. */
     template <typename TestCase> void applyTo(TestCase&, TypeList<>) {
-      /* 基本情况：没有类型可应用测试函数。 */
+      /* Base case: There are no types to apply the testing function to. */
     }
 
-    /* 递归情况：至少有一种类型需要测试。 */
+    /* Recursive case: There's at least one type to test. */
     template <typename TestCase, typename HashTable, typename... HashTables>
     void applyTo(TestCase& testCase, TypeList<HashTable, HashTables...>) {
-      /* 在此类型上调用测试函数 */
+      /* Invoke the testing function on this type */
       testCase.template test<HashTable>();
 
-      /* 递归调用 applyTo，并传入树列表的尾部
-       * 类型。
+      /* Recursively invoke applyTo, passing in the tail end of the list of tree
+       * types.
        */
       applyTo<TestCase>(testCase, TypeList<HashTables...>());
     }
@@ -119,21 +119,21 @@ namespace {
         Timing::Timer removeSuccessTimer;
         Timing::Timer removeFailTimer;
 
-        /* 加载所有英语单词。 */
+        /* Load all English words. */
         auto english = loadEnglishWords();
 
-        /* 确定需要多少槽位。 */
+        /* Determine how many slots we'll need. */
         int numSlots = english.size() / loadFactor;
 
-        /* 用于洗牌的随机源。 */
+        /* Random source for shuffling. */
         mt19937 generator(randomInteger(0, INT_MAX));
 
         for (int iteration = 0; iteration < kNumIterations; iteration++) {
             constructionTimer.start();
 
-            /* 这行代码构造哈希表。如果你有自定义哈希函数
-             * 你希望在此使用，而不是我们标准选择的随机哈希函数。
-             * 将此行改为
+            /* This line of code constructs the hash table. If you have a custom hash function
+             * you'd like to use here instead of our standard selection of random hash functions.
+             * switch this line to read
              *
              *    Table table(HashFunction<string>::wrap(numSlots, your-hash-function));
              */
@@ -158,7 +158,7 @@ namespace {
                 insertFailTimer.stop();
             }
 
-            /* 以随机顺序查询表中的所有项目。 */
+            /* Query for all items in the table, in random order. */
             shuffle(english.begin(), english.end(), generator);
 
             for (const auto& word: english) {
@@ -169,7 +169,7 @@ namespace {
                 lookupSuccessTimer.stop();
             }
 
-            /* 查询不存在的内容。 */
+            /* Query for things that aren't there. */
             for (string& word: english) {
                 word = toUpperCase(word);
             }
@@ -182,7 +182,7 @@ namespace {
                 lookupFailTimer.stop();
             }
 
-            /* 删除所有不存在的单词。 */
+            /* Remove all the words that aren't there. */
             shuffle(english.begin(), english.end(), generator);
 
             for (const auto& word: english) {
@@ -212,7 +212,7 @@ namespace {
         };
     }
 
-    /* 所有负载因子。 */
+    /* All load factors. */
     const vector<double> kLoadFactors = {
         0.50,
         0.60,
@@ -225,7 +225,7 @@ namespace {
         0.97,
     };
 
-    /* 测试求值器——运行测试并保存结果。 */
+    /* Test evaluator - runs the test and stashes away the result. */
     struct Evaluator {
         const double loadFactor;
         vector<TimingResult> results;
@@ -237,9 +237,9 @@ namespace {
         }
     };
 
-    /* 通用 printf。 */
+    /* Generic printf. */
     string format(const string& pattern) {
-        /* 若存在替换位置，则说明出现了问题。 */
+        /* If there's a replacement site, something is wrong. */
         if (pattern.find("%s") != string::npos) {
             error("Unmatched pattern string?");
         }
@@ -279,7 +279,7 @@ namespace {
     const string kTableOutro =
             R"(</table>)";
 
-    /* 创建表格使用的标题。 */
+    /* Creates the header used by the table. */
     struct HeaderBuilder {
         ostream& out;
         template <typename Table> void test() {
@@ -288,17 +288,17 @@ namespace {
     };
 
     void makeTableHeader(ostream& out) {
-        /* 为不需要标题的项预留两个空白条目。 */
+        /* Two blank entries for things that don't need headers. */
         out << "<tr><th></th><th></th>";
 
-        /* 为所有相关类型生成标题。 */
+        /* Generate headers for all the relevant types. */
         HeaderBuilder builder{out};
         applyTo(builder, AllHashTables());
 
         out << "</tr>";
     }
 
-    /* 关于如何访问每一行数据的信息。 */
+    /* Info about how to access data from each row. */
     struct RowInfo {
         string title;
         double TimingResult::* field;
@@ -312,7 +312,7 @@ namespace {
         { "Remove (failure)", &TimingResult::removeFailTime    },
     };
 
-    /* 空单元格中显示的值。 */
+    /* Value to display in an empty cell. */
     const string kEmptyValue = "<i>waiting</i>";
 
     string styleFor(int row) {
@@ -323,7 +323,7 @@ namespace {
     void makeTableRows(ostream& out,
                        const vector<vector<TimingResult>>& results,
                        size_t numCols) {
-        /* 遍历所有负载因子，它们构成表格的各行。 */
+        /* Loop over all the load factors, which make up the rows of the table. */
         for (size_t row = 0; row < kLoadFactors.size(); row++) {
             out << format("<tr style=\"%s\">", styleFor(row));
             out << format("<td rowspan=\"%s\">&alpha; = ", kRows.size()) << kLoadFactors[row] << "</td>";
@@ -336,8 +336,8 @@ namespace {
                     out << format("<td>%s</td>", value);
                 }
 
-                /* 奇怪的边界情况：由于我们预先为标题打开了一行，因此需要关闭
-                 * 此行，然后如果后面还有一行，则重新打开一个。
+                /* Weird edge case: since we opened a row up front for the header, we need to close
+                 * this row and then reopen one if there's another row coming.
                  */
                 out << "</tr>";
                 if (section + 1 != kRows.size()) out << format("<tr style=\"%s\">", styleFor(row));;
@@ -359,8 +359,8 @@ namespace {
 
         builder << kTableOutro << kHTMLFooter;
 
-        /* 同步更新 HTML 显示，以免其他线程争用
-         * 与我们一起。
+        /* Update the HTML display synchronously so we don't have other threads fighting
+         * with us.
          */
         GThread::runOnQtGuiThread([&] {
             mContent->setText(builder.str());
@@ -368,7 +368,7 @@ namespace {
     }
 
     void PerformanceGUI::runAllTests() {
-        /* 所有测试结果的 Grid。 */
+        /* Grid of all test results. */
         vector<vector<TimingResult>> results;
 
         displayResults(results);

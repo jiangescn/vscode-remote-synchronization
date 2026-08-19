@@ -1,23 +1,23 @@
 /*
- * 文件：random.cpp
+ * File: random.cpp
  * ----------------
- * 此文件实现 random.h 接口。
+ * This file implements the random.h interface.
  *
  * @version 2019/05/16
- * - 添加接受最小/最大 RGB 的 randomColor
+ * - added randomColor that takes min/max RGB
  * @version 2017/10/05
- * - 添加 randomFeedClear
+ * - added randomFeedClear
  * @version 2017/09/28
- * - 将随机“feed”函数移到 autograder 命名空间
- * - 确保随机提供的整数位于指定范围内
+ * - moved random 'feed' functions into autograder namespace
+ * - ensure that randomly fed integers are within the specified range
  * @version 2016/10/04
- * - 移除所有静态变量（改用 STATIC_VARIABLE 宏）
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2016/08/02
- * - 添加 randomColor、randomColorString
+ * - added randomColor, randomColorString
  * @version 2014/10/19
- * - 按字母顺序排列函数
+ * - alphabetized functions
  * @version 2014/10/08
- * - 移除“using namespace”语句
+ * - removed 'using namespace' statement
  */
 
 #include "random.h"
@@ -31,7 +31,7 @@
 #include "error.h"
 #include "private/static.h"
 
-/* 私有函数原型 */
+/* Private function prototype */
 
 static void initRandomSeed();
 
@@ -40,10 +40,10 @@ bool randomBool() {
 }
 
 /*
- * 实现说明：randomChance
+ * Implementation notes: randomChance
  * ----------------------------------
- * randomChance 的代码调用 randomReal(0, 1)，然后检查
- * 结果是否小于所请求的概率。
+ * The code for randomChance calls randomReal(0, 1) and then checks
+ * whether the result is less than the requested probability.
  */
 bool randomChance(double p) {
     initRandomSeed();
@@ -66,7 +66,7 @@ int randomColor(int minRGB, int maxRGB) {
     return r << 16 | g << 8 | b;
 }
 
-// 参见 gcolor.h 中的 convertRGBToColor（此处重复以避免依赖 Qt）
+// see convertRGBToColor in gcolor.h (repeated here to avoid Qt dependency)
 std::string randomColorString() {
     int rgb = randomColor();
     std::ostringstream os;
@@ -88,25 +88,25 @@ std::string randomColorString(int minRGB, int maxRGB) {
 }
 
 /*
- * 实现说明：randomInteger
+ * Implementation notes: randomInteger
  * -----------------------------------
- * randomInteger 的代码分四步生成数字：
+ * The code for randomInteger produces the number in four steps:
  *
- * 1. 在范围 [0 .. 1) 中生成一个随机实数 d。
- * 2. 将数字缩放到范围 [0 .. N)，其中 N 是值的数量。
- * 3. 平移数字，使范围从适当值开始。
- * 4. 将结果转换为下一个较小整数。
+ * 1. Generate a random real number d in the range [0 .. 1).
+ * 2. Scale the number to the range [0 .. N) where N is the number of values.
+ * 3. Translate the number so that the range starts at the appropriate value.
+ * 4. Convert the result to the next lower integer.
  *
- * 由于表达式和
+ * The implementation is complicated by the fact that both the expression
  *
  *     RAND_MAX + 1
  *
- * 以及值数量的表达式
+ * and the expression for the number of values
  *
  *     high - low + 1
  *
- * 可能溢出整数范围。因此这些计算必须
- * 使用 double 而不是 int 执行。
+ * can overflow the integer range.  These calculations must therefore be
+ * performed using doubles instead of ints.
  */
 int randomInteger(int low, int high) {
     initRandomSeed();
@@ -116,10 +116,10 @@ int randomInteger(int low, int high) {
 }
 
 /*
- * 实现说明：randomReal
+ * Implementation notes: randomReal
  * --------------------------------
- * randomReal 的代码与 randomInteger 类似，
- * 不执行最后的转换步骤。
+ * The code for randomReal is similar to that for randomInteger,
+ * without the final conversion step.
  */
 double randomReal(double low, double high) {
     initRandomSeed();
@@ -129,10 +129,10 @@ double randomReal(double low, double high) {
 }
 
 /*
- * 实现说明：setRandomSeed
+ * Implementation notes: setRandomSeed
  * -----------------------------------
- * setRandomSeed 函数只是将其参数转发给 srand。
- * 必须调用 initRandomSeed 来设置 initialized 标志。
+ * The setRandomSeed function simply forwards its argument to srand.
+ * The call to initRandomSeed is required to set the initialized flag.
  */
 void setRandomSeed(int seed) {
     initRandomSeed();
@@ -140,17 +140,17 @@ void setRandomSeed(int seed) {
 }
 
 /*
- * 实现说明：initRandomSeed
+ * Implementation notes: initRandomSeed
  * ------------------------------------
- * initRandomSeed 函数声明了一个静态变量，用来记录
- * 种子是否已初始化。首次调用 initRandomSeed 时
- * 调用时 initialized 为 false，因此种子被设置为当前时间。
+ * The initRandomSeed function declares a static variable that keeps track
+ * of whether the seed has been initialized.  The first time initRandomSeed
+ * is called, initialized is false, so the seed is set to the current time.
  */
 static void initRandomSeed() {
     static bool _initialized = false;
     if (!_initialized) {
         srand(int(time(nullptr)));
-        rand();   // BUG 修复：通过一次无用调用启动随机数生成
+        rand();   // BUGFIX: throwaway call to get randomness going
         _initialized = true;
     }
 }

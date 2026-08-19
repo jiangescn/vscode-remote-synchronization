@@ -1,16 +1,16 @@
 /*
- * 文件：gfont.h
+ * File: gfont.h
  * -------------
  *
  * @author Marty Stepp
  * @version 2019/04/30
- * - 为 GText* 添加 changeFontSize
+ * - added changeFontSize for a GText*
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gfont.h，以替代 Java 版本
+ * - renamed to gfont.h to replace Java version
  * @version 2018/07/05
- * - 初始版本
+ * - initial version
  */
 
 
@@ -24,100 +24,100 @@
 #include "gobjects.h"
 
 /**
- * 此类包含在 GUI 系统中处理字体的静态方法。
- * 字体字符串具有以下格式：
+ * This class contains static methods for dealing with fonts in our GUI system.
+ * A font string has the following format:
  *
  * <pre>
- * "字体族-样式-大小"
+ * "family-style-size"
  * </pre>
  *
- * 其中 <code>style</code> 和 <code>size</code> 都是可选的。
- * 若缺少任一元素，或以星号指定，
- * 保留现有值。
+ * where both <code>style</code> and <code>size</code> are optional.
+ * If any of these elements are missing or specified as an asterisk,
+ * the existing value is retained.
  */
 class GFont {
 public:
     /**
-     * 将给定交互控件的字体设为粗体。
-     * 字体名称和大小保持不变。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Makes the given interactor's font bold.
+     * The font name and size are unchanged.
+     * @throw ErrorException if the interactor is null
      */
     static void boldFont(GInteractor* interactor);
 
     /**
-     * 修改给定交互控件的字体，将字号改变给定的
-     * 点的数量。大小变化量可以为正，也可以为负。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Modifies the font of the given interactor, changing its size by the given
+     * number of points.  The change in size can be positive or negative.
+     * @throw ErrorException if the interactor is null
      */
     static void changeFontSize(GInteractor* interactor, int dsize);
 
     /**
-     * 修改给定标签的字体，将字号改变给定的
-     * 点的数量。大小变化量可以为正，也可以为负。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Modifies the font of the given label, changing its size by the given
+     * number of points.  The change in size can be positive or negative.
+     * @throw ErrorException if the interactor is null
      */
     static void changeFontSize(GText* label, int dsize);
 
     /**
-     * 修改给定 Qt 字体对象的大小，将字号改变给定的
-     * 点数，并返回修改后的新字体。
-     * 大小变化可以为正或负。
+     * Modifies the size of the given Qt font object, changing its size by the given
+     * number of points, and returning the new modified font.
+     * The change in size can be positive or negative.
      */
     static QFont changeFontSize(const QFont& font, int dsize);
 
     /**
-     * 修改给定字体对象，将其粗细和/或大小更改为
-     * 给定值，并返回修改后的新字体。
+     * Modifies the given font object, changing its weight and/or size to the
+     * given values, and returning the new modified font.
      */
     static QFont deriveQFont(const QFont& font, QFont::Weight weight = QFont::Normal, int size = -1);
 
     /**
-     * 修改给定字体对象，更改其字体族、粗细和/或
-     * 将大小改为给定值，并返回修改后的新字体。
+     * Modifies the given font object, changing its font family, weight, and/or
+     * size to the given values, and returning the new modified font.
      */
     static QFont deriveQFont(const QFont& font, const std::string& fontFamily, QFont::Weight weight = QFont::Normal, int size = -1);
 
     /**
-     * 修改给定字体对象，将其粗细和/或大小更改为
-     * 给定值，并返回修改后的新字体。
-     * 传入的字体应为类似“Helvetica-12-Bold”的字体字符串。
+     * Modifies the given font object, changing its weight and/or size to the
+     * given values, and returning the new modified font.
+     * The font you pass should be a font string such as "Helvetica-12-Bold".
      */
     static QFont deriveQFont(const std::string& font, QFont::Weight weight = QFont::Normal, int size = -1);
 
     /**
-     * 修改给定字体对象，更改其字体族、粗细和/或
-     * 将大小改为给定值，并返回修改后的新字体。
-     * 传入的字体应为类似“Helvetica-12-Bold”的字体字符串。
+     * Modifies the given font object, changing its font family, weight, and/or
+     * size to the given values, and returning the new modified font.
+     * The font you pass should be a font string such as "Helvetica-12-Bold".
      */
     static QFont deriveQFont(const std::string& font, const std::string& fontFamily, QFont::Weight weight = QFont::Normal, int size = -1);
 
     /**
-     * 将给定交互控件的字体设为斜体。
-     * 字体名称和大小保持不变。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Makes the given interactor's font italic.
+     * The font name and size are unchanged.
+     * @throw ErrorException if the interactor is null
      */
     static void italicFont(GInteractor* interactor);
 
     /**
-     * 将给定 Qt 字体对象转换为以下字体字符串：
-     * "Helvetica-12-Bold"。
+     * Converts the given Qt font object into a font string such as
+     * "Helvetica-12-Bold".
      */
     static std::string toFontString(const QFont& font);
 
     /**
-     * 将“Helvetica-12-Bold”这样的字体字符串转换为 Qt 字体对象。
+     * Converts a font string such as "Helvetica-12-Bold" into a Qt font object.
      */
     static QFont toQFont(const std::string& fontString);
 
     /**
-     * 将“Helvetica-*-12”这样的字体字符串转换为 Qt 字体对象，
-     * 对于其中不存在的任何默认值，使用给定的 `basis` 对象
-     * 字体字符串。
+     * Converts a font string such as "Helvetica-*-12" into a Qt font object,
+     * using the given 'basis' object for any defaults that are not present in
+     * the font string.
      */
     static QFont toQFont(const QFont& basisFont, const std::string& fontString);
 
 private:
-    GFont();   // 阻止构造
+    GFont();   // prevent construction
     static QFont::StyleHint getStyleHint(const std::string& fontFamily);
 };
 

@@ -4,10 +4,10 @@ using namespace std;
 
 namespace SimpleTest {
     namespace Internal {
-        /* 为何使用此类型？因为我们希望能够
+        /* Why this type? Because we want to be able to
          *
-         * 1. 找出某个组中的所有测试，并
-         * 2. 按行号对它们排序。
+         * 1. find all the tests in a certain group, and
+         * 2. have them be sorted by line number.
          */
         map<TestKey, multimap<int, TestCase>>& rawTests() {
             static map<TestKey, multimap<int, TestCase>> result;
@@ -27,13 +27,13 @@ namespace SimpleTest {
             doFail(message, line);
         }
 
-        /* TestFailedException 实现。 */
+        /* TestFailedException implementation. */
         TestFailedException::TestFailedException(const string& message, std::size_t line)
             : logic_error("Line " + to_string(line) + ": " + string(message)) {
 
         }
 
-        /* TestCaseAdder 实现。 */
+        /* TestCaseAdder implementation. */
         TestCaseAdder::TestCaseAdder(const TestKey& key, int line, const string& name, TestType type, std::function<void()> test) {
             rawTests()[key].insert(make_pair(line, TestCase{ name, type, line, test }));
         }

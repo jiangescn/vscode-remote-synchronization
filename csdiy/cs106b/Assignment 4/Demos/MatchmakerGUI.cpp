@@ -42,7 +42,7 @@ namespace {
     public:
         MatchmakerGUI(GWindow& window);
 
-        /* 转发给相关监听器。 */
+        /* Forward to the relevant listener. */
         void mouseDoubleClicked(double x, double y) override;
         void mouseMoved(double x, double y) override;
         void mousePressed(double x, double y) override;
@@ -61,17 +61,17 @@ namespace {
     private:
         shared_ptr<GraphEditor::Editor<>> editor;
 
-        /* 当前匹配（如果有）。 */
+        /* Current matching, if any. */
         unique_ptr<Set<Pair>> currMatching;
 
-        /* 面板布局：
+        /* Panel layout:
          *
-         * [文件名] [              删除按钮                  ]
-         * [新建按钮 ] [              权重滑块                  ]
-         * [保存按钮 ]
-         * [加载按钮 ]
+         * [name of file] [              delete button                  ]
+         * [new  button ] [              weight slider                  ]
+         * [save button ]
+         * [load button ]
          *
-         * [ 查找完美匹配 ][ 最大权重匹配  ]
+         * [ find perfect matching ][ max-weight matching  ]
          */
         Temporary<GContainer> controls;
         GLabel*  fileLabel;
@@ -116,16 +116,16 @@ namespace {
 
         void drawGraph();
 
-        /* 是否选中了任何内容？ */
+        /* Is anything selected? */
         bool somethingSelected = false;
 
-        /* 脏位。 */
+        /* Dirty bit. */
         bool isDirty = false;
 
-        /* 当前文件名。 */
+        /* Current filename. */
         string currFilename;
 
-        /* 这是否为新文件。 */
+        /* Whether this is a new file. */
         bool isNew = false;
     };
 
@@ -168,7 +168,7 @@ namespace {
 
         controls->setWidth(window().getWidth() * 0.9);
 
-        /* 明确说明当前未选择任何内容。 */
+        /* Clarify that nothing is currently selected. */
         entitySelected(nullptr);
     }
 
@@ -240,23 +240,23 @@ namespace {
         somethingSelected = !!entity;
         deleteButton->setEnabled(somethingSelected);
 
-        /* 如果这是边，则调整权重滑块。 */
+        /* If this is an edge, adjust the weight slider. */
         if (auto* edge = dynamic_cast<GraphEditor::Edge*>(entity)) {
             edgeWeightSlider->setValue(stringToInteger(edge->label()));
         }
 
-        /* 选择某项时清除任何已显示的匹配，以便
-         * 颜色正确。
+        /* Clear any displayed matching when something is selected so that
+         * the colors are correct.
          */
         currMatching.reset();
     }
 
     void MatchmakerGUI::entityCreated(GraphEditor::Entity* entity) {
-        /* 节点需要名称。 */
+        /* Nodes need names. */
         if (auto* node = dynamic_cast<GraphEditor::Node*>(entity)) {
             node->label(string(1, 'a' + node->index()));
         }
-        /* 边需要权重。 */
+        /* Edges need weights. */
         if (auto* edge = dynamic_cast<GraphEditor::Edge*>(entity)) {
             edge->label(to_string(edgeWeightSlider->getValue()));
         }
@@ -278,11 +278,11 @@ namespace {
         }
     }
 
-    /* 拖动滑块会更改边权重。 */
+    /* Dragging the slider changes the edge weight. */
     void MatchmakerGUI::changeOccurredIn(GObservable* source) {
         if (editor && editor->selectedEdge() && source == edgeWeightSlider) {
-            /* 查看这是否改变了值。如果是，需要将图标记为
-             * 已变脏。
+            /* See if this changed the value. If so, we need to mark the graph as
+             * dirty.
              */
             int nextValue = edgeWeightSlider->getValue();
             int currValue = stringToInteger(editor->selectedEdge()->label());
@@ -332,10 +332,10 @@ namespace {
         return { 0, 0, window().getCanvasWidth(), window().getCanvasHeight() };
     }
 
-    /* 序列化当前状态。 */
+    /* Serializes the current state of things. */
     void MatchmakerGUI::save() {
-        /* TODO：写入完成前不要覆盖源文件。
-         * 使用 mkstemp，写入该处，完成后再移动。
+        /* TODO: Don't overwrite the source until the write has finished.
+         * Use mkstemp, write there, and then do a move when done.
          */
         ofstream output(currFilename);
         if (!output) error("Cannot open " + currFilename + " for writing.");
@@ -351,7 +351,7 @@ namespace {
             currFilename = newName;
             fileLabel->setLabel(getTail(currFilename));
 
-            /* 不再是新文件——我们刚选择了该文件！ */
+            /* Not a new file anymore - we just picked the file! */
             isNew = false;
         }
 
@@ -367,17 +367,17 @@ namespace {
 
         auto result = GOptionPane::showConfirmDialog(&window(), kUnsavedChanges, kUnsavedChangesTitle, GOptionPane::CONFIRM_YES_NO_CANCEL);
 
-        /* 明确的“否”表示“好的，我要丢弃这些内容。” */
+        /* A firm "no" means "okay, I want to discard things. */
         if (result == GOptionPane::CONFIRM_NO) {
             return true;
         }
 
-        /* “取消”表示“等一下，我不是想这么做。” */
+        /* "Cancel" means "wait, hold on, I didn't mean to do that. */
         if (result == GOptionPane::CONFIRM_CANCEL) {
             return false;
         }
 
-        /* 否则，他们打算保存。 */
+        /* Otherwise, they intend to save. */
         return userSave();
     }
 
@@ -412,12 +412,12 @@ namespace {
     }
 
     void MatchmakerGUI::userLoad() {
-        /* 警告用户存在未保存的更改。 */
+        /* Warn user about unsaved changes. */
         if (!handleUnsavedChanges()) {
             return;
         }
 
-        /* 让用户选择文件；如果未选择，则不执行任何操作。 */
+        /* Ask user to pick a file; don't do anything if they don't pick one. */
         string filename = GFileChooser::showOpenDialog(&window(), "Choose Graph", kBaseDir, "*" + kFileExtension);
         if (filename == "") return;
 
@@ -444,16 +444,16 @@ namespace {
     }
 
     void MatchmakerGUI::findPerfectMatching() {
-        /* 提取图。 */
+        /* Extract the graph. */
         Map<string, Set<string>> graph;
         auto g = editor->viewer();
 
-        /* 安装节点。 */
+        /* Install nodes. */
         g->forEachNode([&](GraphEditor::Node* node) {
             graph[node->label()] = {};
         });
 
-        /* 安装边。 */
+        /* Install edges. */
         g->forEachEdge([&](GraphEditor::Edge* edge) {
             auto src = edge->from()->label();
             auto dst = edge->to()->label();
@@ -462,19 +462,19 @@ namespace {
             graph[dst] += src;
         });
 
-        /* 取消所有选择；当前不处理节点/边。
+        /* Deselect everything; we aren't working on nodes/edges right now.
          *
-         * 此操作必须最先执行，因为它会清除所有
-         * 现有配对。
+         * This must come first, since this has the effect of clearing any
+         * existing matching.
          */
         editor->setActive(nullptr);
 
         Set<Pair> matching;
         if (hasPerfectMatching(graph, matching)) {
-            /* 存储此匹配。 */
+            /* Store this matching. */
             currMatching.reset(new Set<Pair>(matching));
 
-            /* 需要重绘。 */
+            /* We need to redraw. */
             requestRepaint();
         } else {
             currMatching.reset();
@@ -485,16 +485,16 @@ namespace {
     }
 
     void MatchmakerGUI::findMaxWeightMatching() {
-        /* 提取图。 */
+        /* Extract the graph. */
         Map<string, Map<string, int>> graph;
         auto g = editor->viewer();
 
-        /* 安装节点。 */
+        /* Install nodes. */
         g->forEachNode([&](GraphEditor::Node* node) {
             graph[node->label()] = {};
         });
 
-        /* 安装边。 */
+        /* Install edges. */
         g->forEachEdge([&](GraphEditor::Edge* edge) {
             auto src = edge->from()->label();
             auto dst = edge->to()->label();
@@ -503,36 +503,36 @@ namespace {
             graph[dst][src] = stringToInteger(edge->label());
         });
 
-        /* 取消所有选择；当前不处理节点/边。
+        /* Deselect everything; we aren't working on nodes/edges right now.
          *
-         * 此操作必须最先执行，因为它会清除所有
-         * 现有配对。
+         * This must come first, since this has the effect of clearing any
+         * existing matching.
          */
         editor->setActive(nullptr);
 
-        /* 存储此匹配。 */
+        /* Store this matching. */
         currMatching.reset(new Set<Pair>(maximumWeightMatching(graph)));
 
-        /* 需要重绘。 */
+        /* We need to redraw. */
         requestRepaint();
     }
 
-    const string kMatchedColor   = "#ffd320";     // 滑块高亮颜色
-    const string kMatchedBorderColor = "#000000"; // 黑色
+    const string kMatchedColor   = "#ffd320";     // Slide highlight color
+    const string kMatchedBorderColor = "#000000"; // Black
 
-    const string kUnmatchedColor = "#e0e0e0";       // 灰色
-    const string kUnmatchedBorderColor = "#c0c0c0"; // 更深的灰色
+    const string kUnmatchedColor = "#e0e0e0";       // Gray
+    const string kUnmatchedBorderColor = "#c0c0c0"; // Darker Gray
 
 
     void MatchmakerGUI::drawGraph() {
         unordered_map<GraphEditor::Node*, GraphEditor::NodeStyle> nodeStyles;
         unordered_map<GraphEditor::Edge*, GraphEditor::EdgeStyle> edgeStyles;
 
-        /* 如果存在匹配，则相应地对节点进行颜色编码。 */
+        /* If we have a matching, color-code nodes appropriately. */
         if (currMatching) {
             auto graph = editor->viewer();
 
-            /* 最初，所有节点都以未匹配状态绘制。 */
+            /* Initially, all nodes draw as unmatched. */
             GraphEditor::NodeStyle unmatchedNodeStyle;
             unmatchedNodeStyle.borderColor = kUnmatchedBorderColor;
             unmatchedNodeStyle.fillColor   = kUnmatchedColor;
@@ -542,7 +542,7 @@ namespace {
                 nodeStyles[node] = unmatchedNodeStyle;
             });
 
-            /* 最初，所有边都未匹配。 */
+            /* Initially, all edges are unmatched. */
             GraphEditor::EdgeStyle unmatchedEdgeStyle;
             unmatchedEdgeStyle.lineColor     = kUnmatchedBorderColor;
             unmatchedEdgeStyle.labelColor = kUnmatchedBorderColor;
@@ -551,7 +551,7 @@ namespace {
                 edgeStyles[edge] = unmatchedEdgeStyle;
             });
 
-            /* 高亮显示匹配的节点和边。 */
+            /* Highlight matched nodes and edges. */
             GraphEditor::NodeStyle matchedNodeStyle;
             matchedNodeStyle.borderColor = kMatchedBorderColor;
             matchedNodeStyle.fillColor   = kMatchedColor;

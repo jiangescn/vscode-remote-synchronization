@@ -1,206 +1,290 @@
 #include "Matchmaker.h"
 using namespace std;
 
-bool hasPerfectMatching(const Map<string, Set<string>>& possibleLinks, Set<Pair>& matching) {
-    /* TODO：删除此注释和剩余这些行，然后实现此函数。 */
-    (void) possibleLinks;
-    (void) matching;
+bool hasPerfectMatching(const Map<string, Set<string>> &possibleLinks, Set<Pair> &matching)
+{
+    /* TODO: Delete this comment and these remaining lines, then implement this function. */
+    // (void)possibleLinks;
+    // (void)matching;
+    // return false;
+
+    if(possibleLinks.isEmpty())
+    {
+        return true;
+    }
+
+    string person = possibleLinks.firstKey();
+
+    for (string par : possibleLinks[person])
+    {
+        if(!possibleLinks.containsKey(par))
+        {
+            continue;
+        }
+
+        Pair pair(person, par);
+        matching.add(pair);
+
+        Map<string, Set<string>> remaining = possibleLinks;
+        remaining.remove(person);
+        remaining.remove(par);
+        
+        if(hasPerfectMatching(remaining, matching))
+        {
+            return true;
+        }
+
+        matching.remove(pair);
+    }
     return false;
 }
 
-Set<Pair> maximumWeightMatching(const Map<string, Map<string, int>>& possibleLinks) {
-    /* TODO：删除此注释和剩余这些行，然后实现此函数。 */
-    (void) possibleLinks;
-    return { };
+int total(Set<Pair> &matching, const Map<string, Map<string, int>> &possibleLinks)
+{
+    int sum = 0;
+    for (Pair it : matching)
+    {
+        sum += possibleLinks[it.first()][it.second()];
+    }
+    return sum;
 }
 
-/* * * * * 此处以下为测试用例 * * * * */
+Set<Pair> maximumWeightMatching(const Map<string, Map<string, int>> &possibleLinks)
+{
+    /* TODO: Delete this comment and these remaining lines, then implement this function. */
+    // (void)possibleLinks;
+    // return {};
+    if(possibleLinks.isEmpty())
+    {
+        return {};
+    }
 
-namespace {
-    /* 将三元组列表转换为世界的实用工具。 */
-    struct WeightedLink {
+    string preson = possibleLinks.firstKey();
+
+    Map<string, Map<string, int>> remaining = possibleLinks;
+    remaining.remove(preson);
+
+    Set<Pair> best = maximumWeightMatching(remaining);
+
+    for (string par : possibleLinks[preson])
+    {
+        if(!possibleLinks.containsKey(par))
+        {
+            continue;
+        }
+
+        Map<string, Map<string, int>> remaining = possibleLinks;
+        remaining.remove(par);
+        remaining.remove(preson);
+
+        Set<Pair> candidate = maximumWeightMatching(remaining);
+
+        candidate.add(Pair(preson, par));
+
+        if(total(candidate, possibleLinks) > total(best, possibleLinks))
+        {
+            best = candidate;
+        }
+    }
+    return best;    
+}
+
+/* * * * * Test Cases Below This Point * * * * */
+
+namespace
+{
+    /* Utility to go from a list of triples to a world. */
+    struct WeightedLink
+    {
         string from;
         string to;
         int cost;
     };
-    Map<string, Map<string, int>> fromWeightedLinks(const Vector<WeightedLink>& links) {
+    Map<string, Map<string, int>> fromWeightedLinks(const Vector<WeightedLink> &links)
+    {
         Map<string, Map<string, int>> result;
-        for (const auto& link: links) {
+        for (const auto &link : links)
+        {
             result[link.from][link.to] = link.cost;
             result[link.to][link.from] = link.cost;
         }
         return result;
     }
 
-    /* 将配对转换到世界坐标。 */
-    Map<string, Set<string>> fromLinks(const Vector<Pair>& pairs) {
+    /* Pairs to world. */
+    Map<string, Set<string>> fromLinks(const Vector<Pair> &pairs)
+    {
         Map<string, Set<string>> result;
-        for (const auto& link: pairs) {
+        for (const auto &link : pairs)
+        {
             result[link.first()].add(link.second());
             result[link.second()].add(link.first());
         }
         return result;
     }
 
-    /* 检查一组配对是否构成完美匹配。 */
-    bool isPerfectMatching(const Map<string, Set<string>>& possibleLinks,
-                           const Set<Pair>& matching) {
-        /* 需要检查
+    /* Checks if a set of pairs forms a perfect matching. */
+    bool isPerfectMatching(const Map<string, Set<string>> &possibleLinks,
+                           const Set<Pair> &matching)
+    {
+        /* Need to check that
          *
-         * 1. 每一对确实是可能的连接，
-         * 2. 每个人恰好出现在一对中。
+         * 1. each pair is indeed a possible link,
+         * 2. each person appears in exactly one pair.
          */
         Set<string> used;
-        for (Pair p: matching) {
-            /* 这些人甚至属于该群体吗？ */
-            if (!possibleLinks.containsKey(p.first())) return false;
-            if (!possibleLinks.containsKey(p.second())) return false;
+        for (Pair p : matching)
+        {
+            /* Are these folks even in the group of people? */
+            if (!possibleLinks.containsKey(p.first()))
+                return false;
+            if (!possibleLinks.containsKey(p.second()))
+                return false;
 
-            /* 如果这些人在该群组中，他们是否相连？ */
+            /* If these people are in the group, are they linked? */
             if (!possibleLinks[p.first()].contains(p.second()) ||
-                !possibleLinks[p.second()].contains(p.first())) {
+                !possibleLinks[p.second()].contains(p.first()))
+            {
                 return false;
             }
 
-            /* 我们以前见过它们吗？ */
-            if (used.contains(p.first()) || used.contains(p.second())) {
+            /* Have we seen them before? */
+            if (used.contains(p.first()) || used.contains(p.second()))
+            {
                 return false;
             }
 
-            /* 同时添加二者。 */
+            /* Add them both. */
             used += p.first();
             used += p.second();
         }
 
-        /* 确认所有人都在其中。 */
+        /* Confirm that's everyone. */
         return used.size() == possibleLinks.size();
     }
 }
 
 #include "GUI/SimpleTest.h"
 
-PROVIDED_TEST("hasPerfectMatching works on a world with just one person.") {
-    /* 世界中只有一个人 A，没有其他人。真可怜。:-(
+PROVIDED_TEST("hasPerfectMatching works on a world with just one person.")
+{
+    /* The world is just a single person A, with no others. How sad. :-(
      *
      *                 A
      *
-     * 这里不存在完美匹配。
+     * There is no perfect matching.
      */
 
     Set<Pair> unused;
-    EXPECT(!hasPerfectMatching({ { "A", {} } }, unused));
+    EXPECT(!hasPerfectMatching({{"A", {}}}, unused));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on an empty set of people.") {
-    /* 实际上存在完美匹配——不含任何连接的集合满足
-     * 要求。
+PROVIDED_TEST("hasPerfectMatching works on an empty set of people.")
+{
+    /* There actually is a perfect matching - the set of no links meets the
+     * requirements.
      */
     Set<Pair> unused;
     EXPECT(hasPerfectMatching({}, unused));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a world with two linked people.") {
-    /* 这个世界由 A 和 B 两个人组成。应当存在完美匹配。
+PROVIDED_TEST("hasPerfectMatching works on a world with two linked people.")
+{
+    /* This world is a pair of people A and B. There should be a perfect matching.
      *
      *               A -- B
      *
-     * 匹配为 {A, B}
+     * The matching is {A, B}
      */
-    auto links = fromLinks({
-        { "A", "B" }
-    });
+    auto links = fromLinks({{"A", "B"}});
 
     Set<Pair> unused;
     EXPECT(hasPerfectMatching(links, unused));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a world with two linked people, and produces output.") {
-    /* 这个世界由 A 和 B 两个人组成。应当存在完美匹配。
+PROVIDED_TEST("hasPerfectMatching works on a world with two linked people, and produces output.")
+{
+    /* This world is a pair of people A and B. There should be a perfect matching.
      *
      *               A -- B
      *
-     * 匹配为 {A, B}
+     * The matching is {A, B}
      */
-    auto links = fromLinks({
-        { "A", "B" }
-    });
+    auto links = fromLinks({{"A", "B"}});
 
     Set<Pair> expected = {
-        { "A", "B" }
-    };
+        {"A", "B"}};
 
     Set<Pair> matching;
     EXPECT(hasPerfectMatching(links, matching));
     EXPECT_EQUAL(matching, expected);
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a triangle of people.") {
-    /* 当前世界如下：
+PROVIDED_TEST("hasPerfectMatching works on a triangle of people.")
+{
+    /* Here's the world:
      *
      *               A --- B
      *                \   /
      *                 \ /
      *                  C
      *
-     * 很遗憾，这里不存在完美匹配。
+     * There is no perfect matching here, unfortunately.
      */
-    auto links = fromLinks({
-        { "A", "B" },
-        { "B", "C" },
-        { "C", "A" }
-    });
+    auto links = fromLinks({{"A", "B"},
+                            {"B", "C"},
+                            {"C", "A"}});
 
     Set<Pair> unused;
     EXPECT(!hasPerfectMatching(links, unused));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a square of people.") {
-    /* 当前世界如下：
+PROVIDED_TEST("hasPerfectMatching works on a square of people.")
+{
+    /* Here's the world:
      *
      *               A --- B
      *               |     |
      *               |     |
      *               D --- C
      *
-     * 这里有两个不同的完美匹配：AB / CD 和 AD/BD。
-     * 两种方式都可以。
+     * There are two different perfect matching here: AB / CD, and AD/BD.
+     * Either will work.
      */
-    auto links = fromLinks({
-        { "A", "B" },
-        { "B", "C" },
-        { "C", "D" },
-        { "D", "A" }
-    });
+    auto links = fromLinks({{"A", "B"},
+                            {"B", "C"},
+                            {"C", "D"},
+                            {"D", "A"}});
 
     Set<Pair> unused;
     EXPECT(hasPerfectMatching(links, unused));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a square of people, and produces output.") {
-    /* 当前世界如下：
+PROVIDED_TEST("hasPerfectMatching works on a square of people, and produces output.")
+{
+    /* Here's the world:
      *
      *               A --- B
      *               |     |
      *               |     |
      *               C --- D
      *
-     * 这里有两个不同的完美匹配：AB / CD 和 AC/BC。
-     * 两种方式都可以。
+     * There are two different perfect matching here: AB / CD, and AC/BC.
+     * Either will work.
      */
-    auto links = fromLinks({
-        { "A", "B" },
-        { "B", "C" },
-        { "C", "D" },
-        { "D", "A" }
-    });
+    auto links = fromLinks({{"A", "B"},
+                            {"B", "C"},
+                            {"C", "D"},
+                            {"D", "A"}});
 
     Set<Pair> matching;
     EXPECT(hasPerfectMatching(links, matching));
     EXPECT(isPerfectMatching(links, matching));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a pentagon of people.") {
-    /* 当前世界如下：
+PROVIDED_TEST("hasPerfectMatching works on a pentagon of people.")
+{
+    /* Here's the world:
      *
      *               A --- B
      *             /       |
@@ -208,26 +292,25 @@ PROVIDED_TEST("hasPerfectMatching works on a pentagon of people.") {
      *             \       |
      *               D --- C
      *
-     * 这里不存在完美匹配，因为该环的长度为奇数
-     * 长度。
+     * There is no perfect matching here, since the cycle has odd
+     * length.
      */
-    auto links = fromLinks({
-        { "A", "B" },
-        { "B", "C" },
-        { "C", "D" },
-        { "D", "E" },
-        { "E", "A" }
-    });
+    auto links = fromLinks({{"A", "B"},
+                            {"B", "C"},
+                            {"C", "D"},
+                            {"D", "E"},
+                            {"E", "A"}});
 
     Set<Pair> unused;
     EXPECT(!hasPerfectMatching(links, unused));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a line of six people.") {
-    /* 由于 Map 和 Set 在内部按排序顺序存储条目，因此该顺序
-     * 做决策时遍历人员的顺序会影响结果
-     * 结果会受这些人员姓名顺序影响。此测试使用类似如下的分组：
-     * 此测试尝试人员姓名的所有可能排列：
+PROVIDED_TEST("hasPerfectMatching works on a line of six people.")
+{
+    /* Because Map and Set internally store items in sorted order, the order
+     * in which you iterate over people when making decisions is sensitive
+     * to the order of those peoples' names. This test looks at a group like
+     * this one, trying out all possible orderings of peoples' names:
      *
      *
      *
@@ -235,22 +318,21 @@ PROVIDED_TEST("hasPerfectMatching works on a line of six people.") {
      *
      *
      *
-     * 这六个项目共有 6! = 720 种可能的排列
-     * 人员。如果代码能够针对所有这些情况正确解决问题，
-     * 若这些排列都能通过，很可能说明你正确跟踪了
-     * 每一步谁与谁配对。另一方面，如果代码出现
-     * 若这里出现问题，可能表示标记配对状态的方式存在错误：
-     * 谁已配对、谁未配对。
+     * There are 6! = 720 possible permutations of the ordering of these six
+     * people. If your code is able to solve the problem correctly for all of
+     * those orderings, there's a good chance that you're correctly tracking
+     * who is matched at each step. On the other hand, if your code runs into
+     * issues here, it may indicate that there's a bug in how you mark who's
+     * paired and who isn't.
      */
-    Vector<string> people = { "A", "B", "C", "D", "E", "F" };
-    do {
-        Map<string, Set<string>> links = fromLinks({
-            { people[0], people[1] },
-            { people[1], people[2] },
-            { people[2], people[3] },
-            { people[3], people[4] },
-            { people[4], people[5] }
-        });
+    Vector<string> people = {"A", "B", "C", "D", "E", "F"};
+    do
+    {
+        Map<string, Set<string>> links = fromLinks({{people[0], people[1]},
+                                                    {people[1], people[2]},
+                                                    {people[2], people[3]},
+                                                    {people[3], people[4]},
+                                                    {people[4], people[5]}});
 
         Set<Pair> matching;
         EXPECT(hasPerfectMatching(links, matching));
@@ -258,11 +340,12 @@ PROVIDED_TEST("hasPerfectMatching works on a line of six people.") {
     } while (next_permutation(people.begin(), people.end()));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a more complex negative example.") {
-    /* 由于 Map 和 Set 在内部按排序顺序存储条目，因此该顺序
-     * 做决策时遍历人员的顺序会影响结果
-     * 结果会受这些人员姓名顺序影响。此测试使用类似如下的分组：
-     * 此测试尝试人员姓名的所有可能排列：
+PROVIDED_TEST("hasPerfectMatching works on a more complex negative example.")
+{
+    /* Because Map and Set internally store items in sorted order, the order
+     * in which you iterate over people when making decisions is sensitive
+     * to the order of those peoples' names. This test looks at a group like
+     * this one, trying out all possible orderings of peoples' names:
      *
      *
      *         *        *
@@ -271,21 +354,22 @@ PROVIDED_TEST("hasPerfectMatching works on a more complex negative example.") {
      *          /      \
      *         *        *
      *
-     * 这六个项目共有 6! = 720 种可能的排列
-     * 人员。如果代码能够针对所有这些情况正确解决问题，
-     * 若这些排列都能通过，很可能说明你正确跟踪了
-     * 每一步谁与谁配对。另一方面，如果代码出现
-     * 若这里出现问题，可能表示标记配对状态的方式存在错误：
-     * 谁已配对、谁未配对。
+     * There are 6! = 720 possible permutations of the ordering of these six
+     * people. If your code is able to solve the problem correctly for all of
+     * those orderings, there's a good chance that you're correctly tracking
+     * who is matched at each step. On the other hand, if your code runs into
+     * issues here, it may indicate that there's a bug in how you mark who's
+     * paired and who isn't.
      */
-    Vector<string> people = { "A", "B", "C", "D", "E", "F" };
-    do {
+    Vector<string> people = {"A", "B", "C", "D", "E", "F"};
+    do
+    {
         Map<string, Set<string>> links = fromLinks({
-            { people[0], people[2] },
-            { people[1], people[2] },
-            { people[2], people[3] },
-            { people[3], people[4] },
-            { people[3], people[5] },
+            {people[0], people[2]},
+            {people[1], people[2]},
+            {people[2], people[3]},
+            {people[3], people[4]},
+            {people[3], people[5]},
         });
 
         Set<Pair> matching;
@@ -293,11 +377,12 @@ PROVIDED_TEST("hasPerfectMatching works on a more complex negative example.") {
     } while (next_permutation(people.begin(), people.end()));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a more complex positive example.") {
-    /* 由于 Map 和 Set 在内部按排序顺序存储条目，因此该顺序
-     * 做决策时遍历人员的顺序会影响结果
-     * 结果会受这些人员姓名顺序影响。此测试使用类似如下的分组：
-     * 此测试尝试人员姓名的所有可能排列：
+PROVIDED_TEST("hasPerfectMatching works on a more complex positive example.")
+{
+    /* Because Map and Set internally store items in sorted order, the order
+     * in which you iterate over people when making decisions is sensitive
+     * to the order of those peoples' names. This test looks at a group like
+     * this one, trying out all possible orderings of peoples' names:
      *
      *               *
      *               |
@@ -307,22 +392,23 @@ PROVIDED_TEST("hasPerfectMatching works on a more complex positive example.") {
      *            /     \
      *           *       *
      *
-     * 这些项的排列顺序共有 6! = 720 种可能
-     * 人员。如果代码能够针对所有这些情况正确解决问题，
-     * 若这些排列都能通过，很可能说明你正确跟踪了
-     * 每一步谁与谁配对。另一方面，如果代码出现
-     * 若这里出现问题，可能表示标记配对状态的方式存在错误：
-     * 谁已配对、谁未配对。
+     * There are 6! = 720 possible permutations of the ordering of these
+     * people. If your code is able to solve the problem correctly for all of
+     * those orderings, there's a good chance that you're correctly tracking
+     * who is matched at each step. On the other hand, if your code runs into
+     * issues here, it may indicate that there's a bug in how you mark who's
+     * paired and who isn't.
      */
-    Vector<string> people = { "A", "B", "C", "D", "E", "F" };
-    do {
+    Vector<string> people = {"A", "B", "C", "D", "E", "F"};
+    do
+    {
         Map<string, Set<string>> links = fromLinks({
-            { people[0], people[1] },
-            { people[1], people[2] },
-            { people[2], people[3] },
-            { people[3], people[1] },
-            { people[2], people[4] },
-            { people[3], people[5] },
+            {people[0], people[1]},
+            {people[1], people[2]},
+            {people[2], people[3]},
+            {people[3], people[1]},
+            {people[2], people[4]},
+            {people[3], people[5]},
         });
 
         Set<Pair> matching;
@@ -331,31 +417,33 @@ PROVIDED_TEST("hasPerfectMatching works on a more complex positive example.") {
     } while (next_permutation(people.begin(), people.end()));
 }
 
-PROVIDED_TEST("hasPerfectMatching works on a caterpillar.") {
-    /* 由于 Map 和 Set 在内部按排序顺序存储条目，因此该顺序
-     * 做决策时遍历人员的顺序会影响结果
-     * 结果会受这些人员姓名顺序影响。此测试使用类似如下的分组：
-     * 此测试尝试人员姓名的所有可能排列：
+PROVIDED_TEST("hasPerfectMatching works on a caterpillar.")
+{
+    /* Because Map and Set internally store items in sorted order, the order
+     * in which you iterate over people when making decisions is sensitive
+     * to the order of those peoples' names. This test looks at a group like
+     * this one, trying out all possible orderings of peoples' names:
      *
      *         *---*---*
      *         |   |   |
      *         *   *   *
      *
-     * 这六个项目共有 6! = 720 种可能的排列
-     * 人员。如果代码能够针对所有这些情况正确解决问题，
-     * 若这些排列都能通过，很可能说明你正确跟踪了
-     * 每一步谁与谁配对。另一方面，如果代码出现
-     * 若这里出现问题，可能表示标记配对状态的方式存在错误：
-     * 谁已配对、谁未配对。
+     * There are 6! = 720 possible permutations of the ordering of these six
+     * people. If your code is able to solve the problem correctly for all of
+     * those orderings, there's a good chance that you're correctly tracking
+     * who is matched at each step. On the other hand, if your code runs into
+     * issues here, it may indicate that there's a bug in how you mark who's
+     * paired and who isn't.
      */
-    Vector<string> people = { "A", "B", "C", "D", "E", "F" };
-    do {
+    Vector<string> people = {"A", "B", "C", "D", "E", "F"};
+    do
+    {
         Map<string, Set<string>> links = fromLinks({
-            { people[0], people[1] },
-            { people[1], people[2] },
-            { people[0], people[3] },
-            { people[1], people[4] },
-            { people[2], people[5] },
+            {people[0], people[1]},
+            {people[1], people[2]},
+            {people[0], people[3]},
+            {people[1], people[4]},
+            {people[2], people[5]},
         });
 
         Set<Pair> matching;
@@ -364,8 +452,9 @@ PROVIDED_TEST("hasPerfectMatching works on a caterpillar.") {
     } while (next_permutation(people.begin(), people.end()));
 }
 
-PROVIDED_TEST("hasPerfectMatching stress test: negative example (should take under a second).") {
-    /* 这里，我们给出一个像这样的人员“毛毛虫”结构：
+PROVIDED_TEST("hasPerfectMatching stress test: negative example (should take under a second).")
+{
+    /* Here, we're giving a "caterpillar" of people, like this:
      *
      *    *   *   *   *     *   *
      *    |   |   |   |     |   |
@@ -373,73 +462,79 @@ PROVIDED_TEST("hasPerfectMatching stress test: negative example (should take und
      *    |   |   |   |     |   |
      *    *   *   *   *     *   *
      *
-     * 这里不存在完美匹配。不过，可能需要进行一些搜索
-     * 确认确实如此。不过，在此规模下，它应当
-     * 几乎可以瞬间找到解，因为搜索空间相当
-     * 规模较小，并且大多数“错误”决策都能被快速检测出来。
+     * This doesn't have a perfect matching, However, it may take some searching
+     * to confirm this is the case. At this size, however, it should be
+     * almost instanteous to find the solution, since the search space is fairly
+     * small and most "wrong" decisions can be detected quickly.
      *
-     * 另一方面，若实现反复构造相同的
-     * 反复进行匹配，或者即使某个已经
-     * 若找到无法与当前配置配对的对象，则其数量
-     * 需要考虑的选项数量将大到计算机无法处理
-     * 在合理时间内无法完成。
+     * On the other hand, if your implementation repeatedly constructs the same
+     * matchings over and over again, or keeps exploring even when a person who
+     * couldn't be paired with the current setup is found, then the number of
+     * options you need to consider will be too large for your computer to handle
+     * in any reasonable time.
      *
-     * 若其他测试均通过但此测试卡住，请再次检查
-     * 检查代码，确保没有反复构造相同的配对
-     * 多次。
+     * If you're passing the other tests and this test hangs, double-check your
+     * code to make sure you aren't repeatedly constructing the same matchings
+     * multiple times.
      */
 
-    /* “身体节段”的数量。 */
+    /* Number of "body segments". */
     const int kRowSize = 10;
 
     Vector<Pair> links;
-    for (int i = 0; i < kRowSize - 1; i++) {
-        links.add({ to_string(i), to_string(i + 1) });
+    for (int i = 0; i < kRowSize - 1; i++)
+    {
+        links.add({to_string(i), to_string(i + 1)});
     }
-    for (int i = 0; i < kRowSize; i++) {
-        links.add({ to_string(i), to_string(i + kRowSize) });
+    for (int i = 0; i < kRowSize; i++)
+    {
+        links.add({to_string(i), to_string(i + kRowSize)});
     }
-    for (int i = 0; i < kRowSize; i++) {
-        links.add({ to_string(i), to_string(i + 2 * kRowSize) });
+    for (int i = 0; i < kRowSize; i++)
+    {
+        links.add({to_string(i), to_string(i + 2 * kRowSize)});
     }
 
     Set<Pair> matching;
     EXPECT(!hasPerfectMatching(fromLinks(links), matching));
 }
 
-PROVIDED_TEST("hasPerfectMatching stress test: positive example (should take under a second).") {
-    /* 这里，我们给出一个像这样的人员“千足虫”结构：
+PROVIDED_TEST("hasPerfectMatching stress test: positive example (should take under a second).")
+{
+    /* Here, we're giving a "millipede" of people, like this:
      *
      *    *---*---*---* ... *---*
      *    |   |   |   |     |   |
      *    *   *   *   *     *   *
      *
-     * 这里始终存在完美匹配，可通过将每个人
-     * 与其正下方的人配对。不过，可能需要进行一些搜索
-     * 找到这一特定配置。不过，在此规模下，它应当
-     * 几乎可以瞬间找到解，因为搜索空间相当
-     * 规模较小，并且大多数“错误”决策都能被快速检测出来。
+     * This always has a perfect matching, which is found by pairing each person
+     * with the person directly below them. However, it may take some searching
+     * to find this particular configuration. At this size, however, it should be
+     * almost instanteous to find the solution, since the search space is fairly
+     * small and most "wrong" decisions can be detected quickly.
      *
-     * 另一方面，若实现反复构造相同的
-     * 反复进行匹配，或者即使某个已经
-     * 若找到无法与当前配置配对的对象，则其数量
-     * 需要考虑的选项数量将大到计算机无法处理
-     * 在合理时间内无法完成。
+     * On the other hand, if your implementation repeatedly constructs the same
+     * matchings over and over again, or keeps exploring even when a person who
+     * couldn't be paired with the current setup is found, then the number of
+     * options you need to consider will be too large for your computer to handle
+     * in any reasonable time.
      *
-     * 若其他测试均通过但此测试卡住，请再次检查
-     * 检查代码，确保没有反复构造相同的配对
-     * 多次。
+     * If you're passing the other tests and this test hangs, double-check your
+     * code to make sure you aren't repeatedly constructing the same matchings
+     * multiple times.
      */
 
-    /* “身体节段”的数量。 */
+    /* Number of "body segments". */
     const int kRowSize = 10;
 
     Vector<Pair> links;
-    for (int i = 0; i < kRowSize - 1; i++) {
-        links.add({ to_string(i), to_string(i + 1) });
+    for (int i = 0; i < kRowSize - 1; i++)
+    {
+        links.add({to_string(i), to_string(i + 1)});
     }
-    for (int i = 0; i < kRowSize; i++) {
-        links.add({ to_string(i), to_string(i + kRowSize) });
+    for (int i = 0; i < kRowSize; i++)
+    {
+        links.add({to_string(i), to_string(i + kRowSize)});
     }
 
     Set<Pair> matching;
@@ -447,89 +542,89 @@ PROVIDED_TEST("hasPerfectMatching stress test: positive example (should take und
     EXPECT(isPerfectMatching(fromLinks(links), matching));
 }
 
-PROVIDED_TEST("maximumWeightMatching: Works for empty group.") {
+PROVIDED_TEST("maximumWeightMatching: Works for empty group.")
+{
     EXPECT_EQUAL(maximumWeightMatching({}), {});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Works for group of one person.") {
+PROVIDED_TEST("maximumWeightMatching: Works for group of one person.")
+{
     Map<string, Map<string, int>> links = {
-        { "A", {} }
-    };
+        {"A", {}}};
 
     EXPECT_EQUAL(maximumWeightMatching(links), {});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Works for a single pair of people.") {
-    /* 当前世界：
+PROVIDED_TEST("maximumWeightMatching: Works for a single pair of people.")
+{
+    /* This world:
      *
      *  A --- B
      *     1
      *
-     * 最佳选择是 A -- B。
+     * Best option is to pick A -- B.
      */
-    auto links = fromWeightedLinks({
-        { "A", "B", 1 }
-    });
+    auto links = fromWeightedLinks({{"A", "B", 1}});
 
-    /* 应选择 A--B。 */
+    /* Should pick A--B. */
     EXPECT_EQUAL(maximumWeightMatching(links), {{"A", "B"}});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Won't pick a negative edge.") {
-    /* 当前世界：
+PROVIDED_TEST("maximumWeightMatching: Won't pick a negative edge.")
+{
+    /* This world:
      *
      *  A --- B
      *     -1
      *
-     * 最佳选择是不匹配任何人！
+     * Best option is to not match anyone!
      */
-    auto links = fromWeightedLinks({
-        { "A", "B", -1 }
-    });
+    auto links = fromWeightedLinks({{"A", "B", -1}});
 
-    /* 应选择 A--B。 */
+    /* Should pick A--B. */
     EXPECT_EQUAL(maximumWeightMatching(links), {});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Works on a line of three people.") {
-    /* 当前世界：
+PROVIDED_TEST("maximumWeightMatching: Works on a line of three people.")
+{
+    /* This world:
      *
      *  A --- B --- C
      *     1     2
      *
-     * 最佳选项是选择 B -- C。
+     * Best option is to pick B -- C.
      */
     auto links = fromWeightedLinks({
-        { "A", "B", 1 },
-        { "B", "C", 2 },
+        {"A", "B", 1},
+        {"B", "C", 2},
     });
 
-    /* 应当选择 B--C。 */
-    EXPECT_EQUAL(maximumWeightMatching(links), { {"B", "C"} });
+    /* Should pick B--C. */
+    EXPECT_EQUAL(maximumWeightMatching(links), {{"B", "C"}});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Works on a triangle.") {
-    /* 当前世界：
+PROVIDED_TEST("maximumWeightMatching: Works on a triangle.")
+{
+    /* This world:
      *
      *         A
      *      1 / \ 2
      *       B---C
      *         3
      *
-     * 最佳选项是选择 B -- C。
+     * Best option is to pick B -- C.
      */
-    auto links = fromWeightedLinks({
-        { "A", "B", 1 },
-        { "B", "C", 3 },
-        { "A", "C", 2 }
-    });
+    auto links = fromWeightedLinks({{"A", "B", 1},
+                                    {"B", "C", 3},
+                                    {"A", "C", 2}});
 
-    /* 应当选择 B--C。 */
-    EXPECT_EQUAL(maximumWeightMatching(links), { {"B", "C"} });
+    /* Should pick B--C. */
+    EXPECT_EQUAL(maximumWeightMatching(links), {{"B", "C"}});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Works on a square.") {
-    /* 当前世界：
+PROVIDED_TEST("maximumWeightMatching: Works on a square.")
+{
+    /* This world:
      *
      *         1
      *      A --- B
@@ -539,42 +634,44 @@ PROVIDED_TEST("maximumWeightMatching: Works on a square.") {
      *      D --- C
      *         4
      *
-     * 最佳选择是 BC/AD。
+     * Best option is to pick BC/AD.
      */
     auto links = fromWeightedLinks({
-        { "A", "B", 1 },
-        { "B", "C", 2 },
-        { "C", "D", 4 },
-        { "D", "A", 8 },
+        {"A", "B", 1},
+        {"B", "C", 2},
+        {"C", "D", 4},
+        {"D", "A", 8},
     });
 
-    EXPECT_EQUAL(maximumWeightMatching(links), { {"A", "D"}, {"B", "C"} });
+    EXPECT_EQUAL(maximumWeightMatching(links), {{"A", "D"}, {"B", "C"}});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Works on a line of four people.") {
-    /* 当前世界：
+PROVIDED_TEST("maximumWeightMatching: Works on a line of four people.")
+{
+    /* This world:
      *
      *  A --- B --- C --- D
      *     1     3     1
      *
-     * 最佳选择是 B -- C，尽管这不是完美
-     * 匹配。
+     * Best option is to pick B -- C, even though this is not a perfect
+     * matching.
      */
     auto links = fromWeightedLinks({
-        { "A", "B", 1 },
-        { "B", "C", 3 },
-        { "C", "D", 1 },
+        {"A", "B", 1},
+        {"B", "C", 3},
+        {"C", "D", 1},
     });
 
-    /* 应当选择 B--C。 */
-    EXPECT_EQUAL(maximumWeightMatching(links), { {"B", "C"} });
+    /* Should pick B--C. */
+    EXPECT_EQUAL(maximumWeightMatching(links), {{"B", "C"}});
 }
 
-PROVIDED_TEST("maximumWeightMatching: Small stress test (should take at most a second or two).") {
-    /* 由于 Map 和 Set 在内部按排序顺序存储条目，因此该顺序
-     * 做决策时遍历人员的顺序会影响结果
-     * 结果会受这些人员姓名顺序影响。此测试使用类似如下的分组：
-     * 此测试尝试人员姓名的所有可能排列：
+PROVIDED_TEST("maximumWeightMatching: Small stress test (should take at most a second or two).")
+{
+    /* Because Map and Set internally store items in sorted order, the order
+     * in which you iterate over people when making decisions is sensitive
+     * to the order of those peoples' names. This test looks at a group like
+     * this one, trying out all possible orderings of peoples' names:
      *
      *               *
      *               | 1
@@ -584,76 +681,79 @@ PROVIDED_TEST("maximumWeightMatching: Small stress test (should take at most a s
      *          1 /  1  \ 1
      *           *       *
      *
-     * （最佳选择是选取成本为 5 的边和另一侧成本为 1 的边
-     * 边。）
+     * (Best option is to pick the 5-cost edge and the opposite-side 1-cost
+     * edge.)
      *
-     * 这些项的排列顺序共有 6! = 720 种可能
-     * 人员。如果代码能够针对所有这些情况正确解决问题，
-     * 若这些排列都能通过，很可能说明你正确跟踪了
-     * 每一步谁与谁配对。另一方面，如果代码出现
-     * 若这里出现问题，可能表示标记配对状态的方式存在错误：
-     * 谁已配对、谁未配对。
+     * There are 6! = 720 possible permutations of the ordering of these
+     * people. If your code is able to solve the problem correctly for all of
+     * those orderings, there's a good chance that you're correctly tracking
+     * who is matched at each step. On the other hand, if your code runs into
+     * issues here, it may indicate that there's a bug in how you mark who's
+     * paired and who isn't.
      */
-    Vector<string> people = { "A", "B", "C", "D", "E", "F" };
-    do {
+    Vector<string> people = {"A", "B", "C", "D", "E", "F"};
+    do
+    {
         auto links = fromWeightedLinks({
-            { people[0], people[1], 5 },
-            { people[1], people[2], 1 },
-            { people[2], people[0], 1 },
-            { people[3], people[0], 1 },
-            { people[4], people[1], 1 },
-            { people[5], people[2], 1 },
+            {people[0], people[1], 5},
+            {people[1], people[2], 1},
+            {people[2], people[0], 1},
+            {people[3], people[0], 1},
+            {people[4], people[1], 1},
+            {people[5], people[2], 1},
         });
 
         Set<Pair> expected = {
-            { people[0], people[1] },
-            { people[2], people[5] }
-        };
+            {people[0], people[1]},
+            {people[2], people[5]}};
 
         EXPECT_EQUAL(maximumWeightMatching(links), expected);
     } while (next_permutation(people.begin(), people.end()));
 }
 
-PROVIDED_TEST("maximumWeightMatching: Large stress test (should take at most a second or two).") {
-    /* 这里，我们给出一条像这样的人员链：
+PROVIDED_TEST("maximumWeightMatching: Large stress test (should take at most a second or two).")
+{
+    /* Here, we're giving a chain of people, like this:
      *
      *    *---*---*---*---*---*---*---* ... *---*
      *      1   1   1   1   1   1   1         1
      *
-     * n 个人排成一列时，不同配对方式的数量由
-     * 第 n 个 Fibonacci 数。（很好的练习——你能解释原因吗？）这意味着
-     * 如果有一条包含 21 人的链，则有 F(21) = 10,946 种可能的
-     * 要检查的匹配。如果程序恰好逐一测试所有匹配
-     * 一次，那么确定最佳匹配应当很快
-     * 这里是。（它是任何恰好使用 floor(21 / 2) = 10 条边的匹配。
+     * The number of different matchings in a chain of n people is given by the
+     * nth Fibonacci number. (Great exercise - can you explain why?) This means
+     * that if we have a chain of 21 people, there are F(21) = 10,946 possible
+     * matchings to check. If your program tests every single one of them exactly
+     * once, then it should be pretty quick to determine what the best matching
+     * here is. (It's any matching that uses exactly floor(21 / 2) = 10 edges.
      *
-     * 另一方面，若实现反复构造相同的
-     * 反复枚举匹配时，需要考虑的选项数量
-     * 在任何合理时间内都大到计算机无法处理。
+     * On the other hand, if your implementation repeatedly constructs the same
+     * matchings over and over again, then the number of options you need to consider
+     * will be too large for your computer to handle in any reasonable time.
      *
-     * 若其他测试均通过但此测试卡住，请再次检查
-     * 检查代码，确保没有反复构造相同的配对
-     * 多次。
+     * If you're passing the other tests and this test hangs, double-check your
+     * code to make sure you aren't repeatedly constructing the same matchings
+     * multiple times.
      */
     const int kNumPeople = 21;
     Vector<WeightedLink> links;
-    for (int i = 0; i < kNumPeople - 1; i++) {
-        links.add({ to_string(i), to_string(i + 1), 1 });
+    for (int i = 0; i < kNumPeople - 1; i++)
+    {
+        links.add({to_string(i), to_string(i + 1), 1});
     }
 
     auto matching = maximumWeightMatching(fromWeightedLinks(links));
     EXPECT_EQUAL(matching.size(), kNumPeople / 2);
 
-    /* 确认它是一个匹配。 */
+    /* Confirm it's a matching. */
     Set<string> used;
-    for (Pair p: matching) {
-        /* 没有任何人被配对超过一次。 */
+    for (Pair p : matching)
+    {
+        /* No people paired more than once. */
         EXPECT(!used.contains(p.first()));
         EXPECT(!used.contains(p.second()));
         used += p.first();
         used += p.second();
 
-        /* 必须是可能的链接。 */
+        /* Must be a possible links. */
         EXPECT_EQUAL(abs(stringToInteger(p.first()) - stringToInteger(p.second())), 1);
     }
 }

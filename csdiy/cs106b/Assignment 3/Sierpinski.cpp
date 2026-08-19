@@ -29,9 +29,27 @@ void drawSierpinskiTriangle(GWindow& window,
                             double x2, double y2,
                             int order) {
     /* TODO：删除此注释、下面这些代码行，并实现此函数。 */
-    (void) window;
-    (void) x0; (void) y0;
-    (void) x1; (void) y1;
-    (void) x2; (void) y2;
-    (void) order;
+    if (order < 0)
+    {
+        error("Order cannot be negative.");
+    }
+
+    if(order == 0)
+    {
+        drawTriangle(window, x0, y0, x1, y1, x2, y2);
+        return;
+    }
+    double x01 = (x0 + x1) / 2.0;
+    double y01 = (y0 + y1) / 2.0;
+
+    double x12 = (x1 + x2) / 2.0;
+    double y12 = (y1 + y2) / 2.0;
+
+    double x02 = (x0 + x2) / 2.0;
+    double y02 = (y0 + y2) / 2.0;
+
+    drawSierpinskiTriangle(window, x1, y1, x01, y01, x12, y12, order - 1);
+    drawSierpinskiTriangle(window, x01, y01, x0, y0, x02, y02, order - 1);
+    drawSierpinskiTriangle(window, x12, y12, x02, y02, x2, y2, order - 1);
+    return;
 }

@@ -1,16 +1,16 @@
 /*
- * 文件：gcontainer.h
+ * File: gcontainer.h
  * ------------------
  *
  * @author Marty Stepp
  * @version 2018/09/25
- * - 添加 getLayout 方法
+ * - added getLayout method
  * @version 2018/09/19
- * - 添加 contains、regionContains 方法
+ * - added contains, regionContains methods
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/29
- * - 初始版本
+ * - initial version
  */
 
 
@@ -23,42 +23,42 @@
 #include "ginteractor.h"
 #include "vector.h"
 
-class _Internal_QContainer;   // 前向声明
+class _Internal_QContainer;   // forward declaration
 
 /**
- * GContainer 是交互控件的逻辑分组。
- * 容器管理其中交互控件的位置和大小。
- * 此类与 Java 中容器的概念非常相似，表示为
- * 在 Swing 中由 JPanel 类实现。
+ * A GContainer is a logical grouping for interactors.
+ * The container manages the position and size of the interactors inside it.
+ * This class is very similar to the Java concept of a container, represented
+ * in Swing by the JPanel class.
  *
- * 容器具有用于指导如何放置交互控件的布局。
- * 支持的布局包括边框布局（将交互控件放在 N/S/W/E/Center），
- * 网格（按行和列排列交互控件）和流式布局（交互控件按
- * 单条水平线或垂直线）。
+ * A container has a layout that guides how it positions its interactors.
+ * Supported layouts include border (put interactors in the N/S/W/E/Center),
+ * grid (rows and columns of interactors), and flow (interactors go in a
+ * single horizontal or vertical line).
  *
- * 容器还使用类似 CSS 盒模型的“盒模型”，包含边距
- * 以及每个交互控件周围的内边距和相邻控件之间的间距：
+ * Containers also use a "box model" similar to the CSS box model with margins
+ * and padding around each interactor, and spacing between neighboring widgets:
  *
  * <pre>
-    容器
+    container
  * +-------------------+
- * |       外边距       |
- * |  +---边框------+  |
- * |  |    内边距    |  |
- * |  |    内容     |  |
- * |  |    内边距    |  |
+ * |      margin       |
+ * |  +---border----+  |
+ * |  |   padding   |  |
+ * |  |   content   |  |
+ * |  |   padding   |  |
  * |  +-------------+  |
- * |       外边距       |
+ * |      margin       |
  * |                   |
- * |        间距        |
+ * |      spacing      |
  * |                   |
- * |       外边距       |
- * |  +---边框------+  |
- * |  |    内边距    |  |
- * |  |    内容     |  |
- * |  |    内边距    |  |
+ * |      margin       |
+ * |  +---border----+  |
+ * |  |   padding   |  |
+ * |  |   content   |  |
+ * |  |   padding   |  |
  * |  +-------------+  |
- * |       外边距       |
+ * |      margin       |
  * |       ...         |
  * +-------------------+
  * </pre>
@@ -66,17 +66,17 @@ class _Internal_QContainer;   // 前向声明
 class GContainer : public GInteractor {
 public:
     /**
-     * 每个交互控件周围的默认边距。
+     * Default margin around each interactor.
      */
     static const int MARGIN_DEFAULT;
 
     /**
-     * 相邻交互控件之间的默认间距。
+     * Default spacing between neighboring interactors.
      */
     static const int SPACING_DEFAULT;
 
     /**
-     * 容器可以使用的各种布局管理样式。
+     * The various layout management styles that containers can use.
      */
     enum Layout {
         LAYOUT_NONE,
@@ -87,8 +87,8 @@ public:
     };
 
     /**
-     * 边框布局的五个区域。
-     * 其他布局样式不使用。
+     * The five regions of border layouts.
+     * Not used by the other layout styles.
      */
     enum Region {
         REGION_CENTER,
@@ -99,167 +99,167 @@ public:
     };
 
     /**
-     * 使用给定布局创建新容器。
+     * Creates a new container with the given layout.
      */
     GContainer(Layout layout = LAYOUT_FLOW_HORIZONTAL, QWidget* parent = nullptr);
 
     /**
-     * 使用给定行数和列数创建新容器。
-     * 用于网格布局。
+     * Creates a new container with the given number of rows and columns.
+     * Meant to be used for grid layouts.
      */
     GContainer(Layout layout, int rows, int cols, QWidget* parent = nullptr);
 
     /**
-     * 释放容器内部分配的内存。
+     * Frees memory allocated internally by the container.
      */
     ~GContainer() override;
 
     /**
-     * 将给定交互控件添加到此容器交互控件列表末尾。
-     * 若容器使用网格布局，则将交互控件添加到下一个可用
-     * 行/列。如果使用边框布局，则添加到中心区域。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the end of the list of interactors in this container.
+     * If the container uses a grid layout, adds the interactor to the next available
+     * row/column.  If it uses a border layout, adds to the center region.
+     * @throw ErrorException if the interactor is null
      */
     virtual void add(GInteractor* interactor);
 
     /**
-     * 将给定交互控件添加到此容器交互控件列表末尾。
-     * 若容器使用网格布局，则将交互控件添加到下一个可用
-     * 行/列。如果使用边框布局，则添加到中心区域。
+     * Adds the given interactor to the end of the list of interactors in this container.
+     * If the container uses a grid layout, adds the interactor to the next available
+     * row/column.  If it uses a border layout, adds to the center region.
      */
     virtual void add(GInteractor& interactor);
 
     /**
-     * 将给定交互控件添加到此容器的指定行和列，
-     * 假定其使用网格布局。
-     * 若传入 rowspan 和/或 colspan 参数，该项目会占据
-     * 占据多行或多列的空间。
-     * 若容器不使用网格布局，则等价于 add()。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the given row and column in this container,
+     * which is assumed to use a grid layout.
+     * If the rowspan and/or colspan arguments are passed, the item will occupy
+     * multiple rows or columns' worth of space.
+     * If the container does not use a grid layout, equivalent to add().
+     * @throw ErrorException if the interactor is null
      */
     virtual void addToGrid(GInteractor* interactor, int row, int col, int rowspan = 1, int colspan = 1);
 
     /**
-     * 将给定交互控件添加到此容器的指定行和列，
-     * 假定其使用网格布局。
-     * 若传入 rowspan 和/或 colspan 参数，该项目会占据
-     * 占据多行或多列的空间。
-     * 若容器不使用网格布局，则等价于 add()。
+     * Adds the given interactor to the given row and column in this container,
+     * which is assumed to use a grid layout.
+     * If the rowspan and/or colspan arguments are passed, the item will occupy
+     * multiple rows or columns' worth of space.
+     * If the container does not use a grid layout, equivalent to add().
      */
     virtual void addToGrid(GInteractor& interactor, int row, int col, int rowspan = 1, int colspan = 1);
 
     /**
-     * 将给定交互控件添加到此容器的给定区域，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 add()。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the given region in this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to add().
+     * @throw ErrorException if the interactor is null
      */
     virtual void addToRegion(GInteractor* interactor, Region region);
 
     /**
-     * 将给定交互控件添加到此容器的给定区域，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 add()。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the given region in this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to add().
+     * @throw ErrorException if the interactor is null
      */
     virtual void addToRegion(GInteractor* interactor, const std::string& region = "Center");
 
     /**
-     * 将给定交互控件添加到此容器的给定区域，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 add()。
+     * Adds the given interactor to the given region in this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to add().
      */
     virtual void addToRegion(GInteractor& interactor, Region region);
 
     /**
-     * 将给定交互控件添加到此容器的给定区域，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 add()。
+     * Adds the given interactor to the given region in this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to add().
      */
     virtual void addToRegion(GInteractor& interactor, const std::string& region = "Center");
 
     /**
-     * 从此容器删除所有交互控件。
+     * Removes all interactors from this container.
      */
     virtual void clear();
 
     /**
-     * 从此容器的给定区域移除所有交互控件，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则不产生任何效果。
+     * Removes all interactors from the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, has no effect.
      */
     virtual void clearRegion(Region region);
 
     /**
-     * 从此容器的给定区域移除所有交互控件，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则不产生任何效果。
+     * Removes all interactors from the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, has no effect.
      */
     virtual void clearRegion(const std::string& region);
 
     /**
-     * 如果在此容器中找到给定交互控件，则返回 true。
-     * 如果交互控件为 null，则返回 false
+     * Returns true if the given interactor is found in this container.
+     * Returns false if the interactor is null
      */
     virtual bool contains(GInteractor* interactor) const;
 
     /**
-     * 如果在此容器中找到给定交互控件，则返回 true。
+     * Returns true if the given interactor is found in this container.
      */
     virtual bool contains(GInteractor& interactor) const;
 
     /**
-     * 返回此容器内部所有子级或后代交互控件
-     * 容器。它与 getInteractors 的区别在于，不仅返回
-     * 不仅包括直接子项，还包括所有子容器中的孙项等。
-     * 如果传入 type 参数，则只返回该类型的交互控件
-     * （例如“GCheckBox”）。否则将返回所有交互控件。
+     * Returns all interactors that are children or descendents inside this
+     * container.  This differs from getInteractors in that it returns not only
+     * direct children but also grandchildren, etc. in any sub-containers.
+     * If the type argument is passed, will return only interactors of that type
+     * (e.g. "GCheckBox").  Otherwise all interactors will be returned.
      */
     virtual Vector<GInteractor*> getDescendents(const std::string& type = "") const;
 
     /**
-     * 返回此容器中给定从 0 开始索引处的子交互控件。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Returns the child interactor at the given 0-based index in this container.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual GInteractor* getInteractor(int i) const;
 
     /**
-     * 返回此容器中所有子交互控件的向量。
+     * Returns a vector of all children interactors in this container.
      */
     virtual const Vector<GInteractor*>& getInteractors() const;
 
     /**
-     * 返回此容器中的子交互控件数量。
+     * Returns the number of children interactors in this container.
      */
     virtual int getInteractorCount() const;
 
     /**
-     * 返回给定对象中从 0 开始的指定索引处的子交互控件
-     * 此容器中的区域，假定该容器使用边框布局。
-     * 若容器不使用边界布局，则返回 nullptr。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Returns the child interactor at the given 0-based index within the given
+     * region in this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, returns nullptr.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual GInteractor* getInteractorByRegion(int i, Region region) const;
 
     /**
-     * 返回给定对象中从 0 开始的指定索引处的子交互控件
-     * 此容器中的区域，假定该容器使用边框布局。
-     * 若容器不使用边界布局，则返回 nullptr。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Returns the child interactor at the given 0-based index within the given
+     * region in this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, returns nullptr.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual GInteractor* getInteractorByRegion(int i, const std::string& region = "Center") const;
 
     /**
-     * 返回给定区域内子交互控件的数量
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the number of children interactors within the given region in
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual int getInteractorCountByRegion(Region region) const;
 
     /**
-     * 返回给定区域内子交互控件的数量
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the number of children interactors within the given region in
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual int getInteractorCountByRegion(const std::string& region = "Center") const;
 
@@ -267,37 +267,37 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回此容器使用的布局类型。
+     * Returns the type of layout used by this container.
      */
     virtual Layout getLayout() const;
 
     /**
-     * 返回此容器中每个控件周围的像素边距。
+     * Returns the margin around each widget in this container in pixels.
      */
     virtual double getMargin() const;
 
     /**
-     * 返回此容器内部的像素内边距。
+     * Returns the padding inside this container in pixels.
      */
     virtual double getPadding() const;
 
     /**
-     * 返回此容器底部的像素内边距。
+     * Returns the padding on the bottom side of this container in pixels.
      */
     virtual double getPaddingBottom() const;
 
     /**
-     * 返回此容器左侧的像素内边距。
+     * Returns the padding on the left side of this container in pixels.
      */
     virtual double getPaddingLeft() const;
 
     /**
-     * 返回此容器右侧的像素内边距。
+     * Returns the padding on the right side of this container in pixels.
      */
     virtual double getPaddingRight() const;
 
     /**
-     * 返回此容器顶部的像素内边距。
+     * Returns the padding on the top side of this container in pixels.
      */
     virtual double getPaddingTop() const;
 
@@ -305,49 +305,49 @@ public:
     GDimension getPreferredSize() const override;
 
     /**
-     * 返回此容器给定区域的像素高度，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the height in pixels of the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual double getRegionHeight(Region region) const;
 
     /**
-     * 返回此容器给定区域的像素高度，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the height in pixels of the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual double getRegionHeight(const std::string& region) const;
 
     /**
-     * 返回此容器给定区域的像素宽度和高度，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the width and height in pixels of the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual GDimension getRegionSize(Region region) const;
 
     /**
-     * 返回此容器给定区域的像素宽度和高度，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the width and height in pixels of the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual GDimension getRegionSize(const std::string& region) const;
 
     /**
-     * 返回此容器给定区域的像素宽度，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the width in pixels of the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual double getRegionWidth(Region region) const;
 
     /**
-     * 返回此容器给定区域的像素宽度，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则返回 0。
+     * Returns the width in pixels of the given region of this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, returns 0.
      */
     virtual double getRegionWidth(const std::string& region) const;
 
     /**
-     * 返回此容器中控件之间的像素间距。
+     * Returns the spacing between widgets in this container in pixels.
      */
     virtual double getSpacing() const;
 
@@ -358,269 +358,269 @@ public:
     QWidget* getWidget() const override;
 
     /**
-     * 将给定交互控件添加到此容器中给定索引之前。
-     * @throw 如果索引越界或交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to this container just before the given index.
+     * @throw ErrorException if the index is out of bounds or interactor is null
      */
     virtual void insert(int index, GInteractor* interactor);
 
     /**
-     * 将给定交互控件添加到此容器中给定索引之前。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Adds the given interactor to this container just before the given index.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual void insert(int index, GInteractor& interactor);
 
     /**
-     * 将给定交互控件添加到此容器内的给定布局区域
-     * 紧邻给定索引之前。假定容器使用边界
-     * 布局；若不是，则等价于 insert()。
-     * @throw 如果索引越界或交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the given layout region within this container
+     * just before the given index.  The container is assumed to use a border
+     * layout; if it does not, equivalent to insert().
+     * @throw ErrorException if the index is out of bounds or interactor is null
      */
     virtual void insertToRegion(int index, GInteractor* interactor, Region region);
 
     /**
-     * 将给定交互控件添加到此容器内的给定布局区域
-     * 紧邻给定索引之前。假定容器使用边界
-     * 布局；若不是，则等价于 insert()。
-     * @throw 如果索引越界或交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the given layout region within this container
+     * just before the given index.  The container is assumed to use a border
+     * layout; if it does not, equivalent to insert().
+     * @throw ErrorException if the index is out of bounds or interactor is null
      */
     virtual void insertToRegion(int index, GInteractor* interactor, const std::string& region = "Center");
 
     /**
-     * 将给定交互控件添加到此容器内的给定布局区域
-     * 紧邻给定索引之前。假定容器使用边界
-     * 布局；若不是，则等价于 insert()。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Adds the given interactor to the given layout region within this container
+     * just before the given index.  The container is assumed to use a border
+     * layout; if it does not, equivalent to insert().
+     * @throw ErrorException if the index is out of bounds
      */
     virtual void insertToRegion(int index, GInteractor& interactor, Region region);
 
     /**
-     * 将给定交互控件添加到此容器内的给定布局区域
-     * 紧邻给定索引之前。假定容器使用边界
-     * 布局；若不是，则等价于 insert()。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Adds the given interactor to the given layout region within this container
+     * just before the given index.  The container is assumed to use a border
+     * layout; if it does not, equivalent to insert().
+     * @throw ErrorException if the index is out of bounds
      */
     virtual void insertToRegion(int index, GInteractor& interactor, const std::string& region = "Center");
 
     /**
-     * 如果容器不包含任何交互控件，则返回 true。
+     * Returns true if the container does not contain any interactors.
      */
     virtual bool isEmpty() const;
 
     /**
-     * 若在以下对象的给定区域中找到给定交互控件，则返回 true：
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则等价于 contains()。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Returns true if the given interactor is found in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to contains().
+     * @throw ErrorException if the interactor is null
      */
     virtual bool regionContains(GInteractor* interactor, Region region) const;
 
     /**
-     * 若在以下对象的给定区域中找到给定交互控件，则返回 true：
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则等价于 contains()。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Returns true if the given interactor is found in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to contains().
+     * @throw ErrorException if the interactor is null
      */
     virtual bool regionContains(GInteractor* interactor, const std::string& region) const;
 
     /**
-     * 若在以下对象的给定区域中找到给定交互控件，则返回 true：
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则等价于 contains()。
+     * Returns true if the given interactor is found in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to contains().
      */
     virtual bool regionContains(GInteractor& interactor, Region region) const;
 
     /**
-     * 若在以下对象的给定区域中找到给定交互控件，则返回 true：
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则等价于 contains()。
+     * Returns true if the given interactor is found in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to contains().
      */
     virtual bool regionContains(GInteractor& interactor, const std::string& region) const;
 
     /**
-     * 从此容器中移除给定交互控件。
-     * 适用于任意布局。
-     * 若在此容器中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Removes the given interactor from this container.
+     * Works for any layout.
+     * If the given interactor is not found in this container, has no effect.
+     * @throw ErrorException if the interactor is null
      */
     virtual void remove(GInteractor* interactor);
 
     /**
-     * 从此容器中移除给定交互控件。
-     * 适用于任意布局。
-     * 若在此容器中找不到给定交互控件，则不产生任何效果。
+     * Removes the given interactor from this container.
+     * Works for any layout.
+     * If the given interactor is not found in this container, has no effect.
      */
     virtual void remove(GInteractor& interactor);
 
     /**
-     * 从此容器删除给定从 0 开始索引处的子交互控件。
-     * 适用于任意布局。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Removes the child interactor at the given 0-based index from this container.
+     * Works for any layout.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual void remove(int index);
 
     /**
-     * 从此容器内给定区域移除给定交互控件，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 remove()。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Removes the given interactor from the given region within this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to remove().
+     * If the given interactor is not found in the given region, has no effect.
+     * @throw ErrorException if the interactor is null
      */
     virtual void removeFromRegion(GInteractor* interactor, Region region);
 
     /**
-     * 从此容器内给定区域移除给定交互控件，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 remove()。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Removes the given interactor from the given region within this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to remove().
+     * If the given interactor is not found in the given region, has no effect.
+     * @throw ErrorException if the interactor is null
      */
     virtual void removeFromRegion(GInteractor* interactor, const std::string& region);
 
     /**
-     * 从此容器内给定区域移除给定交互控件，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 remove()。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
+     * Removes the given interactor from the given region within this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to remove().
+     * If the given interactor is not found in the given region, has no effect.
      */
     virtual void removeFromRegion(GInteractor& interactor, Region region);
 
     /**
-     * 从此容器内给定区域移除给定交互控件，
-     * 假定其使用边界布局。
-     * 若容器不使用边界布局，则等价于 remove()。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
+     * Removes the given interactor from the given region within this container,
+     * which is assumed to use a border layout.
+     * If the container does not use a border layout, equivalent to remove().
+     * If the given interactor is not found in the given region, has no effect.
      */
     virtual void removeFromRegion(GInteractor& interactor, const std::string& region);
 
     /**
-     * 从给定对象中移除从 0 开始的指定索引处的子交互控件
-     * 此容器中的区域，假定该容器使用边框布局。
-     * 若容器不使用边界布局，则不产生任何效果。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Removes the child interactor at the given 0-based index from the given
+     * region of this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, has no effect.
+     * If the given interactor is not found in the given region, has no effect.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual void removeFromRegion(int index, Region region);
 
     /**
-     * 从给定对象中移除从 0 开始的指定索引处的子交互控件
-     * 此容器中的区域，假定该容器使用边框布局。
-     * 若容器不使用边界布局，则不产生任何效果。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Removes the child interactor at the given 0-based index from the given
+     * region of this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, has no effect.
+     * If the given interactor is not found in the given region, has no effect.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual void removeFromRegion(int index, const std::string& region);
 
     /**
-     * 设置此容器中交互控件的水平和垂直对齐方式。
+     * Sets the horizontal and vertical alignment of interactors in this container.
      */
     virtual void setAlignment(HorizontalAlignment halign, VerticalAlignment valign);
 
     /**
-     * 设置此容器中交互控件的水平对齐方式。
+     * Sets the horizontal alignment of interactors in this container.
      */
     virtual void setHorizontalAlignment(HorizontalAlignment halign);
 
     /**
-     * 设置此容器中交互控件周围的像素边距。
+     * Sets the margin in pixels around interactors in this container.
      */
     virtual void setMargin(double px);
 
     /**
-     * 设置此容器中控件四周的内边距。
+     * Sets the padding on all 4 sides around widgets in this container.
      */
     virtual void setPadding(double px);
 
     /**
-     * 设置此容器中控件四周的内边距，
-     * 垂直边与水平边使用不同的内边距。
+     * Sets the padding on all 4 sides around widgets in this container,
+     * using different padding on the vertical vs horizontal sides.
      */
     virtual void setPadding(double topBottom, double leftRight);
 
     /**
-     * 设置此容器中控件四周的内边距，
-     * 四条边分别使用不同的内边距。
+     * Sets the padding on all 4 sides around widgets in this container,
+     * using different padding on each of the 4 sides.
      */
     virtual void setPadding(double top, double right, double bottom, double left);
 
     /**
-     * 设置此容器中交互控件的垂直对齐方式。
+     * Sets the vertical alignment of interactors in this container.
      */
     virtual void setVerticalAlignment(VerticalAlignment valign);
 
     /**
-     * 设置给定区域中交互控件的水平对齐方式，该区域属于
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the horizontal alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionAlignment(Region region, HorizontalAlignment halign);
 
     /**
-     * 设置给定区域中交互控件的垂直对齐方式，该区域属于
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the vertical alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionAlignment(Region region, VerticalAlignment valign);
 
     /**
-     * 设置给定区域中交互控件的水平和垂直对齐方式
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the horizontal and vertical alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionAlignment(Region region, HorizontalAlignment halign, VerticalAlignment valign);
 
     /**
-     * 设置窗口给定区域中交互控件的水平和/或垂直对齐方式
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the horizontal and/or vertical alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionAlignment(const std::string& region, const std::string& align);
 
     /**
-     * 设置给定区域中交互控件的水平和垂直对齐方式
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the horizontal and vertical alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionAlignment(const std::string& region, const std::string& halign, const std::string& valign);
 
     /**
-     * 设置给定区域中交互控件的水平对齐方式，该区域属于
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the horizontal alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionHorizontalAlignment(Region region, HorizontalAlignment halign);
 
     /**
-     * 设置给定区域中交互控件的水平对齐方式，该区域属于
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the horizontal alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionHorizontalAlignment(const std::string& region, const std::string& halign);
 
     /**
-     * 设置给定区域中交互控件的垂直对齐方式，该区域属于
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the vertical alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionVerticalAlignment(const std::string& region, const std::string& valign);
 
     /**
-     * 设置给定区域中交互控件的垂直对齐方式，该区域属于
-     * 此容器假定使用边界布局。
-     * 若容器不使用边界布局，则设置以下对象的对齐方式：
-     * 改用整个容器。
+     * Sets the vertical alignment of interactors in the given region of
+     * this container, which is assumed to use a border layout.
+     * If the container does not use a border layout, sets the alignment of
+     * the entire container instead.
      */
     virtual void setRegionVerticalAlignment(Region region, VerticalAlignment valign);
 
     /**
-     * 设置此容器中交互控件之间的间距。
+     * Sets the spacing between interactors in this container.
      */
     virtual void setSpacing(double px);
 
@@ -640,7 +640,7 @@ private:
 
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QContainer : public QWidget, public _Internal_QWidget {
@@ -662,22 +662,22 @@ private:
     int _cols;
     int _currentIndex;
 
-    // N/S/W/E/C 的边框布局区域：
+    // border layout regions for N/S/W/E/C:
     // +------------------------+
-    // |          北部           |
+    // |         north          |
     // |------------------------|
-    // |          中央           |
+    // |         middle         |
     // |+----------------------+|
     // || west | center | east ||
     // |+----------------------+|
     // |------------------------|
-    // |          南部           |
+    // |         south          |
     // +------------------------+
-    // 尺寸/拉伸规则：
-    // - N/S 水平扩展
-    // - W/E 垂直扩展
-    // - C 占据所有剩余空间
-    // - 除 Center 控件外，每个控件均以其首选（“建议”）大小显示
+    // sizing/stretching rules:
+    // - N/S expand horizontally
+    // - W/E expand vertically
+    // - C takes all remaining space
+    // - each widget other than Center widget appears at its preferred ("hinted") size
     QVBoxLayout* _overallLayout;
     QHBoxLayout* _northLayout;
     QHBoxLayout* _southLayout;

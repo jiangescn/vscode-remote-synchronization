@@ -1,14 +1,85 @@
 #include "ShiftScheduling.h"
+#include "Shift.h"
 using namespace std;
 
 /* TODO：有关此函数应执行什么操作的更多信息，请参阅 ShiftScheduling.h。
  * 然后删除此注释，并替换为你自己的注释。
  */
-Set<Shift> highestValueScheduleFor(const Set<Shift>& shifts, int maxHours) {
+
+int get_value(Vector<Shift>& s)
+{
+    int ans = 0;
+
+    for (auto it : s)
+    {
+        ans += valueOf(it);
+    }
+
+    return ans;
+}
+
+void dfs(Vector<Shift> &ans, Vector<Shift> &shifts, Vector<Shift> now, int hour, int deep, int Maxhour)
+{
+    if(deep == shifts.size())
+    {
+        if(get_value(now) > get_value(ans))
+        {
+            ans = now;
+        }
+        return;
+    }
+
+    dfs(ans, shifts, now, hour, deep + 1, Maxhour);
+
+    if (hour + lengthOf(shifts[deep]) > Maxhour)
+    {
+        return;
+    }
+
+
+    for (auto it : now)
+    {
+        if(overlapsWith(it, shifts[deep]))
+        {
+            return;
+        }
+    }
+
+    now.add(shifts[deep]);
+
+    dfs(ans, shifts, now, hour + lengthOf(shifts[deep]), deep + 1, Maxhour);
+}
+
+Set<Shift> highestValueScheduleFor(const Set<Shift>& shifts, int maxHours)
+{
     /* TODO：删除接下来的几行并实现此函数。 */
-    (void) shifts;
-    (void) maxHours;
-    return {};
+    if (maxHours < 0)
+    {
+        error("maxHours cannot be negative.");
+    }
+
+    Vector<Shift> s;
+
+    for (auto it : shifts)
+    {
+        s.add(it);
+    }
+
+
+    Vector<Shift> ans;
+    Vector<Shift> now;
+
+    dfs(ans, s, now, 0, 0, maxHours);
+
+
+    Set<Shift> result;
+
+    for (auto it : ans)
+    {
+        result.add(it);
+    }
+
+    return result;
 }
 
 

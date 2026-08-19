@@ -9,46 +9,46 @@
 #include "simpio.h"
 #include <iostream>
 #include <string>
-#include <memory> // 用于 unique_ptr
+#include <memory> // For unique_ptr
 #include <mutex>
 using namespace std;
 using namespace MiniGUI;
 
 namespace {
-    /******** 常量 ********/
+    /******** Constants ********/
 
-    /* 允许的最大圆盘数。 */
+    /* Maximum permitted disks. */
     const int kMaxDisks = 8;
 
-    /* 纺锤数量。 */
+    /* Number of spindles. */
     const int kNumSpindles = 3;
 
-    /* 一次打印到控制台的最大圆盘移动数（若要始终一次性打印所有行而不暂停询问输入，请改为 -1！ */
+    /* Maximum number of disk moves printed to console at once (to always print all lines to console without pausing to ask for input, change this to -1! */
     const int kMaxLines = 25;
 
-    /* 一个纺锤的宽度。 */
+    /* Width of one spindle. */
     const int kSpindleWidth = 20;
 
-    /* 纺锤工作区之间的像素间距。 */
+    /* Pixel margin between spindle work areas. */
     const double kSpindleMarginSize = 10;
 
-    /* 窗口边界与内容区域之间的像素间距。 */
+    /* Pixel margin between window boundary and content area. */
     const double kPadding = 30;
 
-    /* 窗口的宽高比。 */
+    /* Aspect ratio for the window. */
     const double kMinAspectRatio = 5.0 / 3.0;
 
-    /* 显示窗口的最小尺寸。 */
+    /* Minimum sizes of the display window. */
     const double kMinHeight = 20;
     const double kMinWidth  = kMinHeight * kMinAspectRatio;
 
-    /* 允许的最小圆盘宽度。 */
+    /* Smallest possible disk width. */
     const double kMinDiskWidth = 3 * kSpindleWidth;
 
-    /* 纺锤颜色：赤褐色！ */
+    /* Spindle color: Russet! */
     const string kSpindleColor = "#80461B";
 
-    /* 每个圆盘的颜色。 */
+    /* Colors for each disk. */
     const string kDiskColors[] = {
        "#000000",
        "#0000ff",
@@ -59,8 +59,8 @@ namespace {
        "#00ff00",
        "#00ffff"
     };
-    /* 每个圆盘的边框颜色。这些只是圆盘颜色的较深版本
-     * 如上所述。
+    /* Border colors for each disk.  These are just darker versions of the disk colors
+     * given above.
      */
     const string kDiskBorderColors[] = {
         "#000000",
@@ -73,38 +73,38 @@ namespace {
         "#008080"
     };
 
-    /* 提醒先调整窗口大小的消息。 */
+    /* Message warning about resizing the window first. */
     const string kResizeMessage =
             "Don't forget to resize this window so that you can see both the graphics display "
             "and the Qt Creator debugger before hitting the \"Go!\" button. Once the debugger "
             "engages, you may not be able to resize or move this window.";
 
-    /* 该消息的字体信息。 */
+    /* Font info for that message. */
     const Font kResizeMessageFont(FontFamily::SERIF, FontStyle::ITALIC, 16, "#400080");
 
-    /* 动画步数。 */
+    /* Number of steps in the animation. */
     const int kNumAnimationSteps = 50;
 
-    /* 表示单个圆盘的类型。 */
+    /* Type representing a single disk. */
     struct Disk {
-        int size;    // 零表示最小圆盘，尺寸由此递增。
-        GRect* rect; // 图形矩形。
+        int size;    // Zero is smallest disk, sizes increase from there.
+        GRect* rect; // Graphical rectangle.
     };
 
     struct Spindle {
-        /* 当前有哪些 GRect。 */
+        /* Which GRects are here right now. */
         Stack<Disk> disksHere;
 
-        /* 此纺锤的矩形。 */
+        /* The rectangle for this spindle. */
         GRect* rect;
 
-        /* 所分配区域的起始和结束 x 坐标
-         * 添加到此纺锤。这是可放置圆盘的空间
-         * 已移动。
+        /* The start and end x coordinates of the area allocated
+         * to this spindle.  This is the space where disks can be
+         * moved.
          */
         double startX, endX;
 
-        /* 纺锤的中心线。 */
+        /* The center line for the spindle. */
         double centerX;
     };
 
@@ -145,20 +145,20 @@ namespace {
         void clearGraphics();
     };
 
-    /* 噫，全局变量！我们经过仔细权衡后决定这样做
-     * 选项。另一方面，你不应这样做。:-)
+    /* Ewww, global variables! We made the decision to do this based on a careful weighing
+     * of the options. You, on the other hand, should not do this. :-)
      *
-     * 这些必须是原始指针，而不能是实际对象，以免它们被析构
-     * 在静态对象销毁期间仍处于使用状态。
+     * These need to be raw pointers, not actual objects, so they aren't torn down
+     * while in use during static object destruction.
      */
     auto* theGUI        = new shared_ptr<TowersOfHanoiGUI>;
     auto* theGUILock    = new mutex();
     bool  isConsoleMode = false;
 
-    /******** 实现 ********/
+    /******** Implementations ********/
 
-    /* 略带技巧的代码：更新图形显示时，希望强制重绘
-     * 这样即使启用了调试器，我们仍能看到变化。
+    /* Slightly hacky code: when we update the graphics display, we want to force a repaint
+     * so that, if the debugger is enabled, we still see the change.
      */
     void add(GWindow& window, GObject* toAdd) {
         GThread::runOnQtGuiThread([&] {
@@ -173,59 +173,59 @@ namespace {
         });
     }
 
-    /* 设置纺锤。 */
+    /* Sets up the spindles. */
     void TowersOfHanoiGUI::setupSpindles() {
-        /* 计算可分配给一个轴的总水平区域。 */
+        /* Calculate the total horizontal area that can be allocated to a spindle. */
         double workspaceWidth = mBounds.width / kNumSpindles;
 
         for (int i = 0; i < kNumSpindles; i++) {
             Spindle spindle;
 
-            /* 适当设置工作区域。 */
+            /* Set the work area appropriately. */
             spindle.startX = mBounds.x + workspaceWidth * i       + kSpindleMarginSize;
             spindle.endX   = mBounds.x + workspaceWidth * (i + 1) - kSpindleMarginSize;
 
-            /* 为此轴创建矩形。轴将居中位于
-             * 工作区域，其高度等于圆盘数量加上
-             * 一个（这样纺锤仍然可见）。它还会底部对齐。
+            /* Create a rectangle for this spindle.  The spindle will be centered in
+             * the work area and will have height equal to the number of disks plus
+             * one (so the spindle is still visible).  It will also be bottom-aligned.
              */
             double height = (mNumDisks + 1) * mDiskHeight;
             double y = mBounds.y + mBounds.height - height;
 
-            /* 确定中心线位置，然后让矩形围绕它居中。 */
+            /* Determine where the center line is, then center the rectangle around that. */
             spindle.centerX = (spindle.startX + spindle.endX) / 2.0;
             spindle.rect = new GRect(spindle.centerX - kSpindleWidth / 2.0, y, kSpindleWidth, height);
             spindle.rect->setFilled(true);
             spindle.rect->setColor(kSpindleColor);
 
-            /* 将其添加到显示内容中。 */
+            /* Add that to the display. */
             add(window(), spindle.rect);
 
-            /* 将此轴添加到列表中。 */
+            /* Add this spindle to the list. */
             mSpindles += spindle;
         }
     }
 
-    /* 创建并设置模拟中使用的所有圆盘。 */
+    /* Creates and sets up all of the disks that will be used in the simulation. */
     void TowersOfHanoiGUI::setupDisks() {
         for (int i = 0; i < mNumDisks; i++) {
-            /* 需要确定圆盘的位置、颜色和大小。
+            /* We need to determine the position, color, and size of the disk.
              *
-             * 为确定圆盘大小，我们将在工作区之间进行线性插值
-             * 区域（最大可能宽度）和最小可能圆盘宽度
-             * （指定为常量）。特别是，我们希望底部圆盘
-             * 尺寸恰好填满纺锤工作区，而我们希望
-             * 最上方圆盘的大小等于 kMinDiskWidth。我们使用的公式
-             * 我们将使用以下公式：
+             * To size the disk, we will linearly interpolate between the workspace
+             * area (the maximum possible width) and the minimum possible disk width
+             * (specified as a constant).  In particular, we want the bottom disk to
+             * have a size that perfectly fills the spindle workspace, and we want
+             * the top disk to have size equal to kMinDiskWidth.  The formula we
+             * will use for this is the following:
              *
-             * 圆盘 0 的宽度 = 工作区宽度。
-             * 圆盘 i - 1 的宽度 = kMinDiskWidth。
+             * Width of disk 0     = Workspace width.
+             * Width of disk i - 1 = kMinDiskWidth.
              *
-             * 因此：
+             * Therefore:
              *
              * width = ((kMinDiskWidth - workspaceWidth) / (numDisks - 1)) * i + workspaceWidth
              *
-             * 当 numDisks = 1 时存在一个边界情况，因此我们将单独处理它。
+             * There is an edge case here when numDisks = 1, so we will special-case it.
              */
             double workspaceWidth = mSpindles[0].endX - mSpindles[0].startX;
 
@@ -236,54 +236,54 @@ namespace {
                 width = max(kMinDiskWidth, ((kMinDiskWidth - workspaceWidth) / (mNumDisks - 1)) * i + workspaceWidth);
             }
 
-            /* 给定宽度，可通过取以下对象的中心线来找到 x 坐标：
-             * 纺锤，并回退其宽度的一半。
+            /* Given the width, the x coordinate can be found by taking the center line of
+             * the spindle and backing off by half the width.
              */
             double x = mSpindles[0].centerX - width / 2.0;
 
-            /* 可以使用已有函数确定圆盘的 y 坐标
-             * 用于确定下一个圆盘应放在轴上的何处。
+            /* We can determine the y coordinate of the disk by using our existing function
+             * for determining where the next disk should go on a spindle.
              */
             double y = diskYPosition(0);
 
-            /* 创建矩形。 */
+            /* Create the rectangle. */
             GRect* rect = new GRect(x, y, width, mDiskHeight);
             rect->setColor(kDiskBorderColors[kMaxDisks - 1 - i]);
             rect->setFilled(true);
             rect->setFillColor(kDiskColors[kMaxDisks - 1 - i]);
 
-            /* 绘制圆盘。 */
+            /* Draw the disk. */
             add(window(), rect);
 
-            /* 将圆盘添加到轴上。 */
+            /* Add the disk to the spindle. */
             Disk disk;
             disk.rect = rect;
-            disk.size = mNumDisks - i; // 顺序反转，因为我们先创建最大的圆盘。
+            disk.size = mNumDisks - i; // Inverted because we're creating the biggest disk first.
 
             mSpindles[0].disksHere.push(disk);
         }
     }
 
-    /* 给定轴编号，返回下一个圆盘所在位置的 y 坐标
-     * 将放置在该纺锤顶部。
+    /* Given a spindle number, returns the y coordinate where the next disk
+     * would be placed on top of that spindle.
      */
     double TowersOfHanoiGUI::diskYPosition(int spindle) {
         if (spindle < 0 || spindle >= mSpindles.size()) {
             error("Invalid spindle number.");
         }
 
-        /* 位置按如下方式确定：
+        /* The position is determined as follows:
          *
-         * 1. 从窗口底部开始。
-         * 2. 按堆栈中的圆盘数量向后退。
-         * 3. 再向后退一次，因为我们需要给出上方 y 坐标。
+         * 1. Start at the bottom of the window.
+         * 2. Back off by the number of disks in the stack.
+         * 3. Back off once more, since we need to give the upper y coordinate.
          *
-         * 计算结果为 windowHeight - (disksInStack + 1) * diskHeight。
+         * This works out to windowHeight - (disksInStack + 1) * diskHeight.
          */
         return mBounds.y + mBounds.height - (mSpindles[spindle].disksHere.size() + 1) * mDiskHeight;
     }
 
-    /* 给定一个字符，将该字符映射到轴编号。 */
+    /* Given a character, maps that character to a spindle number. */
     int charToSpindle(char ch) {
         switch (ch) {
             case 'A': case 'a': return 0;
@@ -293,10 +293,10 @@ namespace {
         }
     }
 
-    /* 给定动画中的时间，用 0（起点）到以下值之间的数字表示：
-     * 和 1（终点）之间，插值计算圆盘在该时刻沿轨迹所在的位置
-     * 使用三次 Hermite 样条随时间变化。这会使动画看起来明显
-     * 比以前更平滑。
+    /* Given a time through the animation, represented by a number between 0 (start)
+     * and 1 (end), interpolates where along the trajectory the disk would be at that
+     * time using a cubic Hermitian spline.  This makes the animation look significantly
+     * smoother than before.
      *
      * http://en.wikipedia.org/wiki/Cubic_Hermite_spline
      */
@@ -304,38 +304,38 @@ namespace {
         return -2 * t * t * t + 3 * t * t;
     }
 
-    /* 让圆盘从当前位置移动到目标位置的动画。 */
+    /* Animates a disk moving from its current position to the destination. */
     void TowersOfHanoiGUI::animateDiskPath(GRect* disk, double endX, double endY, double totalTime) {
         const double startX = disk->getX(), startY = disk->getY();
 
-        /* 为移动添加动画！ */
+        /* Animate the motion! */
         for (int i = 0; i < kNumAnimationSteps; i++) {
-            /* 在起始位置和结束位置之间插值。为了确定
-             * 对于插值量，我们使用三次 Hermite 样条来映射
-             * 从已完成动画比例转换为更平滑的
-             * 动画点。
+            /* Interpolate between the start and end positions.  To determine
+             * how much to interpolate, we use a cubic Hermite spline to map
+             * from the fraction of the animation completed to a smoother
+             * animation point.
              */
             double x = startX + (endX - startX) * interpolate(double(i) / (kNumAnimationSteps - 1));
             double y = startY + (endY - startY) * interpolate(double(i) / (kNumAnimationSteps - 1));
             setLocation(window(), disk, x, y);
 
-            /* 暂停以让动画继续。实际上不会精确暂停
-             * 恰好持续正确时长，因为其中存在一定延迟
-             * 在图形调用中，但已经“足够接近”。
+            /* Pause to let the animation progress.  This will not work out to pausing
+             * for exactly the right amount of time because there's some latency involved
+             * in the graphics calls, but it's "close enough."
              */
             pause(totalTime / kNumAnimationSteps);
         }
     }
 
     void TowersOfHanoiGUI::computeBounds() {
-        /* 计算显示区域可能的最大宽度和高度。 */
+        /* Compute the maximum possible width and height of the display. */
         double maxWidth  = max(kMinWidth,  window().getCanvasWidth()  - 2 * kPadding);
         double maxHeight = max(kMinHeight, window().getCanvasHeight() - 2 * kPadding);
 
-        /* 确定当前宽高比。 */
+        /* Determine the current aspect ratio. */
         double empiricalAspectRatio = maxWidth / maxHeight;
 
-        /* 绝不低于要求的宽高比。 */
+        /* Never drop below the required aspect ratio. */
         double width, height;
         if (empiricalAspectRatio < kMinAspectRatio) {
             width  = maxWidth;
@@ -345,7 +345,7 @@ namespace {
             height = maxHeight;
         }
 
-        /* 计算所需内边距。 */
+        /* Compute amount of padding needed. */
         double xPadding = (window().getCanvasWidth()  - width)  / 2.0;
         double yPadding = (window().getCanvasHeight() - height) / 2.0;
 
@@ -356,17 +356,17 @@ namespace {
             height
         };
 
-        /* 确定单个圆盘的高度。我们希望圆盘大小满足
-         * 每个轴都可以在顶部放置所有圆盘，然后留出一些垂直空间以
-         * 显示每个纺锤顶部，然后在其上方显示两个空格。这样可以
-         * 最终需要的“虚拟圆盘”数量等于圆盘总数
-         * 实际使用的数量，再加四个额外项。
+        /* Determine the height of a single disk.  We want to size the disks such that
+         * each spindle can have all the disks on top of it, then some vertical space to
+         * show the top of each spindle, then two blank spaces above it.  This works
+         * out to needing a number of "virtual disks" equal to the total number of disks
+         * actually used, plus four extras.
          */
         int numVirtualDisks = mNumDisks + 4;
         mDiskHeight = mBounds.height / numVirtualDisks;
     }
 
-    /* 返回与给定常量关联的动画速度。 */
+    /* Returns the animation speed associated with a given constant. */
     double pauseTimeFor(AnimationSpeed speed) {
         switch (speed) {
         case AnimationSpeed::MOLASSES:
@@ -386,8 +386,8 @@ namespace {
     }
 }
 
-/* 恭喜！你已找到触发以下调用的函数：
- * solveTowersOfHanoi！
+/* Congratulations! You've found the function that triggered the call to
+ * solveTowersOfHanoi!
  */
 void makeTheMagicHappen() {
     solveTowersOfHanoi(5, 'A', 'C', 'B');
@@ -396,7 +396,7 @@ void makeTheMagicHappen() {
 namespace {
     void TowersOfHanoiGUI::actionPerformed(GObservable* source) {
         if (source == mGoButton) {
-            /* 是的，演示已经开始！ */
+            /* Yep, the demo has started! */
             mHasStarted = true;
 
             setDemoOptionsEnabled(false);
@@ -410,53 +410,53 @@ namespace {
     }
 
     void TowersOfHanoiGUI::moveSingleDisk(char startCh, char finishCh) {
-        /* 将起始轴和结束轴转换为索引。 */
+        /* Convert the start and end spindles to indices. */
         int start = charToSpindle(startCh), end = charToSpindle(finishCh);
 
-        /* 确认起始轴不为空。 */
+        /* Confirm that the start spindle isn't empty. */
         if (mSpindles[start].disksHere.isEmpty()) {
             error("No disks at the start spindle.");
         }
 
-        /* 获取要移动的圆盘。 */
+        /* Get the disk to move. */
         Disk disk = mSpindles[start].disksHere.pop();
 
-        /* 确保可以合法地将圆盘从起始纺锤移动到
-         * 结束轴。
+        /* Make sure we can legally move the disk from the start spindle to the
+         * end spindle.
          */
         if (!mSpindles[end].disksHere.isEmpty() &&
             mSpindles[end].disksHere.peek().size <= disk.size) {
             error("Cannot move a larger disk atop a smaller one.");
         }
 
-        /* 确定动画三个部分中每部分必须持续多长时间
-         * 动画。
+        /* Determine how long the animation must take for each of the three parts of the
+         * animation.
          */
         double eachAnimationTime = mPauseTime / 3;
 
-        /* 向上移动圆盘。 */
+        /* Move the disk up. */
         animateDiskPath(disk.rect, disk.rect->getX(), mBounds.y, eachAnimationTime);
 
-        /* 横向移动圆盘。需要通过居中计算新的 x 坐标
-         * 将圆盘移过新的中线。
+        /* Move the disk over.  We need to compute the new x coordinate by centering
+         * the disk over the new midline.
          */
         double newX = mSpindles[end].centerX - disk.rect->getWidth() / 2.0;
         animateDiskPath(disk.rect, newX, mBounds.y, eachAnimationTime);
 
-        /* 向下移动圆盘。 */
+        /* Move the disk down. */
         animateDiskPath(disk.rect, disk.rect->getX(), diskYPosition(end), eachAnimationTime);
 
-        /* 更新内部状态：确保圆盘现在位于目标
-         * 纺锤。
+        /* Update internal state: make sure that the disk is now on the destination
+         * spindle.
          */
         mSpindles[end].disksHere.push(disk);
     }
 
 
 
-    /* 初始化显示。 */
+    /* Initializes the display. */
     void TowersOfHanoiGUI::initHanoiDisplay(int numDisks, AnimationSpeed speed) {
-        /* 验证输入。 */
+        /* Validate input. */
         if (numDisks > kMaxDisks) {
             error("Sorry, but we can't support that many disks.");
         }
@@ -469,7 +469,7 @@ namespace {
         mNumDisks = numDisks;
         computeBounds();
 
-        /* 初始化纺锤和圆盘。 */
+        /* Initialize the spindles and disks. */
         setupSpindles();
         setupDisks();
 
@@ -496,7 +496,7 @@ namespace {
     }
 
     void TowersOfHanoiGUI::repaint() {
-        /* 如果已经完成演示，则不要显示调整大小的消息。 */
+        /* If we've already done the demo, don't display the resize message. */
         if (!mHasStarted) {
             window().clearCanvasPixels();
 
@@ -511,7 +511,7 @@ namespace {
                 text->alignCenterVertically();
                 text->draw(window());
             } catch (const ErrorException &) {
-                // 糟糕，文本无法放入框中。不要尝试。
+                // Oops, can't fit text in the box. Don't attempt to.
             }
         }
     }
@@ -519,8 +519,8 @@ namespace {
     bool TowersOfHanoiGUI::shuttingDown() {
         unique_lock<mutex> lock(*theGUILock);
 
-        /* 释放此处存储的共享指针，以触发析构函数
-         * GUI 使用完我们之后。
+        /* Free the shared pointer stored here so that the destructor fires
+         * once the GUI is done with us.
          */
         theGUI->reset();
 
@@ -529,7 +529,7 @@ namespace {
 
 
 
-    /******** 控制台实现 ********/
+    /******** Console Implementation ********/
     class TowersOfHanoiConsole {
     public:
         bool condensedOutput = false;
@@ -549,28 +549,28 @@ namespace {
 
     };
 
-    TowersOfHanoiConsole console; // 全局实例
+    TowersOfHanoiConsole console; // global instance
 
-    /* 将 int 转换为用于轴标签的字母字符 */
+    /* Convert int to alphabetic char for spindle labelling */
     char convert(int i) {
         return (i % 26) + 'A';
     }
 
-    /* 初始化 mSpindles，使所有 mNumDisks 个圆盘都位于最左侧纺锤，其余纺锤为空 */
+    /* Initialize mSpindles to have all mNumDisks disks on leftmost spindle, remaining spindles are empty */
     void TowersOfHanoiConsole::setup() {
-        // 按字母表初始化纺锤（左侧为 'A'）
+        // initialize spindles according to alphabet (left is 'A')
         for (int i = 0; i < kNumSpindles; i++){
             mSpindles[convert(i)] = { };
         }
 
-        // 将圆盘添加到最左侧轴，使其从上到下按 1 到 mNumDisks 排列
+        // add disks to leftmost spindle so that disks go from 1 to mNumDisks, from top to bottom
         for (int i = 0; i < mNumDisks; i++) {
             mSpindles['A'].add(mNumDisks - i);
         }
 
     }
 
-    /* 从顶部（vector 末尾）到底部（vector 开头）打印纺锤上的圆盘列表 */
+    /* Prints list of disks on spindle from top (end of vector) to bottom (beginning of vector) */
     void TowersOfHanoiConsole::listDisks(char spindle) {
         for (int i = mSpindles[spindle].size() - 1; i >= 0; i--){
             cout << mSpindles[spindle][i];
@@ -580,7 +580,7 @@ namespace {
         }
     }
 
-    /* 列出所有塔柱及其圆盘 */
+    /* Lists all spires and their disks */
     void TowersOfHanoiConsole::listSpires() {
         for (int i = 0; i < kNumSpindles; i++){
             cout << " " << convert(i) << " [";
@@ -593,7 +593,7 @@ namespace {
         cout << endl;
     }
 
-    /* 等待用户输入空行。 */
+    /* Waits for the user to enter a blank line. */
     void pressEnterToContinue(const string& message) {
         string line;
         do {
@@ -602,10 +602,10 @@ namespace {
     }
 
     /**
-     * 初始化控制台“显示”：在最左侧纺锤（纺锤 'A'）上设置 numDisks 个圆盘，并打印基于文本的设置说明
+     * Initialize console "display" by setting up numDisks disks on leftmost spindle (spindle 'A') and printing text-based explanation of setup
      *
-     * @param numDisks 问题中使用的圆盘数量；所有圆盘最初都在最左侧轴上
-     * @param speed 动画速度决定各打印语句之间的暂停长度
+     * @param numDisks Number of disks to use in problem; all disks start on leftmost spindle
+     * @param speed Animation speed dictates length of pause between print statements
      */
     void TowersOfHanoiConsole::initHanoiDisplay(int numDisks, AnimationSpeed speed){
         if (numDisks > kMaxDisks) {
@@ -617,11 +617,11 @@ namespace {
         }
         mNumDisks = numDisks;
 
-        setup(); // 初始化纺锤和圆盘
+        setup(); // initialize spindles and disks
 
         mPauseTime = pauseTimeFor(speed);
 
-        // 设置说明
+        // explanation of setup
         cout << "The movement of the disks will be abbreviated, and at each move the state of all the spires will be printed. ";
         cout << "'1 from A to C:  A [2 3 4 5], B [], C [1]' translates to 'Disk 1 moves from A to C, and as a result the spires look like the following: 2, 3, 4, and 5 are on spire A, no disks are on spire B, and disk 1 is on spire C.'" << endl;
 
@@ -632,9 +632,9 @@ namespace {
 
     }
 
-    /* 打印移动说明，并更新内部状态以反映圆盘变化 */
+    /* Prints description of movement and updates internal state to reflect disk update */
     void TowersOfHanoiConsole::moveSingleDisk(char from, char to){
-        // 检查是否已经打印 kMaxLines 行；如果是，则在继续打印前提示用户
+        // Check to see if kMaxLines have been printed already, if so, prompt user before continuing to print
         if (kMaxLines >= 0 && mNumCalls >= kMaxLines) {
             pressEnterToContinue("Press enter to continue printing lines.");
             mNumCalls = 0;
@@ -644,7 +644,7 @@ namespace {
             error("No disks at the start spire.");
         }
 
-        // 执行移动——更新 mSpindles
+        // do movement -- update mSpindles
         int currDisk = mSpindles[from][mSpindles[from].size() - 1];
         mSpindles[from].remove(mSpindles[from].size() - 1);
 
@@ -682,7 +682,7 @@ void initHanoiDisplay(int n, AnimationSpeed speed) {
 
         (*theGUI)->initHanoiDisplay(n, speed);
     } else {
-        /* 已完成：设置汉诺塔图形。 */
+        /* DONE: Set up Hanoi graphics. */
         console.initHanoiDisplay(n, speed);
     }
 }
@@ -702,7 +702,7 @@ void moveSingleDisk(char start, char finish) {
 }
 
 CONSOLE_HANDLER("Towers of Hanoi") {
-    /* 将全局模式设为 console，使处理程序知道当前处于控制台模式。 */
+    /* Set the global mode to console so the handlers know we're in console mode. */
     isConsoleMode = true;
 
     makeTheMagicHappen();

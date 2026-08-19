@@ -1,22 +1,22 @@
 /*
- * 文件：gcheckbox.h
+ * File: gcheckbox.h
  * -----------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加按键事件支持
+ * - added key event support
  * @version 2018/10/06
- * - 添加 toggle()
+ * - added toggle()
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/09/04
- * - 添加双击事件支持
+ * - added double-click event support
  * @version 2018/08/23
- * - 重命名为 gcheckbox.h，以替代 Java 版本
+ * - renamed to gcheckbox.h to replace Java version
  * @version 2018/06/29
- * - 添加 change 事件
+ * - added change event
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 
@@ -31,21 +31,21 @@
 class _Internal_QCheckBox;
 
 /**
- * 此交互控件子类表示屏幕上的复选框。
- * 单击一次复选框会选中它；再次单击会取消选中。
- * 可以通过设置操作监听器监听复选框点击，
- * 传入希望每次单击时调用的函数。
+ * This interactor subclass represents an onscreen check box.
+ * Clicking once on the check box selects it; clicking again removes the selection.
+ * You can listen for clicks on a checkbox by setting an action listener,
+ * passing the function you want to call on each click.
  */
 class GCheckBox : public GInteractor {
 public:
     /**
-     * 创建具有给定文本的复选框。
-     * 可以传入可选的第二个参数，使复选框初始为选中状态。
+     * Creates a checkbox with the given text.
+     * You can pass an optional second parameter to initially check the box.
      */
     GCheckBox(const std::string& text = "", bool checked = false, QWidget* parent = nullptr);
 
     /**
-     * 释放复选框内部分配的内存。
+     * Frees memory allocated internally by the checkbox.
      */
     ~GCheckBox() override;
 
@@ -56,7 +56,7 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回复选框旁边的文本。
+     * Returns the text next to the checkbox.
      */
     virtual std::string getText() const;
 
@@ -67,37 +67,37 @@ public:
     QWidget* getWidget() const override;
 
     /**
-     * 如果复选框当前已选中，则返回 true。
-     * 等价于 isSelected。
+     * Returns true if the checkbox is currently checked.
+     * Equivalent to isSelected.
      */
     virtual bool isChecked() const;
 
     /**
-     * 如果复选框当前已选中，则返回 true。
-     * 等价于 isChecked。
+     * Returns true if the checkbox is currently checked.
+     * Equivalent to isChecked.
      */
     virtual bool isSelected() const;
 
     /**
-     * 设置复选框是否应被选中。
-     * 等价于 setSelected。
+     * Sets whether the checkbox should be checked.
+     * Equivalent to setSelected.
      */
     virtual void setChecked(bool checked);
 
     /**
-     * 设置复选框是否应被选中。
-     * 等价于 setChecked。
+     * Sets whether the checkbox should be checked.
+     * Equivalent to setChecked.
      */
     virtual void setSelected(bool selected);
 
     /**
-     * 设置复选框旁边显示的文本。
+     * Sets the text that will appear next to the checkbox.
      */
     virtual void setText(const std::string& text);
 
     /**
-     * 反转复选框的选中状态：若原先未选中则设为选中
-     * 取消选中；如果已选中，则将其取消选中。
+     * Reverses the checked state of the box, setting it to be checked if it was
+     * unchecked or to be unchecked if it was checked.
      */
     virtual void toggle();
 
@@ -116,7 +116,7 @@ private:
 };
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QCheckBox : public QCheckBox, public _Internal_QWidget {

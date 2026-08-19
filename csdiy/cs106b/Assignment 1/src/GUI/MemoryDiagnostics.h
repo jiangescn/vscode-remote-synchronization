@@ -1,25 +1,25 @@
 #ifndef MemoryDiagnostics_Included
 #define MemoryDiagnostics_Included
 
-/* 一组实用函数，用于跟踪以下对象的分配和释放：
- * 各种节点类型。在实际 C++ 代码中通常不会这样做，而会
- * 而应依赖优秀的外部工具，例如 Valgrind；如果继续学习，你会见到它
- * 继续学习 CS107！
+/* Set of utility functions that can be used to track allocations and deallocations of
+ * various node types. In actual C++ code, you wouldn't do something like this and would
+ * instead rely on external tools like the wonderful Valgrind, which you'll see if you
+ * continue on to CS107!
  */
 
 #include <string>
 
-/* 宏：TRACK_ALLOCATIONS_OF(type)
+/* Macro: TRACK_ALLOCATIONS_OF(type)
  * ------------------------------------------------------------------------------
- * 将指定节点类型接入内存诊断系统。使用方法是：
- * 在正在定义的 struct 或 class 内部，插入如下所示的一行：
+ * Hooks the specified node type into the memory diagnostics system. To use this,
+ * inside the struct or class that you're defining, insert a line like this one:
  *
  *     struct MyType {
  *         ...
  *         TRACK_ALLOCATIONS_OF(MyType);
  *     };
  */
-#define TRACK_ALLOCATIONS_OF(type) /* 无需关注的内容 */
+#define TRACK_ALLOCATIONS_OF(type) /* Something you shouldn't worry about */
 
 
 
@@ -31,7 +31,7 @@
 
 
 
-/* * * * * 此处以下为实现部分 * * * * */
+/* * * * * Implementation Below This Point * * * * */
 
 
 
@@ -50,8 +50,8 @@
 #include <map>
 #include <vector>
 
-/* 内存诊断辅助函数。通常不需要使用其中任何函数
- * 代码中的函数。
+/* Helper functions for memory diagnostics. You are not expected to use any of these
+ * functions in your code.
  */
 namespace MemoryDiagnostics {
     void recordNew(const std::type_info& type);
@@ -61,13 +61,13 @@ namespace MemoryDiagnostics {
         static int initializer;
     };
 
-    /* 将指定类型安装到主类型表中。返回一个整数值
-     * 完全无关紧要。
+    /* Installs the specified type into the main type tables. Returns an integer value
+     * that is completely of no consequence.
      */
     int registerSentinel(const std::type_info& type);
 
-    /* 用于分配和释放内存的挂钩。可用它自定义内存系统如何
-     * 分配和释放该类型的对象。
+    /* Hook to allocate and deallocate memory. Use this to customize how the memory system
+     * allocates and deallocates objects of your type.
      */
     template <typename T> struct Allocator {
         static void* scalarAlloc(std::size_t bytes) {
@@ -87,11 +87,11 @@ namespace MemoryDiagnostics {
         }
     };
 
-    /* 清除所有分配记录，相当于重置内存泄漏计数。 */
+    /* Clears all allocation records, effectively resetting the leak counts. */
     void clear();
 
-    /* 返回包含内存泄漏/错误的所有类型的映射。键是类型
-     * 键为名称，值为分配记录。
+    /* Returns a map of all types that have memory leaks / errors. Keys are type
+     * names, values are allocation records.
      */
     std::map<std::string, int> typesWithErrors();
 }
@@ -99,12 +99,12 @@ namespace MemoryDiagnostics {
 template <typename T>
 int MemoryDiagnostics::MemorySentinel<T>::initializer = registerSentinel(typeid(T));
 
-/* TRACK_ALLOCATIONS 的实现会引入 operator new/delete 挂钩，并调用
- * 接入内存诊断系统。
+/* Implementation of TRACK_ALLOCATIONS introduces operator new/delete hooks that call
+ * into the memory diagnostics system.
  *
- * 若按 F2 或 fn+F2 后被重定向到这里，则你已被送到
- * TRACK_ALLOCATIONS_OF 的实现而非定义。向上滚动查看
- * 向上查看本文件中的更多信息。
+ * If you were redirected here by hitting F2 or fn+F2, you've been sent to the
+ * implementation of TRACK_ALLOCATIONS_OF rather than the definition. Scroll higher
+ * up in this file for more information.
  */
 #undef TRACK_ALLOCATIONS_OF
 #define TRACK_ALLOCATIONS_OF(Type)                                           \

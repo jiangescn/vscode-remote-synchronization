@@ -1,19 +1,19 @@
 /*
- * 文件：gridlocation.h
+ * File: gridlocation.h
  * --------------------
- * 此文件导出 <code>GridLocation</code> 结构体，它是一个小型
- * 表示行和列的结构。
- * 行/列值允许为负数或越界；如果
- * 如果向网格传入越界位置，网格会抛出错误。
+ * This file exports the <code>GridLocation</code> structure, which is a small
+ * structure representing a row and column.
+ * The row/column values are allowed to be negative or out of bounds; if an
+ * out-of-bounds location is passed to a grid, the grid will throw an error.
  *
- * <code>Grid</code> 和 <code>SparseGrid</code> 类的若干成员
- * 已进行改造，可接受 <code>GridLocation</code> 来代替整数
- * 用于行/列索引。
+ * Several members of the <code>Grid</code> and <code>SparseGrid</code> classes
+ * have been retrofitted to accept <code>GridLocation</code>s in place of integers
+ * for row/column indexes.
  *
- * 此文件还声明了 <code>GridLocationRange</code> 类，
- * 它表示可循环遍历的二维网格位置范围。
+ * This file also declares the <code>GridLocationRange</code> class,
+ * which represents a 2D range of grid locations that can be looped over.
  *
- * 每个成员的实现见 gridlocation.cpp。
+ * See gridlocation.cpp for the implementation of each member.
  */
 
 #ifndef _gridlocation_h
@@ -25,39 +25,39 @@
 
 #include "error.h"
 
-class GridLocationRange;   // 前向声明
+class GridLocationRange;   // forward declaration
 
 struct GridLocation {
 public:
 
     /*
-     * 构造表示给定行和列的位置。
-     * 允许任何索引，包括负数和越界索引。
+     * Constructs a location representing the given row and column.
+     * Any indexes are allowed, including negatives and out-of-bounds indexes.
      */
     GridLocation(int row, int col);
 
     /*
-     * 构造默认位置 0, 0。
+     * Constructs a default location 0, 0.
      */
     GridLocation();
 
     /*
-     * 返回此位置的字符串表示，例如 "r2c17"。
+     * Returns a string representation of this location, such as "r2c17".
      */
     std::string toString() const;
 
-    /* 行和列数据——可直接访问或修改 */
+    /* row and column data - may be directly accessed or modified */
     int row;
     int col;
 };
 
 /*
- * 返回此网格位置的整数哈希码。
+ * Returns an integer hash code for this grid location.
  */
 int hashCode(const GridLocation& loc);
 
 /*
- * 用于比较网格位置的关系运算符。
+ * Relational operators for comparing grid locations.
  */
 bool operator <(const GridLocation& loc1, const GridLocation& loc2);
 bool operator <=(const GridLocation& loc1, const GridLocation& loc2);
@@ -67,32 +67,32 @@ bool operator >(const GridLocation& loc1, const GridLocation& loc2);
 bool operator >=(const GridLocation& loc1, const GridLocation& loc2);
 
 /*
- * 用于按 toString 格式读取或写入位置的 I/O 流运算符。
+ * I/O stream operators for reading or writing locations in their toString format.
  */
 std::ostream& operator <<(std::ostream& out, const GridLocation& loc);
 std::istream& operator >>(std::istream& input, GridLocation& loc);
 
 
 /*
- * 表示网格位置范围。
- * 实际的各网格位置不会全部创建并存储在
- * 此对象；那将需要大量内存。
- * 相反，我们主要使用此类对给定范围进行 for-each 循环
- * 使用其内部迭代器遍历位置。
+ * Represents a range of grid locations.
+ * The actual individual grid locations are not all created and stored in
+ * this object; that would require a lot of memory usage.
+ * Instead, we primarily use this class for for-each looping over a given range
+ * of locations using its internal iterator.
  *
- * 常见用法模式：
+ * Common usage pattern:
  * GridLocationRange range(0, 0, 10, 5);
  * for (GridLocation loc : range) { ... }
  *
- * 或者，如果有 Grid 集合，其 locations() 方法会返回 GridLocationRange
- * 可直接循环遍历的对象。
+ * or, if you have a Grid collection, its locations() method returns a GridLocationRange
+ * object that you can loop over directly.
  *
  * for (GridLocation loc : grid.locations()) { ... }
  */
 class GridLocationRange {
 private:
     /*
-     * 索引范围的内部迭代器。
+     * Internal iterator over range of indexes.
      */
     class GridLocationRangeIterator : public std::iterator<std::input_iterator_tag, GridLocation> {
     private:
@@ -113,7 +113,7 @@ private:
         GridLocationRangeIterator(const GridLocationRangeIterator& itr)
                 : glr(itr.glr),
                   loc(itr.loc) {
-            // 空
+            // empty
         }
 
         GridLocationRangeIterator& operator ++() {
@@ -217,84 +217,84 @@ private:
 
 public:
     /*
-     * 在给定起止位置上构造闭区间范围。
-     * isRowMajor 标志指示我们是否按以下顺序遍历范围：
-     * 行优先顺序（true，默认）或列优先顺序（false）。
+     * Constructs a range over the given start/end locations, inclusive.
+     * The isRowMajor flag indicates whether we will loop over the range in
+     * row-major order (true, default) or column-major order (false).
      */
     GridLocationRange(int startRow = 0, int startCol = 0, int endRow = 0, int endCol = 0, bool isRowMajor = true);
 
     /*
-     * 在给定起止位置上构造闭区间范围。
-     * isRowMajor 标志指示我们是否按以下顺序遍历范围：
-     * 行优先顺序（true，默认）或列优先顺序（false）。
+     * Constructs a range over the given start/end locations, inclusive.
+     * The isRowMajor flag indicates whether we will loop over the range in
+     * row-major order (true, default) or column-major order (false).
      */
     GridLocationRange(const GridLocation& startLoc, const GridLocation& endLoc, bool isRowMajor = true);
 
     /*
-     * 返回遍历该范围的迭代器。
+     * Returns an iterator over the range.
      */
     GridLocationRangeIterator begin() const;
 
     /*
-     * 如果此范围完全包含给定另一范围，则返回 true。
+     * Returns true if this range entirely contains the given other range.
      */
     bool contains(const GridLocation& loc) const;
 
     /*
-     * 返回位于范围末尾的迭代器。
+     * Returns an iterator at the end of the range.
      */
     GridLocationRangeIterator end() const;
 
     /*
-     * 返回此范围中的最后一列（含）。
+     * Returns the last column in this range, inclusive.
      */
     int endCol() const;
 
     /*
-     * 返回此范围中的最后一个行/列位置（含）。
+     * Returns the last row/column location in this range, inclusive.
      */
     const GridLocation& endLocation() const;
 
     /*
-     * 返回此范围中的最后一行（含）。
+     * Returns the last row in this range, inclusive.
      */
     int endRow() const;
 
     /*
-     * 如果此范围不包含任何行或列，则返回 true。
+     * Returns true if this range contains no rows or columns.
      */
     bool isEmpty() const;
 
     /*
-     * 如果应按行优先顺序遍历此范围，则返回 true，
-     * 按构造时指定（默认 true）。
+     * Returns true if this range should be traversed in row-major order,
+     * as specified at time of construction (default true).
      */
     bool isRowMajor() const;
 
     /*
-     * 返回此范围中的第一列。
+     * Returns the first column in this range.
      */
     int startCol() const;
 
     /*
-     * 返回此范围中的第一个行/列位置。
+     * Returns the first row/column location in this range.
      */
     const GridLocation& startLocation() const;
 
     /*
-     * 返回此范围中的第一行。
+     * Returns the first row in this range.
      */
     int startRow() const;
 
     /*
-     * 返回此范围的字符串表示，
-     * 例如 "[r1c3 .. r4c7]"。
+     * Returns a string representation of this range,
+     * such as "[r1c3 .. r4c7]".
      */
     std::string toString() const;
 };
 
 /*
- * 用于按 toString 格式写入位置范围的 I/O 流运算符。
+ * I/O stream operators for writing location ranges in their toString format.
  */
 std::ostream& operator <<(std::ostream& out, const GridLocationRange& range);
 

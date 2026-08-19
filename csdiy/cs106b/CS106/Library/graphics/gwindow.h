@@ -1,25 +1,25 @@
 /*
- * 文件：gwindow.h
+ * File: gwindow.h
  * ---------------
  *
  * @author Marty Stepp
  * @version 2019/05/05
- * - 添加用于检查深色模式的静态方法
- * - 添加获取系统默认控件背景色/前景色的静态方法
+ * - added static method for isDarkMode checking support
+ * - added static methods to ask for system default widget bg/fg color
  * @version 2019/04/09
- * - 添加工具栏支持
+ * - added toolbar support
  * @version 2018/10/20
- * - 添加高密度屏幕功能
+ * - added high-density screen features
  * @version 2018/09/09
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/09/05
- * - 重构为使用边界布局的 GContainer“内容窗格”存储所有交互控件
+ * - refactored to use a border layout GContainer "content pane" for storing all interactors
  * @version 2018/08/23
- * - 重命名为 gwindow.h，以替代 Java 版本
+ * - renamed to gwindow.h to replace Java version
  * @version 2018/07/29
- * - 菜单栏
+ * - menu bars
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 
@@ -46,58 +46,58 @@
 class _Internal_QMainWindow;
 
 /**
- * 此类表示支持简单图形操作的图形窗口。
- * GWindow 是 GUI 子系统中的一等对象；所有图形
- * 程序通常会创建至少一个 GWindow，用于容纳其他交互控件和
- * 用于在屏幕上显示的图形对象。
+ * This class represents a graphics window that supports simple graphics.
+ * A GWindow is a first-class citizen in our GUI subsystem; all graphical
+ * programs will create at least one GWindow to hold other interactors and
+ * graphical objects for display on the screen.
  *
- * GWindow 同时承担两个主要图形用途：
+ * A GWindow simultaneously serves two major graphical purposes:
  *
- * 1）交互控件的顶层容器。
- * 可以调用 addToRegion 和 add 方法，将交互控件添加到北部、
- * 窗口的南、西、东和中心区域。
- * 中心区域最多容纳一个在两个维度上扩展的交互控件
- * 填充未被其他四个区域占用的像素。
- * 这类似于 Java AWT/Swing 的 BorderLayout 系统。
- * 窗口使用一个内部 GContainer（称为“内容窗格”）来
- * 安排这些交互控件的位置和大小。
- * 有关布局和容器的更多详细信息，请参阅 gcontainer.h。
+ * 1) A top-level container for interactors.
+ * You can call the addToRegion and add methods to add interactors to the north,
+ * south, west, east, and center regions of the window.
+ * The center region holds at most one interactor that expands in both dimensions
+ * to fill pixels not occupied by the other four regions.
+ * This is analogous to Java AWT/Swing's BorderLayout system.
+ * The window uses an internal GContainer that we call its "content pane" to
+ * layout the positions and sizes of these interactors.
+ * See gcontainer.h for more detail about layout and containers.
  *
- * 2）用于绘制形状、线条和颜色的图形画布。
- * GWindow 包含一个中央图形画布，其实现形式为
- * GCanvas 类型的对象。一旦你执行以下操作，画布就会出现在窗口上
- * 在窗口上调用任意绘图方法。
+ * 2) A graphical canvas for drawing shapes, lines, and colors.
+ * A GWindow contains a central graphical canvas that is implemented as an
+ * object of type GCanvas.  The canvas will appear on the window the moment you
+ * call any drawing method on the window.
  *
- * 图形画布由两层组成。
- * 背景层提供用于绘制静态图像的表面，这些图像
- * 不涉及动画，或用于基于二维像素的绘图算法。
- * 有关绘制形状、对象等的更多详细信息，请参阅 gcanvas.h 和 gobjects.h
- * 以及像素。
+ * The graphical canvas consists of two layers.
+ * The background layer provides a surface for drawing static pictures that
+ * involve no animation, or for 2D pixel-based drawing algorithms.
+ * See gcanvas.h and gobjects.h for more detail about drawing shapes, objects,
+ * and pixels.
  *
- * GWindow 类包含若干 drawXxx 和 fillXxx 方法，用于绘制
- * 无需客户端即可在背景层绘制线条、矩形和椭圆
- * 无需直接创建 gobjects.h 层次结构中的对象。
+ * The GWindow class includes several drawXxx and fillXxx methods that draw
+ * lines, rectangles, and ovals on the background layer without the client
+ * needing to directly create objects from the gobjects.h hierarchy.
  *
- * 前景层提供用于添加有状态形状和对象的抽象
- * 将图形对象绘制到画布。接受 GObject 的 add() 方法
- * 参数会将这些对象放到前景层。这样做的优点是
- * 前景层的优点是可以随时间操控对象，例如
- * 移动它、更改其颜色、大小或其他属性，并看到这些变化
- * 立即显示在屏幕上。这使前景层最适合
- * 适合动画或移动精灵。
+ * The foreground layer provides an abstraction for adding stateful shapes and
+ * graphical objects onto the canvas.  The add() methods that accept GObject
+ * parameters place these objects onto the foreground layer.  The advantage of
+ * the foreground layer is that you can manipulate the object over time, such as
+ * moving it, changing its color, size, or other properties, and see these
+ * changes immediately on the screen.  This makes the foreground layer most
+ * appropriate for animations or moving sprites.
  *
- * 可以在同一个窗口中同时使用两种 GWindow 范式。
- * 例如，可以在北部或南部放置一行按钮，同时
- * 在窗口中心的画布上绘制形状。
+ * You can use the two GWindow paradigms together in the same window.
+ * For example, you can place a row of buttons in the north or south while
+ * drawing shapes onto the canvas in the center of the window.
  *
- * 如果将 GInteractor add() 到窗口的中心区域，我们会假定
- * 你不希望使用图形画布，并将用所添加的内容替换它
- * 交互控件。
+ * If you add() a GInteractor to the center region of the window, we will assume
+ * that you do not want the graphical canvas and will replace it with the added
+ * interactor.
  */
 class GWindow : public GObservable, public virtual GForwardDrawingSurface {
 public:
     /**
-     * 窗口边框布局的五个区域。
+     * The five regions of window border layouts.
      */
     enum Region {
         REGION_CENTER = GContainer::REGION_CENTER,
@@ -108,7 +108,7 @@ public:
     };
 
     /**
-     * 窗口关闭时可能发生的各种操作。
+     * The various actions that can occur when a window closes.
      */
     enum CloseOperation {
         CLOSE_DO_NOTHING,
@@ -118,535 +118,535 @@ public:
     };
 
     /**
-     * 未指定时新创建窗口的默认像素宽度
-     * 其宽度未明确指定。
+     * The default width of a newly created window in pixels if
+     * its width is not explicitly specified.
      */
     static const int DEFAULT_WIDTH;
 
     /**
-     * 未指定时新创建窗口的默认像素高度
-     * 其高度未明确指定。
+     * The default height of a newly created window in pixels if
+     * its height is not explicitly specified.
      */
     static const int DEFAULT_HEIGHT;
 
     /**
-     * 屏幕被视为
-     * 被视为高密度或高 DPI。
+     * The minimum number of dots per inch before a screen is considered
+     * to be high-density or high-DPI.
      */
     static const int HIGH_DPI_SCREEN_THRESHOLD;
 
     /**
-     * “普通”低 DPI 屏幕的最低每英寸点数。
-     * 用于确定在高 DPI 屏幕上应放大多少。
+     * The minimum number of dots per inch on a "normal" low-DPI screen.
+     * Used to figure out how much to scale up on high-DPI screens.
      */
     static const int STANDARD_SCREEN_DPI;
 
     /**
-     * 用于加载 GWindow 初始内容的默认文件名
-     * 标题栏图标。
+     * The default file name used to load a GWindow's initial
+     * title bar icon.
      */
     static const std::string DEFAULT_ICON_FILENAME;
 
     /**
-     * 创建具有默认宽度和高度的新窗口。
+     * Creates a new window of a default width and height.
      */
     GWindow(bool visible = true);
 
     /**
-     * 创建具有给定宽度和高度的新窗口。
+     * Creates a new window of the given width and height.
      */
     GWindow(double width, double height, bool visible = true);
 
     /**
-     * 创建具有给定位置和大小的新窗口。
+     * Creates a new window of the given location and size.
      */
     GWindow(double x, double y, double width, double height, bool visible = true);
 
     /**
-     * 释放窗口内部分配的内存。
+     * Frees memory allocated internally by the window.
      */
     ~GWindow() override;
 
     /**
-     * 将给定交互控件添加到窗口中心区域。
-     * 此操作会替换图形画布并将画布隐藏。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the center region of the window.
+     * This replaces the graphical canvas and causes the canvas to be hidden.
+     * @throw ErrorException if the interactor is null
      */
     virtual void add(GInteractor* interactor);
 
     /**
-     * 将给定交互控件添加到窗口中心区域
-     * 并将其移动到给定 x/y 位置。
-     * 此操作会替换图形画布并将画布隐藏。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the center region of the window
+     * and moves it to the given x/y location.
+     * This replaces the graphical canvas and causes the canvas to be hidden.
+     * @throw ErrorException if the interactor is null
      */
     virtual void add(GInteractor* interactor, double x, double y);
 
     /**
-     * 将给定交互控件添加到窗口中心区域。
-     * 此操作会替换图形画布并将画布隐藏。
+     * Adds the given interactor to the center region of the window.
+     * This replaces the graphical canvas and causes the canvas to be hidden.
      */
     virtual void add(GInteractor& interactor);
 
     /**
-     * 将给定交互控件添加到窗口中心区域
-     * 并将其移动到给定 x/y 位置。
-     * 此操作会替换图形画布并将画布隐藏。
+     * Adds the given interactor to the center region of the window
+     * and moves it to the given x/y location.
+     * This replaces the graphical canvas and causes the canvas to be hidden.
      */
     virtual void add(GInteractor& interactor, double x, double y);
 
     /**
-     * 将给定图形对象添加到窗口画布。
-     * 若图形画布尚未显示，此操作会使其出现。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given graphical object to the window's canvas.
+     * This causes the graphical canvas to appear if it was not already showing.
+     * @throw ErrorException if the interactor is null
      */
     virtual void add(GObject* obj);
 
     /**
-     * 将给定图形对象添加到窗口画布
-     * 并将其移动到给定 x/y 位置。
-     * 若图形画布尚未显示，此操作会使其出现。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given graphical object to the window's canvas
+     * and moves it to the given x/y location.
+     * This causes the graphical canvas to appear if it was not already showing.
+     * @throw ErrorException if the interactor is null
      */
     virtual void add(GObject* obj, double x, double y);
 
     /**
-     * 将给定图形对象添加到窗口画布。
-     * 若图形画布尚未显示，此操作会使其出现。
+     * Adds the given graphical object to the window's canvas.
+     * This causes the graphical canvas to appear if it was not already showing.
      */
     virtual void add(GObject& obj);
 
     /**
-     * 将给定图形对象添加到窗口画布
-     * 并将其移动到给定 x/y 位置。
-     * 若图形画布尚未显示，此操作会使其出现。
+     * Adds the given graphical object to the window's canvas
+     * and moves it to the given x/y location.
+     * This causes the graphical canvas to appear if it was not already showing.
      */
     virtual void add(GObject& obj, double x, double y);
 
     /**
-     * 将具有给定文本的菜单添加到窗口顶部菜单栏。
-     * 如果给定菜单已存在，则直接返回它而不再次添加。
+     * Adds a menu with the given text to the window's top menu bar.
+     * If the given menu already exists, returns it without adding it again.
      */
     virtual QMenu* addMenu(const std::string& text);
 
     /**
-     * 向给定菜单添加新菜单项。
-     * 若给定菜单项已存在于此菜单中，则直接返回它，不会
-     * 再次添加它。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，会发生 ACTION_MENU 动作事件。
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * Adds a new menu item to the given menu.
+     * If the given menu item already exists in this menu, returns it without
+     * adding it again.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, an ACTION_MENU action event will occur.
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
                                  const std::string& icon = "");
 
     /**
-     * 向给定菜单添加新菜单项。
-     * 若给定菜单项已存在于此菜单中，则直接返回它，不会
-     * 再次添加它。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，将调用给定监听器函数。
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * Adds a new menu item to the given menu.
+     * If the given menu item already exists in this menu, returns it without
+     * adding it again.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
                                  const std::string& icon, GEventListenerVoid func);
 
     /**
-     * 向给定菜单添加新菜单项。
-     * 若给定菜单项已存在于此菜单中，则直接返回它，不会
-     * 再次添加它。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，将调用给定监听器函数。
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * Adds a new menu item to the given menu.
+     * If the given menu item already exists in this menu, returns it without
+     * adding it again.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
                                  const QIcon& icon, GEventListenerVoid func);
 
     /**
-     * 向给定菜单添加新菜单项。
-     * 若给定菜单项已存在于此菜单中，则直接返回它，不会
-     * 再次添加它。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，将调用给定监听器函数。
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * Adds a new menu item to the given menu.
+     * If the given menu item already exists in this menu, returns it without
+     * adding it again.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
                                  const QPixmap& icon, GEventListenerVoid func);
 
     /**
-     * 向给定菜单添加新的复选菜单项。
-     * 若给定菜单项已存在于此菜单中，则直接返回它，不会
-     * 再次添加它。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，会发生 ACTION_MENU 动作事件。
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * Adds a new checkbox menu item to the given menu.
+     * If the given menu item already exists in this menu, returns it without
+     * adding it again.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, an ACTION_MENU action event will occur.
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QAction* addMenuItemCheckBox(const std::string& menu, const std::string& item,
                                          bool checked = false,
                                          const std::string& icon = "");
 
     /**
-     * 向给定菜单添加新的复选菜单项。
-     * 若给定菜单项已存在于此菜单中，则直接返回它，不会
-     * 再次添加它。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，将调用给定监听器函数。
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * Adds a new checkbox menu item to the given menu.
+     * If the given menu item already exists in this menu, returns it without
+     * adding it again.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QAction* addMenuItemCheckBox(const std::string& menu, const std::string& item,
                                          bool checked,
                                          const std::string& icon, GEventListenerVoid func);
 
     /**
-     * 在给定菜单末尾添加水平分隔线。
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * Adds a horizontal line separator to the end of the given menu.
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QAction* addMenuSeparator(const std::string& menu);
 
     /**
-     * 在现有菜单中添加子菜单。
-     * 之后可以使用以下代码向此子菜单添加项：
+     * Adds a sub-menu within an existing menu.
+     * You can later add items to this sub-menu using:
      *
      * myWindow->addMenuItem(menu + "/" + submenu, item);
-     * @throw 如果给定菜单不存在，则抛出 ErrorException
+     * @throw ErrorException if the given menu does not exist
      */
     virtual QMenu* addSubMenu(const std::string& menu, const std::string& submenu);
 
     /**
-     * 将给定交互控件添加到此窗口的给定区域。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the given region in this window.
+     * @throw ErrorException if the interactor is null
      */
     virtual void addToRegion(GInteractor* interactor, Region region);
 
     /**
-     * 将给定交互控件添加到此窗口的给定区域。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Adds the given interactor to the given region in this window.
+     * @throw ErrorException if the interactor is null
      */
     virtual void addToRegion(GInteractor* interactor, const std::string& region = "Center");
 
     /**
-     * 将给定交互控件添加到此窗口的给定区域。
+     * Adds the given interactor to the given region in this window.
      */
     virtual void addToRegion(GInteractor& interactor, Region region);
 
     /**
-     * 将给定交互控件添加到此窗口的给定区域。
+     * Adds the given interactor to the given region in this window.
      */
     virtual void addToRegion(GInteractor& interactor, const std::string& region = "Center");
 
     /**
-     * 向此窗口添加可放置操作按钮的工具栏。
+     * Adds a toolbar to this window where action buttons can be placed.
      */
     virtual void addToolbar(const std::string& title = "");
 
     /**
-     * 向窗口工具栏添加新项目。
-     * 若窗口没有工具栏，则添加一个。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，会发生 ACTION_MENU 动作事件。
+     * Adds a new item to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, an ACTION_MENU action event will occur.
      */
     virtual QAction* addToolbarItem(const std::string& item,
                                     const std::string& icon = "");
 
     /**
-     * 向窗口工具栏添加新项目。
-     * 若窗口没有工具栏，则添加一个。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，将调用给定监听器函数。
+     * Adds a new item to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
      */
     virtual QAction* addToolbarItem(const std::string& item,
                                     const std::string& icon,
                                     GEventListenerVoid func);
 
     /**
-     * 向窗口工具栏添加新项目。
-     * 若窗口没有工具栏，则添加一个。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，将调用给定监听器函数。
+     * Adds a new item to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
      */
     virtual QAction* addToolbarItem(const std::string& item,
                                     const QIcon& icon,
                                     GEventListenerVoid func);
 
     /**
-     * 向窗口工具栏添加新项目。
-     * 若窗口没有工具栏，则添加一个。
-     * 可以提供一个可选图标，显示在菜单项旁边。
-     * 单击菜单项时，将调用给定监听器函数。
+     * Adds a new item to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
      */
     virtual QAction* addToolbarItem(const std::string& item,
                                     const QPixmap& icon,
                                     GEventListenerVoid func);
 
     /**
-     * 向窗口工具栏添加分隔符。
-     * 若窗口没有工具栏，则添加一个。
+     * Adds a separator to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
      */
     virtual QAction* addToolbarSeparator();
 
     /**
-     * 从窗口所有区域删除所有交互控件。
+     * Removes all interactors from all regionss of the window.
      */
     void clear() override;
 
     /**
-     * 从此窗口的图形画布中删除所有图形对象
-     * 并将背景层重置为窗口背景色。
+     * Removes all graphical objects from the graphical canvas in this window
+     * and resets the background layer to the window's background color.
      */
     virtual void clearCanvas();
 
     /**
-     * 从此窗口的图形画布中删除所有图形对象。
-     * 这意味着使用 add() 方法添加的任何形状（例如 GRect）
-     * GOval 等对象会被移除，而直接绘制到以下对象上的形状
-     * 通过调用 drawXxx() 方法绘制到窗口背景像素层的内容将会
-     * 保留。若还要清除背景层，请调用 clearCanvasPixels
-     * 或改用 clearCanvas。
+     * Removes all graphical objects from the graphical canvas in this window.
+     * This means that any shapes added using the add() methods, such as GRect,
+     * GOval, etc. will be removed, while any shapes drawn directly onto the
+     * window's background pixel layer by calling the drawXxx() methods will be
+     * retained.  To clear the background layer as well, call clearCanvasPixels
+     * or clearCanvas instead.
      */
     virtual void clearCanvasObjects();
 
     /**
-     * 将窗口画布像素的背景层重置为
-     * 窗口的背景色。
-     * 这意味着使用 add() 方法添加的任何形状（例如 GRect）
-     * GOval 等对象会保留，而直接绘制到以下对象上的形状
-     * 通过调用 drawXxx() 方法绘制到窗口背景像素层的内容将会
-     * 被清除。若还要清除添加到前景层的形状，
-     * 改为调用 clearCanvasObjects 或 clearCanvas。
+     * Resets the background layer of pixels in the window's canvas to the
+     * window's background color.
+     * This means that any shapes added using the add() methods, such as GRect,
+     * GOval, etc. will remain, while any shapes drawn directly onto the
+     * window's background pixel layer by calling the drawXxx() methods will be
+     * wiped out.  To clear the shapes added to the foreground layer as well,
+     * call clearCanvasObjects or clearCanvas instead.
      */
     virtual void clearCanvasPixels();
 
     /**
-     * 从此窗口的给定区域移除所有交互控件。
+     * Removes all interactors from the given region of this window.
      */
     virtual void clearRegion(Region region);
 
     /**
-     * 从此窗口的给定区域移除所有交互控件。
+     * Removes all interactors from the given region of this window.
      */
     virtual void clearRegion(const std::string& region);
 
     /**
-     * 从窗口工具栏中删除所有项目（如果存在）。
+     * Removes all items from the window's toolbar, if present.
      */
     virtual void clearToolbarItems();
 
     /**
-     * 将窗口精确移动到当前屏幕中心。
+     * Relocates the window to the exact center of the current screen.
      */
     virtual void center();
 
     /**
-     * 根据用户计算机是否处于以下状态，返回应使用的颜色：
-     * 处于浅色或深色模式。
-     * 若处于浅色模式，返回 lightColor；否则返回 darkColor。
+     * Returns which color to use depending on whether the user's computer is
+     * in light or dark mode.
+     * If in light mode, returns lightColor; else returns darkColor.
      */
     static std::string chooseLightDarkModeColor(const std::string& lightColor,
                                                 const std::string& darkColor);
 
     /**
-     * 根据用户计算机是否处于以下状态，返回应使用的颜色：
-     * 处于浅色或深色模式。
-     * 若处于浅色模式，返回 lightColor；否则返回 darkColor。
+     * Returns which color to use depending on whether the user's computer is
+     * in light or dark mode.
+     * If in light mode, returns lightColor; else returns darkColor.
      */
     static int chooseLightDarkModeColorInt(int lightColor, int darkColor);
 
     /**
-     * 关闭窗口。
-     * 如果设置了窗口监听器，将依次触发 WINDOW_CLOSING 和
-     * 向其发送 WINDOW_CLOSED 事件。
+     * Closes the window.
+     * If a window listener has been set, a WINDOW_CLOSING and then
+     * WINDOW_CLOSED event is sent to it.
      */
     virtual void close();
 
     /**
-     * 将此窗口的像素与以下图像内容进行比较：
-     * 给定文件。
-     * 差异显示在“差异图像”窗口中，其中会高亮
-     * 任何不同的像素。
+     * Compares the pixels of this window to the contents of the image in the
+     * given file.
+     * The differences are displayed in a "diff image" window that highlights
+     * any differing pixels.
      *
-     * TODO：实现
+     * TODO: implement
      * @private
      */
     virtual void compareToImage(const std::string& filename, bool ignoreWindowSize = true) const;
 
     /**
-     * 如果窗口可以发生事件，则返回 true。
-     * 如果窗口已初始化且可见，此值将为 true。
+     * Returns true if events can occur on the window.
+     * This will be true if the window has been initialized and is visible.
      * @private
      */
     bool eventsEnabled() const override;
 
     /**
-     * 返回指向窗口内部图形画布的直接指针
-     * 用于绘制形状和对象。
-     * 请谨慎使用！
+     * Returns a direct pointer to the window's internal graphical canvas
+     * on which shapes and objects are drawn.
+     * Use with care!
      */
     virtual GCanvas* getCanvas() const;
 
     /**
-     * 返回窗口中央画布区域的像素高度。
+     * Returns the height of the window's central canvas area in pixels.
      */
     virtual double getCanvasHeight() const;
 
     /**
-     * 返回窗口中央画布区域的像素宽度和高度。
+     * Returns the width and height of the window's central canvas area in pixels.
      */
     virtual GDimension getCanvasSize() const;
 
     /**
-     * 返回窗口中央画布区域的像素宽度。
+     * Returns the width of the window's central canvas area in pixels.
      */
     virtual double getCanvasWidth() const;
 
     /**
-     * 返回一个常量，表示发生以下情况时将采取的操作
-     * 用户关闭窗口。
+     * Returns a constant representing the action that will be taken when the
+     * user closes the window.
      */
     virtual CloseOperation getCloseOperation() const;
 
     /**
-     * 以字符串返回交互控件背景的默认颜色。
-     * 通常是浅灰色，具体取决于用户的
-     * 系统设置。
-     * 在某些处于“深色模式”的系统上，它可能是更接近黑色的颜色。
+     * Returns the default color for backgrounds of interactors as a string.
+     * This is normally a light-grayish color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to black.
      */
     static std::string getDefaultInteractorBackgroundColor();
 
     /**
-     * 以 RGB 整数形式返回交互控件文本的默认颜色。
-     * 通常是浅灰色，具体取决于用户的
-     * 系统设置。
-     * 在某些处于“深色模式”的系统上，它可能是更接近黑色的颜色。
+     * Returns the default color for text on interactors as an RGB integer.
+     * This is normally a light-grayish color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to black.
      */
     static int getDefaultInteractorBackgroundColorInt();
 
     /**
-     * 以字符串返回交互控件文本的默认颜色。
-     * 通常是黑色或接近黑色，具体取决于用户的
-     * 系统设置。
-     * 在某些处于“深色模式”的系统上，它可能是更接近白色的颜色。
+     * Returns the default color for text on interactors as a string.
+     * This is normally black or a nearly-black color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to white.
      */
     static std::string getDefaultInteractorTextColor();
 
     /**
-     * 以 RGB 整数形式返回交互控件文本的默认颜色。
-     * 通常是黑色或接近黑色，具体取决于用户的
-     * 系统设置。
-     * 在某些处于“深色模式”的系统上，它可能是更接近白色的颜色。
+     * Returns the default color for text on interactors as an RGB integer.
+     * This is normally black or a nearly-black color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to white.
      */
     static int getDefaultInteractorTextColorInt();
 
     /**
-     * 返回窗口中给定从 0 开始索引处的图形对象
-     * 图形画布。
-     * @throw 如果索引越界，则抛出 ErrorException
+     * Returns the graphical object at the given 0-based index in the window's
+     * graphical canvas.
+     * @throw ErrorException if the index is out of bounds
      */
     virtual GObject* getGObject(int index) const;
 
     /**
-     * 返回窗口中 z 顺序最上层的图形对象
-     * 图形画布中与给定 x/y 像素位置接触的对象。
-     * 如果没有对象接触给定位置，则返回 nullptr。
+     * Returns the top-most graphical object in the z-ordering in the window's
+     * graphical canvas that touches the given x/y pixel location.
+     * If no object touches the given location, returns nullptr.
      */
     virtual GObject* getGObjectAt(double x, double y) const;
 
     /**
-     * 返回窗口画布中的图形对象总数。
+     * Returns the total number of graphical objects in the window's canvas.
      */
     virtual int getGObjectCount() const;
 
     /**
-     * 返回指向最近创建的 Qt 窗口对象的指针。
-     * 学生不得调用。
+     * Returns a pointer to the most recently created Qt window object.
+     * Not to be called by students.
      * @private
      */
     static QMainWindow* getLastWindow();
 
     /**
-     * 返回屏幕上窗口内部左上角的 x/y 位置，
-     * 不包括屏幕上的窗口标题栏和边框。
+     * Returns the x/y location of the top-left corner of the interior of the window on screen,
+     * excluding any onscreen window title bar and frame.
      */
     virtual GPoint getLocation() const;
 
     /**
-     * 返回窗口总像素高度，不包括标题
-     * 标题栏和边框。
+     * Returns the total height of the window in pixels, excluding its title
+     * bar and borders.
      */
     virtual double getHeight() const;
 
     /**
-     * 返回窗口的首选大小。
-     * 窗口倾向于恰好能容纳交互控件的尺寸
-     * 以其各自的首选大小放置在其中，而不会拉伸。
-     * 调用 pack() 时，窗口将设置为此大小。
+     * Returns the size that the window would prefer to be.
+     * The window prefers to be exactly the right size to fit the interactors
+     * placed inside it at their own preferred sizes without stretching.
+     * This is the size that the window will be set to if you call pack().
      */
     virtual GDimension getPreferredSize() const;
 
     /**
-     * 返回窗口给定区域的像素高度。
+     * Returns the height of the given region of the window in pixels.
      */
     virtual double getRegionHeight(Region region) const;
 
     /**
-     * 返回窗口给定区域的像素高度。
+     * Returns the height of the given region of the window in pixels.
      */
     virtual double getRegionHeight(const std::string& region) const;
 
     /**
-     * 返回窗口给定区域的像素宽度和高度。
+     * Returns the width and height of the given region of the window in pixels.
      */
     virtual GDimension getRegionSize(Region region) const;
 
     /**
-     * 返回窗口给定区域的像素宽度和高度。
+     * Returns the width and height of the given region of the window in pixels.
      */
     virtual GDimension getRegionSize(const std::string& region) const;
 
     /**
-     * 返回窗口给定区域的像素宽度。
+     * Returns the width of the given region of the window in pixels.
      */
     virtual double getRegionWidth(Region region) const;
 
     /**
-     * 返回窗口给定区域的像素宽度。
+     * Returns the width of the given region of the window in pixels.
      */
     virtual double getRegionWidth(const std::string& region) const;
 
     /**
-     * 返回屏幕的每英寸点数。
-     * 这用于处理高密度屏幕。
+     * Returns the dots-per-inch of the screen.
+     * This is used when accounting for high-density screens.
      */
     static int getScreenDpi();
 
     /**
-     * 返回此屏幕 DPI 相对于普通低 DPI 屏幕的比率。
-     * 这可用于在高密度屏幕上放大图形。
+     * Returns the ratio of this screen's DPI compared to a normal low-DPI screen.
+     * This can be used to scale up graphics on high-density screens.
      */
     static double getScreenDpiScaleRatio();
 
     /**
-     * 返回整个屏幕的像素高度。
+     * Returns the height of the entire screen in pixels.
      */
     static double getScreenHeight();
 
     /**
-     * 返回整个屏幕的像素宽度和高度。
+     * Returns the width and height of the entire screen in pixels.
      */
     static GDimension getScreenSize();
 
     /**
-     * 返回整个屏幕的像素宽度。
+     * Returns the width of the entire screen in pixels.
      */
     static double getScreenWidth();
 
     /**
-     * 返回窗口总像素宽度和高度，不包括
-     * 其标题栏和边框。
+     * Returns the total width and height of the window in pixels, excluding
+     * its title bar and borders.
      */
     virtual GDimension getSize() const;
 
     /**
-     * 返回窗口标题栏文本。
+     * Returns the title bar text for the window.
      */
     virtual std::string getTitle() const;
 
@@ -654,92 +654,92 @@ public:
     std::string getType() const override;
 
     /**
-     * 返回表示窗口的内部 Qt 控件。
-     * 客户端无需直接使用此方法。
+     * Returns an internal Qt widget representing the window.
+     * Clients do not need to use this method directly.
      * @private
      */
     virtual QWidget* getWidget() const;
 
     /**
-     * 返回窗口总像素宽度，不包括标题
-     * 标题栏和边框。
+     * Returns the total width of the window in pixels, excluding its title
+     * bar and borders.
      */
     virtual double getWidth() const;
 
     /**
-     * 返回屏幕上窗口内部左边缘的 x 位置，
-     * 不包括屏幕上的窗口标题栏和边框。
+     * Returns the x location of the left edge of the interior of the window on screen,
+     * excluding any onscreen window title bar and frame.
      */
     virtual double getX() const;
 
     /**
-     * 返回屏幕上窗口内部上边缘的 y 位置，
-     * 不包括屏幕上的窗口标题栏和边框。
+     * Returns the y location of the top edge of the interior of the window on screen,
+     * excluding any onscreen window title bar and frame.
      */
     virtual double getY() const;
 
     /**
-     * 如果此窗口有工具栏，则返回 true。
+     * Returns true if this window has a toolbar.
      */
     virtual bool hasToolbar() const;
 
     /**
-     * 使窗口在屏幕上不可见。
-     * 等价于 setVisible(false)。
+     * Makes the window be not visible on the screen.
+     * Equivalent to setVisible(false).
      */
     virtual void hide();
 
     /**
-     * 如果给定 x/y 位置位于整个区域边界内，则返回 true
-     * 窗口。
-     * 请注意，这是基于包含标题栏在内的完整窗口大小
-     * 栏、菜单、边框等。
-     * 如果你试图测试窗口画布区域中形状的边界，
-     * 改用 inCanvasBounds 方法。
+     * Returns true if the given x/y location is within the bounds of the entire
+     * window.
+     * Note that this is based on the entire window size including its title
+     * bar, menus, borders, etc.
+     * If you are trying to test for bounds for shapes in the window canvas area,
+     * use the inCanvasBounds method instead.
      */
     virtual bool inBounds(double x, double y) const;
 
     /**
-     * 如果给定 x/y 位置位于中央区域边界内，则返回 true
-     * 窗口的画布区域。
+     * Returns true if the given x/y location is within the bounds of the central
+     * canvas area of the window.
      */
     virtual bool inCanvasBounds(double x, double y) const;
 
     /**
-     * 如果用户计算机处于“深色模式”，则返回 true。
-     * 这是一种流行的深色配色方案，主要用于较新的 Mac。
-     * 我们的检查并不完善，基本上只是创建一个虚拟控件
-     * 并检查其是否具有明亮文本和深色背景。
+     * Returns true if the user's computer is in "dark mode."
+     * This is a popular dark color scheme mostly used on recent Macs.
+     * Our checking is imperfect and basically just creates a dummy widget
+     * and checks whether it has bright text and a dark background.
      */
     static bool isDarkMode();
 
     /**
-     * 返回屏幕每英寸点数是否足够高，以便
-     * 将其视为应使用缩放的“高密度”屏幕。
-     * 其阈值由常量
+     * Returns whether the dots-per-inch of the screen are high enough to
+     * consider it a "high-density" screen for which scaling should be used.
+     * The threshold for this is given by the constant
      */
     static bool isHighDensityScreen();
 
     /**
-     * 返回在高密度屏幕上运行时是否应缩放某些窗口
-     * 屏幕。
+     * Returns whether we should scale some windows when run on high-density
+     * screens.
      */
     static bool isHighDpiScalingEnabled();
 
     /**
-     * 如果窗口处于占据整个屏幕的最大化状态，则返回 true
-     * 屏幕。
+     * Returns true if the window is in a maximized state, occupying the entire
+     * screen.
      */
     virtual bool isMaximized() const;
 
     /**
-     * 如果窗口处于最小化（图标化）状态，则返回 true
-     * 通常表现为窗口被隐藏，只在任务栏中留下图标。
+     * Returns true if the window is in a minimized (iconified) state, which
+     * often displays as the window being hidden except for a task bar icon.
      */
     virtual bool isMinimized() const;
 
     /**
-     * 如果窗口当前打开且在屏幕上可见，则返回 true。
+     * Returns true if the window is currently open and visible on the screen.
      */
     virtual bool isOpen() const;
 
@@ -747,169 +747,169 @@ public:
     bool isRepaintImmediately() const override;
 
     /**
-     * 如果窗口允许调整大小，则返回 true。
-     * 该值初始为 true，但可通过调用 setResizable(false) 更改。
+     * Returns true if the window allows itself to be resized.
+     * This is initially true but can be changed by calling setResizable(false).
      */
     virtual bool isResizable() const;
 
     /**
-     * 如果窗口在屏幕上可见，则返回 true。
+     * Returns true if the window is visible on the screen.
      */
     virtual bool isVisible() const;
 
     /**
-     * 从给定名称的文件读取像素数据并加载到
-     * 窗口的画布区域。
-     * @throw 如果找不到文件或无法将其作为图像加载，则抛出 ErrorException
+     * Reads pixel data from the file with the given name and loads it into the
+     * window's canvas area.
+     * @throw ErrorException if the file is not found or cannot be loaded as an image
      */
     virtual void loadCanvasPixels(const std::string& filename);
 
     /**
-     * 将窗口设为最大化状态，占据整个屏幕。
+     * Puts the window in a maximized state, occupying the entire screen.
      */
     virtual void maximize();
 
     /**
-     * 将窗口设为最小化（图标化）状态，
-     * 通常表现为窗口被隐藏，只在任务栏中留下图标。
+     * Puts the window in a minimized (iconified) state, which
+     * often displays as the window being hidden except for a task bar icon.
      */
     virtual void minimize();
 
     /**
-     * 将窗口调整为其首选大小。
-     * 窗口倾向于恰好能容纳交互控件的尺寸
-     * 以其各自的首选大小放置在其中，而不会拉伸。
-     * 调用 getPreferredSize 时，窗口会返回此大小。
+     * Resizes the window to its preferred size.
+     * The window prefers to be exactly the right size to fit the interactors
+     * placed inside it at their own preferred sizes without stretching.
+     * This is the size that the window would return from a call to getPreferredSize.
      */
     virtual void pack();
 
     /**
-     * 使当前线程暂停给定的毫秒数。
-     * 等价于 sleep()。
-     * @throw 如果 ms 为负，则抛出 ErrorException
+     * Causes the current thread to pause itself for the given number of milliseconds.
+     * Equivalent to sleep().
+     * @throw ErrorException if ms is negative
      */
     virtual void pause(double ms);
 
     /**
-     * 指示库记住窗口的 x/y 位置，以便如果
-     * 将来打开另一个具有相同标题的窗口时，它将
-     * 自动返回该位置。
+     * Instructs the library to remember the window's x/y position so that if
+     * another window with the same title is opened in the future, it will
+     * automatically go back to that location.
      * @private
      */
     virtual void rememberPosition();
 
     /**
-     * 从窗口中移除给定交互控件。
-     * 无论将交互控件添加到哪个区域，此方法都有效。
-     * 若在此容器中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Removes the given interactor from the window.
+     * This will work regardless of which region you added the interactor to.
+     * If the given interactor is not found in this container, has no effect.
+     * @throw ErrorException if the interactor is null
      */
     virtual void remove(GInteractor* interactor);
 
     /**
-     * 从窗口中移除给定交互控件。
-     * 无论将交互控件添加到哪个区域，此方法都有效。
-     * 若在此容器中找不到给定交互控件，则不产生任何效果。
+     * Removes the given interactor from the window.
+     * This will work regardless of which region you added the interactor to.
+     * If the given interactor is not found in this container, has no effect.
      */
     virtual void remove(GInteractor& interactor);
 
     /**
-     * 从此窗口的画布中移除给定图形对象，
-     * 若它原本存在。
-     * @throw 如果图形对象为空，则抛出 ErrorException
+     * Removes the given graphical object from the canvas of this window,
+     * if it was present.
+     * @throw ErrorException if the graphical object is null
      */
     virtual void remove(GObject* obj);
 
     /**
-     * 从此窗口的画布中移除给定图形对象，
-     * 若它原本存在。
+     * Removes the given graphical object from the canvas of this window,
+     * if it was present.
      */
     virtual void remove(GObject& obj);
 
     /**
-     * 从此窗口删除点击监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the click listener from this window so that it will no longer
+     * call it when events occur.
      */
     virtual void removeClickListener();
 
     /**
-     * 从此窗口内给定区域移除给定交互控件。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Removes the given interactor from the given region within this window.
+     * If the given interactor is not found in the given region, has no effect.
+     * @throw ErrorException if the interactor is null
      */
     virtual void removeFromRegion(GInteractor* interactor, Region region);
 
     /**
-     * 从此窗口内给定区域移除给定交互控件。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
-     * @throw 如果交互控件为空，则抛出 ErrorException
+     * Removes the given interactor from the given region within this window.
+     * If the given interactor is not found in the given region, has no effect.
+     * @throw ErrorException if the interactor is null
      */
     virtual void removeFromRegion(GInteractor* interactor, const std::string& region);
 
     /**
-     * 从此窗口内给定区域移除给定交互控件。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
+     * Removes the given interactor from the given region within this window.
+     * If the given interactor is not found in the given region, has no effect.
      */
     virtual void removeFromRegion(GInteractor& interactor, Region region);
 
     /**
-     * 从此窗口内给定区域移除给定交互控件。
-     * 若在给定区域中找不到给定交互控件，则不产生任何效果。
+     * Removes the given interactor from the given region within this window.
+     * If the given interactor is not found in the given region, has no effect.
      */
     virtual void removeFromRegion(GInteractor& interactor, const std::string& region);
 
     /**
-     * 从此窗口删除键盘监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the key listener from this window so that it will no longer
+     * call it when events occur.
      */
     virtual void removeKeyListener();
 
     /**
-     * 从此窗口删除菜单监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the menu listener from this window so that it will no longer
+     * call it when events occur.
      */
     virtual void removeMenuListener();
 
     /**
-     * 从此窗口删除鼠标监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the mouse listener from this window so that it will no longer
+     * call it when events occur.
      */
     virtual void removeMouseListener();
 
     /**
-     * 从此窗口删除计时器监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the timer listener from this window so that it will no longer
+     * call it when events occur.
      */
     virtual void removeTimerListener();
 
     /**
-     * 如果窗口有工具栏，则将其删除。
+     * Removes the toolbar from this window, if one was present.
      */
     virtual void removeToolbar();
 
     /**
-     * 从此窗口删除窗口监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the window listener from this window so that it will no longer
+     * call it when events occur.
      */
     virtual void removeWindowListener();
 
     /**
-     * 请求系统将键盘焦点分配给窗口，这会将
-     * 将其置于顶层，并确保键盘事件传递给窗口。
-     * 单击窗口会自动请求焦点。
+     * Asks the system to assign the keyboard focus to the window, which brings
+     * it to the top and ensures that key events are delivered to the window.
+     * Clicking in the window automatically requests the focus.
      */
     virtual void requestFocus();
 
     /**
-     * 将窗口设为普通状态，既不最小化也不最大化。
+     * Puts the window in a normal state, neither minimized or maximized.
      */
     virtual void restore();
 
     /**
-     * 将窗口图形画布的内容写入给定输出
-     * 文件名。这会写入前景层中的所有形状，以及
-     * 以及背景层中的所有像素。
-     * @throw 如果文件无法保存，则抛出 ErrorException
+     * Writes the contents of the window's graphical canvas to the given output
+     * filename.  This will write all shapes from the foreground layer as well
+     * as all pixels from the background layer.
+     * @throw ErrorException if the file cannot be saved
      */
     virtual void saveCanvasPixels(const std::string& filename);
 
@@ -920,292 +920,292 @@ public:
     void setBackground(const std::string& color) override;
 
     /**
-     * 调整窗口大小，使中央画布区域恰好占据
-     * 给定的像素高度，而不改变其宽度。
+     * Resizes the window so that its central canvas region will occupy exactly
+     * the given height in pixels, without changing its width.
      */
     virtual void setCanvasHeight(double height);
 
     /**
-     * 调整窗口大小，使中央画布区域恰好占据
-     * 给定像素宽度和高度。
+     * Resizes the window so that its central canvas region will occupy exactly
+     * the given width and height in pixels.
      */
     virtual void setCanvasSize(double width, double height);
 
     /**
-     * 调整窗口大小，使中央画布区域恰好占据
-     * 给定像素宽度和高度。
+     * Resizes the window so that its central canvas region will occupy exactly
+     * the given width and height in pixels.
      */
     virtual void setCanvasSize(const GDimension& size);
 
     /**
-     * 调整窗口大小，使中央画布区域恰好占据
-     * 给定的像素宽度，而不改变其高度。
+     * Resizes the window so that its central canvas region will occupy exactly
+     * the given width in pixels, without changing its height.
      */
     virtual void setCanvasWidth(double width);
 
     /**
-     * 在此窗口上设置鼠标监听器，以便在以下情况发生时调用它
-     * 当鼠标在窗口画布上单击时。
-     * 任何现有的单击监听器都会被替换。
-     * 请注意，此方法并不是监听单个对象点击的方式
-     * 窗口中的按钮和其他交互控件；若要这样做，请调用
-     * 在这些交互控件上分别调用 setActionListener 和其他类似方法。
+     * Sets a mouse listener on this window so that it will be called
+     * when the mouse is clicked on the window's canvas.
+     * Any existing click listener will be replaced.
+     * Note that this method is not how you listen to clicks on individual
+     * buttons and other interactors inside the window; to do that, call
+     * setActionListener and other such methods on those interactors individually.
      */
     virtual void setClickListener(GEventListener func);
 
     /**
-     * 在此窗口上设置鼠标监听器，以便在以下情况发生时调用它
-     * 当鼠标在窗口画布上单击时。
-     * 任何现有的单击监听器都会被替换。
-     * 请注意，此方法并不是监听单个对象点击的方式
-     * 窗口中的按钮和其他交互控件；若要这样做，请调用
-     * 在这些交互控件上分别调用 setActionListener 和其他类似方法。
+     * Sets a mouse listener on this window so that it will be called
+     * when the mouse is clicked on the window's canvas.
+     * Any existing click listener will be replaced.
+     * Note that this method is not how you listen to clicks on individual
+     * buttons and other interactors inside the window; to do that, call
+     * setActionListener and other such methods on those interactors individually.
      */
     virtual void setClickListener(GEventListenerVoid func);
 
     /**
-     * 设置窗口关闭时应发生的操作。
+     * Sets what should happen when the window is closed.
      */
     virtual void setCloseOperation(CloseOperation op);
 
     /**
-     * 设置发生以下情况时库的 GUI 系统是否应关闭
-     * 窗口已关闭。
+     * Sets whether the library's GUI system should shut down when the
+     * window is closed.
      */
     virtual void setExitOnClose(bool exitOnClose);
 
     /**
-     * 设置窗口总像素高度。
+     * Sets the window's total height in pixels.
      */
     virtual void setHeight(double width);
 
     /**
-     * 在此窗口上设置键盘监听器，以便在以下情况发生时调用它
-     * 当用户按下任意键时。
-     * 任何现有的按键监听器都会被替换。
+     * Sets a key listener on this window so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
      */
     virtual void setKeyListener(GEventListener func);
 
     /**
-     * 在此窗口上设置键盘监听器，以便在以下情况发生时调用它
-     * 当用户按下任意键时。
-     * 任何现有的按键监听器都会被替换。
+     * Sets a key listener on this window so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
      */
     virtual void setKeyListener(GEventListenerVoid func);
 
     /**
-     * 将窗口左上角在屏幕上的 x/y 位置设置为给定坐标。
+     * Sets the window's top-left x/y location on the screen to the given coordinates.
      */
     virtual void setLocation(double x, double y);
 
     /**
-     * 将窗口左上角在屏幕上的 x/y 位置设置为给定点。
+     * Sets the window's top-left x/y location on the screen to the given point.
      */
     virtual void setLocation(const GPoint& p);
 
     /**
-     * 设置给定菜单中的给定项目是启用还是禁用。
-     * @throw 如果菜单和/或项目不存在，则抛出 ErrorException
+     * Sets whether the given item in the given menu is enabled or disabled.
+     * @throw ErrorException if the menu and/or item does not exist
      */
     virtual void setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled);
 
     /**
-     * 为此窗口设置菜单监听器，以便在以下情况下调用：
-     * 菜单项被单击时，发送 ACTION_MENU 操作事件。
-     * 任何现有的菜单监听器都会被替换。
+     * Sets a menu listener on this window so that it will be called
+     * when menu items are clicked, sending an ACTION_MENU action event.
+     * Any existing menu listener will be replaced.
      */
     virtual void setMenuListener(GEventListener func);
 
     /**
-     * 为此窗口设置菜单监听器，以便在以下情况下调用：
-     * 菜单项被单击时。
-     * 任何现有的菜单监听器都会被替换。
+     * Sets a menu listener on this window so that it will be called
+     * when menu items are clicked.
+     * Any existing menu listener will be replaced.
      */
     virtual void setMenuListener(GEventListenerVoid func);
 
     /**
-     * 在窗口画布上设置鼠标监听器，以便在以下情况发生时调用它
-     * 当用户在画布上移动或单击鼠标时。
-     * 任何现有的鼠标监听器都会被替换。
+     * Sets a mouse listener on the window's canvas so that it will be called
+     * when the user moves or clicks the mouse on the canvas.
+     * Any existing mouse listener will be replaced.
      */
     virtual void setMouseListener(GEventListener func);
 
     /**
-     * 在窗口画布上设置鼠标监听器，以便在以下情况发生时调用它
-     * 当用户在画布上移动或单击鼠标时。
-     * 任何现有的鼠标监听器都会被替换。
+     * Sets a mouse listener on the window's canvas so that it will be called
+     * when the user moves or clicks the mouse on the canvas.
+     * Any existing mouse listener will be replaced.
      */
     virtual void setMouseListener(GEventListenerVoid func);
 
     /**
-     * 设置给定区域中交互控件的水平对齐方式，该区域属于
-     * 窗口。
+     * Sets the horizontal alignment of interactors in the given region of
+     * the window.
      */
     virtual void setRegionAlignment(Region region, HorizontalAlignment halign);
 
     /**
-     * 设置给定区域中交互控件的垂直对齐方式，该区域属于
-     * 窗口。
+     * Sets the vertical alignment of interactors in the given region of
+     * the window.
      */
     virtual void setRegionAlignment(Region region, VerticalAlignment valign);
 
     /**
-     * 设置给定对象中交互控件的水平和垂直对齐方式
-     * 窗口的区域。
+     * Sets the horizontal and vertical alignment of interactors in the given
+     * region of the window.
      */
     virtual void setRegionAlignment(Region region, HorizontalAlignment halign, VerticalAlignment valign);
 
     /**
-     * 设置给定对象中交互控件的水平和/或垂直对齐方式
-     * 窗口的区域。
+     * Sets the horizontal and/or vertical alignment of interactors in the given
+     * region of the window.
      */
     virtual void setRegionAlignment(const std::string& region, const std::string& align);
 
     /**
-     * 设置给定对象中交互控件的水平和垂直对齐方式
-     * 窗口的区域。
+     * Sets the horizontal and vertical alignment of interactors in the given
+     * region of the window.
      */
     virtual void setRegionAlignment(const std::string& region, const std::string& halign, const std::string& valign);
 
     /**
-     * 设置给定区域中交互控件的水平对齐方式，该区域属于
-     * 窗口。
+     * Sets the horizontal alignment of interactors in the given region of
+     * the window.
      */
     virtual void setRegionHorizontalAlignment(Region region, HorizontalAlignment halign);
 
     /**
-     * 设置给定区域中交互控件的水平对齐方式，该区域属于
-     * 窗口。
+     * Sets the horizontal alignment of interactors in the given region of
+     * the window.
      */
     virtual void setRegionHorizontalAlignment(const std::string& region, const std::string& halign);
 
     /**
-     * 设置给定区域中交互控件的垂直对齐方式，该区域属于
-     * 窗口。
+     * Sets the vertical alignment of interactors in the given region of
+     * the window.
      */
     virtual void setRegionVerticalAlignment(const std::string& region, const std::string& valign);
 
     /**
-     * 设置给定区域中交互控件的垂直对齐方式，该区域属于
-     * 窗口。
+     * Sets the vertical alignment of interactors in the given region of
+     * the window.
      */
     virtual void setRegionVerticalAlignment(Region region, VerticalAlignment valign);
 
     /**
-     * 设置窗口是否允许调整大小。
-     * 初始为 true。
+     * Sets whether the window allows itself to be resized.
+     * Initially true.
      */
     virtual void setResizable(bool resizable);
 
     /**
-     * 设置窗口总像素宽度和高度。
-     * 请注意，此大小包含窗口标题栏、边框等由系统添加的部分
-     * 由操作系统决定。
-     * 若确实想在给定宽度和高度的像素区域上绘制形状，
-     * 你应改用 setCanvasSize 方法。
+     * Sets the window's total width and height in pixels.
+     * Note that this size includes the window's title bar, border, etc. as added
+     * by your operating system.
+     * If you actually want to draw shapes over a given width and height of pixels,
+     * you should instead use the setCanvasSize method.
      */
     virtual void setSize(double width, double height);
 
     /**
-     * 设置窗口的像素宽度和高度。
-     * 请注意，此大小包含窗口标题栏、边框等由系统添加的部分
-     * 由操作系统决定。
-     * 若确实想在给定宽度和高度的像素区域上绘制形状，
-     * 你应改用 setCanvasSize 方法。
+     * Sets the window's width and height in pixels.
+     * Note that this size includes the window's title bar, border, etc. as added
+     * by your operating system.
+     * If you actually want to draw shapes over a given width and height of pixels,
+     * you should instead use the setCanvasSize method.
      */
     virtual void setSize(const GDimension& size);
 
     /**
-     * 为此窗口设置菜单监听器，以便在以下情况下调用：
-     * 当计时器延迟到期时，发送计时器事件。
-     * 任何现有的计时器监听器都会被替换。
+     * Sets a menu listener on this window so that it will be called
+     * when timer delays elapse, sending a timer event.
+     * Any existing timer listener will be replaced.
      */
     virtual void setTimerListener(double ms, GEventListener func);
 
     /**
-     * 为此窗口设置菜单监听器，以便在以下情况下调用：
-     * 当计时器延迟到期时，发送计时器事件。
-     * 任何现有的计时器监听器都会被替换。
+     * Sets a menu listener on this window so that it will be called
+     * when timer delays elapse, sending a timer event.
+     * Any existing timer listener will be replaced.
      */
     virtual void setTimerListener(double ms, GEventListenerVoid func);
 
-    // TODO：setTimerListenerOnce？
+    // TODO: setTimerListenerOnce?
 
     /**
-     * 将窗口标题栏文本设置为给定字符串。
-     * 等价于 setWindowTitle。
+     * Sets the window's title bar text to the given string.
+     * Equivalent to setWindowTitle.
      */
     virtual void setTitle(const std::string& title);
 
     /**
-     * 设置窗口是否在屏幕上可见。
-     * 初始为 true，除非向窗口传入了 visible=false
-     * 构造函数。
+     * Sets whether the window can be seen on the screen.
+     * Initially true unless a visible value of false was passed to the window's
+     * constructor.
      */
     virtual void setVisible(bool visible);
 
     /**
-     * 设置窗口总像素宽度。
+     * Sets the window's total width in pixels.
      */
     virtual void setWidth(double width);
 
     /**
-     * 将窗口设置为使用
+     * Sets the window to use the
      */
     virtual void setWindowIcon(const std::string& iconFile);
 
     /**
-     * 在此窗口上设置窗口监听器，以便在以下情况发生时调用它
-     * 当发生窗口事件时，例如调整大小或关闭窗口。
-     * 任何现有的动作监听器都会被替换。
+     * Sets a window listener on this window so that it will be called
+     * when window events occur, such as resizing or closing the window.
+     * Any existing action listener will be replaced.
      */
     virtual void setWindowListener(GEventListener func);
 
     /**
-     * 在此窗口上设置窗口监听器，以便在以下情况发生时调用它
-     * 当发生窗口事件时，例如调整大小或关闭窗口。
-     * 任何现有的动作监听器都会被替换。
+     * Sets a window listener on this window so that it will be called
+     * when window events occur, such as resizing or closing the window.
+     * Any existing action listener will be replaced.
      */
     virtual void setWindowListener(GEventListenerVoid func);
 
     /**
-     * 将窗口标题栏文本设置为给定字符串。
-     * 等价于 setWindowTitle。
+     * Sets the window's title bar text to the given string.
+     * Equivalent to setWindowTitle.
      */
     virtual void setWindowTitle(const std::string& title);
 
     /**
-     * 将窗口左侧在屏幕上的 x 位置设置为给定坐标。
+     * Sets the window's left x location on the screen to the given coordinate.
      */
     virtual void setX(double x);
 
     /**
-     * 将窗口顶部在屏幕上的 y 位置设置为给定坐标。
+     * Sets the window's top y location on the screen to the given coordinate.
      */
     virtual void setY(double y);
 
     /**
-     * 将窗口设置为在屏幕上可见。
-     * 等价于 setVisible(true)。
+     * Sets the window to be visible on the screen.
+     * Equivalent to setVisible(true).
      */
     virtual void show();
 
     /**
-     * 使当前线程暂停给定的毫秒数。
-     * 等价于 pause()。
-     * @throw 如果 ms 为负，则抛出 ErrorException
+     * Causes the current thread to pause itself for the given number of milliseconds.
+     * Equivalent to pause().
+     * @throw ErrorException if ms is negative
      */
     virtual void sleep(double ms);
 
     /**
-     * 在操作系统的 z 顺序中将窗口移到后面，
-     * 位于占用相同像素的任何其他窗口之下。
+     * Moves the window to the back of the z-ordering in the operating system,
+     * underneath any other windows that occupy the same pixels.
      */
     virtual void toBack();
 
     /**
-     * 在操作系统的 z 顺序中将窗口移到前面，
-     * 位于占用相同像素的任何其他窗口之前。
+     * Moves the window to the front of the z-ordering in the operating system,
+     * in front of any other windows that occupy the same pixels.
      */
     virtual void toFront();
 
@@ -1238,60 +1238,60 @@ private:
 };
 
 
-// 用于兼容性的全局函数
+// global functions for compatibility
 
 /**
- * 将颜色名称转换为编码该颜色的整数
- * 颜色的红、绿、蓝分量。
- * 有关颜色的更多详细信息，请参阅 gcolor.h。
+ * Converts a color name into an integer that encodes the
+ * red, green, and blue components of the color.
+ * See gcolor.h for more details about colors.
  */
 int convertColorToRGB(const std::string& colorName);
 
 /**
- * 将 <code>rgb</code> 值转换为以下形式的颜色名称：
- * 格式为 <code>"#rrggbb"</code>。其中 <code>rr</code>、
- * <code>gg</code> 和 <code>bb</code> 的值均为两位
- * 表示该颜色分量强度的十六进制数。
- * 有关颜色的更多详细信息，请参阅 gcolor.h。
+ * Converts an <code>rgb</code> value into a color name in the
+ * form <code>"#rrggbb"</code>.  Each of the <code>rr</code>,
+ * <code>gg</code>, and <code>bb</code> values are two-digit
+ * hexadecimal numbers indicating the intensity of that component.
+ * See gcolor.h for more details about colors.
  */
 std::string convertRGBToColor(int rgb);
 
 /**
- * 关闭所有图形窗口并退出应用程序，而不
- * 等待任何进一步的用户交互。
+ * Closes all graphics windows and exits from the application without
+ * waiting for any additional user interaction.
  */
 void exitGraphics();
 
 /**
- * 返回整个显示屏的高度。
+ * Returns the height of the entire display screen.
  */
 double getScreenHeight();
 
 /**
- * 返回整个显示屏的宽度/高度。
+ * Returns the width/height of the entire display screen.
  */
 GDimension getScreenSize();
 
 /**
- * 返回整个显示屏的宽度。
+ * Returns the width of the entire display screen.
  */
 double getScreenWidth();
 
 /**
- * 暂停指定的毫秒数。此函数
- * 适用于运动原本会过快的动画。
+ * Pauses for the indicated number of milliseconds.  This function is
+ * useful for animation where the motion would otherwise be too fast.
  */
 void pause(double milliseconds);
 
 /**
- * 发出请求，更新最近创建的图形窗口。
- * 也可以直接调用窗口的 repaint() 方法重绘该窗口。
+ * Issues a request to update the most recently created graphics window.
+ * You can also call the repaint() method on a window directly to repaint that window.
  */
 void repaint();
 
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QMainWindow : public QMainWindow {

@@ -21,7 +21,7 @@ ostream& operator<< (ostream& out, LinearProbingHashTable::Slot slot) {
 bool operator== (const LinearProbingHashTable::Slot& lhs, const LinearProbingHashTable::Slot& rhs) {
     if (lhs.type != rhs.type) return false;
 
-    /* 任何墓碑/空槽只与其他墓碑/空槽相等，忽略值。 */
+    /* Any tombstone/empty equals only other tombstone/empties, ignoring the value. */
     if (lhs.type == LinearProbingHashTable::SlotType::EMPTY ||
         lhs.type == LinearProbingHashTable::SlotType::TOMBSTONE) return true;
 
@@ -44,11 +44,11 @@ ostream& operator<< (ostream& out, RobinHoodHashTable::Slot slot) {
 }
 
 bool operator== (const RobinHoodHashTable::Slot& lhs, const RobinHoodHashTable::Slot& rhs) {
-    /* 如果任一为空，则仅当两者都为空时它们才相等。 */
+    /* If either are empty, they're equal if they're both empty. */
     if (lhs.distance == RobinHoodHashTable::EMPTY_SLOT || rhs.distance == RobinHoodHashTable::EMPTY_SLOT) {
         return lhs.distance == rhs.distance;
     }
 
-    /* 否则，只有真正相等时它们才相同。 */
+    /* Otherwise, they're identical only if they really are equal. */
     return lhs.distance == rhs.distance && lhs.value == rhs.value;
 }

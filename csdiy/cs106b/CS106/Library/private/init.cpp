@@ -1,16 +1,16 @@
 /*
- * 文件：init.cpp
+ * File: init.cpp
  * --------------
  *
- * TODO（待办）
+ * TODO
  *
  * @author Marty Stepp
  * @version 2018/11/22
- * - 添加无界面模式支持
+ * - added headless mode support
  * @version 2018/08/28
- * - 重构以使用 stanfordcpplib 命名空间
+ * - refactor to use stanfordcpplib namespace
  * @version 2018/08/27
- * - 初始版本
+ * - initial version
  */
 
 #include "private/init.h"
@@ -24,9 +24,9 @@
 
 
 #ifdef _WIN32
-#  include <direct.h>   // 用于 chdir
+#  include <direct.h>   // for chdir
 #else // _WIN32
-#  include <unistd.h>   // 用于 chdir
+#  include <unistd.h>   // for chdir
 #endif // _WIN32
 
 inline void initResourcesOutsideNamespace() { Q_INIT_RESOURCE(images); }
@@ -47,10 +47,10 @@ bool exitEnabled() {
     return STATIC_VARIABLE(isExitEnabled);
 }
 
-// 由真正的 main() 函数自动调用；
-// 在 Qt GUI 主线程中运行
+// called automatically by real main() function;
+// to be run in Qt GUI main thread
 void initializeLibrary(int argc, char** argv) {
-    // 确保库只初始化一次
+    // ensure that library is initialized only once
     static bool _initialized = false;
     if (_initialized) {
         return;
@@ -64,12 +64,12 @@ void initializeLibrary(int argc, char** argv) {
     parseArgsQt(argc, argv);
 
 #ifndef SPL_HEADLESS_MODE
-    // 初始化主 Qt 图形子系统
+    // initialize the main Qt graphics subsystem
     QtGui::instance()->setArgs(argc, argv);
     QtGui::instance()->initializeQt();
     initResourcesOutsideNamespace();
 
-    // 初始化 Qt 图形控制台（如果学生 #include 了它）
+    // initialize Qt graphical console (if student #included it)
     initializeQtGraphicalConsole();
 #endif // SPL_HEADLESS_MODE
 }
@@ -78,7 +78,7 @@ void initializeStudentThread() {
     exceptions::setTopLevelExceptionHandlerEnabled(true);
 }
 
-// 此处代码应与 platform.cpp 的 parseArgs 函数大致相同
+// this should be roughly the same code as platform.cpp's parseArgs function
 static void parseArgsQt(int argc, char** argv) {
     if (argc <= 0) {
         return;
@@ -88,7 +88,7 @@ static void parseArgsQt(int argc, char** argv) {
     // programName() = getRoot(getTail(arg0));
 
 #ifndef _WIN32
-    // 仅在 Mac 上，由于应用嵌套目录结构，可能需要更改 wd
+    // on Mac only, may need to change wd because of app's nested dir structure
     size_t ax = arg0.find(".app/Contents/");
     if (ax != std::string::npos) {
         while (ax > 0 && arg0[ax] != '/') {
@@ -96,7 +96,7 @@ static void parseArgsQt(int argc, char** argv) {
         }
         if (ax > 0) {
             std::string cwd = arg0.substr(0, ax);
-            chdir(cwd.c_str()); // wd 是包含 .app 的文件夹
+            chdir(cwd.c_str()); // wd is folder containing .app
         }
     }
 #endif // _WIN32
@@ -109,14 +109,14 @@ static void parseArgsQt(int argc, char** argv) {
 
 void setExitEnabled(bool enabled) {
     STATIC_VARIABLE(isExitEnabled) = enabled;
-    // TODO：通知 GConsoleWindow？
+    // TODO: notify GConsoleWindow?
 }
 
-// 关闭 Qt 图形控制台窗口；
-// 在 Qt 主线程中运行
+// shut down the Qt graphical console window;
+// to be run in Qt main thread
 void shutdownLibrary() {
 #ifdef SPL_HEADLESS_MODE
-    // 空
+    // empty
 #else
     shutdownConsole();
 #endif // SPL_HEADLESS_MODE
@@ -127,16 +127,16 @@ void shutdownLibrary() {
 namespace std {
 void __stanfordcpplib__exitLibrary(int status) {
     if (stanfordcpplib::exitEnabled()) {
-        // 调用 std::exit（已重命名）
+        // call std::exit (has been renamed)
 
 #ifdef exit
 #undef exit
         std::exit(status);
 #define exit __stanfordcpplib__exitLibrary
-#endif // 退出
+#endif // exit
 
     } else {
-        // 不允许调用 exit()；生成错误消息
+        // not allowed to call exit(); produce error message
         std::ostringstream out;
         out << "Program tried to call exit(" << status << ") to quit. " << std::endl;
         out << "*** This function has been disabled; main should end through " << std::endl;

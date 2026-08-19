@@ -1,20 +1,20 @@
 /*
- * 文件：gbutton.cpp
+ * File: gbutton.cpp
  * ------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 将部分事件处理代码移到 GInteractor 父类
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
- * - 添加接受 QIcon 和 QPixmap 的 setIcon
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/09/04
- * - 添加双击事件支持
+ * - added double-click event support
  * @version 2018/08/23
- * - 重命名为 gbutton.cpp，以替代 Java 版本
+ * - renamed to gbutton.cpp to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "gbutton.h"
@@ -32,7 +32,7 @@ GButton::GButton(const std::string& text, const std::string& iconFileName, QWidg
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
     }
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GButton::GButton(const std::string& text, const QIcon& icon, QWidget* parent) {
@@ -41,7 +41,7 @@ GButton::GButton(const std::string& text, const QIcon& icon, QWidget* parent) {
     });
     setText(text);
     setIcon(icon);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GButton::GButton(const std::string& text, const QPixmap& icon, QWidget* parent) {
@@ -50,11 +50,11 @@ GButton::GButton(const std::string& text, const QPixmap& icon, QWidget* parent) 
     });
     setText(text);
     setIcon(icon);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GButton::~GButton() {
-    // TODO：delete _iqpushbutton;
+    // TODO: delete _iqpushbutton;
     _iqpushbutton->detach();
     _iqpushbutton = nullptr;
 }
@@ -188,26 +188,26 @@ void _Internal_QPushButton::handleClick() {
         return;
     }
     GEvent actionEvent(
-                /* 类  */ ACTION_EVENT,
-                /* 类型   */ ACTION_PERFORMED,
-                /* 名称   */ "click",
-                /* 来源 */ _gbutton);
+                /* class  */ ACTION_EVENT,
+                /* type   */ ACTION_PERFORMED,
+                /* name   */ "click",
+                /* source */ _gbutton);
     actionEvent.setActionCommand(_gbutton->getActionCommand());
     _gbutton->fireEvent(actionEvent);
 }
 
 void _Internal_QPushButton::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QPushButton::mouseDoubleClickEvent", "event");
-    QWidget::mouseDoubleClickEvent(event);   // 调用父类实现
+    QWidget::mouseDoubleClickEvent(event);   // call super
     if (!_gbutton || !_gbutton->isAcceptingEvent("doubleclick")) {
         return;
     }
     emit doubleClicked();
     GEvent mouseEvent(
-                /* 类  */ MOUSE_EVENT,
-                /* 类型   */ MOUSE_DOUBLE_CLICKED,
-                /* 名称   */ "doubleclick",
-                /* 来源 */ _gbutton);
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _gbutton);
     mouseEvent.setActionCommand(_gbutton->getActionCommand());
     mouseEvent.setButton((int) event->button());
     mouseEvent.setX(event->pos().x());

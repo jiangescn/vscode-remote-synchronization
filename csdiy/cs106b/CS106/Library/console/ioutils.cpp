@@ -1,15 +1,15 @@
 /*
- * 文件：ioutils.cpp
+ * File: ioutils.cpp
  * ---------------
- * 此文件包含用于帮助捕获、重定向
- * 并向 cin/cout/err 提供输入。
- * 每个函数的文档见 ioutils.h。
+ * This file contains implementations of functions to help capture, redirect,
+ * and feed input to cin/cout/err.
+ * See ioutils.h for documentation of each function.
  * 
  * @author Marty Stepp
  * @version 2016/10/28
- * - 修复输出限制静态变量的错误
+ * - bug fix for output limit static var
  * @version 2016/10/22
- * - 移除所有静态变量（改用 STATIC_VARIABLE 宏）
+ * - removed all static variables (replaced with STATIC_VARIABLE macros)
  * @version 2014/10/14
  * @since 2014/03/01
  */
@@ -128,4 +128,4 @@ void setConsoleEchoUserInput(bool echo) {
 void setConsoleOutputLimit(int limit) {
     STATIC_VARIABLE(consoleOutputLimit) = limit;
 }
-} // 命名空间 ioutils
+} // namespace ioutils

@@ -17,24 +17,24 @@ using namespace MiniGUI;
 namespace {
     const string kNotSelected = "-";
 
-    /* 图形常量。 */
-    const double kEventTimerSpeed = 1; // 足够快，可以流畅运行，但又不会淹没事件队列
+    /* Graphics constants. */
+    const double kEventTimerSpeed = 1; // Fast enough for things to run smoothly, not enough to drown us
     const string kBackgroundColor = "White";
     const double kPadding = 20;
 
-    /* 控制台高度，以画布大小的比例表示。 */
+    /* Height of the console, as a fraction of the canvas size. */
     const double kConsoleScaleFactor = 0.9;
 
-    /* 坐标轴常量。 */
-    const char kAxisColor[] = "#555555"; // 戴维灰
+    /* Axis constants. */
+    const char kAxisColor[] = "#555555"; // Davy's gray
     const Font kAxisFont(FontFamily::SERIF, FontStyle::NORMAL, 8, kAxisColor);
-    const size_t kMaxAxisLabels = 10;    // X 轴主刻度线的最大数量
+    const size_t kMaxAxisLabels = 10;    // Max number of major tick marks on the X axis
 
-    /* 内容区域。 */
+    /* Content areas. */
     const double kHeaderHeight    = 50;
     const Font kHeaderFont(FontFamily::SERIF, FontStyle::BOLD_ITALIC, 24, kAxisColor);
 
-    /* 图例区域，以相对于图表区域起点的偏移量表示。 */
+    /* Legend area, expressed as an offset from the start of the chart area. */
     const double kLegendXOffset   = 100;
     const double kLegendYOffset   =   0;
     const double kLegendWidth     = 150;
@@ -42,8 +42,8 @@ namespace {
     const Font kLegendFont(FontFamily::SANS_SERIF, FontStyle::NORMAL, 12, kAxisColor);
 
     /**
-     * 表示秒表的类型，用于测量各种操作的耗时
-     * 操作。
+     * A type representing a stopwatch. This is used to time the costs of various
+     * operations.
      */
     class Timer {
     public:
@@ -65,14 +65,14 @@ namespace {
       chrono::high_resolution_clock::time_point current;
     };
 
-    /* 运行计时测试所需的全部信息。 */
+    /* All the information needed to run a time test. */
     struct TimeTest {
-        function<void (size_t n, size_t k, Timer& timer)> callback; // 给定 n、k 和计时器，执行工作。
-        vector<size_t> ns, ks;                                      // n 和 k 的值
-        string name;                                                // 我们正在测试的内容
+        function<void (size_t n, size_t k, Timer& timer)> callback; // Given n, k, and a timer, do work.
+        vector<size_t> ns, ks;                                      // Values of n and k
+        string name;                                                // What we're testing
     };
 
-    /* 按线性和指数序列生成数字 */
+    /* Generates numbers in linear and exponential sequences */
     vector<size_t> linRange(size_t low, size_t high, size_t step) {
         vector<size_t> result;
         for (; low <= high; low += step) {
@@ -89,7 +89,7 @@ namespace {
         return result;
     }
 
-    /* 堆的测试用例。我们只执行简单的堆排序。 */
+    /* Test cases for the heap. We just do a simple heapsort. */
     TimeTest heapPQueueTests() {
         static const int kNumTrials = 25;
         return {
@@ -97,7 +97,7 @@ namespace {
                 for (int round = 0; round < kNumTrials; round++) {
                     HeapPQueue hpq;
 
-                    /* 将 n 个元素入队。 */
+                    /* Enqueue n elements. */
                     for (int i = 0; i < n; i++) {
                         DataPoint toAdd = { "", randomReal(0, numeric_limits<int>::max()) };
                         timer.start();
@@ -105,7 +105,7 @@ namespace {
                         timer.stop();
                     }
 
-                    /* 将所有元素出队。 */
+                    /* Dequeue all elements. */
                     for (int i = 0; i < n; i++) {
                         timer.start();
                         (void) hpq.dequeue();
@@ -114,12 +114,12 @@ namespace {
                 }
             },
             linRange(0, 50000, 2500),
-            { 1 }, // 未使用；无关紧要
+            { 1 }, // Unused; doesn't matter
             "HeapPQueue (enqueue/dequeue n elements)"
         };
     }
 
-    /* 堆的测试用例。我们只执行简单的堆排序。 */
+    /* Test cases for the heap. We just do a simple heapsort. */
     TimeTest apportionmentTests() {
         static const int kNumTrials = 25;
         return {
@@ -141,7 +141,7 @@ namespace {
         };
     }
 
-    /* 测试驱动程序，与任何特定测试结果显示方式分离。 */
+    /* Test driver, factored out from any particular method of displaying the test results. */
     class TestDriver {
     public:
         TestDriver(const TimeTest& test,
@@ -154,14 +154,14 @@ namespace {
 
         }
 
-        /* 运行测试的下一步。这样做是为了让 GUI 能够使用
-         * 计时器回调；测试驱动代码只需逐步执行直到完成。
+        /* Runs the next step of the test. This is done so that the GUI can use
+         * a timer callback and the test driver code can just step until done.
          */
         void step();
 
     private:
         TimeTest test;
-        size_t nextN = 0, nextK = 0; // 接下来要使用的 n 和 k 值。
+        size_t nextN = 0, nextK = 0; // Next values of n and k to use.
 
         function<void(int k)> onNewK;
         function<void(int n, double value)> onNewN;
@@ -169,27 +169,27 @@ namespace {
     };
 
     void TestDriver::step() {
-        /* 当前是否位于最开始？ */
+        /* Are we at the very beginning? */
         if (nextN == 0 && nextK == 0) {
             onNewK(test.ks[nextK]);
         }
 
-        /* 否则，运行下一个测试。 */
+        /* Otherwise, run the next test. */
         Timer timer;
         test.callback(test.ns[nextN], test.ks[nextK], timer);
 
-        /* 保存结果。 */
+        /* Store the result. */
         onNewN(test.ns[nextN], timer.elapsed());
 
-        /* 向前一步。 */
+        /* Step forward. */
         nextN++;
 
-        /* 所有 n 都完成了吗？进入下一个 k。 */
+        /* Finished all n's? Advance k. */
         if (nextN == test.ns.size()) {
             nextN = 0;
             nextK++;
 
-            /* 所有 k 都完成了吗？处理结束！ */
+            /* Finished all k's? We're done! */
             if (nextK == test.ks.size()) {
                 onStop();
                 return;
@@ -199,18 +199,18 @@ namespace {
         }
     }
 
-    /* 用于不同 k 值的颜色。 */
+    /* Colors to use for various values of k. */
     const vector<string> kLineColors = {
-        "#CC0000", // 赛车红
-        "#EE7F2D", // 普林斯顿橙
-        "#FFC40C", // 御竹黄
-        "#008000", // 办公室绿
+        "#CC0000", // Rosso Corsa
+        "#EE7F2D", // Princeton Orange
+        "#FFC40C", // Mikado Yellow
+        "#008000", // Office Green
         "#007BA7", // Cerulean
         "#B53389", // Fandango
         "#343434", // Jet
     };
 
-    /* 报告不同类型计时信息的问题处理程序。 */
+    /* Problem handler that reports timing information for the different types. */
     class PerformanceGUI: public ProblemHandler {
     public:
         PerformanceGUI(GWindow& window);
@@ -222,27 +222,27 @@ namespace {
         void repaint() override;
 
     private:
-        /* 每次计时器触发都会进入下一个测试用例。 */
+        /* Each timer tick steps us through the next test case. */
         GTimer timer{kEventTimerSpeed};
 
-        /* 我们正在执行哪个测试（如果有）。 */
+        /* Which test, if any, we're doing. */
         bool isActive = false;
         TimeTest currTest;
 
-        vector<string> axisLabels{2};   // x 轴标签。默认为两个空字符串
-        size_t axisTicks = 0;           // X 轴上使用的次刻度线
+        vector<string> axisLabels{2};   // Labels to use on the x axis. Defaults to two blank strings
+        size_t axisTicks = 0;           // Minor ticks to use on the x axis
 
-        /* 截至目前的测试用例结果。 */
+        /* Test case results so far. */
         unique_ptr<TestDriver> driver;
         Vector<Vector<double>> results;
 
 
-        /* 用于选择测试内容的按钮。 */
+        /* Buttons for what to test. */
         Temporary<GButton> heapPQ;
         Temporary<GButton> apportionment;
 
 
-        /* 侧边控制台。 */
+        /* Side console. */
         Temporary<GColorConsole> console;
 
         void startTests(const TimeTest& test);
@@ -260,7 +260,7 @@ namespace {
     }
 
     void PerformanceGUI::timerFired() {
-        /* 若没有活动测试，则无需执行任何操作。 */
+        /* If we don't have an active test, there's nothing to do. */
         if (!isActive) {
             timer.stop();
             return;
@@ -268,29 +268,29 @@ namespace {
 
         driver->step();
 
-        /* 需要重绘！ */
+        /* Need to redraw things! */
         requestRepaint();
     }
 
-    /* 开始新的测试会话。 */
+    /* Begins a new testing session. */
     void PerformanceGUI::startTests(const TimeTest& test) {
-        /* 清除所有旧测试信息。 */
+        /* Clear out all old test information. */
         currTest = test;
 
-        /* 从 k 值到文本颜色的映射。如果存在以下情况，则会忽略此项：
-         * 只有一个 k 值。
+        /* Map from k values to text colors. This is ignored if there
+         * is just one k value.
          */
         map<size_t, string> colors;
         for (size_t k: test.ks) {
             colors.insert(make_pair(k, kLineColors[colors.size()]));
         }
 
-        /* 重置状态。 */
+        /* Reset state. */
         auto onNewK = [test, colors, this](int k) {
-            /* 为结果添加新的存放位置。 */
+            /* Add an new place for the results to go. */
             results.add({});
 
-            /* 若有多个 k 值需要依次显示，则显示当前 k 的选择。 */
+            /* Display that choice of k if there are multiple k's to go around. */
             if (test.ks.size() != 1) {
                 console->doWithStyle(colors.at(k), GColorConsole::BOLD, [&]{
                     *console << "k = " << k << endl;
@@ -299,7 +299,7 @@ namespace {
         };
 
         auto onNewN = [this](int n, double elapsed) {
-            /* 保存结果。 */
+            /* Store the result. */
             results[results.size() - 1] += elapsed;
 
             *console << "  n = " << left << setw(10) << (to_string(n) + ": ") << elapsed / 1e6 << "ms" << endl;
@@ -314,26 +314,26 @@ namespace {
         results.clear();
         console->clearDisplay();
 
-        /* 设置 x 轴标签。 */
+        /* Set up x-axis labels. */
         axisLabels.clear();
 
-        /* X 轴上的标签永远不会超过 kMaxAxisLabels 个。如果我们
-         * 否则会开始引入次级刻度。
+        /* We will never have more than kMaxAxisLabels labels on the X axis. If we
+         * do, we will start introducing minor tickmarks.
          *
-         * 我们将按如下方式执行。我们会计算
-         * ceil（标签数量 / kAxisLabels），得到需要跳过的刻度数
-         * 要使用的值。例如，如果希望有 11 个标签且最大值为 10，我们会计算
-         * ceil(11 / 10) - 1 = 2，并在每组之间放置一个次级刻度
-         * 主刻度的数量。
+         * The way we're going to do this is as follows. We'll compute
+         * ceil(#labels / kAxisLabels), which gives back the number of tick skips
+         * to use. For example, if we want 11 labels and the max is 10, we'll compute
+         * ceil(11 / 10) - 1 = 2, and have one minor tick in between each set
+         * of major ticks.
          *
-         * 我们实际上使用以下技巧计算：公式 (a + b - 1) / b 可计算
-         * ceil(a / b)。
+         * We actually compute this using the technique that (a + b - 1) / b computes
+         * ceil(a / b).
          */
         axisTicks = ((test.ns.size() + kMaxAxisLabels - 1) / kMaxAxisLabels);
         size_t numMajor = (test.ns.size() + axisTicks - 1) / axisTicks;
 
         for (size_t i = 0; i < numMajor; i++) {
-            size_t effectiveIndex = i * axisTicks; // 毕竟，我们正在跳过内容！
+            size_t effectiveIndex = i * axisTicks; // We're skipping things, after all!
 
             string label;
             if (effectiveIndex == 0) {
@@ -341,15 +341,15 @@ namespace {
             } else if (effectiveIndex < test.ns.size()) {
                 label = to_string(test.ns[effectiveIndex]);
             } else {
-                label = ""; // 不是必需的，但有助于明确意图。
+                label = ""; // Not needed, but helps clarify intent.
             }
 
             axisLabels.push_back(label);
         }
 
-        /* axisTicks 参数实际上直接控制要绘制多少个次刻度
-         * 实际绘制的刻度，而不是主刻度之间的跳步大小。因此需要减去
-         * 这里多画一个，以确保绘制正确数量的次刻度线。
+        /* The axisTicks parameter actually literally controls how many minor ticks are
+         * drawn, not the skip size between major ticks. As a result, we need to subtract
+         * one here in order to ensure that we draw teh right number of minor ticks.
          */
         axisTicks--;
 
@@ -373,7 +373,7 @@ namespace {
     void PerformanceGUI::repaint() {
         clearDisplay(window(), kBackgroundColor);
 
-        /* 为标题预留空间。 */
+        /* Space for the header. */
         GRectangle header = {
             kPadding, kPadding,
             window().getCanvasWidth() - 2 * kPadding,
@@ -382,14 +382,14 @@ namespace {
 
         double chartTop = header.y + header.height;
 
-        /* 设置图表。 */
+        /* Set up the chart. */
         GRectangle chart = {
             kPadding, chartTop,
             window().getCanvasWidth()  - 2 * kPadding,
             window().getCanvasHeight() - chartTop - kPadding
         };
 
-        /* 以及图例。 */
+        /* And the legend. */
         GRectangle legend = {
             chart.x + kLegendXOffset, chart.y + kLegendYOffset,
             kLegendWidth, kLegendHeight
@@ -408,12 +408,12 @@ namespace {
     }
 
     void PerformanceGUI::drawChart(GWindow& window, const GRectangle& bounds) {
-        /* Y 轴标签将为空。但至少需要两个，因此我们会创建它们。 */
+        /* Y-axis labels will be empty. We need a minimum of two, though, so we'll make those. */
         vector<string> yLabels(2);
 
-        /* 将结果转换为线段。 */
+        /* Convert our results into line segments. */
 
-        /* 找出所有内容中的最大值。 */
+        /* Find the maximum value across everything. */
         double maxValue = 0;
         double minValue = numeric_limits<double>::infinity();
         for (const auto& result: results) {
@@ -423,10 +423,10 @@ namespace {
             }
         }
 
-        /* 将最大值稍微上调，以避免除以零。 */
+        /* Nudge the max value up a bit to avoid dividing by zero. */
         maxValue = nextafter(maxValue, numeric_limits<double>::infinity());
 
-        /* 按该数值将所有内容归一化。 */
+        /* Normalize everything by that amount. */
         vector<vector<GPoint>> lines;
         for (const auto& result: results) {
             vector<GPoint> line;
@@ -436,7 +436,7 @@ namespace {
             lines.push_back(line);
         }
 
-        /* 绘制它！ */
+        /* Draw it! */
         LineGraphRender::construct(lines,
                                    axisLabels,
                                    yLabels,
@@ -450,23 +450,23 @@ namespace {
     }
 
     void PerformanceGUI::drawLegend(GWindow& window, const GRectangle& bounds) {
-        /* 若只有一个 k 值，则不绘制任何内容。 */
+        /* If there is only one value of k, don't draw anything. */
         if (currTest.ks.size() <= 1) return;
 
-        /* 否则，存在多个 k 值。根据行数组织标签
-         * 目前已绘制的内容。
+        /* Otherwise, there are many values of k. Assemble labels based on the number of lines
+         * we have drawn so far.
          */
         vector<string> labels;
         for (size_t i = 0; i < currTest.ks.size() && i < size_t(results.size()); i++) {
             labels.push_back("k = " + to_string(currTest.ks[i]));
         }
 
-        /* 设置图例。先不要绘制；我们需要清除其后面的区域。 */
+        /* Set up the legend. Don't draw it yet; we need to clear the area behind it. */
         auto legend = LegendRender::construct(labels, kLineColors, bounds, kLegendFont, kLegendFont.color());
         window.setColor(kBackgroundColor);
         window.fillRect(legend->computedBounds());
 
-        /* 现在绘制它。 */
+        /* Now draw it. */
         legend->draw(window);
     }
 }

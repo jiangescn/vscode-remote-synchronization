@@ -1,24 +1,24 @@
 /*
- * 文件：ginteractor.h
+ * File: ginteractor.h
  * -------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加 set/removeActionListener
- * - 添加 set/removeClickListener
- * - 添加 set/removeDoubleClickListener
- * - 添加 set/removeKeyListener
- * - 添加 set/removeMouseListener
+ * - added set/removeActionListener
+ * - added set/removeClickListener
+ * - added set/removeDoubleClickListener
+ * - added set/removeKeyListener
+ * - added set/removeMouseListener
  * @version 2019/04/22
- * - 添加接受 QIcon 和 QPixmap 的 setIcon
+ * - added setIcon with QIcon and QPixmap
  * @version 2018/09/20
- * - 添加读写锁以避免竞态条件
+ * - added read/write lock to avoid race conditions
  * @version 2018/09/05
- * - 添加 getContainer 和 is/setVisible 逻辑
+ * - added getContainer and is/setVisible logic
  * @version 2018/08/23
- * - 重命名为 ginteractor.h，以替代 Java 版本
+ * - renamed to ginteractor.h to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 
@@ -41,14 +41,14 @@ class GWindow;
 class _Internal_QWidget;
 
 /**
- * 此抽象类是所有图形交互控件的超类。
- * 在大多数应用中，交互控件会添加到沿着窗口的控制条中
- * GWindow 的一个区域。
+ * This abstract class is the superclass for all graphical interactors.
+ * In most applications, interactors will be added to a control strip along
+ * one of the regions of a GWindow.
  */
 class GInteractor : public GObservable {
 public:
     /**
-     * 交互控件可将其文本相对于图标放置的位置。
+     * The places where an interactor can place its text relative to its icon.
      */
     enum TextPosition {
         TEXT_BESIDE_ICON,
@@ -57,594 +57,594 @@ public:
     };
 
     /**
-     * 初始化新创建的交互控件。
-     * 如果 Qt 图形子系统尚未初始化，构造
-     * 交互控件会对其进行初始化。
+     * Initializes a newly created interactor.
+     * If the Qt graphical subsystem has not yet been initialized, constructing
+     * an interactor will initialize it.
      */
     GInteractor();
 
     /**
-     * 释放交互控件内部分配的内存。
+     * Frees memory allocated internally by the interactor.
      */
     virtual ~GInteractor();
 
     /**
-     * 如果此交互控件当前接受事件，则返回 true。
-     * 初始为 true。
-     * 交互控件必须可见并添加到屏幕窗口中，才能接收事件。
+     * Returns true if this interactor is currently accepting events.
+     * Initially true.
+     * An interactor must be visible and added to an onscreen window to receive events.
      */
     bool eventsEnabled() const override;
 
     /**
-     * 返回表示此交互控件快捷键的字符串，
-     * 如果未设置快捷键，则返回空字符串。
-     * @return 快捷键，例如“Ctrl-S”
+     * Returns a string representing a hotkey for this interactor,
+     * or an empty string if no accelerator has been set.
+     * @return an accelerator such as "Ctrl-S"
      */
     virtual std::string getAccelerator() const;
 
     /**
-     * 返回此交互控件的动作命令，
-     * 它是一个半唯一字符串，可在事件发生时用来标识该对象。
-     * 例如，对于按钮，默认动作命令是按钮文本。
+     * Returns an action command for this interactor,
+     * which is a semi-unique string you can use to identify it when events occur.
+     * For example, for buttons, the default action command is the button's text.
      */
     virtual std::string getActionCommand() const;
 
     /**
-     * 以字符串返回交互控件的背景色。
-     * @return 颜色字符串，例如 "blue" 或 "#7700ff"
+     * Returns the background color of the interactor as a string.
+     * @return a string such as "blue" or "#7700ff"
      */
     virtual std::string getBackground() const;
 
     /**
-     * 以 RGB 整数返回交互控件的背景色。
-     * @return 整数，例如 0x7700ff
+     * Returns the background color of the interactor as an RGB integer.
+     * @return an integer such as 0x7700ff
      */
     virtual int getBackgroundInt() const;
 
     /**
-     * 返回表示此交互控件 x/y 位置和大小的矩形。
+     * Returns a rectangle representing the x/y position and size of this interactor.
      */
     virtual GRectangle getBounds() const;
 
     /**
-     * 以字符串形式返回交互控件的前景色/文本颜色。
-     * 等价于 getForeground。
-     * @return 颜色字符串，例如 "blue" 或 "#7700ff"
+     * Returns the foreground/text color of the interactor as a string.
+     * Equivalent to getForeground.
+     * @return a string such as "blue" or "#7700ff"
      */
     virtual std::string getColor() const;
 
     /**
-     * 以 RGB 整数形式返回交互控件的前景色/文本颜色。
-     * 等价于 getForegroundInt。
-     * @return 整数，例如 0x7700ff
+     * Returns the foreground/text color of the interactor as an RGB integer.
+     * Equivalent to getForegroundInt.
+     * @return an integer such as 0x7700ff
      */
     virtual int getColorInt() const;
 
     /**
-     * 返回指向容纳此交互控件的屏幕容器的指针。
-     * 创建交互控件时，其容器初始为 null。
-     * 如果将交互控件添加到
-     * 窗口或其他布局容器。
-     * 交互控件必须添加到容器或窗口中才能接收事件
-     * 或使其在屏幕上可见。
-     * @return 容器；如果交互控件尚未被放入容器，则为 nullptr
-     *         添加到任何容器
+     * Returns a pointer to the onscreen container holding this interactor.
+     * When an interactor is created, its container is initially null.
+     * This will become non-null automatically if you add the interactor to
+     * a window or other layout container.
+     * Interactors must be added to a container or window to receive events
+     * or to become visible on the screen.
+     * @return the container, or nullptr if interactor has not yet been
+     *         added to any container
      */
     virtual GContainer* getContainer() const;
 
     /**
-     * 以类似以下内容的字体字符串返回此交互控件文本的字体
-     * "Helvetica-12-Bold"。
-     * @return 字体字符串，例如“Helvetica-12-Bold”
+     * Returns the font of this interactor's text as a font string such as
+     * "Helvetica-12-Bold".
+     * @return a font string such as "Helvetica-12-Bold"
      */
     virtual std::string getFont() const;
 
     /**
-     * 以字符串形式返回交互控件的前景色/文本颜色。
-     * 等价于 getColor。
-     * @return 颜色字符串，例如 "blue" 或 "#7700ff"
+     * Returns the foreground/text color of the interactor as a string.
+     * Equivalent to getColor.
+     * @return a string such as "blue" or "#7700ff"
      */
     virtual std::string getForeground() const;
 
     /**
-     * 以 RGB 整数形式返回交互控件的前景色/文本颜色。
-     * 等价于 getColorInt。
-     * @return 整数，例如 0x7700ff
+     * Returns the foreground/text color of the interactor as an RGB integer.
+     * Equivalent to getColorInt.
+     * @return an integer such as 0x7700ff
      */
     virtual int getForegroundInt() const;
 
     /**
-     * 返回此交互控件当前屏幕高度（像素）。
+     * Returns the current onscreen height of this interactor in pixels.
      */
     virtual double getHeight() const;
 
     /**
-     * 返回此交互控件的全局唯一标识符，
-     * 该值在构造交互控件时设置。
-     * 这些 ID 有助于调试，以唯一标识交互控件。
+     * Returns a globally unique identifier for this interactor,
+     * which is set when the interactor is constructed.
+     * These IDs can be useful for debugging to help identify interactors uniquely.
      */
     virtual int getID() const;
 
     /**
-     * 返回与此交互控件关联的图标文件名，
-     * 如果未设置图标，则返回空字符串。
-     * 并非所有交互控件类型都支持图标。
+     * Returns the file name of the icon associated with this interactor,
+     * or an empty string if no icon has been set.
+     * Not all types of interactors support icons.
      */
     virtual std::string getIcon() const;
 
     /**
-     * 返回指向此对象所包装内部 Qt 控件的直接指针
-     * 交互控件。所有交互控件子类都必须重写此方法。
-     * 学生/客户端通常不需要调用此函数。
+     * Returns a direct pointer to the internal Qt widget being wrapped by this
+     * interactor.  This must be overridden by all interactor subclasses.
+     * Students/clients generally should not need to call this.
      * @private
      */
     virtual _Internal_QWidget* getInternalWidget() const = 0;
 
     /**
-     * 返回表示屏幕左上角位置的 (x, y) 点
-     * 此交互控件在其所在窗口中的角。
+     * Returns an (x, y) point representing the onscreen location of the top-left
+     * corner of this interactor within its containing window.
      */
     virtual GPoint getLocation() const;
 
     /**
-     * 返回此交互控件允许的最小像素高度
-     * 将自身调整到的大小。
+     * Returns the minimum height in pixels that this interactor will permit
+     * itself to be resized to.
      */
     virtual double getMinimumHeight() const;
 
     /**
-     * 返回表示最小像素尺寸的 GDimension 结构
-     * 此交互控件允许自身调整到的大小。
+     * Returns a GDimension structure representing the minimum size in pixels
+     * that this interactor will permit itself to be resized to.
      */
     virtual GDimension getMinimumSize() const;
 
     /**
-     * 返回此交互控件允许的最小像素宽度
-     * 将自身调整到的大小。
+     * Returns the minimum width in pixels that this interactor will permit
+     * itself to be resized to.
      */
     virtual double getMinimumWidth() const;
 
     /**
-     * 返回表示此交互控件唯一名称的字符串。
-     * 默认名称字符串使用交互控件的类型及其 ID 来生成
-     * 类似 "GButton_14" 的字符串，但可调用 setName 覆盖。
-     * @return 字符串，例如“GButton_14”
+     * Returns a string representing a unique name for this interactor.
+     * The default name string uses the interactor's type and its ID to make
+     * a string like "GButton_14", but you can override this by calling setName.
+     * @return a string such as "GButton_14"
      */
     virtual std::string getName() const;
 
     /**
-     * 返回此交互控件首选的像素高度，
-     * 恰好容纳其内容，不进行拉伸，也不显示滚动条。
+     * Returns the height in pixels that this interactor would prefer to be,
+     * which would exactly fit its contents with no stretching or scrollbars.
      */
     virtual double getPreferredHeight() const;
 
     /**
-     * 返回存储像素宽度和高度的 GDimension 结构
-     * 此交互控件的首选大小，
-     * 恰好容纳其内容，不进行拉伸，也不显示滚动条。
+     * Returns a GDimension structure storing the width and height in pixels
+     * that this interactor would prefer to be,
+     * which would exactly fit its contents with no stretching or scrollbars.
      */
     virtual GDimension getPreferredSize() const;
 
     /**
-     * 返回此交互控件首选的像素高度，
-     * 恰好容纳其内容，不进行拉伸，也不显示滚动条。
+     * Returns the height in pixels that this interactor would prefer to be,
+     * which would exactly fit its contents with no stretching or scrollbars.
      */
     virtual double getPreferredWidth() const;
 
     /**
-     * 返回存储当前屏幕宽度和高度的 GDimension 结构
-     * 此交互控件的像素大小。
+     * Returns a GDimension structure storing the current onscreen width and height
+     * of this interactor in pixels.
      */
     virtual GDimension getSize() const;
 
     /**
-     * 返回表示此交互控件类名的字符串，
-     * 例如 "GButton" 或 "GCheckBox"。
-     * GInteractor 的所有子类都必须实现此方法。
-     * @return 字符串，例如“GCheckBox”
+     * Returns a string representing the class name of this interactor,
+     * such as "GButton" or "GCheckBox".
+     * All subclasses of GInteractor must implement this method.
+     * @return a string such as "GCheckBox"
      */
     std::string getType() const override = 0;
 
     /**
-     * 返回指向此对象所包装内部 Qt 控件的直接指针
-     * 交互控件。所有交互控件子类都必须重写此方法。
-     * 学生/客户端通常不需要调用此函数。
+     * Returns a direct pointer to the internal Qt widget being wrapped by this
+     * interactor.  This must be overridden by all interactor subclasses.
+     * Students/clients generally should not need to call this.
      * @private
      */
     virtual QWidget* getWidget() const = 0;
 
     /**
-     * 返回此交互控件当前屏幕宽度（像素）。
+     * Returns the current onscreen width of this interactor in pixels.
      */
     virtual double getWidth() const;
 
     /**
-     * 返回此交互控件左上像素的 x 坐标
-     * 在其屏幕窗口内。
+     * Returns the x-coordinate of the top-left pixel of this interactor
+     * within its onscreen window.
      */
     virtual double getX() const;
 
     /**
-     * 返回此交互控件左上像素的 y 坐标
-     * 在其屏幕窗口内。
+     * Returns the y-coordinate of the top-left pixel of this interactor
+     * within its onscreen window.
      */
     virtual double getY() const;
 
     /**
-     * 如果给定的 x/y 像素位于此交互控件的边界内，则返回 true。
+     * Returns true if the given x/y pixel is within the bounds of this interactor.
      */
     virtual bool inBounds(double x, double y) const;
 
     /**
-     * 如果给定的 x/y 像素位于此交互控件的边界内，则返回 true。
+     * Returns true if the given x/y pixel is within the bounds of this interactor.
      */
     virtual bool inBounds(int x, int y) const;
 
     /**
-     * 如果此交互控件当前已启用，则返回 true。
-     * 大多数交互控件初始时处于启用状态，但可以禁用以阻止它们
-     * 能够被单击或以其他方式发出事件。
+     * Returns true if this interactor is currently enabled.
+     * Most interactors begin as enabled but can be disabled to stop them from
+     * being able to be clicked on or otherwise emit events.
      */
     virtual bool isEnabled() const;
 
     /**
-     * 如果交互控件在屏幕上可见，则返回 true。
-     * 交互控件在添加到屏幕上的以下对象之前不可见：
-     * 窗口或容器。
+     * Returns true if the interactor is visible on the screen.
+     * Interactors will not be visible until they are added to an onscreen
+     * window or container.
      */
     virtual bool isVisible() const;
 
     /**
-     * 从此交互控件删除动作监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the action listener from this interactor so that it will no longer
+     * call it when events occur.
      */
     virtual void removeActionListener();
 
     /**
-     * 从此交互控件删除点击监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the click listener from this interactor so that it will no longer
+     * call it when events occur.
      */
     virtual void removeClickListener();
 
     /**
-     * 从此交互控件删除双击监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the double-click listener from this interactor so that it will no longer
+     * call it when events occur.
      */
     virtual void removeDoubleClickListener();
 
     /**
-     * 从此交互控件删除键盘监听器，使其不再
-     * 在发生键盘事件时调用它。
+     * Removes the key listener from this interactor so that it will no longer
+     * call it when key events occur.
      */
     virtual void removeKeyListener();
 
     /**
-     * 从此交互控件删除鼠标监听器，使其不再
-     * 在事件发生时调用它。
+     * Removes the mouse listener from this interactor so that it will no longer
+     * call it when events occur.
      */
     virtual void removeMouseListener();
 
     /**
-     * 将键盘焦点转移到此交互控件。
+     * Transfers keyboard focus to this interactor.
      */
     virtual void requestFocus();
 
     /**
-     * 为此交互控件设置快捷键，例如 "Ctrl-S"。
-     * 并非所有交互控件类型都支持快捷键。
-     * @param accelerator 快捷键，例如“Ctrl-S”
+     * Sets an accelerator hotkey for this interactor, such as "Ctrl-S".
+     * Not all interactor types support accelerators.
+     * @param accelerator a hotkey such as "Ctrl-S"
      */
     virtual void setAccelerator(const std::string& accelerator);
 
     /**
-     * 设置此交互控件的动作命令。
-     * 动作命令应是一个半唯一字符串，可用于
-     * 在事件发生时标识交互控件。
-     * 例如，对于按钮，默认动作命令是按钮文本，
-     * 但如果愿意，可以将它改为其他字符串。
-     * 此功能的主要用途是，当你希望将同一个函数用作
-     * 如果要为许多交互控件设置事件监听器，可以使用动作命令
-     * 帮助区分每个事件由哪个交互控件生成。
+     * Sets the action command for this interactor.
+     * The action command is meant to be a semi-unique string you can use to
+     * identify the interactor when events occur.
+     * For example, for buttons, the default action command is the button's text,
+     * but you can change it to a different string if you prefer.
+     * The main usage of this feature is if you want to use the same function as
+     * an event listener for many interactors, you can use the action command
+     * to help distinguish which interactor generates each event.
      */
     virtual void setActionCommand(const std::string& actionCommand);
 
     /**
-     * 在此交互控件上设置动作监听器，以便在以下情况发生时调用它
-     * 当以其主要方式与它交互时。
-     * 例如，若此交互控件是按钮，单击时会触发。
-     * 任何现有的动作监听器都会被替换。
+     * Sets an action listener on this interactor so that it will be called
+     * when it is interacted with in its primary way.
+     * For example, if this interactor is a button, this will fire when it is clicked.
+     * Any existing action listener will be replaced.
      */
     virtual void setActionListener(GEventListener func);
 
     /**
-     * 在此交互控件上设置动作监听器，以便在以下情况发生时调用它
-     * 当以其主要方式与它交互时。
-     * 例如，若此交互控件是按钮，单击时会触发。
-     * 任何现有的动作监听器都会被替换。
+     * Sets an action listener on this interactor so that it will be called
+     * when it is interacted with in its primary way.
+     * For example, if this interactor is a button, this will fire when it is clicked.
+     * Any existing action listener will be replaced.
      */
     virtual void setActionListener(GEventListenerVoid func);
 
     /**
-     * 将交互控件的背景色设置为由以下内容表示的颜色：
-     * 给定 RGB 整数。
-     * @param rgb RGB 整数，例如 0x7700ff
+     * Sets the background color of the interactor to the color represented by
+     * the given RGB integer.
+     * @param rgb an RGB integer such as 0x7700ff
      */
     virtual void setBackground(int rgb);
 
     /**
-     * 将交互控件的背景色设置为由以下内容表示的颜色：
-     * 给定字符串。
-     * @param color 颜色字符串，例如 "blue" 或 "#7700ff"
+     * Sets the background color of the interactor to the color represented by
+     * the given string.
+     * @param color a string such as "blue" or "#7700ff"
      */
     virtual void setBackground(const std::string& color);
 
     /**
-     * 设置控件的大小和位置。
-     * 通常应避免显式设置控件大小和位置
-     * 不要采用这种方式；应使用容器和区域帮助布局
-     * 以适当大小放置控件。
+     * Sets the size and location of the widget.
+     * In general you should avoid explicitly sizing and positioning widgets
+     * in this way; instead, use containers and regions to help you lay out
+     * widgets at the proper sizes.
      */
     virtual void setBounds(double x, double y, double width, double height);
 
     /**
-     * 设置控件的大小和位置。
-     * 通常应避免显式设置控件大小和位置
-     * 不要采用这种方式；应使用容器和区域帮助布局
-     * 以适当大小放置控件。
+     * Sets the size and location of the widget.
+     * In general you should avoid explicitly sizing and positioning widgets
+     * in this way; instead, use containers and regions to help you lay out
+     * widgets at the proper sizes.
      */
     virtual void setBounds(const GRectangle& size);
 
     /**
-     * 为此交互控件设置鼠标监听器，以便在以下情况下调用：
-     * 当鼠标在其上单击时。
-     * 任何现有的单击监听器都会被替换。
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is clicked on it.
+     * Any existing click listener will be replaced.
      */
     virtual void setClickListener(GEventListener func);
 
     /**
-     * 为此交互控件设置鼠标监听器，以便在以下情况下调用：
-     * 当鼠标在其上单击时。
-     * 任何现有的单击监听器都会被替换。
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is clicked on it.
+     * Any existing click listener will be replaced.
      */
     virtual void setClickListener(GEventListenerVoid func);
 
     /**
-     * 将交互控件的前景/文本颜色设为以下内容表示的颜色：
-     * 给定 RGB 整数。
-     * 等价于 setForeground。
-     * @param rgb RGB 整数，例如 0x7700ff
+     * Sets the foreground/text color of the interactor to the color represented by
+     * the given RGB integer.
+     * Equivalent to setForeground.
+     * @param rgb an RGB integer such as 0x7700ff
      */
     virtual void setColor(int rgb);
 
     /**
-     * 将交互控件的前景/文本颜色设为以下内容表示的颜色：
-     * 给定字符串。
-     * 等价于 setForeground。
-     * @param color 颜色字符串，例如 "blue" 或 "#7700ff"
+     * Sets the foreground/text color of the interactor to the color represented by
+     * the given string.
+     * Equivalent to setForeground.
+     * @param color a string such as "blue" or "#7700ff"
      */
     virtual void setColor(const std::string& color);
 
     /**
-     * 为此交互控件设置鼠标监听器，以便在以下情况下调用：
-     * 当鼠标在其上双击时。
-     * 任何现有的双击监听器都会被替换。
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is double-clicked on it.
+     * Any existing double-click listener will be replaced.
      */
     virtual void setDoubleClickListener(GEventListener func);
 
     /**
-     * 为此交互控件设置鼠标监听器，以便在以下情况下调用：
-     * 当鼠标在其上双击时。
-     * 任何现有的双击监听器都会被替换。
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is double-clicked on it.
+     * Any existing double-click listener will be replaced.
      */
     virtual void setDoubleClickListener(GEventListenerVoid func);
 
     /**
-     * 设置此交互控件当前是否启用。
-     * 大多数交互控件初始时处于启用状态，但可以禁用以阻止它们
-     * 能够被单击或以其他方式发出事件。
+     * Sets whether this interactor is currently enabled.
+     * Most interactors begin as enabled but can be disabled to stop them from
+     * being able to be clicked on or otherwise emit events.
      */
     virtual void setEnabled(bool value);
 
     /**
-     * 将此控件使用的字体设为给定 Qt 字体。
-     * 客户端通常应使用此方法的字符串版本。
+     * Sets the font used by this widget to the given Qt font.
+     * Clients should generally use the string version of this method.
      */
     virtual void setFont(const QFont& font);
 
     /**
-     * 将此控件使用的字体设为以下字符串所表示的字体
-     * 给定字体字符串，例如“Helvetica-16-Bold”。
-     * @param font 字体字符串，例如“Helvetica-16-Bold”
+     * Sets the font used by this widget to the font represented by the
+     * given font string, such as "Helvetica-16-Bold".
+     * @param font a font string such as "Helvetica-16-Bold"
      */
     virtual void setFont(const std::string& font);
 
     /**
-     * 将交互控件的前景/文本颜色设为以下内容表示的颜色：
-     * 给定 RGB 整数。
-     * 等价于 setColor。
-     * @param rgb RGB 整数，例如 0x7700ff
+     * Sets the foreground/text color of the interactor to the color represented by
+     * the given RGB integer.
+     * Equivalent to setColor.
+     * @param rgb an RGB integer such as 0x7700ff
      */
     virtual void setForeground(int rgb);
 
     /**
-     * 将交互控件的前景/文本颜色设为以下内容表示的颜色：
-     * 给定字符串。
-     * 等价于 setColor。
-     * @param color 颜色字符串，例如 "blue" 或 "#7700ff"
+     * Sets the foreground/text color of the interactor to the color represented by
+     * the given string.
+     * Equivalent to setColor.
+     * @param color a string such as "blue" or "#7700ff"
      */
     virtual void setForeground(const std::string& color);
 
     /**
-     * 设置交互控件在屏幕上的像素高度。
-     * @throw 如果 height 为负数，则抛出 ErrorException
+     * Sets the onscreen height of the interactor in pixels.
+     * @throw ErrorException if height is negative
      */
     virtual void setHeight(double height);
 
     /**
-     * 设置与此交互控件关联的图标。
-     * 并非所有交互控件类型都支持图标。
-     * @param icon 要使用的图标
+     * Sets the icon associated with this interactor.
+     * Not all types of interactors support icons.
+     * @param icon the icon to use
      */
     virtual void setIcon(const QIcon& icon);
 
     /**
-     * 设置与此交互控件关联的图标。
-     * 并非所有交互控件类型都支持图标。
-     * @param icon 要使用的图标
+     * Sets the icon associated with this interactor.
+     * Not all types of interactors support icons.
+     * @param icon the icon to use
      */
     virtual void setIcon(const QPixmap& icon);
 
     /**
-     * 设置与此交互控件关联的图标文件名，
-     * 如果未设置图标，则返回空字符串。
-     * 并非所有交互控件类型都支持图标。
-     * @param filename 要使用的图标文件路径
-     * @param retainIconSize 如果图标应保持现有像素大小，则为 true（默认），
-     *                       如果应调整大小以适应交互控件，则为 false
+     * Sets the file name of the icon associated with this interactor,
+     * or an empty string if no icon has been set.
+     * Not all types of interactors support icons.
+     * @param filename icon file path to use
+     * @param retainIconSize true if icon should stay at its existing pixel size (default),
+     *                       or false if it should be resized to fit the interactor
      */
     virtual void setIcon(const std::string& filename, bool retainIconSize = true);
 
     /**
-     * 在此交互控件上设置键盘监听器，以便在以下情况发生时调用它
-     * 当用户按下任意键时。
-     * 任何现有的按键监听器都会被替换。
+     * Sets a key listener on this interactor so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
      */
     virtual void setKeyListener(GEventListener func);
 
     /**
-     * 在此交互控件上设置键盘监听器，以便在以下情况发生时调用它
-     * 当用户按下任意键时。
-     * 任何现有的按键监听器都会被替换。
+     * Sets a key listener on this interactor so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
      */
     virtual void setKeyListener(GEventListenerVoid func);
 
     /**
-     * 设置交互控件左上角在屏幕上的 x/y 坐标
-     * 相对于其窗口。
-     * 通常客户端不应调用此函数，而应改用容器
-     * 以及用于定位交互控件的布局区域。
+     * Sets the onscreen x/y-coordinate of the top-left corner of the interactor
+     * relative to its window.
+     * Generally clients should not call this and should instead use containers
+     * and layout regions to position interactors.
      */
     virtual void setLocation(double x, double y);
 
     /**
-     * 设置此交互控件允许自身缩小到的最小像素尺寸
-     * 要调整到的大小。
-     * @throw 如果 width 或 height 为负，则抛出 ErrorException
+     * Sets the minimum size in pixels that this interactor will permit itself
+     * to be resized to.
+     * @throw ErrorException if width or height is negative
      */
     virtual void setMinimumSize(double width, double height);
 
     /**
-     * 设置此交互控件允许自身缩小到的最小像素尺寸
-     * 要调整到的大小。
-     * @throw 如果 width 或 height 为负，则抛出 ErrorException
+     * Sets the minimum size in pixels that this interactor will permit itself
+     * to be resized to.
+     * @throw ErrorException if width or height is negative
      */
     virtual void setMinimumSize(const GDimension& size);
 
     /**
-     * 为此交互控件设置鼠标监听器，以便在以下情况下调用：
-     * 当鼠标在其上移动或单击时。
-     * 任何现有的鼠标监听器都会被替换。
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is moved or clicked on it.
+     * Any existing mouse listener will be replaced.
      */
     virtual void setMouseListener(GEventListener func);
 
     /**
-     * 为此交互控件设置鼠标监听器，以便在以下情况下调用：
-     * 当鼠标在其上移动或单击时。
-     * 任何现有的鼠标监听器都会被替换。
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is moved or clicked on it.
+     * Any existing mouse listener will be replaced.
      */
     virtual void setMouseListener(GEventListenerVoid func);
 
     /**
-     * 设置表示此交互控件唯一名称的字符串。
-     * 默认名称字符串使用交互控件的类型及其 ID 来生成
-     * 类似 "GButton_14" 的字符串，但可调用 setName 覆盖。
-     * @param name 字符串，例如“GButton_14”
+     * Sets a string representing a unique name for this interactor.
+     * The default name string uses the interactor's type and its ID to make
+     * a string like "GButton_14", but you can override this by calling setName.
+     * @param name a string such as "GButton_14"
      */
     virtual void setName(const std::string& name);
 
     /**
-     * 设置此交互控件的首选像素高度。
-     * 通常客户端无需调用此方法；交互控件可以
-     * 自行确定首选大小。
-     * 但调用它可以在以下情况下向容器/布局系统提供提示：
-     * 你希望给定交互控件“倾向于”使自身变大或变小
-     * 针对具体程序的需要。
+     * Sets the height in pixels that this interactor would prefer to be.
+     * Normally clients do not need to call this method; the interactor can
+     * figure out its own preferred size.
+     * But calling it can help you to hint to the container/layout system if
+     * you want a given interactor to "prefer" to make itself larger or smaller
+     * for the purposes of your particular program.
      */
     virtual void setPreferredHeight(double height);
 
     /**
-     * 设置此交互控件的首选像素宽度和高度。
-     * 通常客户端无需调用此方法；交互控件可以
-     * 自行确定首选大小。
-     * 但调用它可以在以下情况下向容器/布局系统提供提示：
-     * 你希望给定交互控件“倾向于”使自身变大或变小
-     * 针对具体程序的需要。
+     * Sets the width and height in pixels that this interactor would prefer to be.
+     * Normally clients do not need to call this method; the interactor can
+     * figure out its own preferred size.
+     * But calling it can help you to hint to the container/layout system if
+     * you want a given interactor to "prefer" to make itself larger or smaller
+     * for the purposes of your particular program.
      */
     virtual void setPreferredSize(double width, double height);
 
 
     /**
-     * 设置此交互控件的首选像素尺寸。
-     * 通常客户端无需调用此方法；交互控件可以
-     * 自行确定首选大小。
+     * Sets the size in pixels that this interactor would prefer to be.
+     * Normally clients do not need to call this method; the interactor can
+     * figure out its own preferred size.
      */
     virtual void setPreferredSize(const GDimension& size);
 
 
     /**
-     * 设置此交互控件的首选像素宽度。
-     * 通常客户端无需调用此方法；交互控件可以
-     * 自行确定首选大小。
+     * Sets the width in pixels that this interactor would prefer to be.
+     * Normally clients do not need to call this method; the interactor can
+     * figure out its own preferred size.
      */
     virtual void setPreferredWidth(double width);
 
     /**
-     * 设置交互控件在屏幕上的像素宽度和高度。
-     * @throw 如果 width 或 height 为负，则抛出 ErrorException
+     * Sets the onscreen width and height of the interactor in pixels.
+     * @throw ErrorException if width or height is negative
      */
     virtual void setSize(double width, double height);
 
     /**
-     * 设置交互控件在屏幕上的像素宽度和高度。
-     * @throw 如果 width 或 height 为负，则抛出 ErrorException
+     * Sets the onscreen width and height of the interactor in pixels.
+     * @throw ErrorException if width or height is negative
      */
     virtual void setSize(const GDimension& size);
 
     /**
-     * 设置一个“工具提示”，当用户将鼠标悬停于以下位置时显示
-     * 覆盖在交互控件上。
-     * 设置空字符串以清除工具提示。
+     * Sets a "tooltip" that will appear if the user hovers their mouse
+     * over the interactor.
+     * Set an empty string to clear the tooltip.
      */
     virtual void setTooltip(const std::string& tooltipText);
 
     /**
-     * 如果交互控件在屏幕上可见，则返回 true。
-     * 交互控件在添加到屏幕上的以下对象之前不可见：
-     * 窗口或容器。
-     * 如果对不在任何屏幕窗口中的交互控件调用 setVisible
-     * 容器中，它不会产生任何效果。
+     * Returns true if the interactor is visible on the screen.
+     * Interactors will not be visible until they are added to an onscreen
+     * window or container.
+     * If you call setVisible on an interactor that is not in any onscreen
+     * container, it will have no effect.
      */
     virtual void setVisible(bool visible);
 
     /**
-     * 设置交互控件在屏幕上的像素宽度。
-     * @throw 如果 width 为负数，则抛出 ErrorException
+     * Sets the onscreen width of the interactor in pixels.
+     * @throw ErrorException if width is negative
      */
     virtual void setWidth(double width);
 
     /**
-     * 设置交互控件左上角在屏幕上的 x 坐标
-     * 相对于其窗口。
-     * 通常客户端不应调用此函数，而应改用容器
-     * 以及用于定位交互控件的布局区域。
+     * Sets the onscreen x-coordinate of the top-left corner of the interactor
+     * relative to its window.
+     * Generally clients should not call this and should instead use containers
+     * and layout regions to position interactors.
      */
     virtual void setX(double x);
 
     /**
-     * 设置交互控件左上角在屏幕上的 y 坐标
-     * 相对于其窗口。
-     * 通常客户端不应调用此函数，而应改用容器
-     * 以及用于定位交互控件的布局区域。
+     * Sets the onscreen y-coordinate of the top-left corner of the interactor
+     * relative to its window.
+     * Generally clients should not call this and should instead use containers
+     * and layout regions to position interactors.
      */
     virtual void setY(double y);
 
@@ -682,7 +682,7 @@ protected:
     /**
      * @private
      */
-    QReadWriteLock _lock;    // 避免线程竞态条件
+    QReadWriteLock _lock;    // avoid thread race conditions
 
     /**
      * @private
@@ -750,10 +750,10 @@ private:
 
 
 /**
- * 表示包装在以下对象内部的内部 Qt 控件的类：
- * GInteractor 对象。
- * 每个 GInteractor 子类都必须定义一个以下对象的子类：
- * 要由该交互控件包装的 _Internal_QWidget。
+ * A class representing internal Qt widgets that are wrapped inside of
+ * GInteractor objects.
+ * Every GInteractor subclass must define a class that is a subclass of
+ * _Internal_QWidget to be wrapped by that interactor.
  * @private
  */
 class _Internal_QWidget {
@@ -778,9 +778,9 @@ private:
 };
 
 /**
- * 一个通用的简单 GInteractor，可包装传入的任意 Qt QWidget。
- * 这样设计是为了使库可扩展，并允许你包装其他
- * 原始库中未内置的 Qt 控件。
+ * A generic simple GInteractor that wraps any Qt QWidget you pass it.
+ * This is meant to make the library extensible and allow you to wrap other
+ * Qt widgets that were not built into the original library.
  * @private
  */
 template <typename T>
@@ -788,7 +788,7 @@ class GGenericInteractor : public GInteractor {
 public:
     GGenericInteractor(T* widget)
             : _widget(widget) {
-        _iqwidget = new _Internal_QWidget();   // 占位项
+        _iqwidget = new _Internal_QWidget();   // dummy
     }
 
     _Internal_QWidget* getInternalWidget() const override {

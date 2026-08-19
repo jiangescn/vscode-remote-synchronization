@@ -1,28 +1,28 @@
 /*
- * 文件：gthread.h
+ * File: gthread.h
  * ---------------
  *
- * 此文件包含与多线程相关的代码。
- * Qt 至少需要两个线程运行：一个主 Qt GUI 线程，
- * 以及单独的学生代码线程。
- * 学生的 main() 函数在后一个学生线程中运行。
- * 还可以使用静态方法在新线程中运行代码
- * GThread::runInNewThread 或 GThread::runInNewThreadAsync。
+ * This file contains code related to multithreading.
+ * Qt requires at least two threads to run: a main Qt GUI thread,
+ * and a separate student code thread.
+ * The student's main() function runs in this latter student thread.
+ * You can also run code in a new thread using the static method
+ * GThread::runInNewThread or GThread::runInNewThreadAsync.
  *
  * @version 2019/04/13
- * - 重新实现 GThread，以包装 QThread 或 std::thread
- * - 添加用于线程抽象的 GThread 抽象基类
- * - 添加 GThreadQt 和 GThreadStd 子类
- * - 将 GFunctionThread 重命名为 QFunctionThread，以减少名称混淆
- * - 移除 GStudentThread 子类，并将其功能合并到 GThread
+ * - reimplement GThread to wrap either QThread or std::thread
+ * - add GThread abstract base class for thread abstractions
+ * - add GThreadQt and GThreadStd subclasses
+ * - rename GFunctionThread to QFunctionThread to reduce name confusion
+ * - remove GStudentThread subclass and combine functionality into GThread
  * @version 2018/10/18
- * - 改进线程名称
+ * - improved thread names
  * @version 2018/09/08
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gthread.h，以替代 Java 版本
+ * - renamed to gthread.h to replace Java version
  * @version 2018/07/28
- * - 初始版本
+ * - initial version
  */
 
 #ifndef _gthread_h
@@ -38,39 +38,39 @@
 class QtGui;
 
 /**
- * QFunctionThread 是在自己的线程中运行函数的对象
- * 执行线程。
+ * A QFunctionThread is an object that runs a function in its own
+ * thread of execution.
  *
- * 构造它时传入一个要运行的 void 函数作为参数，
- * 然后调用其 <code>run()</code> 方法，在该函数自己的
- * 自己的线程。
+ * You construct it, passing a void function to run as a parameter,
+ * and then call its <code>run()</code> method to run that function in its
+ * own thread.
  *
- * 客户端通常无需直接访问此类。
- * 若要在库中使用线程，请使用静态方法
- * <code>GThread::runInNewThread</code> 和
- * <code>GThread::runInNewThreadAsync</code>。
+ * Clients generally do not need to access this class directly.
+ * To use threads with our library, use the static methods
+ * <code>GThread::runInNewThread</code> and
+ * <code>GThread::runInNewThreadAsync</code>.
  * @private
  */
 class QFunctionThread : public QThread {
 public:
     /**
-     * 构造一个要执行的新线程。
+     * Constructs a new thread to execute.
      */
     QFunctionThread(GThunk func);
 
     /**
-     * 构造一个要执行的新线程。
+     * Constructs a new thread to execute.
      */
     QFunctionThread(GThunkInt func);
 
     /**
-     * 返回函数返回的值（如果有），否则返回 0。
+     * Returns the value returned by the function, if any, else 0.
      */
     int returnValue() const;
 
 protected:
     /**
-     * 在自己的线程中执行传给构造函数的函数。
+     * Executes the function passed to the constructor in its own thread.
      */
     void run();
 
@@ -84,252 +84,252 @@ private:
 };
 
 /**
- * GThread 类是一个包含静态方法的实用工具类，这些方法允许
- * 让你能在各种系统线程上运行代码。
- * 该库始终运行以下两个标准线程：
+ * The GThread class is a utility class containing static methods that allow
+ * you to run code on various system threads.
+ * The library has the following two standard threads running at all times:
  *
  * <ol>
- *     <li> Qt GUI 线程，运行 Qt 的主 exec() 循环，
- *          处理所有 GUI 对象的创建和事件
- *          （严格来说，这是程序的主线程）
+ *     <li> The Qt GUI thread, which runs Qt's master exec() loop,
+ *          handles all GUI object creation and events
+ *          (this is technically the program's main thread)
  *
- *     <li> 学生线程，运行学生的 main() 函数并
- *          main 调用的任何子函数
+ *     <li> The student thread, which runs the student's main() function and
+ *          any sub-functions called by main
  * </ol>
  *
- * 学生和客户端通常无需担心线程问题。
- * 许多图形交互控件会在内部调用这些方法
- * 确保所有内部 Qt GUI 控件都在 Qt GUI
- * 线程。这是它们正常运行所必需的。
+ * Students and clients normally do not need to worry about threading issues.
+ * These methods are called internally by many of the graphical interactors
+ * to make sure that all internal Qt GUI widgets are initialized on the Qt GUI
+ * thread.  This is required for them to function properly.
  *
- * 如果希望在独立线程中运行一段代码，请使用静态方法
- * <code>GThread::runInNewThread</code> 和
- * <code>GThread::runInNewThreadAsync</code>。
+ * If you want to run a piece of code in its own thread, use static methods
+ * <code>GThread::runInNewThread</code> and
+ * <code>GThread::runInNewThreadAsync</code>.
  */
 class GThread {
 public:
     /**
-     * 返回线程函数返回的值。
-     * 在函数运行结束前，此值将为 0。
-     * 仅当你的线程执行的函数
-     * 返回一个 int。
+     * Returns the value returned by the thread's function.
+     * This will be 0 until the function is done running.
+     * This method only has meaning if your thread executes a function that
+     * returns an int.
      */
     virtual int getResult() const = 0;
 
     /**
-     * 如果给定线程当前正在运行，则返回 true。
+     * Returns true if the given thread is currently actively running.
      */
     virtual bool isRunning() const = 0;
 
     /**
-     * 等待此线程完成。
-     * 会按需无限期等待。
+     * Waits for this thread to finish.
+     * Will wait indefinitely as needed.
      */
     virtual void join() = 0;
 
     /**
-     * 等待此线程完成。
-     * 最多等待给定毫秒数。
-     * 如果线程已结束则返回 true；如果仍在运行则返回 false。
+     * Waits for this thread to finish.
+     * Will wait up to the given number of milliseconds.
+     * Returns true if the thread has finished or false if it is still running.
      */
     virtual bool join(long ms) = 0;
 
     /**
-     * 返回传给构造函数的线程名称，或一个默认名称
-     * 如果未传入名称，则使用默认名称。
-     * 并非所有线程实现都支持名称。
+     * Returns the thread's name as passed to the constructor, or a default
+     * name if none was passed.
+     * Not all thread implementations support names.
      */
     virtual std::string name() const = 0;
 
     /**
-     * 返回线程的优先级。
-     * 优先级较高的线程往往比优先级较低的线程获得更多运行时间。
-     * 并非所有线程实现都支持优先级。
+     * Returns the thread's priority.
+     * Threads with higher priorities tend to run more than ones that are lower.
+     * Not all thread implementations support priorities.
      */
     virtual int priority() const = 0;
 
     /**
-     * 将线程名称设置为给定值。
-     * 并非所有线程实现都支持名称。
+     * Sets the thread's name to the given value.
+     * Not all thread implementations support names.
      */
     virtual void setName(const std::string& name) = 0;
 
     /**
-     * 将线程优先级设置为给定值。
-     * 并非所有线程实现都支持优先级。
+     * Sets the thread's priority to the given value.
+     * Not all thread implementations support priorities.
      */
     virtual void setPriority(int priority) = 0;
 
     /**
-     * 使线程暂停指定的毫秒数。
-     * @throw 如果 ms 为负，则抛出 ErrorException
+     * Causes the thread to pause itself for the given number of milliseconds.
+     * @throw ErrorException if ms is negative
      */
     virtual void sleep(double ms) = 0;
 
     /**
-     * 指示线程开始运行。
+     * Tells the thread to start running.
      */
     virtual void start() = 0;
 
     /**
-     * 强制终止线程。
-     * 除非绝对必要，否则可能不应调用此函数，
-     * 因为这可能导致程序状态混乱。
+     * Forcibly terminates the thread.
+     * You probably should not call this unless absolutely necessary,
+     * since it can lead to messed up state in the program.
      */
     virtual void stop() = 0;
 
     /**
-     * 表示当前线程愿意将执行权让给任何
-     * 其他希望运行的线程。
-     * 它与 sleep() 略有不同，因为 sleep() 要求暂停
-     * 使当前线程暂停给定时间，而 yield() 更像是
-     * 向其他线程发出提示：如果愿意，现在可以运行。
+     * Indicates that the current thread is willing to yield execution to any
+     * other threads that want to run.
+     * This differs slightly from sleep() in that sleep() mandates to pause the
+     * current thread for a given amount of time, while yield() is more of an
+     * offer to other threads that they may run now if they so choose.
      */
     virtual void yield() = 0;
 
-    // TODO：用于设置顶层异常处理程序的方法
+    // TODO: methods to set a top-level exception handler
 
 
     /**
-     * 如果调用者不在 Qt GUI 线程上运行，则生成错误。
-     * 可以传入可选的错误详细消息。
+     * Generates an error if the caller is not running on the Qt GUI thread.
+     * An optional error detail message can be passed.
      */
     static void ensureThatThisIsTheQtGuiThread(const std::string& message = "");
 
     /**
-     * 返回调用方的 Qt 线程对象。
+     * Returns the caller's Qt thread object.
      */
     static GThread* getCurrentThread();
 
     /**
-     * 返回表示以下对象 Qt GUI 线程的 Qt 线程对象
-     * 应用程序。
+     * Returns the Qt thread object representing the Qt Gui thread for the
+     * application.
      */
     static GThread* getQtGuiThread();
 
     /**
-     * 返回表示以下代码运行线程的 Qt 线程对象
-     * 学生的 main() 函数运行。
+     * Returns the Qt thread object representing the thread on which the
+     * student's main() function runs.
      */
     static GThread* getStudentThread();
 
     /**
-     * 如果调用方正在 Qt GUI 线程上运行，则返回 true。
+     * Returns true if the caller is running on the Qt GUI thread.
      */
     static bool iAmRunningOnTheQtGuiThread();
 
     /**
-     * 如果调用方正在学生线程上运行，则返回 true。
+     * Returns true if the caller is running on the student thread.
      */
     static bool iAmRunningOnTheStudentThread();
 
     /**
-     * 如果 Qt GUI 线程已创建，则返回 true。
-     * 这会发生在学生的 main() 函数运行之前。
+     * Returns true if the Qt GUI thread has been created.
+     * This will happen right before the student's main() function runs.
      */
     static bool qtGuiThreadExists();
 
     /**
-     * 在独立新线程中运行给定 void 函数，
-     * 阻塞当前线程，等待其完成。
-     * 可以为线程传入可选名称，这有助于查看
-     * 在调试器中遍历线程列表。
+     * Runs the given void function in its own new thread,
+     * blocking the current thread to wait until it is done.
+     * You can pass an optional name for the thread which can help when looking
+     * through the list of threads in a debugger.
      *
-     * 新线程中未捕获的异常或错误会使以下对象崩溃：
-     * 程序，并且调用线程无法捕获该异常。
+     * Any uncaught exceptions or errors in the new thread will crash the
+     * program and cannot be caught by the calling thread.
      *
-     * 若希望新线程在后台运行，
-     * 改用 <code>runInNewThreadAsync</code> 函数。
+     * If you want the new thread to run in the background,
+     * use the <code>runInNewThreadAsync</code> function instead.
      */
     static void runInNewThread(GThunk func, const std::string& threadName = "");
 
     /**
-     * 在后台独立新线程中运行给定 void 函数；
-     * 当前线程不会阻塞，而会继续执行。
-     * 可以为线程传入可选名称，这有助于查看
-     * 在调试器中遍历线程列表。
-     * 返回指向给定线程的指针，以便你按需等待给定的
-     * 供线程完成工作的一段时间。
+     * Runs the given void function in its own new thread in the background;
+     * the current thread does not block and keeps going.
+     * You can pass an optional name for the thread which can help when looking
+     * through the list of threads in a debugger.
+     * Returns a pointer to the given thread in case you want to wait a given
+     * amount of time for the thread to do its work.
      *
-     * 新线程中未捕获的异常或错误会使以下对象崩溃：
-     * 程序，并且调用线程无法捕获该异常。
+     * Any uncaught exceptions or errors in the new thread will crash the
+     * program and cannot be caught by the calling thread.
      *
-     * 如果希望调用者等待新线程运行结束，
-     * 改用 <code>runInNewThread</code> 函数。
+     * If you want the caller to wait for the new thread to finish running,
+     * use the <code>runInNewThread</code> function instead.
      */
     static GThread* runInNewThreadAsync(GThunk func, const std::string& threadName = "");
 
     /**
-     * 在 Qt GUI 线程上运行给定 void 函数，
-     * 阻塞当前线程，等待其完成。
-     * 内部 GUI 控件会频繁调用此函数，并且
-     * 库的交互控件，因为所有 Qt GUI 操作都必须
-     * 在应用程序主线程上执行。
+     * Runs the given void function on the Qt GUI thread,
+     * blocking the current thread to wait until it is done.
+     * This function is called heavily by the internal GUI widgets and
+     * interactors of the library, because all Qt GUI operations are required
+     * to be done on the application's main thread.
      *
-     * Qt GUI 线程中未捕获的异常或错误会使以下对象崩溃：
-     * 程序，并且调用线程无法捕获该异常。
+     * Any uncaught exceptions or errors in the Qt GUI thread will crash the
+     * program and cannot be caught by the calling thread.
      *
-     * 若希望新线程在后台运行，
-     * 改用 <code>runOnQtGuiThreadAsync</code> 函数。
+     * If you want the new thread to run in the background,
+     * use the <code>runOnQtGuiThreadAsync</code> function instead.
      */
     static void runOnQtGuiThread(GThunk func);
 
     /**
-     * 在后台 Qt GUI 线程上运行给定 void 函数；
-     * 当前线程不会阻塞，而会继续执行。
+     * Runs the given void function on the Qt GUI thread in the background;
+     * the current thread does not block and keeps going.
      *
-     * Qt GUI 线程中未捕获的异常或错误会使以下对象崩溃：
-     * 程序，并且调用线程无法捕获该异常。
+     * Any uncaught exceptions or errors in the Qt GUI thread will crash the
+     * program and cannot be caught by the calling thread.
      *
-     * 如果希望调用者等待 Qt GUI 线程代码运行结束，
-     * 改用 <code>runOnQtGuiThread</code> 函数。
+     * If you want the caller to wait for the Qt GUI thread code to finish running,
+     * use the <code>runOnQtGuiThread</code> function instead.
      */
     static void runOnQtGuiThreadAsync(GThunk func);
 
     /**
-     * 启动学生线程，并让其运行给定函数，
-     * 它不接收参数并返回 int。
+     * Starts the student's thread, telling it to run the given function,
+     * which accepts no arguments and returns an int.
      */
     static void startStudentThread(GThunkInt mainFunc);
 
     /**
-     * 如果学生线程已创建，则返回 true。
+     * Returns true if the student's thread has already been created.
      */
     static bool studentThreadExists();
 
     /**
-     * 等待给定线程完成，最多等待给定毫秒数。
-     * @return 如果线程在经过完整 ms 时间前未完成，则为 true
+     * Waits the given number of milliseconds for the given thread to finish.
+     * @return true if the entire amount of ms was elapsed without the thread finishing
      */
     static bool wait(GThread* thread, long ms);
 
     /**
-     * 将当前线程设置为应用程序的“Gui”线程。
-     * 库初始化代码会调用此函数，以通知 GThread
-     * 声明哪个线程是 GUI 线程的类。
-     * 客户端无需直接调用此方法。
+     * Sets the current thread to be the "Gui" thread for the application.
+     * This is called by our library initialization code to inform the GThread
+     * class what thread is the Gui thread.
+     * Clients do not need to call this method directly.
      * @private
      */
     static void setGuiThread();
 
 protected:
-    // 禁止构造
+    // forbid construction
     GThread();
     virtual ~GThread() = default;
 
     virtual void run() = 0;
 
-    // 成员变量
+    // member variables
     GThunk _func;
     GThunkInt _funcInt;
     bool _hasReturn;
     int _returnValue;
 
-    // 指向两个核心库线程的指针
+    // pointers to the two core library threads
     static GThread* _qtGuiThread;
     static GThread* _studentThread;
 
-    // QThread 与相关 GThread 包装器之间的映射
+    // mapping between QThreads and their related GThread wrappings
     static Map<QThread*, GThread*> _allGThreadsQt;
     static Map<std::thread*, GThread*> _allGThreadsStd;
 
@@ -341,35 +341,35 @@ private:
 
 
 /**
- * GThreadQt 是一个在自己的线程中运行函数的对象
- * Qt 执行线程。
- * 构造它时传入一个要运行的 void 函数作为参数，
- * 然后调用其 <code>run()</code> 方法，在该函数自己的
- * 自己的线程。
+ * A GThreadQt is an object that runs a function in its own
+ * Qt thread of execution.
+ * You construct it, passing a void function to run as a parameter,
+ * and then call its <code>run()</code> method to run that function in its
+ * own thread.
  *
- * 提供此功能是为了让你无需自行创建 QThread 子类
- * 仅用于运行给定代码片段。
+ * This is provided so that you don't need to subclass QThread yourself
+ * just to run a given piece of code.
  *
- * 客户端通常无需直接访问此类。
- * 若要在库中使用线程，请使用静态方法
- * <code>GThread::runInNewThread</code> 和
- * <code>GThread::runInNewThreadAsync</code>。
+ * Clients generally do not need to access this class directly.
+ * To use threads with our library, use the static methods
+ * <code>GThread::runInNewThread</code> and
+ * <code>GThread::runInNewThreadAsync</code>.
  * @private
  */
 class GThreadQt : public GThread {
 public:
     /**
-     * 构造一个要执行的新线程，可指定线程名称。
+     * Constructs a new thread to execute, with an optional thread name.
      */
     GThreadQt(GThunk func, const std::string& threadName = "");
 
     /**
-     * 构造一个要执行的新线程，可指定线程名称。
+     * Constructs a new thread to execute, with an optional thread name.
      */
     GThreadQt(GThunkInt func, const std::string& threadName = "");
 
     /**
-     * 构造新线程以包装给定现有 Qt 线程。
+     * Constructs a new thread to wrap the given existing Qt thread.
      */
     GThreadQt(QThread* qthread);
 
@@ -418,40 +418,40 @@ protected:
 private:
     Q_DISABLE_COPY(GThreadQt)
 
-    QThread* _qThread;   // 底层真实 Qt 线程
+    QThread* _qThread;   // underlying real Qt thread
 };
 
 
 /**
- * GThreadQt 是一个在自己的线程中运行函数的对象
- * std::thread 执行线程。
- * 构造它时传入一个要运行的 void 函数作为参数，
- * 然后调用其 <code>run()</code> 方法，在该函数自己的
- * 自己的线程。
+ * A GThreadQt is an object that runs a function in its own
+ * std::thread thread of execution.
+ * You construct it, passing a void function to run as a parameter,
+ * and then call its <code>run()</code> method to run that function in its
+ * own thread.
  *
- * 提供此功能是为了让你无需自行创建 QThread 子类
- * 仅用于运行给定代码片段。
+ * This is provided so that you don't need to subclass QThread yourself
+ * just to run a given piece of code.
  *
- * 客户端通常无需直接访问此类。
- * 若要在库中使用线程，请使用静态方法
- * <code>GThread::runInNewThread</code> 和
- * <code>GThread::runInNewThreadAsync</code>。
+ * Clients generally do not need to access this class directly.
+ * To use threads with our library, use the static methods
+ * <code>GThread::runInNewThread</code> and
+ * <code>GThread::runInNewThreadAsync</code>.
  * @private
  */
 class GThreadStd : public GThread {
 public:
     /**
-     * 构造一个要执行的新线程，可指定线程名称。
+     * Constructs a new thread to execute, with an optional thread name.
      */
     GThreadStd(GThunk func, const std::string& threadName = "");
 
     /**
-     * 构造一个要执行的新线程，可指定线程名称。
+     * Constructs a new thread to execute, with an optional thread name.
      */
     GThreadStd(GThunkInt func, const std::string& threadName = "");
 
     /**
-     * 构造新线程以包装给定现有 std 线程。
+     * Constructs a new thread to wrap the given existing std thread.
      */
     GThreadStd(std::thread* stdThread);
 
@@ -500,16 +500,16 @@ protected:
 private:
     Q_DISABLE_COPY(GThreadStd)
 
-    std::thread* _stdThread;   // 底层真实 std 线程
+    std::thread* _stdThread;   // underlying real std thread
     std::string _name;
     std::atomic<bool> _running;
 };
 
 
-// 设置当前线程名称以在调试器中显示的平台特定方式
+// Platform-specific way to set the name of current thread for display in debugger
 void native_set_thread_name(const char *name);
 
-// 退出当前线程的平台特定方式
+// Platform-specific way to exit current thread
 [[noreturn]] void native_thread_exit();
 
 #endif // _gthread_h

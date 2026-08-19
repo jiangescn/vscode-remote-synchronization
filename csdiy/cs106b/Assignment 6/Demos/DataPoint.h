@@ -6,11 +6,11 @@
 #include <istream>
 #include "Demos/DataPointAlloc.h"
 
-/* 表示数据点的类型。本作业全程都会使用此类型
- * 表示某段信息（此处为字符串）及其关联的
- * 权重（此处为 double）。原则上可以设想包含更多
- * 由某个键（一般信息）及其关联内容组成的复杂结构
- * 关联权重，其中键按权重排序。
+/* A type representing a data point. This type is used throughout this assignment
+ * to represent some piece of information (here, a string) with some associated
+ * weight (here, a double). In principle, you could imagine having much more
+ * complex structures consisting of some key (general information) with an
+ * associated weight, where the keys are sorted by weight.
  */
 struct DataPoint {
     std::string name;
@@ -24,37 +24,37 @@ struct DataPoint {
 
 
 
-/* 以下所有内容都是我们提供的额外功能，用于让以下操作更容易：
- * 处理 DataPoint。这涉及我们尚未讲到的内容
- * 本季度的 CS106B；如对此工作方式有疑问，请联系我们！
+/* Everything below this is extra functionality we've provided to make it easier
+ * to work with DataPoints. This involves content above what we've covered in
+ * CS106B this quarter; ping us if you have any questions about how this works!
  */
 
-/* 一些用于处理 DataPoint 的实用运算符。 */
+/* Some nice utility operators for working with DataPoints. */
 bool operator== (const DataPoint& lhs, const DataPoint& rhs);
 bool operator!= (const DataPoint& lhs, const DataPoint& rhs);
 
-/* 将 DataPoint 写入流。 */
+/* Write a DataPoint to a stream. */
 std::ostream& operator<< (std::ostream& out, const DataPoint& pt);
 
-/* 从流中读取一个 DataPoint。 */
+/* Read a DataPoint from a stream. */
 std::istream& operator>> (std::istream& in, DataPoint& result);
 
-/* 不应使用关系运算符直接相互比较 DataPoint
- * 运算符。如果你在这里附近遇到编译器错误，很可能是
+/* You should not be directly comparing DataPoints against one another using relational
+ * operators. If you're getting a compiler error around here, there's a good chance that
  *
- *   1. 你正在相互比较 DataPoint 对象，例如
+ *   1. You are trying to compare DataPoint objects against one another, as in
  *
- *         if (dp1 < dp2) { ... 错误！ ... }
+ *         if (dp1 < dp2) { ... bad! ... }
  *
- *      若是这种情况，需要明确指定希望比较的内容
- *      相互比较。你的本意是否是比较它们的
- *      权重？
+ *      If that's the case, you'll need to specify what it is that you want to
+ *      compare against one another. Did you mean, for example, to compare their
+ *      weights?
  *
- *         if (dp1.weight < dp2.weight) { ... 正确！ ... }
+ *         if (dp1.weight < dp2.weight) { ... good! ... }
  *
- *   2. 你正在构造 Set<DataPoint> 或 Map<DataPoint, Something>。
- *      就本作业而言，不需要执行这两种操作中的任何一种
- *      操作。看看是否有其他方式可以实现你的具体目标。
+ *   2. You are trying to form a Set<DataPoint> or a Map<DataPoint, Something>.
+ *      For the purposes of this assignment, you shouldn't need to do either of these
+ *      things. See if there's a different way to accomplish your particular goal.
  */
 bool operator<  (const DataPoint& lhs, const DataPoint& rhs) = delete;
 bool operator<= (const DataPoint& lhs, const DataPoint& rhs) = delete;

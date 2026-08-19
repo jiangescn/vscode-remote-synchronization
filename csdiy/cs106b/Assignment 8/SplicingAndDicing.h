@@ -2,16 +2,16 @@
 #include "Demos/NucleotideAlloc.h"
 
 /**
- * 表示核苷酸的类型。请勿对此进行任何更改
- * 解决此问题过程中使用的 struct；不过，你也不应
- * 发现自己也需要这样做。
+ * Type representing a nucleotide. Please do not make any changes to this
+ * struct in the course of solving this problem; then again, you shouldn't
+ * find yourself needing to do this, either.
  */
 struct Nucleotide {
     char value;
     Nucleotide* next;
     Nucleotide* prev;
 
-    /* 此自定义宏有助于检测内存泄漏。 */
+    /* This custom macro assists with memory leak detection. */
     TRACK_ALLOCATIONS_OF(Nucleotide);
 };
 

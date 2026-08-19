@@ -1,24 +1,24 @@
 /*
- * 文件：glabel.cpp
+ * File: glabel.cpp
  * ----------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 将部分事件处理代码移到 GInteractor 父类
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
- * - 添加接受 QIcon 和 QPixmap 的 setIcon
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/10/04
- * - 添加 get/setWordWrap
+ * - added get/setWordWrap
  * @version 2018/09/04
- * - 添加双击事件支持
+ * - added double-click event support
  * @version 2018/09/03
- * - 为可单击标签添加 addActionListener 方法
+ * - added addActionListener methods for clickable labels
  * @version 2018/08/23
- * - 重命名为 glabel.cpp，以替代 Java 版本
+ * - renamed to glabel.cpp to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "glabel.h"
@@ -38,7 +38,7 @@ GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
     }
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GLabel::GLabel(const std::string& text, const QIcon& icon, QWidget* parent)
@@ -48,7 +48,7 @@ GLabel::GLabel(const std::string& text, const QIcon& icon, QWidget* parent)
     });
     setText(text);
     setIcon(icon);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GLabel::GLabel(const std::string& text, const QPixmap& icon, QWidget* parent)
@@ -58,12 +58,12 @@ GLabel::GLabel(const std::string& text, const QPixmap& icon, QWidget* parent)
     });
     setText(text);
     setIcon(icon);
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GLabel::~GLabel() {
-    // TODO：if (_gtext) { delete _gtext; }
-    // TODO：delete _iqlabel;
+    // TODO: if (_gtext) { delete _gtext; }
+    // TODO: delete _iqlabel;
     _iqlabel->detach();
     _iqlabel = nullptr;
 }
@@ -91,14 +91,14 @@ std::string GLabel::getText() const {
 }
 
 GInteractor::TextPosition GLabel::getTextPosition() const {
-    // TODO（待办）
+    // TODO
 //    switch (_iqlabel->toolButtonStyle()) {
 //    case Qt::ToolButtonTextBesideIcon:
 //        return GInteractor::TEXT_BESIDE_ICON;
 //    case Qt::ToolButtonTextUnderIcon:
 //        return GInteractor::TEXT_UNDER_ICON;
 //    case Qt::ToolButtonTextOnly:
-//    默认：
+//    default:
 //        return GInteractor::TEXT_ONLY;
 //    }
 
@@ -139,46 +139,46 @@ void GLabel::setColor(int rgb) {
     if (_gtext) {
         _gtext->setColor(rgb);
     }
-    GInteractor::setColor(rgb);   // 调用父类实现
+    GInteractor::setColor(rgb);   // call super
 }
 
 void GLabel::setColor(const std::string& color) {
     if (_gtext) {
         _gtext->setColor(color);
     }
-    GInteractor::setColor(color);   // 调用父类实现
+    GInteractor::setColor(color);   // call super
 }
 
 void GLabel::setFont(const QFont& font) {
     if (_gtext) {
         _gtext->setFont(font);
     }
-    GInteractor::setFont(font);   // 调用父类实现
+    GInteractor::setFont(font);   // call super
 }
 
 void GLabel::setFont(const std::string& font) {
     if (_gtext) {
         _gtext->setFont(font);
     }
-    GInteractor::setFont(font);   // 调用父类实现
+    GInteractor::setFont(font);   // call super
 }
 
 void GLabel::setForeground(int rgb) {
     if (_gtext) {
         _gtext->setForeground(rgb);
     }
-    GInteractor::setForeground(rgb);   // 调用父类实现
+    GInteractor::setForeground(rgb);   // call super
 }
 
 void GLabel::setForeground(const std::string& color) {
     if (_gtext) {
         _gtext->setForeground(color);
     }
-    GInteractor::setForeground(color);   // 调用父类实现
+    GInteractor::setForeground(color);   // call super
 }
 
 void GLabel::setHeight(double height) {
-    ensureGText();   // 设置大小会触发 GText 模式
+    ensureGText();   // setting size triggers GText mode
     _gtext->setHeight(height);
     GInteractor::setHeight(height);
 }
@@ -186,7 +186,7 @@ void GLabel::setHeight(double height) {
 void GLabel::setIcon(const QIcon& icon) {
     GInteractor::setIcon(icon);
     GThread::runOnQtGuiThread([this, &icon]() {
-        QSize size(16, 16);   // 默认大小
+        QSize size(16, 16);   // default size
         if (!icon.availableSizes().empty()) {
             size = icon.availableSizes()[0];
         }
@@ -195,7 +195,7 @@ void GLabel::setIcon(const QIcon& icon) {
         _iqlabel->updateGeometry();
         _iqlabel->update();
 
-        // TODO：会丢失文本；怎样让同一个标签同时拥有图标和文本？
+        // TODO: loses text; how to have both icon and text in same label?
         if (!getText().empty()) {
             std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
         }
@@ -209,7 +209,7 @@ void GLabel::setIcon(const QPixmap& icon) {
         _iqlabel->updateGeometry();
         _iqlabel->update();
 
-        // TODO：会丢失文本；怎样让同一个标签同时拥有图标和文本？
+        // TODO: loses text; how to have both icon and text in same label?
         if (!getText().empty()) {
             std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
         }
@@ -226,13 +226,13 @@ void GLabel::setIcon(const std::string& filename, bool retainIconSize) {
                 QPixmap pixmap(QString::fromStdString(filename));
                 _iqlabel->setPixmap(pixmap);
                 if (retainIconSize) {
-                    // TODO（待办）
+                    // TODO
                     // _iqlabel->setIconSize(pixmap.size());
                     _iqlabel->updateGeometry();
                     _iqlabel->update();
                 }
 
-                // TODO：会丢失文本；怎样让同一个标签同时拥有图标和文本？
+                // TODO: loses text; how to have both icon and text in same label?
                 if (!getText().empty()) {
                     std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
                 }
@@ -246,19 +246,19 @@ void GLabel::setLabel(const std::string& text) {
 }
 
 void GLabel::setLocation(double x, double y) {
-    ensureGText();   // 设置位置会触发 GText 模式
+    ensureGText();   // setting location triggers GText mode
     _gtext->setLocation(x, y);
     GInteractor::setLocation(x, y);
 }
 
 void GLabel::setSize(double width, double height) {
-    ensureGText();   // 设置大小会触发 GText 模式
+    ensureGText();   // setting size triggers GText mode
     _gtext->setSize(width, height);
     GInteractor::setSize(width, height);
 }
 
 void GLabel::setSize(const GDimension& size) {
-    ensureGText();   // 设置大小会触发 GText 模式
+    ensureGText();   // setting size triggers GText mode
     _gtext->setSize(size);
     GInteractor::setSize(size);
 }
@@ -274,7 +274,7 @@ void GLabel::setText(const std::string& text) {
 }
 
 void GLabel::setTextPosition(GInteractor::TextPosition position) {
-    // TODO：这实际上不起作用，因为 Qt 中的标签无法同时包含文本和图标
+    // TODO: doesn't really work because a label can't have both text and icon in Qt
     if (position == GInteractor::TEXT_UNDER_ICON) {
         // _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     } else if (position == GInteractor::TEXT_BESIDE_ICON) {
@@ -288,11 +288,11 @@ void GLabel::setVisible(bool visible) {
     if (_gtext) {
         _gtext->setVisible(visible);
     }
-    GInteractor::setVisible(visible);   // 调用父类实现
+    GInteractor::setVisible(visible);   // call super
 }
 
 void GLabel::setWidth(double width) {
-    ensureGText();   // 设置大小会触发 GText 模式
+    ensureGText();   // setting size triggers GText mode
     _gtext->setWidth(width);
     GInteractor::setWidth(width);
 }
@@ -304,13 +304,13 @@ void GLabel::setWordWrap(bool wrap) {
 }
 
 void GLabel::setX(double x) {
-    ensureGText();   // 设置位置会触发 GText 模式
+    ensureGText();   // setting location triggers GText mode
     _gtext->setX(x);
     GInteractor::setX(x);
 }
 
 void GLabel::setY(double y) {
-    ensureGText();   // 设置位置会触发 GText 模式
+    ensureGText();   // setting location triggers GText mode
     _gtext->setY(y);
     GInteractor::setY(y);
 }
@@ -329,7 +329,7 @@ void _Internal_QLabel::detach() {
 
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QLabel::mouseDoubleClickEvent", "event");
-    QWidget::mouseDoubleClickEvent(event);   // 调用父类实现
+    QWidget::mouseDoubleClickEvent(event);   // call super
     if (!_glabel) {
         return;
     }
@@ -338,10 +338,10 @@ void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
         return;
     }
     GEvent mouseEvent(
-                /* 类  */ MOUSE_EVENT,
-                /* 类型   */ MOUSE_DOUBLE_CLICKED,
-                /* 名称   */ "doubleclick",
-                /* 来源 */ _glabel);
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _glabel);
     mouseEvent.setActionCommand(_glabel->getActionCommand());
     mouseEvent.setButton((int) event->button());
     mouseEvent.setX(event->pos().x());
@@ -351,12 +351,12 @@ void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
 
 void _Internal_QLabel::mousePressEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QLabel::mousePressEvent", "event");
-    QWidget::mousePressEvent(event);   // 调用父类实现
+    QWidget::mousePressEvent(event);   // call super
     if (!_glabel) {
         return;
     }
 
-    // 仅对左键单击触发信号/事件
+    // fire the signal/event only for left-clicks
     if (!(event->button() & Qt::LeftButton)) {
         return;
     }
@@ -368,10 +368,10 @@ void _Internal_QLabel::mousePressEvent(QMouseEvent* event) {
     }
 
     GEvent actionEvent(
-                /* 类  */ ACTION_EVENT,
-                /* 类型   */ ACTION_PERFORMED,
-                /* 名称   */ "click",
-                /* 来源 */ _glabel);
+                /* class  */ ACTION_EVENT,
+                /* type   */ ACTION_PERFORMED,
+                /* name   */ "click",
+                /* source */ _glabel);
     actionEvent.setActionCommand(_glabel->getActionCommand());
     actionEvent.setButton((int) event->button());
     actionEvent.setX(event->pos().x());

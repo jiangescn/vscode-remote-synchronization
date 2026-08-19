@@ -1,15 +1,15 @@
 /*
- * 文件：plainconsole.cpp
+ * File: plainconsole.cpp
  * ----------------------
- * 此文件定义用于为
- * C++ 纯文本控制台流：cin/cout/cerr。
- * 每个函数的文档见 plainconsole.h。
+ * This file defines the implementation of functions to add utility to the
+ * C++ plain text console streams, cin/cout/cerr.
+ * See plainconsole.h for documentation of each function.
  *
  * @author Marty Stepp
  * @version 2017/11/12
- * - 将受限流改为抛出错误而不是触发 SIGABRT，以便更好地显示
+ * - changed limited stream to throw error rather than raise SIGABRT for better displaying
  * @version 2017/10/20
- * - 修复关于 0 与 nullptr 的编译器警告
+ * - fixed compiler warning about 0 vs nullptr
  * @version 2015/10/21
  * @since 2015/10/21
  */
@@ -22,17 +22,17 @@
 
 namespace plainconsole {
 /*
- * 仅将所有内容转发给委托对象的流缓冲区，
- * 但会回显从中读取的任何用户输入。
- * 用于在从文件重定向输入时（有时）回显控制台输入。
+ * A stream buffer that just forwards everything to a delegate,
+ * but echoes any user input read from it.
+ * Used to (sometimes) echo console input when redirected in from a file.
  * http://www.cplusplus.com/reference/streambuf/streambuf/
  */
 class EchoingStreambuf : public std::streambuf {
 private:
-    /* 常量 */
+    /* Constants */
     static const int BUFFER_SIZE = 4096;
 
-    /* 实例变量 */
+    /* Instance variables */
     char inBuffer[BUFFER_SIZE];
     char outBuffer[BUFFER_SIZE];
     std::istream instream;
@@ -52,7 +52,7 @@ public:
     }
 
     ~EchoingStreambuf() {
-        /* 空 */
+        /* Empty */
     }
     
     virtual void setOutputLimit(int limit) {
@@ -60,7 +60,7 @@ public:
     }
 
     virtual int underflow() {
-        // “return 0”处理来自 stdin 重定向的输入结束情况
+        // 'return 0' handles end-of-input from stdin redirect
         std::string line;
         if (!getline(instream, line)) {
             return 0;
@@ -77,7 +77,7 @@ public:
         inBuffer[n] = '\0';
         setg(inBuffer, inBuffer, inBuffer + n);
         
-        // 这里用于回显输入
+        // this is the place to echo the input
         // fprintf(stdout, "inBuffer: \"%s\"\n", inBuffer);
         // fflush(stdout);
         outstream << inBuffer;
@@ -121,8 +121,8 @@ public:
 };
 
 /*
- * 限制可打印字符数量的流缓冲区。
- * 如果超过该数量，将抛出 ErrorException。
+ * A stream buffer that limits how many characters you can print to it.
+ * If you exceed that many, it throws an ErrorException.
  */
 class LimitedStreambuf : public std::streambuf {
 private:
@@ -135,7 +135,7 @@ public:
             : outstream(&buf),
               outputLimit(limit),
               outputPrinted(0) {
-        setp(nullptr, nullptr);   // // 不进行缓冲，每个字符都触发 overflow
+        setp(nullptr, nullptr);   // // no buffering, overflow on every char
     }
 
     virtual void setOutputLimit(int limit) {
@@ -145,12 +145,12 @@ public:
     virtual int overflow(int ch = EOF) {
         outputPrinted++;
         if (outputLimit > 0 && outputPrinted > outputLimit) {
-            // error("打印了过多输出");
+            // error("excessive output printed");
             // outstream.setstate(std::ios::failbit | std::ios::badbit | std::ios::eofbit);
-            // 终止程序
-            // （使用信号而不是错误/异常
-            // 这样学生就不会尝试捕获它）
-            // error("打印了过多输出；代码中可能存在无限循环。");
+            // kill the program
+            // (use a signal rather than error/exception
+            // so student won't try to catch it)
+            // error("Excessive output printed; you may have an infinite loop in your code.");
             raise(SIGUSR1);
         } else {
             outstream.put(ch);
@@ -174,16 +174,16 @@ void setEcho(bool value) {
     static std::streambuf* oldBuf = nullptr;
     
     if (!echobufIn && value) {
-        // 开始回显从 cin 获取的用户输入
+        // start to echo user input pulled from cin
         oldBuf = std::cin.rdbuf();
         echobufIn = new EchoingStreambuf(*std::cin.rdbuf(), std::cout);
         std::cin.rdbuf(echobufIn);
     } else if (echobufIn && !value) {
-        // 停止回显
+        // stop echo
         std::cin.rdbuf(oldBuf);
         oldBuf = nullptr;
         echobufIn = nullptr;
     }
 }
 
-} // 命名空间 plainconsole
+} // namespace plainconsole

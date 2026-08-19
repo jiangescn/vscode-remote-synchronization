@@ -1,8 +1,8 @@
 /*
- * 文件：vector.h
+ * File: vector.h
  * --------------
- * 此文件导出 <code>Vector</code> 类，该类提供
- * C++ 数组类型的高效、安全、便捷替代品。
+ * This file exports the <code>Vector</code> class, which provides an
+ * efficient, safe, convenient replacement for the array type in C++.
  */
 
 #ifndef _vector_h
@@ -25,331 +25,331 @@
 #include "random.h"
 
 /**
- * 此类存储一个类似数组的有序值列表。
- * 支持使用方括号进行传统数组选择，但
- * 还支持插入和删除元素。在以下方面类似：
- * 与 STL <code>vector</code> 类型对应的函数，但在两方面更简单
- * 使用和实现。
+ * This class stores an ordered list of values similar to an array.
+ * It supports traditional array selection using square brackets, but
+ * also supports inserting and deleting elements.  It is similar in
+ * function to the STL <code>vector</code> type, but is simpler both
+ * to use and to implement.
  */
 template <typename ValueType>
 class Vector {
 public:
     /**
-     * 初始化一个新的空向量。
+     * Initializes a new empty vector.
      * @bigoh O(1)
      */
     Vector() = default;
 
     /**
-     * 初始化一个新向量，创建包含 <code>n</code> 个元素的数组
-     * 元素，每个元素都初始化为 <code>value</code>。
-     * 如果缺少 <code>value</code>，元素将初始化为
-     * 恢复为该类型的默认值。
+     * Initializes a new vector, creating an array with <code>n</code>
+     * elements, each of which is initialized to <code>value</code>.
+     * If <code>value</code> is missing, the elements are initialized
+     * to the default value for the type.
      * @bigoh O(N)
      */
     explicit Vector(int n, ValueType value = ValueType());
 
     /**
-     * 使用初始化列表设置 Vector。
+     * Uses an initializer list to set up the vector.
      * @bigoh O(N)
      */
     Vector(std::initializer_list<ValueType> list);
 
     /**
-     * 释放此向量分配的任何堆存储。
+     * Frees any heap storage allocated by this vector.
      * @bigoh O(1)
      */
     virtual ~Vector() = default;
 
     /**
-     * 将新值添加到此向量末尾。
+     * Adds a new value to the end of this vector.
      * @bigoh O(1)
      */
     void add(const ValueType& value);
 
     /**
-     * 将给定其他向量中的所有元素添加到此向量。
-     * 返回对此向量的引用。
-     * 行为与 += 运算符相同。
+     * Adds all elements of the given other vector to this vector.
+     * Returns a reference to this vector.
+     * Identical in behavior to the += operator.
      * @bigoh O(N)
      */
     Vector<ValueType>& addAll(const Vector<ValueType>& v);
 
     /**
-     * 从此向量中删除所有元素。
+     * Removes all elements from this vector.
      * @bigoh O(1)
      */
     void clear();
 
     /**
-     * 比较两个向量是否相等。
-     * 如果此向量包含完全相同的内容，则返回 <code>true</code>
-     * 与给定另一个 Vector 相同的值。
-     * 行为与 == 运算符相同。
+     * Compares two vectors for equality.
+     * Returns <code>true</code> if this vector contains exactly the same
+     * values as the given other vector.
+     * Identical in behavior to the == operator.
      * @bigoh O(N)
      */
     bool equals(const Vector<ValueType>& v) const;
 
     /**
-     * 返回此向量中指定索引处的元素。
-     * 行为与 [] 运算符类似。
-     * @throw 如果索引不在数组范围内，则抛出 ErrorException
+     * Returns the element at the specified index in this vector.
+     * Similar in behavior to the [] operator.
+     * @throw ErrorException if the index is not in the array range
      * @bigoh O(1)
      */
     const ValueType& get(int index) const;
 
     /**
-     * 在指定索引之前将元素插入此向量。
-     * 后续所有元素向右移动一个位置。
-     * @throw 如果索引不在从 0 开始的数组范围内，则抛出 ErrorException
-     * 范围最大可包含 Vector 的长度。
+     * Inserts the element into this vector before the specified index.
+     * All subsequent elements are shifted one position to the right.
+     * @throw ErrorException if the index is not in the array range from 0
+     * up to and including the length of the vector.
      * @bigoh O(N)
      */
     void insert(int index, const ValueType& value);
 
     /**
-     * 如果此向量不包含元素，则返回 <code>true</code>。
+     * Returns <code>true</code> if this vector contains no elements.
      * @bigoh O(1)
      */
     bool isEmpty() const;
 
     /**
-     * 按以下顺序对向量中的每个元素调用指定函数：
-     * 按索引升序。
+     * Calls the specified function on each element of the vector in
+     * ascending index order.
      * @bigoh O(N)
      */
     void mapAll(std::function<void (const ValueType&)> fn) const;
 
     /**
-     * 从此向量中删除指定索引处的元素
-     * 并返回它。后续所有元素向
-     * 左侧位置。
-     * @throw 如果索引不在数组范围内，则抛出 ErrorException
+     * Removes the element at the specified index from this vector
+     * and returns it. All subsequent elements are shifted one
+     * position to the left.
+     * @throw ErrorException if the index is not in the array range
      * @bigoh O(N)
      */
     ValueType remove(int index);
 
     /**
-     * 用以下值替换此向量中指定索引处的元素
-     * 新值。该索引处之前的值会被覆盖。
-     * 行为与 [] 运算符类似。
-     * @throw 如果索引不在数组范围内，则抛出 ErrorException
+     * Replaces the element at the specified index in this vector with
+     * a new value.  The previous value at that index is overwritten.
+     * Similar in behavior to the [] operator.
+     * @throw ErrorException if the index is not in the array range
      * @bigoh O(1)
      */
     void set(int index, const ValueType& value);
 
     /**
-     * 返回此向量中的元素数量。
+     * Returns the number of elements in this vector.
      * @bigoh O(1)
      */
     int size() const;
 
     /**
-     * 将此向量中的元素重新排列为排序顺序。
-     * 例如，如果向量存储 {9, 1, 4, 3}，则将其改为 {1, 3, 4, 9}。
-     * ValueType 必须具有 operator < 才能调用此方法。
+     * Rearranges the order of the elements in this vector into sorted order.
+     * For example, if vector stores {9, 1, 4, 3}, changes it to store {1, 3, 4, 9}.
+     * The ValueType must have an operator < to call this method.
      * @bigoh O(N log N)
      */
     void sort();
 
     /**
-     * 返回一个包含给定元素子集范围的新向量
-     * 从此向量生成。新向量是深拷贝，不与此向量链接。
-     * @throw 如果范围 (start .. start + length) 不在有效范围内，则抛出 ErrorException
-     *        位于此 Vector 的边界内，否则 length 为负数
+     * Returns a new vector containing the given subset range of elements
+     * from this vector. The new vector is a deep copy, not linked to this one.
+     * @throw ErrorException if the range (start .. start + length) is not
+     *        within the bounds of this vector, or if length is negative
      * @bigoh O(N)
      */
     Vector<ValueType> subList(int start, int length) const;
 
     /**
-     * 返回一个包含从起始位置开始的元素的新向量
-     * 到 Vector 末尾。
+     * Returns a new vector containing the elements from the start position
+     * to the end of the vector.
      *
-     * @throw 如果 start > size()，则抛出 ErrorException
+     * @throw ErrorException if start > size()
      * @bigoh O(N)
      */
     Vector<ValueType> subList(int start) const;
 
     /**
-     * 将向量转换为可打印的字符串表示
-     * 例如 "{10, 20, 30, 40}"。
+     * Converts the vector to a printable string representation
+     * such as "{10, 20, 30, 40}".
      * @bigoh O(N)
      */
     std::string toString() const;
 
     /**
-     * 重载 <code>[]</code>，用于从此向量中选择元素。
-     * 此扩展允许使用传统数组下标语法来
-     * 获取或设置单个元素。
-     * @throw 如果索引不在数组范围内，则抛出 ErrorException
+     * Overloads <code>[]</code> to select elements from this vector.
+     * This extension enables the use of traditional array notation to
+     * get or set individual elements.
+     * @throw ErrorException if the index is not in the array range
      * @bigoh O(1)
      */
     ValueType& operator [](int index);
 
     /**
-     * 重载 <code>[]</code>，用于从此向量中选择元素。
-     * 此扩展允许使用传统数组下标语法来
-     * 获取或设置单个元素。
-     * @throw 如果索引不在数组范围内，则抛出 ErrorException
+     * Overloads <code>[]</code> to select elements from this vector.
+     * This extension enables the use of traditional array notation to
+     * get or set individual elements.
+     * @throw ErrorException if the index is not in the array range
      * @bigoh O(1)
      */
     const ValueType& operator [](int index) const;
 
     /**
-     * 连接两个向量并返回结果。
+     * Concatenates two vectors and returns the result.
      * @bigoh O(N)
      */
     Vector operator +(const Vector& v2) const;
 
     /**
-     * 返回一个由此向量追加给定元素形成的新向量。
+     * Produces a vector formed by appending the given element to this vector.
      * @bigoh O(N)
      */
     Vector operator +(const ValueType& elem) const;
 
     /**
-     * 将 <code>v2</code> 中的所有元素添加到此向量末尾。
+     * Adds all of the elements from <code>v2</code> to the end of this vector.
      * @bigoh O(N)
      */
     Vector& operator +=(const Vector& v2);
 
     /**
-     * 将指定的单个值）添加到向量末尾。
+     * Adds the single specified value) to the end of the vector.
      * @bigoh O(1)
      */
     Vector& operator +=(const ValueType& value);
 
 
     /**
-     * 比较两个向量是否相等。
-     * ValueType 必须具有 == 运算符。
+     * Compares two vectors for equality.
+     * The ValueType must have an == operator.
      * @bigoh O(N)
      */
     bool operator ==(const Vector& v2) const;
 
     /**
-     * 比较两个向量是否不相等。
-     * ValueType 必须具有 != 运算符。
+     * Compares two vectors for inequality.
+     * The ValueType must have a != operator.
      * @bigoh O(N)
      */
     bool operator !=(const Vector& v2) const;
 
     /**
-     * 用于比较两个向量的关系运算符。
-     * 每个元素都与以下位置的对应元素逐对比较：
-     * 另一个向量中相同索引处的元素；例如，先检查以下值：
-     * 索引依次为 0、1，依此类推。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two vectors.
+     * Each element is compared pairwise to the corresponding element at the
+     * same index in the other vector; for example, we first check the values
+     * at index 0, then 1, and so on.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(N)
      */
     bool operator <(const Vector& v2) const;
 
     /**
-     * 用于比较两个向量的关系运算符。
-     * 每个元素都与以下位置的对应元素逐对比较：
-     * 另一个向量中相同索引处的元素；例如，先检查以下值：
-     * 索引依次为 0、1，依此类推。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two vectors.
+     * Each element is compared pairwise to the corresponding element at the
+     * same index in the other vector; for example, we first check the values
+     * at index 0, then 1, and so on.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(N)
      */
     bool operator <=(const Vector& v2) const;
 
     /**
-     * 用于比较两个向量的关系运算符。
-     * 每个元素都与以下位置的对应元素逐对比较：
-     * 另一个向量中相同索引处的元素；例如，先检查以下值：
-     * 索引依次为 0、1，依此类推。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two vectors.
+     * Each element is compared pairwise to the corresponding element at the
+     * same index in the other vector; for example, we first check the values
+     * at index 0, then 1, and so on.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(N)
      */
     bool operator >(const Vector& v2) const;
 
     /**
-     * 用于比较两个向量的关系运算符。
-     * 每个元素都与以下位置的对应元素逐对比较：
-     * 另一个向量中相同索引处的元素；例如，先检查以下值：
-     * 索引依次为 0、1，依此类推。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two vectors.
+     * Each element is compared pairwise to the corresponding element at the
+     * same index in the other vector; for example, we first check the values
+     * at index 0, then 1, and so on.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(N)
      */
     bool operator >=(const Vector& v2) const;
 
     /*
-     * 其他 Vector 操作
+     * Additional Vector operations
      * ----------------------------
-     * 除本接口中列出的方法外，Vector
-     * 类支持以下操作：
+     * In addition to the methods listed in this interface, the Vector
+     * class supports the following operations:
      *
-     *   - 使用 << 和 >> 运算符进行流输入/输出
-     *   - 为复制构造函数和赋值运算符实现深拷贝
-     *   - 使用基于范围的 for 语句或 STL 迭代器进行迭代
+     *   - Stream I/O using the << and >> operators
+     *   - Deep copying for the copy constructor and assignment operator
+     *   - Iteration using the range-based for statement or STL iterators
      *
-     * 这些迭代形式按索引顺序处理 Vector。
+     * The iteration forms process the Vector in index order.
      */
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
 private:
     /*
-     * 实现说明：Vector 数据结构
+     * Implementation notes: Vector data structure
      * -------------------------------------------
-     * 元素存储在 std::vector 中，即标准 C++ 库
-     * 表示元素序列的类型。我们包装 std::vector 是因为
-     * 它没有运行时安全检查，这一点需要时间适应
-     * 适用于你刚开始学习使用这些类型时。
+     * The elements are stored in a std::vector, the regular C++ library
+     * type representing a sequence of elements. We wrap std::vector because
+     * it has no runtime safety checks, something that's tricky to get used
+     * to when you're first learning to use these types.
      *
-     * C++ 库中有一个边界情况：std::vector<bool> 不会
-     * 并不像你可能认为的那样工作。这被广泛认为是一个错误
-     * 这是语言设计中的问题，多年来一直有修复它的提案
-     * 已经很多年。在此期间，我们通过回退到
-     * 当客户端希望创建以下对象时使用 std::deque 类型
+     * There's an edge case in the C++ libraries where std::vector<bool> doesn't
+     * work as you might think it does. This is widely regarded as a mistake
+     * in the language design and there's been a proposal to fix it for many
+     * years now. In the interim, we get around this by falling back on the
+     * std::deque type in the event that the client wants to make a
      * Vector<bool>
      */
     using ContainerType = typename std::conditional<std::is_same<ValueType, bool>::value,
                                                     std::deque<bool>,
                                                     std::vector<ValueType>>::type;
 
-    /* 实例变量 */
+    /* Instance variables */
     ContainerType _elements;
     stanfordcpplib::collections::VersionTracker _version;
 
-    /* 私有方法 */
+    /* Private methods */
 
     /*
-     * 如果给定索引不在以下范围内，则抛出 ErrorException：
-     * [min..max]，包含两端。
-     * 这是供 Vector 各成员使用的统一错误处理程序，这些成员
-     * 接受索引参数。
-     * prefix 参数表示放在以下内容开头的文本字符串：
-     * 错误消息，通常用于指出是哪个成员抛出了错误。
+     * Throws an ErrorException if the given index is not within the range of
+     * [min..max] inclusive.
+     * This is a consolidated error handler for all various Vector members that
+     * accept index parameters.
+     * The prefix parameter represents a text string to place at the start of
+     * the error message, generally to help indicate which member threw the error.
      *
-     * 我们将 prefix 设为 const char* 而不是 std::string，以避免必须
-     * 每次调用都构造并销毁前缀。
+     * We make prefix a const char* rather than a std::string to avoid having to
+     * construct and then destroy the prefix with each call.
      */
     void checkIndex(int index, int min, int max, const char* prefix) const;
 
     /*
-     * 隐藏功能
+     * Hidden features
      * ---------------
-     * 此文件的剩余部分包含实现以下功能所需的代码：
-     * 支持深拷贝和迭代。加入这些方法
-     * 放入公共接口会使该接口更加
-     * 普通客户端难以理解。
+     * The remainder of this file consists of the code required to
+     * support deep copying and iteration.  Including these methods
+     * in the public interface would make that interface more
+     * difficult to understand for the average client.
      */
 
 public:
     /**
-     * 将元素添加到作为左操作数传入的向量。
-     * 此形式使在旧版 C++ 中初始化 Vector 更方便。
+     * Adds an element to the vector passed as the left-hand operatand.
+     * This form makes it easier to initialize vectors in old versions of C++.
      * @bigoh O(1)
      */
     Vector& operator ,(const ValueType& value);
@@ -362,14 +362,14 @@ public:
     const_iterator begin() const;
     const_iterator end() const;
 
-    /* 更新内部版本计数。只有我们的库需要此功能，并且它们仅
-     * 在少数情况下需要它：某操作语义上会修改，但按位来看
-     * 发生非修改操作。
+    /* Updates the internal version count. Only our libraries need this, and they only
+     * need it in rare cases where an operation that's semantically mutating but bitwise
+     * non-mutating occurs.
      */
     void updateVersion();
 };
 
-/* 实现部分 */
+/* Implementation section */
 
 template <typename ValueType>
 Vector<ValueType>::Vector(int n, ValueType value) {
@@ -383,10 +383,10 @@ Vector<ValueType>::Vector(std::initializer_list<ValueType> list)
 }
 
 /*
- * 实现说明：Vector 方法
+ * Implementation notes: Vector methods
  * ------------------------------------
- * 基本 Vector 方法很直接，应只需要
- * 没有详细文档。
+ * The basic Vector methods are straightforward and should require
+ * no detailed documentation.
  */
 template <typename ValueType>
 void Vector<ValueType>::add(const ValueType& value) {
@@ -398,7 +398,7 @@ Vector<ValueType>& Vector<ValueType>::addAll(const Vector<ValueType>& v) {
     for (const ValueType& value : v) {
         add(value);
     }
-    return *this;   // 错误修复 2014/04/27
+    return *this;   // BUGFIX 2014/04/27
 }
 
 template <typename ValueType>
@@ -431,10 +431,10 @@ bool Vector<ValueType>::isEmpty() const {
 }
 
 /*
- * 实现说明：mapAll
+ * Implementation notes: mapAll
  * ----------------------------
- * mapAll 函数的各种版本会应用该函数或
- * 按索引升序对每个元素调用函数对象。
+ * The various versions of the mapAll function apply the function or
+ * function object to each element in ascending index order.
  */
 template <typename ValueType>
 void Vector<ValueType>::mapAll(std::function<void (const ValueType&)> fn) const {
@@ -495,10 +495,10 @@ std::string Vector<ValueType>::toString() const {
 }
 
 /*
- * 实现说明：Vector 选择
+ * Implementation notes: Vector selection
  * --------------------------------------
- * 以下代码使用以下方式实现传统数组选择：
- * 用于索引的方括号。
+ * The following code implements traditional array selection using
+ * square brackets for the index.
  */
 template <typename ValueType>
 ValueType& Vector<ValueType>::operator [](int index) {
@@ -577,7 +577,7 @@ void Vector<ValueType>::checkIndex(int index, int min, int max, const char* pref
                 out << min << ".." << max;
             } else if (min == max) {
                 out << min;
-            } // 否则 min > max，没有范围，空向量
+            } // else min > max, no range, empty vector
             out << "]";
         }
         error(out.str());
@@ -585,11 +585,11 @@ void Vector<ValueType>::checkIndex(int index, int min, int max, const char* pref
 }
 
 /*
- * 实现说明：逗号运算符
+ * Implementation notes: The , operator
  * ------------------------------------
- * 逗号运算符通过将右操作数添加到 vector 来工作，并
- * 然后按引用返回 Vector，以便为下一次
- * 链中的值。
+ * The comma operator works adding the right operand to the vector and
+ * then returning the vector by reference so that it is set for the next
+ * value in the chain.
  */
 template <typename ValueType>
 Vector<ValueType>& Vector<ValueType>::operator ,(const ValueType& value) {
@@ -598,11 +598,11 @@ Vector<ValueType>& Vector<ValueType>::operator ,(const ValueType& value) {
 }
 
 /*
- * 实现说明：<< 和 >>
+ * Implementation notes: << and >>
  * -------------------------------
- * 插入和提取运算符使用以下文件中的模板功能：
- * 使用 strlib.h 读写通用值，并以特殊方式处理字符串
- * 特殊处理。
+ * The insertion and extraction operators use the template facilities in
+ * strlib.h to read and write generic values in a way that treats strings
+ * specially.
  */
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Vector<ValueType>& vec) {
@@ -612,15 +612,15 @@ std::ostream& operator <<(std::ostream& os, const Vector<ValueType>& vec) {
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Vector<ValueType>& vec) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, vec, element, /* 描述符 */ "Vector::operator >>");
+    return stanfordcpplib::collections::readCollection(is, vec, element, /* descriptor */ "Vector::operator >>");
 }
 
 
 /*
- * 实现说明：迭代器支持
+ * Implementation notes: Iterator support
  * --------------------------------------
- * 我们使用了已检查的迭代器类型，这要求提供
- * 关于可用值的完整范围。
+ * We used the checked iterator type, which requires us to provide information
+ * about the full range of values available.
  */
 template <typename ValueType>
 typename Vector<ValueType>::iterator Vector<ValueType>::begin() {
@@ -645,8 +645,8 @@ void Vector<ValueType>::updateVersion() {
 }
 
 /*
- * 向量的模板哈希函数。
- * 要求 Vector 中的元素类型具有 hashCode 函数。
+ * Template hash function for vectors.
+ * Requires the element type in the Vector to have a hashCode function.
  */
 template <typename ValueType>
 int hashCode(const Vector<ValueType>& vec) {
@@ -654,11 +654,11 @@ int hashCode(const Vector<ValueType>& vec) {
 }
 
 /*
- * 函数：randomElement
- * 用法：element = randomElement(v);
+ * Function: randomElement
+ * Usage: element = randomElement(v);
  * ----------------------------------
- * 返回从给定向量中随机选择的元素。
- * 如果 Vector 为空，则抛出错误。
+ * Returns a randomly chosen element of the given vector.
+ * Throws an error if the vector is empty.
  */
 template <typename T>
 const T& randomElement(const Vector<T>& vec) {

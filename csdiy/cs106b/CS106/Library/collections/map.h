@@ -1,8 +1,8 @@
 /*
- * 文件：map.h
+ * File: map.h
  * -----------
- * 此文件导出模板类 <code>Map</code>，该类
- * 维护一个<i>键</i>-<i>值</i>对集合。
+ * This file exports the template class <code>Map</code>, which
+ * maintains a collection of <i>key</i>-<i>value</i> pairs.
  */
 
 #ifndef _map_h
@@ -22,266 +22,266 @@
 #include "vector.h"
 
 /*
- * 类：Map<KeyType,ValueType>
+ * Class: Map<KeyType,ValueType>
  * -----------------------------
- * 此类维护 <b><i>键</i></b>与
- * <b><i>值</i></b>。用于键和值的类型
- * 使用模板指定，这使得可以使用
- * 将此结构与任何数据类型一起使用。
+ * This class maintains an association between <b><i>keys</i></b> and
+ * <b><i>values</i></b>.  The types used for keys and values are
+ * specified using templates, which makes it possible to use
+ * this structure with any data type.
  */
 template <typename KeyType, typename ValueType>
 class Map {
 public:
     /*
-     * 构造函数：Map
-     * 用法：Map<KeyType,ValueType> map;
+     * Constructor: Map
+     * Usage: Map<KeyType,ValueType> map;
      * ----------------------------------
-     * 初始化一个新的空映射，用于关联以下类型的键和值：
-     * 指定类型。
+     * Initializes a new empty map that associates keys and values of the
+     * specified types.
      */
     Map();
 
     /*
-     * 构造函数：Map
-     * 用法：Map<KeyType,ValueType> map(lessFunc);
+     * Constructor: Map
+     * Usage: Map<KeyType,ValueType> map(lessFunc);
      * --------------------------------------------
-     * 初始化一个新的空映射，用于关联以下类型的键和值：
-     * 指定类型，并使用给定的“小于”比较函数
-     * 用于对之后添加的任何键进行排序。
-     * 该函数可以按值或以下方式接受要比较的两个键
-     * 或通过 const 引用。
+     * Initializes a new empty map that associates keys and values of the
+     * specified types, using the given "less-than" comparison function
+     * to order any keys that will be later added to it.
+     * The function can accept the two keys to compare either by value
+     * or by const reference.
      */
     Map(std::function<bool (const KeyType&, const KeyType&)> lessFunc);
 
     /*
-     * 构造函数：Map
-     * 用法：Map<ValueType> map {{"a", 1}, {"b", 2}, {"c", 3}};
+     * Constructor: Map
+     * Usage: Map<ValueType> map {{"a", 1}, {"b", 2}, {"c", 3}};
      * ---------------------------------------------------------
-     * 初始化存储给定键值对的新映射。
-     * 请注意，键值对在内部按键排序存储，而不是
-     * 不一定与它们在初始化列表中的书写顺序相同。
+     * Initializes a new map that stores the given pairs.
+     * Note that the pairs are stored in key-sorted order internally and not
+     * necessarily the order in which they are written in the initializer list.
      */
     Map(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
-     * 构造函数：Map
-     * 用法：Map<ValueType> map({{"a", 1}, {"b", 2}, {"c", 3}}, lessFunc);
+     * Constructor: Map
+     * Usage: Map<ValueType> map({{"a", 1}, {"b", 2}, {"c", 3}}, lessFunc);
      * --------------------------------------------------------------------
-     * 初始化一个新的空映射，用于关联以下类型的键和值：
-     * 指定类型，并使用给定的“小于”比较函数
-     * 用于对之后添加的任何键进行排序。
-     * 该函数可以按值或以下方式接受要比较的两个键
-     * 或通过 const 引用。
+     * Initializes a new empty map that associates keys and values of the
+     * specified types, using the given "less-than" comparison function
+     * to order any keys that will be later added to it.
+     * The function can accept the two keys to compare either by value
+     * or by const reference.
      */
     Map(std::initializer_list<std::pair<const KeyType, ValueType>> list,
         std::function<bool (const KeyType&, const KeyType&)> lessFunc);
 
     /*
-     * 析构函数：~Map
+     * Destructor: ~Map
      * ----------------
-     * 释放与此映射关联的所有堆存储。
+     * Frees any heap storage associated with this map.
      */
     virtual ~Map() = default;
 
     /*
-     * 方法：clear
-     * 用法：map.clear();
+     * Method: clear
+     * Usage: map.clear();
      * -------------------
-     * 移除此映射中的所有条目。
+     * Removes all entries from this map.
      */
     void clear();
 
     /*
-     * 方法：containsKey
-     * 用法：if (map.containsKey(key)) ...
+     * Method: containsKey
+     * Usage: if (map.containsKey(key)) ...
      * ------------------------------------
-     * 如果存在 <code>key</code> 的条目，则返回 <code>true</code>
-     * 在此映射中。
+     * Returns <code>true</code> if there is an entry for <code>key</code>
+     * in this map.
      */
     bool containsKey(const KeyType& key) const;
 
     /*
-     * 方法：equals
-     * 用法：if (map.equals(map2)) ...
+     * Method: equals
+     * Usage: if (map.equals(map2)) ...
      * --------------------------------
-     * 如果两个映射包含完全相同的内容，则返回 <code>true</code>
-     * 键值对时为 true，否则为 false。
+     * Returns <code>true</code> if the two maps contain exactly the same
+     * key/value pairs, and <code>false</code> otherwise.
      */
     bool equals(const Map& map2) const;
 
     /*
-     * 方法：firstKey
-     * 用法：KeyType value = map.firstKey();
+     * Method: firstKey
+     * Usage: KeyType value = map.firstKey();
      * --------------------------------------
-     * 按照以下方式建立的顺序返回映射中的第一个键：
-     * <code>for-each</code> 循环。若映射为空，则产生错误。
+     * Returns the first key in the map in the order established by the
+     * <code>for-each</code> loop.  If the map is empty, generates an error.
      */
     KeyType firstKey() const;
 
     /*
-     * 方法：get
-     * 用法：ValueType value = map.get(key);
+     * Method: get
+     * Usage: ValueType value = map.get(key);
      * --------------------------------------
-     * 返回此映射中与 <code>key</code> 关联的值。
-     * 若找不到 <code>key</code>，<code>get</code> 返回
-     * <code>ValueType</code> 的默认值。
+     * Returns the value associated with <code>key</code> in this map.
+     * If <code>key</code> is not found, <code>get</code> returns the
+     * default value for <code>ValueType</code>.
      */
     ValueType get(const KeyType& key) const;
 
     /*
-     * 方法：isEmpty
-     * 用法：if (map.isEmpty()) ...
+     * Method: isEmpty
+     * Usage: if (map.isEmpty()) ...
      * -----------------------------
-     * 如果此映射不包含任何条目，则返回 <code>true</code>。
+     * Returns <code>true</code> if this map contains no entries.
      */
     bool isEmpty() const;
 
     /*
-     * 方法：keys
-     * 用法：Vector<KeyType> keys = map.keys();
+     * Method: keys
+     * Usage: Vector<KeyType> keys = map.keys();
      * -----------------------------------------
-     * 返回包含此映射中所有键的集合。
-     * 请注意，此实现会对键进行深拷贝，
-     * 因此在大型映射上调用效率较低。
+     * Returns a collection containing all keys in this map.
+     * Note that this implementation makes a deep copy of the keys,
+     * so it is inefficient to call on large maps.
      */
     Vector<KeyType> keys() const;
 
     /*
-     * 方法：lastKey
-     * 用法：KeyType value = map.lastKey();
+     * Method: lastKey
+     * Usage: KeyType value = map.lastKey();
      * ------------------------------------
-     * 按照以下方式建立的顺序返回映射中的最后一个键：
-     * <code>for-each</code> 循环。若映射为空，则产生错误。
+     * Returns the last key in the map in the order established by the
+     * <code>for-each</code> loop.  If the map is empty, generates an error.
      */
     KeyType lastKey() const;
 
     /*
-     * 方法：mapAll
-     * 用法：map.mapAll(fn);
+     * Method: mapAll
+     * Usage: map.mapAll(fn);
      * ----------------------
-     * 遍历映射条目，并调用 <code>fn(key, value)</code>
-     * 分别处理每一个。键按以下定义的升序处理
-     * 由比较函数决定。
+     * Iterates through the map entries and calls <code>fn(key, value)</code>
+     * for each one.  The keys are processed in ascending order, as defined
+     * by the comparison function.
      */
     void mapAll(std::function<void (const KeyType&, const ValueType&)> fn) const;
 
     /*
-     * 方法：put
-     * 用法：map.put(key, value);
+     * Method: put
+     * Usage: map.put(key, value);
      * ---------------------------
-     * 在此映射中将 <code>key</code> 与 <code>value</code> 关联。
-     * 与 <code>key</code> 关联的任何旧值都会被替换
-     * 被新值替换。
+     * Associates <code>key</code> with <code>value</code> in this map.
+     * Any previous value associated with <code>key</code> is replaced
+     * by the new value.
      */
     void put(const KeyType& key, const ValueType& value);
 
     /*
-     * 方法：putAll
-     * 用法：map.putAll(map2);
+     * Method: putAll
+     * Usage: map.putAll(map2);
      * ------------------------
-     * 将给定映射中的所有键值对添加到此映射。
-     * 若两个映射包含相同键的键值对，则采用 map2 中的
-     * 替换此映射中的对应项。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
-     * 返回对此映射的引用。
+     * Adds all key/value pairs from the given map to this map.
+     * If both maps contain a pair for the same key, the one from map2 will
+     * replace the one from this map.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
+     * Returns a reference to this map.
      */
     Map& putAll(const Map& map2);
 
     /*
-     * 方法：remove
-     * 用法：map.remove(key);
+     * Method: remove
+     * Usage: map.remove(key);
      * -----------------------
-     * 从此映射中移除 <code>key</code> 的任何条目。
+     * Removes any entry for <code>key</code> from this map.
      */
     void remove(const KeyType& key);
 
     /*
-     * 方法：removeAll
-     * 用法：map.removeAll(map2);
+     * Method: removeAll
+     * Usage: map.removeAll(map2);
      * ---------------------------
-     * 从此映射中移除包含在给定映射中的所有键/值对。
-     * 若两个映射都包含同一个键，但该键对应不同值，则
-     * 该映射不会被移除。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
-     * 返回对此映射的引用。
+     * Removes all key/value pairs from this map that are contained in the given map.
+     * If both maps contain the same key but it maps to different values, that
+     * mapping will not be removed.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
+     * Returns a reference to this map.
      */
     Map& removeAll(const Map& map2);
 
     /*
-     * 方法：retainAll
-     * 用法：map.retainAll(map2);
+     * Method: retainAll
+     * Usage: map.retainAll(map2);
      * ---------------------------
-     * 从此映射中移除不包含在给定映射中的所有键/值对。
-     * 若两个映射都包含同一个键，但该键对应不同值，则
-     * 该映射将被移除。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
-     * 返回对此映射的引用。
+     * Removes all key/value pairs from this map that are not contained in the given map.
+     * If both maps contain the same key but it maps to different values, that
+     * mapping will be removed.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
+     * Returns a reference to this map.
      */
     Map& retainAll(const Map& map2);
 
     /*
-     * 方法：size
-     * 用法：int nEntries = map.size();
+     * Method: size
+     * Usage: int nEntries = map.size();
      * ---------------------------------
-     * 返回此映射中的条目数。
+     * Returns the number of entries in this map.
      */
     int size() const;
 
     /*
-     * 方法：toString
-     * 用法：string str = map.toString();
+     * Method: toString
+     * Usage: string str = map.toString();
      * -----------------------------------
-     * 将映射转换为可打印的字符串表示。
+     * Converts the map to a printable string representation.
      */
     std::string toString() const;
 
     /*
-     * 方法：values
-     * 用法：Vector<ValueType> values = map.values();
+     * Method: values
+     * Usage: Vector<ValueType> values = map.values();
      * -----------------------------------------------
-     * 返回包含此映射中所有值的集合。
-     * 请注意，此实现会对值进行深拷贝，
-     * 因此在大型映射上调用效率较低。
+     * Returns a collection containing all values in this map.
+     * Note that this implementation makes a deep copy of the values,
+     * so it is inefficient to call on large maps.
      */
     Vector<ValueType> values() const;
 
     /*
-     * 运算符：[]
-     * 用法：map[key]
+     * Operator: []
+     * Usage: map[key]
      * ---------------
-     * 选择与 <code>key</code> 关联的值。此语法
-     * 使我们很容易把映射理解为“关联数组”
-     * 按键类型索引。若 <code>key</code> 已存在
-     * 若键存在于映射中，此函数返回对其关联
-     * 值。如果键不在映射中，则创建一个新条目
-     * 其值被设置为该值类型的默认值。
+     * Selects the value associated with <code>key</code>.  This syntax
+     * makes it easy to think of a map as an "associative array"
+     * indexed by the key type.  If <code>key</code> is already present
+     * in the map, this function returns a reference to its associated
+     * value.  If key is not present in the map, a new entry is created
+     * whose value is set to the default for the value type.
      */
     ValueType& operator [](const KeyType& key);
     ValueType operator [](const KeyType& key) const;
 
     /*
-     * 运算符：==
-     * 用法：if (map1 == map2) ...
+     * Operator: ==
+     * Usage: if (map1 == map2) ...
      * ----------------------------
-     * 比较两个映射是否相等。
+     * Compares two maps for equality.
      */
     bool operator ==(const Map& map2) const;
 
     /*
-     * 运算符：!=
-     * 用法：if (map1 != map2) ...
+     * Operator: !=
+     * Usage: if (map1 != map2) ...
      * ----------------------------
-     * 比较两个映射是否不相等。
+     * Compares two maps for inequality.
      */
     bool operator !=(const Map& map2) const;
 
     /*
-     * 运算符：<、<=、>、>=
-     * 用法：if (map1 < map2) ...
+     * Operators: <, <=, >, >=
+     * Usage: if (map1 < map2) ...
      * ---------------------------
-     * 用于比较两个映射的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two maps.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      */
     bool operator <(const Map& map2) const;
     bool operator <=(const Map& map2) const;
@@ -289,87 +289,87 @@ public:
     bool operator >=(const Map& map2) const;
 
     /*
-     * 运算符：+
-     * 用法：map1 + map2
+     * Operator: +
+     * Usage: map1 + map2
      * ------------------
-     * 返回两个映射的并集，等价于第一个映射的副本
-     * 等价于在第一个映射上调用 putAll，并将第二个映射作为参数传入。
-     * 若两个映射都包含同一键的映射关系，则
-     * 优先采用第二个映射中的值。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Returns the union of the two maps, equivalent to a copy of the first map
+     * with putAll called on it passing the second map as a parameter.
+     * If the two maps both contain a mapping for the same key, the mapping
+     * from the second map is favored.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator +(const Map& map2) const;
 
     /*
-     * 运算符：+=
-     * 用法：map1 += map2;
+     * Operator: +=
+     * Usage: map1 += map2;
      * --------------------
-     * 将给定映射中的所有键值对添加到此映射。
-     * 等价于调用 putAll(map2)。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Adds all key/value pairs from the given map to this map.
+     * Equivalent to calling putAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator +=(const Map& map2);
 
     /*
-     * 运算符：-
-     * 用法：map1 - map2
+     * Operator: -
+     * Usage: map1 - map2
      * ------------------
-     * 返回两个映射的差集，等价于第一个映射的副本
-     * 等价于在第一个映射上调用 removeAll，并将第二个映射作为参数传入。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Returns the difference of the two maps, equivalent to a copy of the first map
+     * with removeAll called on it passing the second map as a parameter.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator -(const Map& map2) const;
 
     /*
-     * 运算符：-=
-     * 用法：map1 -= map2;
+     * Operator: -=
+     * Usage: map1 -= map2;
      * --------------------
-     * 从此映射中移除给定映射中的所有键/值对。
-     * 等价于调用 removeAll(map2)。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Removes all key/value pairs from the given map to this map.
+     * Equivalent to calling removeAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator -=(const Map& map2);
 
     /*
-     * 运算符：*
-     * 用法：map1 * map2
+     * Operator: *
+     * Usage: map1 * map2
      * ------------------
-     * 返回两个映射的交集，等价于第一个映射的副本
-     * 等价于在第一个映射上调用 retainAll，并将第二个映射作为参数传入。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Returns the intersection of the two maps, equivalent to a copy of the first map
+     * with retainAll called on it passing the second map as a parameter.
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator *(const Map& map2) const;
 
     /*
-     * 运算符：*=
-     * 用法：map1 *= map2;
+     * Operator: *=
+     * Usage: map1 *= map2;
      * ---------------------
-     * 从此映射中移除给定映射中找不到的所有键/值对。
-     * 等价于调用 retainAll(map2)。
-     * 还可以传入由键值对组成的初始化列表，例如 {{"a", 1}, {"b", 2}, {"c", 3}}。
+     * Removes all key/value pairs that are not found in the given map from this map.
+     * Equivalent to calling retainAll(map2).
+     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator *=(const Map& map2);
 
     /*
-     * 其他 Map 操作
+     * Additional Map operations
      * -------------------------
-     * 除本接口中列出的方法外，Map
-     * 类支持以下操作：
+     * In addition to the methods listed in this interface, the Map
+     * class supports the following operations:
      *
-     *   - 使用 << 和 >> 运算符进行流输入/输出
-     *   - 为复制构造函数和赋值运算符实现深拷贝
-     *   - 使用基于范围的 for 语句和 STL 迭代器进行迭代
+     *   - Stream I/O using the << and >> operators
+     *   - Deep copying for the copy constructor and assignment operator
+     *   - Iteration using the range-based for statement and STL iterators
      *
-     * 所有迭代保证按以下方式建立的顺序进行：
-     * 传给构造函数的比较函数，通常
-     * 与键类型的顺序一致。
+     * All iteration is guaranteed to proceed in the order established by
+     * the comparison function passed to the constructor, which ordinarily
+     * matches the order of the key type.
      */
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
 private:
@@ -379,12 +379,12 @@ private:
 
 public:
     /*
-     * 隐藏功能
+     * Hidden features
      * ---------------
-     * 此文件的剩余部分包含实现以下功能所需的代码：
-     * 支持深复制和迭代。将这些方法包含在
-     * 接口的公共部分会使该接口更加
-     * 普通客户端难以理解。
+     * The remainder of this file consists of the code required to
+     * support deep copying and iteration.  Including these methods in
+     * the public portion of the interface would make that interface more
+     * difficult to understand for the average client.
      */
 
     using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename MapType::const_iterator>>;
@@ -396,7 +396,7 @@ public:
 
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map() : _elements(stanfordcpplib::collections::checkedLess<KeyType>()) {
-    // 已在初始化器中处理
+    // Handled in initializer
 }
 
 template <typename KeyType, typename ValueType>
@@ -407,7 +407,7 @@ Map<KeyType, ValueType>::Map(std::function<bool(const KeyType&, const KeyType&)>
 template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<const KeyType, ValueType>> list)
         : _elements(list, stanfordcpplib::collections::checkedLess<KeyType>()) {
-    // 已在初始化器中处理
+    // Handled in initializer
 }
 
 template <typename KeyType, typename ValueType>
@@ -547,7 +547,7 @@ ValueType& Map<KeyType, ValueType>::operator [](const KeyType& key) {
     auto presize = size();
     auto& result = _elements[key];
 
-    /* 如果大小已更新，则一定插入了某个元素。 */
+    /* If the size was updated, we must have inserted something. */
     if (presize != size()) _version.update();
     return result;
 }
@@ -597,7 +597,7 @@ bool Map<KeyType, ValueType>::operator ==(const Map& map2) const {
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator !=(const Map& map2) const {
-    return !equals(map2);   // BUG 修复 2016/01/27，感谢 O. Zeng
+    return !equals(map2);   // BUGFIX 2016/01/27, thanks to O. Zeng
 }
 
 template <typename KeyType, typename ValueType>
@@ -631,11 +631,11 @@ typename Map<KeyType, ValueType>::iterator Map<KeyType, ValueType>::end() const 
 }
 
 /*
- * 实现说明：<< 和 >>
+ * Implementation notes: << and >>
  * -------------------------------
- * 插入和提取运算符使用以下文件中的模板功能：
- * 使用 strlib.h 读写通用值，并以特殊方式处理字符串
- * 特殊处理。
+ * The insertion and extraction operators use the template facilities in
+ * strlib.h to read and write generic values in a way that treats strings
+ * specially.
  */
 template <typename KeyType, typename ValueType>
 std::ostream& operator <<(std::ostream& os,
@@ -647,12 +647,12 @@ template <typename KeyType, typename ValueType>
 std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
     KeyType key;
     ValueType value;
-    return stanfordcpplib::collections::readPairedCollection(is, map, key, value, /* 描述符 */ std::string("Map::operator >>"));
+    return stanfordcpplib::collections::readPairedCollection(is, map, key, value, /* descriptor */ std::string("Map::operator >>"));
 }
 
 /*
- * 映射的模板哈希函数。
- * 要求 Map 中的键和值类型具有 hashCode 函数。
+ * Template hash function for maps.
+ * Requires the key and value types in the Map to have a hashCode function.
  */
 template <typename K, typename V>
 int hashCode(const Map<K, V>& map) {
@@ -660,11 +660,11 @@ int hashCode(const Map<K, V>& map) {
 }
 
 /*
- * 函数：randomKey
- * 用法：element = randomKey(map);
+ * Function: randomKey
+ * Usage: element = randomKey(map);
  * --------------------------------
- * 从给定映射中随机选择并返回一个键。
- * 如果映射为空，则抛出错误。
+ * Returns a randomly chosen key of the given map.
+ * Throws an error if the map is empty.
  */
 template <typename K, typename V>
 const K& randomKey(const Map<K, V>& map) {

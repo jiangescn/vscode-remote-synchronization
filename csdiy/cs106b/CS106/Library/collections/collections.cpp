@@ -1,12 +1,12 @@
 /*
- * 文件：collections.cpp
+ * File: collections.cpp
  * ---------------------
- * 此文件实现 collections.h 接口。
+ * This file implements the collections.h interface.
  * 
  * @version 2019/04/11
- * - 添加读写带引号 char 值的函数
+ * - added functions to read/write quoted char values
  * @version 2018/10/20
- * - 初始版本
+ * - initial version
  */
 
 #include "collections.h"
@@ -15,9 +15,9 @@
 #include <iostream>
 
 /*
- * 实现说明：readQuotedString 和 writeQuotedString
+ * Implementation notes: readQuotedString and writeQuotedString
  * ------------------------------------------------------------
- * 这些函数中的大部分工作都与转义序列有关。
+ * Most of the work in these functions has to do with escape sequences.
  */
 
 STATIC_CONST_VARIABLE_DECLARE(std::string, STRING_DELIMITERS, ",:)}]\n")
@@ -33,19 +33,19 @@ bool stringNeedsQuoting(const std::string& str) {
 }
 
 bool readQuotedChar(std::istream& is, char& ch, bool throwOnError) {
-    // 跳过空白
+    // skip whitespace
     char temp;
     while (is.get(temp) && isspace(temp)) {
-        // 空
+        // empty
     }
     if (is.fail()) {
         return true;
     }
 
-    // 现在我们要么位于某个字符（如 X），要么位于引号字符串的开头
-    // 字符，例如“X”或“\n”
+    // now we are either at a character, like X, or at the start of a quoted
+    // character such as 'X' or '\n'
     if (temp == '\'' || temp == '"') {
-        // 带引号字符；交由字符串读取代码处理
+        // quoted character; defer to string-reading code
         is.unget();
         std::string s;
         bool result = readQuotedString(is, s, throwOnError);
@@ -54,10 +54,10 @@ bool readQuotedChar(std::istream& is, char& ch, bool throwOnError) {
         }
         return result;
     } else {
-        // 未加引号的字符；由我们自行读取
-        // 特殊情况：\（例如 \n、\t）
+        // unquoted character; read it ourselves
+        // special case: \ (e.g. \n, \t)
         if (temp == '\\') {
-            // TODO（待办）
+            // TODO
             char temp2;
             if (is.get(temp2)) {
                 switch (temp2) {
@@ -86,10 +86,10 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
     str = "";
     char ch;
     while (is.get(ch) && isspace(ch)) {
-        /* 空 */
+        /* Empty */
     }
     if (is.fail()) {
-        return true;   // 空字符串？
+        return true;   // empty string?
     }
     if (ch == '\'' || ch == '"') {
         char delim = ch;
@@ -165,7 +165,7 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
         if (is) is.unget();
         str = str.substr(0, endTrim);
     }
-    return true;   // 读取成功
+    return true;   // read successfully
 }
 
 std::ostream& writeQuotedChar(std::ostream& os, char ch, bool forceQuotes) {

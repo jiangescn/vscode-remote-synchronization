@@ -3,7 +3,7 @@
 using namespace std;
 
 namespace {
-    /* 衬线字体。 */
+    /* Serif font. */
     const char kSerifFont[] =
         #ifdef __APPLE__
             "Didot"
@@ -12,7 +12,7 @@ namespace {
         #endif
     ;
 
-    /* 无衬线字体。 */
+    /* Sans-serif font. */
     const char kSansSerifFont[] =
         #ifdef __APPLE__
             "Helvetica"
@@ -21,7 +21,7 @@ namespace {
         #endif
     ;
 
-    /* 等宽字体。 */
+    /* Monospace font. */
     const char kMonospaceFont[] =
         #ifdef __APPLE__
             "Monaco"
@@ -30,7 +30,7 @@ namespace {
         #endif
     ;
 
-    /* Unicode 衬线字体。 */
+    /* Unicode Serif font. */
     const char kUnicodeSerifFont[] =
         #ifdef __APPLE__
             "Times"
@@ -41,7 +41,7 @@ namespace {
         #endif
     ;
 
-    /* Unicode 无衬线字体。 */
+    /* Unicode Sans-Serif font. */
     const char kUnicodeSansSerifFont[] =
         #ifdef __APPLE__
             "Lucida Grande"
@@ -52,7 +52,7 @@ namespace {
         #endif
     ;
 
-    /* Unicode 等宽字体。 */
+    /* Unicode monospace font. */
     const char kUnicodeMonospaceFont[] =
         #ifdef __APPLE__
             "Lucida Grande"
@@ -64,7 +64,7 @@ namespace {
     ;
 
 
-    /* 字体族 -> String */
+    /* Font family -> String */
     string to_string(MiniGUI::FontFamily family) {
         if (family == MiniGUI::FontFamily::MONOSPACE) {
             return kMonospaceFont;
@@ -83,7 +83,7 @@ namespace {
         }
     }
 
-    /* 字体样式 -> StanfordCPPLib 字符串。 */
+    /* Font style -> StanfordCPPLib string. */
     string to_string(MiniGUI::FontStyle style) {
         if (style == MiniGUI::FontStyle::BOLD) {
             return "BOLD";
@@ -100,17 +100,17 @@ namespace {
 }
 
 namespace MiniGUI {
-    /* 默认值。 */
+    /* Defaults. */
     Font::Font() : mFamily(FontFamily::SANS_SERIF),
                    mStyle(FontStyle::NORMAL),
                    mSize(13),
                    mColor("black") {
-        // 已在初始化列表中处理。
+        // Handled in initialization list.
     }
 
     Font::Font(FontFamily family, FontStyle style, int size, const string& color)
         : mFamily(family), mStyle(style), mSize(size), mColor(color) {
-        // 已在初始化列表中处理。
+        // Handled in initialization list.
     }
 
     FontFamily Font::family() const {
@@ -150,15 +150,15 @@ namespace MiniGUI {
     }
 
     string Font::stanfordCPPLibFontString() const {
-        /* 先处理字体名称。 */
+        /* Begin with the font name. */
         string result = to_string(family());
 
-        /* 样式（如适用）。 */
+        /* Style, if appropriate. */
         if (style() != FontStyle::NORMAL) {
             result += "-" + to_string(style());
         }
 
-        /* 最后添加字号。 */
+        /* End with font size. */
         result += "-" + to_string(size());
 
         return result;

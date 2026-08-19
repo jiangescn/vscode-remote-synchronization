@@ -40,7 +40,7 @@ namespace {
 
     #endif
 
-    const string kFileSuffix = ".huff"; // 必须为小写
+    const string kFileSuffix = ".huff"; // Must be lower-case
 
     class DecompressGUI: public ProblemHandler {
     public:
@@ -66,14 +66,14 @@ namespace {
     DecompressGUI::DecompressGUI(GWindow& window) : ProblemHandler(window) {
         mDisplay = make_temporary<GColorConsole>(window, "CENTER");
 
-        /* 主装饰框。 */
+        /* Main chrome box. */
         mChrome = make_temporary<GContainer>(window, "SOUTH", GContainer::LAYOUT_FLOW_VERTICAL);
 
-        /* 当前选中的文件。 */
+        /* Currently-selected file. */
         selectedFile = new GLabel(kNoFileSelected);
         mChrome->add(selectedFile);
 
-        /* 按钮行容器。 */
+        /* Row box for buttons. */
         GContainer* buttons = new GContainer();
         chooseFileButton = new GButton("Choose file");
         decompressButton   = new GButton("Decompress!");

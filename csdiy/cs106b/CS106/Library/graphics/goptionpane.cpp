@@ -1,24 +1,24 @@
 /*
- * 文件：goptionpane.cpp
+ * File: goptionpane.cpp
  * ---------------------
  *
- * 此代码大部分复制自 goptionpane.cpp，并修改为使用
- * Qt 的 QMessageBox 和 QInputDialog 类。
+ * This code is largely copied from goptionpane.cpp and modified to use
+ * Qt's QMessageBox and QInputDialog classes.
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 可以按 Esc 关闭 TextFileDialog
+ * - can press Esc to close a TextFileDialog
  * @version 2018/12/28
- * - 修复 showOptionDialog 中自动助记键/快捷键的错误
+ * - bug fix for auto mnemonics/hotkeys in showOptionDialog
  * @version 2018/11/14
- * - 为 showOptionDialog 窗口的选项按钮添加助记键/快捷键
- * - 向 showOptionDialog 窗口添加通过 Escape 取消的逻辑
+ * - added mnemonics/hotkey to showOptionDialog window option buttons
+ * - added Cancel logic to Escape out of showOptionDialog window
  * @version 2018/10/18
- * - 修复 showOptionDialog，使其在 Qt GUI 线程上运行
+ * - bug fix for showOptionDialog to run on Qt GUI thread
  * @version 2018/08/23
- * - 重命名为 goptionpane.cpp，以替代 Java 版本
+ * - renamed to goptionpane.cpp to replace Java version
  * @version 2018/06/28
- * - 初始版本
+ * - initial version
  */
 
 #include "goptionpane.h"
@@ -34,13 +34,13 @@
 #include "strlib.h"
 
 GOptionPane::GOptionPane() {
-    // 空
+    // empty
 }
 
 GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(const std::string& message,
                                                           const std::string& title,
                                                           ConfirmType type) {
-    return showConfirmDialog(/* 父级 */ static_cast<QWidget*>(nullptr), message, title, type);
+    return showConfirmDialog(/* parent */ static_cast<QWidget*>(nullptr), message, title, type);
 }
 
 GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(GWindow* parent,
@@ -61,7 +61,7 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
     }
     std::string titleToUse = title.empty() ? std::string("Select an option") : title;
 
-    // 将枚举类型转换为 Qt 的按钮枚举类型
+    // convert our enum types to Qt's button enum type
     QMessageBox::StandardButtons buttons;
     QMessageBox::StandardButton defaultButton = QMessageBox::Cancel;
     if (type == GOptionPane::ConfirmType::CONFIRM_YES_NO) {
@@ -99,7 +99,7 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
 std::string GOptionPane::showInputDialog(const std::string& message,
                                          const std::string& title,
                                          const std::string& initialValue) {
-    return showInputDialog(/* 父级 */ static_cast<QWidget*>(nullptr), message, title, initialValue);
+    return showInputDialog(/* parent */ static_cast<QWidget*>(nullptr), message, title, initialValue);
 }
 
 std::string GOptionPane::showInputDialog(GWindow* parent,
@@ -128,7 +128,7 @@ std::string GOptionPane::showInputDialog(QWidget* parent,
 void GOptionPane::showMessageDialog(const std::string& message,
                                     const std::string& title,
                                     MessageType type) {
-    showMessageDialog(/* 父级 */ static_cast<QWidget*>(nullptr), message, title, type);
+    showMessageDialog(/* parent */ static_cast<QWidget*>(nullptr), message, title, type);
 }
 
 void GOptionPane::showMessageDialog(GWindow* parent,
@@ -171,7 +171,7 @@ std::string GOptionPane::showOptionDialog(const std::string& message,
                                           const Vector<std::string>& options,
                                           const std::string& title,
                                           const std::string& initiallySelected) {
-    return showOptionDialog(/* 父级 */ static_cast<QWidget*>(nullptr), message, options, title, initiallySelected);
+    return showOptionDialog(/* parent */ static_cast<QWidget*>(nullptr), message, options, title, initiallySelected);
 }
 
 std::string GOptionPane::showOptionDialog(GWindow* parent,
@@ -195,7 +195,7 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
             box.setParent(parent);
         }
         box.setText(QString::fromStdString(message));
-        box.setWindowTitle(QString::fromStdString(titleToUse)); // 供参考：在 MacOS 上警告标题会被忽略（据文档）
+        box.setWindowTitle(QString::fromStdString(titleToUse)); // FYI: title for alert ignored on MacOS (per docs)
         box.setAttribute(Qt::WA_QuitOnClose, false);
 
         for (std::string option : options) {
@@ -203,12 +203,12 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
         }
 
         if (!initiallySelected.empty()) {
-            // TODO：不知道如何正确设置初始选中的按钮
+            // TODO: dunno how to set initially selected button properly
             // box.setDefaultButton(QString::fromStdString(initiallySelected));
         }
 
-        // 为每个按钮分配唯一快捷键；监听按钮上的按键
-        // （尝试将索引 0、1、2 处的字符设为助记键）
+        // give each button a unique hotkey; listen to key presses on buttons
+        // (try to set char at index 0, 1, 2 as the mnemonic)
         Set<QAbstractButton*> buttonsUsed;
         Set<std::string> charsUsed;
         QAbstractButton* escapeButton = nullptr;
@@ -245,7 +245,7 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
             }
         }
 
-        // 设置监听器，在按 Esc 时关闭窗口
+        // set listener to close window when Esc is pressed
         if (escapeButton) {
             box.setEscapeButton(escapeButton);
         }
@@ -277,7 +277,7 @@ void GOptionPane::showTextFileDialog(GWindow* parent,
     showTextFileDialog(parent ? parent->getWidget() : nullptr, fileText, title, rows, cols);
 }
 
-void GOptionPane::showTextFileDialog(QWidget* /*父级*/,
+void GOptionPane::showTextFileDialog(QWidget* /*parent*/,
                                      const std::string& fileText,
                                      const std::string& title,
                                      int rows,
@@ -307,8 +307,8 @@ void GOptionPane::showTextFileDialog(QWidget* /*父级*/,
     });
     window->addToRegion(button, GWindow::REGION_SOUTH);
 
-    // 按下 Escape 时调用函数关闭窗口
-    // （与 gdiffgui.cpp 和 gdiffimage.cpp 中的代码类似）
+    // function to close the window when Escape is pressed
+    // (similar to code in gdiffgui.cpp and gdiffimage.cpp)
     auto windowCloseLambda = [window](GEvent event) {
         if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
             window->close();

@@ -1,23 +1,23 @@
 /*
- * 文件：observable.h
+ * File: observable.h
  * ------------------
- * 此文件定义名为 <code>Observable</code> 的抽象超类，该类
- * 允许对象存储观察者列表；观察者是其他对象，它们
- * 当可观察对象状态的某部分发生变化时收到通知。
- * 这是经典观察者/可观察对象设计模式的一个示例。
+ * This file defines an abstract superclass named <code>Observable</code> that
+ * allows objects to store lists of observers, which are other objects that are
+ * notified when some part of the state of the observable object changes.
+ * This is an example of the classic Observer/Observable design pattern.
  *
  * @author Marty Stepp
  * @version 2018/09/25
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2017/10/25
- * - 添加接受引用参数的 addObserver/removeObserver 重载
+ * - added addObserver/removeObserver overloads that accept reference param
  * @version 2016/11/20
- * - 重构以使用事件类型模板
+ * - refactored to use template for event type
  * @version 2014/10/08
- * - 移除“using namespace”语句
- * - 修复 removeObserver 的错误字符串（原先写成“addObserver”）
+ * - removed 'using namespace' statement
+ * - fixed bug in error string on removeObserver (said 'addObserver')
  * @version 2014/03/09
- * - 初始版本
+ * - initial version
  */
 
 
@@ -28,76 +28,76 @@
 
 #include "error.h"
 
-// 前向声明
+// forward declarations
 template <class T>
 class Observer;
 
 /**
- * 此抽象超类允许对象存储观察者列表，
- * 即希望在对象的某部分
- * 可观察对象的状态发生变化。
+ * This abstract superclass allows objects to store lists of observers,
+ * which are other objects that would like to be notified when some part of the
+ * state of the observable object changes.
  *
- * 预期用法是，在你希望
- * 希望被观察，然后在其代码中的适当位置调用 notifyObservers
- * 位置。然后创建另一个继承 Observer 并定义以下内容的对象
- * update 方法，并将其附加到 Observable，以便接收通知。
+ * The intended usage is that you should extend Observable in the object you
+ * want to be watched, then call notifyObservers in its code at appropriate
+ * places.  Then create some other object that extends Observer and defines an
+ * update method, and attach it to the Observable so it will be notified.
  */
 template <typename T>
 class Observable {
 public:
     /**
-     * 将给定观察者对象添加到此可观察对象的内部列表
-     * 观察者的数量。调用以下内容时会调用观察者的 update 方法：
-     * 随后会调用 notifyObservers 方法。
-     * 前置条件：obs != nullptr
+     * Adds the given observer object to this observable object's internal list
+     * of observers.  The observer's update method will be called when the
+     * notifyObservers method is called afterward.
+     * Precondition: obs != nullptr
      */
     void addObserver(Observer<T>* obs);
 
     /**
-     * 将给定观察者对象添加到此可观察对象的内部列表
-     * 观察者的数量。调用以下内容时会调用观察者的 update 方法：
-     * 随后会调用 notifyObservers 方法。
+     * Adds the given observer object to this observable object's internal list
+     * of observers.  The observer's update method will be called when the
+     * notifyObservers method is called afterward.
      */
     void addObserver(Observer<T>& obs);
 
     /**
-     * 调用之前添加的所有观察者的 update 方法
-     * 添加到此可观察对象。
-     * 可以传入给定参数，以便向
-     * 必要时通知观察者。如果未传入参数，则使用 nullptr。
+     * Calls the update method of all observers that have been added previously
+     * to this observable object.
+     * The given argument can be passed to provide extra information to the
+     * observers if necessary.  If no argument is passed, nullptr is used.
      */
     void notifyObservers(T arg = T());
 
     /**
-     * 从此可观察对象的内部列表中移除给定观察者对象
-     * 观察者列表。该观察者将不再收到通知。
+     * Removes the given observer object from this observable object's internal
+     * list of observers.  The observer will no longer be notified.
      */
     void removeObserver(Observer<T>* obs);
 
     /**
-     * 从此可观察对象的内部列表中移除给定观察者对象
-     * 观察者列表。该观察者将不再收到通知。
+     * Removes the given observer object from this observable object's internal
+     * list of observers.  The observer will no longer be notified.
      */
     void removeObserver(Observer<T>& obs);
 
 private:
-    // 调用 notifyObservers 时要通知的观察者列表
+    // a list of observers to notify when notifyObservers is called
     std::set<Observer<T>*> m_observers;
 };
 
 /**
- * 希望在可观察对象状态变化时收到通知的对象
- * 更改。
+ * An object that wishes to be notified when the state of an observable object
+ * changes.
  */
 template <typename T>
 class Observer {
 public:
     /**
-     * 由 Observable 调用，以通知此观察者其状态已变化。
-     * 'obs' 参数是指向可观察对象本身的指针
-     * 状态变化发生的位置。'arg' 参数将
-     * Observable 调用以下方法时传递的额外信息
-     * notifyObservers（如果有）。
+     * Called by an Observable to inform this observer that its state changed.
+     * The 'obs' parameter will be a pointer to the observable object itself
+     * on which the state change occurred.  The 'arg' parameter will be
+     * the extra information passed by the Observable when it called
+     * notifyObservers, if any.
      */
     virtual void update(Observable<T>* obs, const T& arg = T()) = 0;
 };

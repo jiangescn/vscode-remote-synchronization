@@ -1,7 +1,7 @@
 /**
- * 此处提供的表格哈希实现基于
- * 由传奇人物 Kevin Gibbons 在担任 CS166 助教时实现
- * 于 2016 年春季。谢谢 Kevin！
+ * The implementation of tabulation hashing provided here is based on an
+ * implementation by the legendary Kevin Gibbons when he was a TA for CS166
+ * in Spring 2016. Thanks, Kevin!
  */
 #include "HashFunction.h"
 #include "random.h"

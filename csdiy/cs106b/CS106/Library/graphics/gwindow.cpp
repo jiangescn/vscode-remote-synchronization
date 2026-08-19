@@ -1,42 +1,42 @@
 /*
- * 文件：gwindow.cpp
+ * File: gwindow.cpp
  * -----------------
  *
  * @author Marty Stepp
  * @version 2019/05/05
- * - 添加用于检查深色模式的静态方法
- * - 添加获取系统默认控件背景色/前景色的静态方法
+ * - added static method for isDarkMode checking support
+ * - added static methods to ask for system default widget bg/fg color
  * @version 2019/04/27
- * - 修复更多获取/设置窗口大小和位置的错误
+ * - fixed more bugs with getting/setting window size and location
  * @version 2019/04/25
- * - 修复获取窗口几何信息和请求焦点的错误
+ * - fixed bugs with getting window geometry and requesting focus
  * @version 2019/04/12
- * - 将 pause() 的无界面模式实现（空实现）移至 console.cpp
+ * - moved pause() headless mode implementation (empty) to console.cpp
  * @version 2019/04/09
- * - 添加工具栏支持
+ * - added toolbar support
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/10/20
- * - 添加高密度屏幕功能
+ * - added high-density screen features
  * @version 2018/10/11
- * - 修复 compareToImage 函数的错误
+ * - bug fix for compareToImage function
  * @version 2018/09/23
- * - 修复 Windows/MinGW 兼容性问题
+ * - bug fixes for Windows/MinGW compatibility
  * @version 2018/09/19
- * - 修复 clear() 方法的错误
+ * - bug fix for clear() method
  * @version 2018/09/13
- * - 更新类型转换语法，以消除新编译器版本中的警告
- * - 更新窗口父级语义
+ * - updated cast syntax to remove warnings in new compiler versions
+ * - updated window parent semantics
  * @version 2018/09/05
- * - 重构为使用边界布局的 GContainer“内容窗格”存储所有交互控件
+ * - refactored to use a border layout GContainer "content pane" for storing all interactors
  * @version 2018/08/23
- * - 重命名为 gwindow.h，以替代 Java 版本
+ * - renamed to gwindow.h to replace Java version
  * @version 2018/07/03
- * - 线程安全代码
+ * - thread safety code
  * @version 2018/07/01
- * - 二维图形/绘图函数
+ * - 2D graphics/painting functions
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "gwindow.h"
@@ -60,11 +60,11 @@
 #include "strlib.h"
 
 _Internal_QMainWindow* GWindow::_lastWindow = nullptr;
-/*静态*/ const int GWindow::DEFAULT_WIDTH = 500;
-/*静态*/ const int GWindow::DEFAULT_HEIGHT = 300;
-/*静态*/ const int GWindow::HIGH_DPI_SCREEN_THRESHOLD = 200;
-/*静态*/ const int GWindow::STANDARD_SCREEN_DPI = 96;
-/*静态*/ const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
+/*static*/ const int GWindow::DEFAULT_WIDTH = 500;
+/*static*/ const int GWindow::DEFAULT_HEIGHT = 300;
+/*static*/ const int GWindow::HIGH_DPI_SCREEN_THRESHOLD = 200;
+/*static*/ const int GWindow::STANDARD_SCREEN_DPI = 96;
+/*static*/ const std::string GWindow::DEFAULT_ICON_FILENAME = "splicon-large.png";
 
 GWindow::GWindow(bool visible)
         : _iqmainwindow(nullptr),
@@ -125,7 +125,7 @@ GWindow::~GWindow() {
     if (_lastWindow == _iqmainwindow) {
         _lastWindow = nullptr;
     }
-    // TODO：delete _iqmainwindow;
+    // TODO: delete _iqmainwindow;
     if (_iqmainwindow) {
         _iqmainwindow->_gwindow = nullptr;
         _iqmainwindow = nullptr;
@@ -177,7 +177,7 @@ void GWindow::add(GObject& obj, double x, double y) {
 QMenu* GWindow::addMenu(const std::string& menu) {
     std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
     if (_menuMap.containsKey(menuKey)) {
-        // 重复项；不要再次创建
+        // duplicate; do not create again
         return _menuMap[menuKey];
     }
 
@@ -207,7 +207,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
     std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
     std::string menuItemKey = menuKey + "/" + itemKey;
     if (_menuActionMap.containsKey(menuItemKey)) {
-        // 重复项；不要再次创建
+        // duplicate; do not create again
         return _menuActionMap[menuItemKey];
     }
 
@@ -220,7 +220,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
             action->setIcon(qicon);
         }
 
-        // 单击菜单项时，调用用户提供的函数
+        // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
@@ -239,7 +239,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
     std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
     std::string menuItemKey = menuKey + "/" + itemKey;
     if (_menuActionMap.containsKey(menuItemKey)) {
-        // 重复项；不要再次创建
+        // duplicate; do not create again
         return _menuActionMap[menuItemKey];
     }
 
@@ -249,7 +249,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
         action = qmenu->addAction(QString::fromStdString(item));
         action->setIcon(icon);
 
-        // 单击菜单项时，调用用户提供的函数
+        // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
@@ -268,7 +268,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
     std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
     std::string menuItemKey = menuKey + "/" + itemKey;
     if (_menuActionMap.containsKey(menuItemKey)) {
-        // 重复项；不要再次创建
+        // duplicate; do not create again
         return _menuActionMap[menuItemKey];
     }
 
@@ -278,7 +278,7 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
         action = qmenu->addAction(QString::fromStdString(item));
         action->setIcon(icon);
 
-        // 单击菜单项时，调用用户提供的函数
+        // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
@@ -319,7 +319,7 @@ QAction* GWindow::addMenuItemCheckBox(const std::string& menu,
             action->setIcon(qicon);
         }
 
-        // 单击菜单项时，调用用户提供的函数
+        // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
@@ -367,7 +367,7 @@ QMenu* GWindow::addSubMenu(const std::string& menu, const std::string& submenu) 
 void GWindow::addToRegion(GInteractor* interactor, Region region) {
     require::nonNull(interactor, "GWindow::addToRegion");
     if (region == REGION_CENTER) {
-        // “GText 模式”中的标签会作为 GText 对象添加到画布
+        // labels in "GText mode" are added as GText objects to canvas
         if (interactor->getType() == "GLabel") {
             GLabel* label = static_cast<GLabel*>(interactor);
             if (label->hasGText()) {
@@ -406,7 +406,7 @@ void GWindow::addToolbar(const std::string& title) {
 QAction* GWindow::addToolbarItem(const std::string& item,
                                  const std::string& icon) {
     GEventListenerVoid func = [this, item]() {
-        this->_iqmainwindow->handleMenuAction(/* 菜单 */ "toolbar", item);
+        this->_iqmainwindow->handleMenuAction(/* menu */ "toolbar", item);
     };
     return addToolbarItem(item, icon, func);
 }
@@ -421,7 +421,7 @@ QAction* GWindow::addToolbarItem(const std::string& item,
     std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
     std::string menuItemKey = "toolbar/" + itemKey;
     if (_menuActionMap.containsKey(menuItemKey)) {
-        // 重复项；不要再次创建
+        // duplicate; do not create again
         return _menuActionMap[menuItemKey];
     }
 
@@ -430,13 +430,13 @@ QAction* GWindow::addToolbarItem(const std::string& item,
         if (icon.empty()) {
             action = _toolbar->addAction(QString::fromStdString(item));
         } else {
-            // 带图标的工具栏项目不显示文本
+            // toolbar item with icon doesn't show text
             QIcon qicon(QString::fromStdString(icon));
             action = _toolbar->addAction(qicon, QString::fromStdString(""));
             action->setToolTip(QString::fromStdString(item));
         }
 
-        // 单击菜单项时，调用用户提供的函数
+        // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
@@ -456,17 +456,17 @@ QAction* GWindow::addToolbarItem(const std::string& item,
     std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
     std::string menuItemKey = "toolbar/" + itemKey;
     if (_menuActionMap.containsKey(menuItemKey)) {
-        // 重复项；不要再次创建
+        // duplicate; do not create again
         return _menuActionMap[menuItemKey];
     }
 
     QAction* action = nullptr;
     GThread::runOnQtGuiThread([this, item, &icon, func, menuItemKey, &action]() {
-        // 带图标的工具栏项目不显示文本
+        // toolbar item with icon doesn't show text
         action = _toolbar->addAction(icon, QString::fromStdString(""));
         action->setToolTip(QString::fromStdString(item));
 
-        // 单击菜单项时，调用用户提供的函数
+        // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
@@ -486,17 +486,17 @@ QAction* GWindow::addToolbarItem(const std::string& item,
     std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
     std::string menuItemKey = "toolbar/" + itemKey;
     if (_menuActionMap.containsKey(menuItemKey)) {
-        // 重复项；不要再次创建
+        // duplicate; do not create again
         return _menuActionMap[menuItemKey];
     }
 
     QAction* action = nullptr;
     GThread::runOnQtGuiThread([this, item, &icon, func, menuItemKey, &action]() {
-        // 带图标的工具栏项目不显示文本
+        // toolbar item with icon doesn't show text
         action = _toolbar->addAction(icon, QString::fromStdString(""));
         action->setToolTip(QString::fromStdString(item));
 
-        // 单击菜单项时，调用用户提供的函数
+        // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
             func();
         });
@@ -519,7 +519,7 @@ QAction* GWindow::addToolbarSeparator() {
 }
 
 void GWindow::clear() {
-    // TODO：重新实现为清除控件，而不仅是画布
+    // TODO: reimplement to clear out widgets rather than just canvas
     clearCanvas();
 
 //    bool hasCanvas = _canvas && _contentPane->regionContains(_canvas, GContainer::REGION_CENTER);
@@ -530,7 +530,7 @@ void GWindow::clear() {
 //    if (hasCanvas) {
 //        clearCanvas();
 //    } else {
-//        // 不移除画布，但移除中心区域中的其他所有控件
+//        // don't remove canvas, but do remove any other widgets in center
 //        _contentPane->clearRegion(GContainer::REGION_CENTER);
 //        ensureForwardTarget();
 //    }
@@ -544,13 +544,13 @@ void GWindow::clearCanvas() {
 
 void GWindow::clearCanvasObjects() {
     if (_canvas) {
-        _canvas->clearObjects();   // 在 Qt GUI 线程上运行
+        _canvas->clearObjects();   // runs on Qt GUI thread
     }
 }
 
 void GWindow::clearCanvasPixels() {
     if (_canvas) {
-        _canvas->clearPixels();   // 在 Qt GUI 线程上运行
+        _canvas->clearPixels();   // runs on Qt GUI thread
     }
 }
 
@@ -578,12 +578,12 @@ void GWindow::center() {
                 screenSize.height / 2 - windowSize.height / 2);
 }
 
-/*静态*/ std::string GWindow::chooseLightDarkModeColor(
+/*static*/ std::string GWindow::chooseLightDarkModeColor(
         const std::string& lightColor, const std::string& darkColor) {
     return isDarkMode() ? darkColor : lightColor;
 }
 
-/*静态*/ int GWindow::chooseLightDarkModeColorInt(int lightColor, int darkColor) {
+/*static*/ int GWindow::chooseLightDarkModeColorInt(int lightColor, int darkColor) {
     return isDarkMode() ? darkColor : lightColor;
 }
 
@@ -599,13 +599,13 @@ void GWindow::compareToImage(const std::string& filename, bool /*ignoreWindowSiz
     GDiffImage::showDialog("expected output", fileCanvas,
                            "your output", _canvas);
 
-    // TODO（待办）
+    // TODO
     // delete fileCanvas;
 }
 
 void GWindow::ensureForwardTarget() {
     if (!_canvas) {
-        // 让画布占用窗口中所有未分配空间
+        // tell canvas to take any unclaimed space in the window
         GThread::runOnQtGuiThread([this]() {
             _canvas = new GCanvas(_iqmainwindow);
             _canvas->setBackground(GColor::WHITE);
@@ -614,7 +614,7 @@ void GWindow::ensureForwardTarget() {
         });
     }
 //    else if (!_canvas->isVisible()) {
-//        // 将画布放回中心区域
+//        // put canvas back in center region
 //        GThread::runOnQtGuiThread([this]() {
 //            QLayout* centerLayout = layoutForRegion(REGION_CENTER);
 //            if (!GLayout::contains(centerLayout, _canvas->getWidget())) {
@@ -654,11 +654,11 @@ GWindow::CloseOperation GWindow::getCloseOperation() const {
     return _closeOperation;
 }
 
-/*静态*/ std::string GWindow::getDefaultInteractorBackgroundColor() {
+/*static*/ std::string GWindow::getDefaultInteractorBackgroundColor() {
     return GColor::convertRGBToColor(getDefaultInteractorBackgroundColorInt());
 }
 
-/*静态*/ int GWindow::getDefaultInteractorBackgroundColorInt() {
+/*static*/ int GWindow::getDefaultInteractorBackgroundColorInt() {
     static bool everCheckedBefore = false;
     static int previousBg = 0;
     if (!everCheckedBefore) {
@@ -669,11 +669,11 @@ GWindow::CloseOperation GWindow::getCloseOperation() const {
     return previousBg;
 }
 
-/*静态*/ std::string GWindow::getDefaultInteractorTextColor() {
+/*static*/ std::string GWindow::getDefaultInteractorTextColor() {
     return GColor::convertRGBToColor(getDefaultInteractorTextColorInt());
 }
 
-/*静态*/ int GWindow::getDefaultInteractorTextColorInt() {
+/*static*/ int GWindow::getDefaultInteractorTextColorInt() {
     static bool everCheckedBefore = false;
     static int previousFg = 0;
     if (!everCheckedBefore) {
@@ -708,7 +708,7 @@ int GWindow::getGObjectCount() const {
     }
 }
 
-/* 静态 */ QMainWindow* GWindow::getLastWindow() {
+/* static */ QMainWindow* GWindow::getLastWindow() {
     return _lastWindow;
 }
 
@@ -748,20 +748,20 @@ double GWindow::getRegionWidth(const std::string& region) const {
     return _contentPane->getRegionWidth(region);
 }
 
-/*静态*/ int GWindow::getScreenDpi() {
+/*static*/ int GWindow::getScreenDpi() {
     return QGuiApplication::primaryScreen()->logicalDotsPerInchX();
 }
 
-/*静态*/ double GWindow::getScreenDpiScaleRatio() {
+/*static*/ double GWindow::getScreenDpiScaleRatio() {
     double ratio = (double) getScreenDpi() / STANDARD_SCREEN_DPI;
     return (ratio >= 1.0) ? ratio : 1.0;
 }
 
-/*静态*/ double GWindow::getScreenHeight() {
+/*static*/ double GWindow::getScreenHeight() {
     return getScreenSize().height;
 }
 
-/*静态*/ GDimension GWindow::getScreenSize() {
+/*static*/ GDimension GWindow::getScreenSize() {
     QRect rec;
     GThread::runOnQtGuiThread([&rec]() {
         rec = QGuiApplication::primaryScreen()->availableGeometry();
@@ -769,7 +769,7 @@ double GWindow::getRegionWidth(const std::string& region) const {
     return GDimension(rec.width(), rec.height());
 }
 
-/*静态*/ double GWindow::getScreenWidth() {
+/*static*/ double GWindow::getScreenWidth() {
     return getScreenSize().width;
 }
 
@@ -817,26 +817,26 @@ bool GWindow::inCanvasBounds(double x, double y) const {
     return 0 <= x && x < getCanvasWidth() && 0 <= y && y < getCanvasHeight();
 }
 
-/*静态*/ bool GWindow::isDarkMode() {
+/*static*/ bool GWindow::isDarkMode() {
     if (!getLastWindow()) {
-        // 尚无法检查
+        // cannot check yet
         return false;
     }
     int bg = getDefaultInteractorBackgroundColorInt();
     int fg = getDefaultInteractorTextColorInt();
 
-    // 我们的启发式规则：如果文本比背景更亮，
-    // 我们将假定它们处于深色模式
+    // our heuristic: if the text is brighter than the background,
+    // we'll assume they are in dark mode
     double bgLum = GColor::getLuminance(bg);
     double fgLum = GColor::getLuminance(fg);
     return fgLum > bgLum;
 }
 
-/*静态*/ bool GWindow::isHighDensityScreen() {
+/*static*/ bool GWindow::isHighDensityScreen() {
     return getScreenDpi() >= HIGH_DPI_SCREEN_THRESHOLD;
 }
 
-/*静态*/ bool GWindow::isHighDpiScalingEnabled() {
+/*static*/ bool GWindow::isHighDpiScalingEnabled() {
 #ifdef SPL_SCALE_HIGH_DPI_SCREEN
     return true;
 #else
@@ -871,7 +871,7 @@ bool GWindow::isVisible() const {
 
 void GWindow::loadCanvasPixels(const std::string& filename) {
     ensureForwardTarget();
-    _canvas->load(filename);   // 在 Qt GUI 线程上运行
+    _canvas->load(filename);   // runs on Qt GUI thread
 }
 
 void GWindow::maximize() {
@@ -895,12 +895,12 @@ void GWindow::pause(double ms) {
     GThread::getCurrentThread()->sleep(ms);
 }
 
-void GWindow::processKeyPressEventInternal(QKeyEvent* /* 事件 */) {
-    // 空实现；请重写我
+void GWindow::processKeyPressEventInternal(QKeyEvent* /* event */) {
+    // empty; override me
 }
 
 void GWindow::rememberPosition() {
-    // TODO（待办）
+    // TODO
 }
 
 void GWindow::remove(GObject* obj) {
@@ -912,7 +912,7 @@ void GWindow::remove(GObject* obj) {
 
 void GWindow::remove(GObject& obj) {
     if (_canvas) {
-        _canvas->remove(&obj);   // 在 Qt GUI 线程上运行
+        _canvas->remove(&obj);   // runs on Qt GUI thread
     }
 }
 
@@ -927,14 +927,14 @@ void GWindow::remove(GInteractor& interactor) {
 
 void GWindow::removeClickListener() {
     if (_canvas) {
-        _canvas->removeClickListener();   // 在 Qt GUI 线程上运行
+        _canvas->removeClickListener();   // runs on Qt GUI thread
     }
 }
 
 void GWindow::removeFromRegion(GInteractor* interactor, Region region) {
     require::nonNull(interactor, "GWindow::removeFromRegion");
 
-    // 特殊情况：“GText 模式”下的标签会添加到画布
+    // special case: labels in "GText mode" are added to canvas
     if (region == REGION_CENTER && interactor->getType() == "GLabel") {
         GLabel* label = static_cast<GLabel*>(interactor);
         if (label->hasGText()) {
@@ -960,7 +960,7 @@ void GWindow::removeFromRegion(GInteractor& interactor, const std::string& regio
 
 void GWindow::removeKeyListener() {
     if (_canvas) {
-        _canvas->removeKeyListener();   // 在 Qt GUI 线程上运行
+        _canvas->removeKeyListener();   // runs on Qt GUI thread
     }
 }
 
@@ -970,7 +970,7 @@ void GWindow::removeMenuListener() {
 
 void GWindow::removeMouseListener() {
     if (_canvas) {
-        _canvas->removeMouseListener();   // 在 Qt GUI 线程上运行
+        _canvas->removeMouseListener();   // runs on Qt GUI thread
     }
 }
 
@@ -1013,7 +1013,7 @@ void GWindow::restore() {
 
 void GWindow::saveCanvasPixels(const std::string& filename) {
     ensureForwardTarget();
-    _canvas->save(filename);   // 在 Qt GUI 线程上运行
+    _canvas->save(filename);   // runs on Qt GUI thread
 }
 
 void GWindow::setBackground(int color) {
@@ -1027,7 +1027,7 @@ void GWindow::setBackground(const std::string& color) {
     _contentPane->setBackground(color);
     GThread::runOnQtGuiThread([this, color]() {
         GForwardDrawingSurface::setBackground(color);
-        // TODO：设置北/南/东/西区域及中央区域的背景？
+        // TODO: set background of N/S/E/W regions and central region?
     });
 }
 
@@ -1039,7 +1039,7 @@ void GWindow::setCanvasHeight(double height) {
 void GWindow::setCanvasSize(double width, double height) {
     require::nonNegative2D(width, height, "GWindow::setCanvasSize", "width", "height");
     ensureForwardTarget();
-    _canvas->setMinimumSize(width, height);    // 在 Qt GUI 线程上运行
+    _canvas->setMinimumSize(width, height);    // runs on Qt GUI thread
     _canvas->setPreferredSize(width, height);
     pack();
 }
@@ -1099,35 +1099,35 @@ void GWindow::setMenuItemEnabled(const std::string& menu, const std::string& ite
 }
 
 void GWindow::setClickListener(GEventListener func) {
-    _canvas->setClickListener(func);   // 在 Qt GUI 线程上运行
+    _canvas->setClickListener(func);   // runs on Qt GUI thread
 }
 
 void GWindow::setClickListener(GEventListenerVoid func) {
-    _canvas->setClickListener(func);   // 在 Qt GUI 线程上运行
+    _canvas->setClickListener(func);   // runs on Qt GUI thread
 }
 
 void GWindow::setKeyListener(GEventListener func) {
-    _canvas->setKeyListener(func);   // 在 Qt GUI 线程上运行
+    _canvas->setKeyListener(func);   // runs on Qt GUI thread
 }
 
 void GWindow::setKeyListener(GEventListenerVoid func) {
-    _canvas->setKeyListener(func);   // 在 Qt GUI 线程上运行
+    _canvas->setKeyListener(func);   // runs on Qt GUI thread
 }
 
 void GWindow::setMenuListener(GEventListener func) {
-    setEventListener("actionMenu", func);   // 在 Qt GUI 线程上运行
+    setEventListener("actionMenu", func);   // runs on Qt GUI thread
 }
 
 void GWindow::setMenuListener(GEventListenerVoid func) {
-    setEventListener("actionMenu", func);   // 在 Qt GUI 线程上运行
+    setEventListener("actionMenu", func);   // runs on Qt GUI thread
 }
 
 void GWindow::setMouseListener(GEventListener func) {
-    _canvas->setMouseListener(func);   // 在 Qt GUI 线程上运行
+    _canvas->setMouseListener(func);   // runs on Qt GUI thread
 }
 
 void GWindow::setMouseListener(GEventListenerVoid func) {
-    _canvas->setMouseListener(func);   // 在 Qt GUI 线程上运行
+    _canvas->setMouseListener(func);   // runs on Qt GUI thread
 }
 
 void GWindow::setRegionAlignment(Region region, HorizontalAlignment halign) {
@@ -1316,7 +1316,7 @@ void GWindow::toFront() {
 }
 
 
-// 用于兼容性的全局函数
+// global functions for compatibility
 
 int convertColorToRGB(const std::string& colorName) {
     return GColor::convertColorToRGB(colorName);
@@ -1353,7 +1353,7 @@ void repaint() {
     if (lastWindow) {
         lastWindow->repaint();
     }
-    // TODO：其他窗口？
+    // TODO: other windows?
 }
 
 
@@ -1367,7 +1367,7 @@ _Internal_QMainWindow::_Internal_QMainWindow(GWindow* gwindow, QWidget* parent)
 
 void _Internal_QMainWindow::changeEvent(QEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::changeEvent", "event");
-    QMainWindow::changeEvent(event);   // 调用父类实现
+    QMainWindow::changeEvent(event);   // call super
     if (!_gwindow || event->type() != QEvent::WindowStateChange) {
         return;
     }
@@ -1391,11 +1391,11 @@ void _Internal_QMainWindow::changeEvent(QEvent* event) {
 void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::closeEvent", "event");
     if (!_gwindow) {
-        QMainWindow::closeEvent(event);   // 调用父类实现
+        QMainWindow::closeEvent(event);   // call super
         return;
     }
 
-    // 窗口关闭前发送“closing”事件
+    // send "closing" event before window closes
     _gwindow->fireGEvent(event, WINDOW_CLOSING, "closing");
 
     GWindow::CloseOperation closeOp = _gwindow->getCloseOperation();
@@ -1404,30 +1404,30 @@ void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    // 窗口关闭后发送“close”事件
+    // send "close" event after window closes
     event->accept();
-    QMainWindow::closeEvent(event);   // 调用父类实现
+    QMainWindow::closeEvent(event);   // call super
     _gwindow->fireGEvent(event, WINDOW_CLOSED, "close");
 
     if (closeOp == GWindow::CLOSE_EXIT) {
-        // 退出应用程序
+        // exit app
         QtGui::instance()->exitGraphics(EXITING_DUE_TO_WINDOW_CLOSE);
     }
 }
 
 void _Internal_QMainWindow::handleMenuAction(const std::string& menu, const std::string& item) {
     GEvent actionEvent(
-                /* 类  */ ACTION_EVENT,
-                /* 类型   */ ACTION_MENU,
-                /* 名称   */ "actionMenu",
-                /* 来源 */ _gwindow);
+                /* class  */ ACTION_EVENT,
+                /* type   */ ACTION_MENU,
+                /* name   */ "actionMenu",
+                /* source */ _gwindow);
     actionEvent.setActionCommand(menu + "/" + item);
     _gwindow->fireEvent(actionEvent);
 }
 
 void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::keyPressEvent", "event");
-    QMainWindow::keyPressEvent(event);   // 调用父类实现
+    QMainWindow::keyPressEvent(event);   // call super
     if (!_gwindow) {
         return;
     }
@@ -1436,7 +1436,7 @@ void _Internal_QMainWindow::keyPressEvent(QKeyEvent* event) {
 
 void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::resizeEvent", "event");
-    QMainWindow::resizeEvent(event);   // 调用父类实现
+    QMainWindow::resizeEvent(event);   // call super
     if (!_gwindow) {
         return;
     }
@@ -1445,7 +1445,7 @@ void _Internal_QMainWindow::resizeEvent(QResizeEvent* event) {
 
 void _Internal_QMainWindow::timerEvent(QTimerEvent* event) {
     require::nonNull(event, "_Internal_QMainWindow::timerEvent", "event");
-    QMainWindow::timerEvent(event);   // 调用父类实现
+    QMainWindow::timerEvent(event);   // call super
     if (!_gwindow) {
         return;
     }

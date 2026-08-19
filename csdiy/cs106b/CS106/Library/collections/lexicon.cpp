@@ -1,38 +1,38 @@
 /*
- * 文件：lexicon.cpp
+ * File: lexicon.cpp
  * -----------------
- * Lexicon 是单词列表。此 Lexicon 由以下数据结构支持：
- * 称为前缀树或 trie（读作 "try"）的结构。
+ * A Lexicon is a word list. This Lexicon is backed by a data
+ * structure called a prefix tree or trie ("try").
  *
- * 这是 Lexicon 的重新实现。其先前实现使用
- * 一对结构：有向无环词图（DAWG）和 STL 集合。
- * 由于多个原因，该实现被弃用：
+ * This is a re-implementation of Lexicon.  Its previous implementation used
+ * a pair of structures: a directed acyclic word graph (DAWG) and an STL set.
+ * That implementation was discarded because of several reasons:
  *
- * - 它依赖学生无法阅读的二进制文件格式。
- * - 它未提供 remove 等预期的类成员。
- * - 它使用了一对笨重的数据结构，必须分别搜索。
- * - 它针对空间占用进行了优化，而非易用性和可维护性。
+ * - It relied on binary file formats that were not readable by students.
+ * - It did not provide for expected class members like remove.
+ * - It had a clunky pair of data structures that had to be searched separately.
+ * - It was optimized for space usage over ease of use and maintenance.
  *
- * 原始 DAWG 实现保留在 dawglexicon.h/cpp 中。
+ * The original DAWG implementation is retained as dawglexicon.h/cpp.
  *
  * @version 2018/03/10
- * - 添加 front 方法
+ * - added method front
  * @version 2016/09/24
- * - 重构以使用 collections.h 实用函数
+ * - refactored to use collections.h utility functions
  * @version 2016/08/11
- * - 添加运算符 +、+=、-、-=、*、*=，以更好地匹配 Set/HashSet
+ * - added operators +, +=, -, -=, *, *= to better match Set/HashSet
  * @version 2016/08/10
- * - 添加对 std initializer_list 用法的构造函数支持，例如 {"a", "b", "c"}
+ * - added constructor support for std initializer_list usage, such as {"a", "b", "c"}
  * @version 2016/08/04
- * - 修复 operator >>，使其不抛出错误
+ * - fixed operator >> to not throw errors
  * @version 2015/07/05
- * - 使用全局哈希函数而非全局变量
+ * - using global hashing functions rather than global variables
  * @version 2014/11/13
- * - 添加比较运算符 <、>= 等
- * - 添加 hashCode 函数
+ * - added comparison operators <, >=, etc.
+ * - added hashCode function
  * @version 2014/10/10
- * - 添加比较运算符 ==、!=
- * - 移除“using namespace”语句
+ * - added comparison operators ==, !=
+ * - removed 'using namespace' statement
  */
 
 #include "lexicon.h"
@@ -56,7 +56,7 @@ Lexicon::Lexicon() :
         _root(nullptr),
         _size(0),
         _removeFlag(false) {
-    // 空
+    // empty
 }
 
 Lexicon::Lexicon(std::istream& input) :
@@ -323,7 +323,7 @@ std::string Lexicon::toString() const {
 }
 
 /*
- * 运算符
+ * Operators
  */
 bool Lexicon::operator ==(const Lexicon& lex2) const {
     return equals(lex2);
@@ -429,7 +429,7 @@ Lexicon& Lexicon::operator -=(const std::string& word) {
     return *this;
 }
 
-/* 私有辅助函数实现 */
+/* private helpers implementation */
 
 Lexicon& Lexicon::operator ,(const std::string& word) {
     if (_removeFlag) {
@@ -440,69 +440,69 @@ Lexicon& Lexicon::operator ,(const std::string& word) {
     return *this;
 }
 
-// 前置条件：word 已清理为仅包含小写 a-z 字母
+// pre: word is scrubbed to contain only lowercase a-z letters
 bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::string& originalWord) {
     if (!node) {
-        // 一路向下创建节点，每个单词字母对应一个节点
+        // create nodes all the way down, one for each letter of the word
         node = new TrieNode();
     }
 
     if (word.empty()) {
-        // 基本情况：已添加此单词的所有字母
+        // base case: we have added all of the letters of this word
         if (node->isWord()) {
-            return false;   // 重复单词；已存在
+            return false;   // duplicate word; already present
         } else {
-            // 新单词；添加它
+            // new word; add it
             node->setWord(true);
             _size++;
             _allWords.add(originalWord);
             return true;
         }
     } else {
-        // 递归情况：截去第一个字母，遍历其余部分
+        // recursive case: chop off first letter, traverse the rest
         return addHelper(node->child(word[0]), word.substr(1), originalWord);
     }
 }
 
-// 前置条件：word 已清理为仅包含小写 a-z 字母
+// pre: word is scrubbed to contain only lowercase a-z letters
 bool Lexicon::containsHelper(TrieNode* node, const std::string& word, bool isPrefix) const {
     if (!node) {
-        // 基本情况：没有指向此处的指针，因此前缀一定不存在
+        // base case: no pointer down to here, so prefix must not exist
         return false;
     } else if (word.length() == 0) {
-        // 基本情况：一直向下找到了节点。
-        // 如果我们正在查找前缀，这意味着该路径本身就是前缀，
-        // 因此应返回 true。
-        // 如果我们查找的是精确单词匹配而不是前缀，
-        // 必须检查 isWord 标志，确认该单词已添加
+        // base case: Found nodes all the way down.
+        // If we are looking for a prefix, this means this path IS a prefix,
+        // so we should return true.
+        // If we are looking for an exact word match rather than a prefix,
+        // we must check the isWord flag to see that this word was added
         return (isPrefix ? true : node->isWord());
     } else {
-        // 递归情况：针对一个字母沿适当的子指针前进
+        // recursive case: follow appropriate child pointer for one letter
         return containsHelper(node->child(word[0]), word.substr(1), isPrefix);
     }
 }
 
-// 前置条件：word 已清理为仅包含小写 a-z 字母
+// pre: word is scrubbed to contain only lowercase a-z letters
 bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix) {
     if (!node) {
-        // 基本情况：死胡同；不得包含此单词/前缀
+        // base case: dead end; this word/prefix must not be contained
         return false;
     } else if (word.empty()) {
-        // 基本情况：已遍历此单词/前缀的所有字母
-        // 现在必须执行移除操作
+        // base case: we have walked all of the letters of this word/prefix
+        // and now we must do the removal
         if (isPrefix) {
-            // 删除此节点及其所有后代
-            removeSubtreeHelper(node, originalWord);   // 从 m_allWords 中删除并设置 m_size
+            // remove this node and all of its descendents
+            removeSubtreeHelper(node, originalWord);   // removes from m_allWords, sets m_size
             node = nullptr;
         } else {
-            // 在词典中找到了此单词；
+            // found this word in the lexicon;
             if (node->isLeaf()) {
-                // 仅删除此叶节点
+                // remove this leaf node only
                 delete node;
                 node = nullptr;
             } else {
-                // 取消此节点的单词状态，但保留它，因为它可能
-                // 仍然有作为有效单词的子节点
+                // de-word-ify this node, but leave it because it may
+                // still have children that are valid words
                 if (node->isWord()) {
                     node->setWord(false);
                 }
@@ -512,12 +512,12 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
         }
         return true;
     } else {
-        // 递归情况：截去第一个字母，遍历其余部分
+        // recursive case: chop off first letter, traverse the rest
         bool wasLeaf = node->isLeaf();
         bool result = removeHelper(node->child(word[0]), word.substr(1), originalWord, isPrefix);
 
-        // 内存清理：如果之前不是叶节点但现在是，并且不是单词，
-        // 那么我也不再需要，因此也删除我
+        // memory cleanup: if I wasn't a leaf but now am, and am not a word,
+        // then I am now unneeded, so remove me too
         if (result && !wasLeaf && node
                 && node->isLeaf() && !node->isWord()) {
             delete node;
@@ -527,7 +527,7 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
     }
 }
 
-// 删除/释放此节点及其所有后代
+// remove/free this node and all descendents
 void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWord) {
     if (node) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
@@ -572,11 +572,11 @@ std::ostream& operator <<(std::ostream& out, const Lexicon& lex) {
 
 std::istream& operator >>(std::istream& is, Lexicon& lex) {
     std::string element;
-    return stanfordcpplib::collections::readCollection(is, lex, element, /* 描述符 */ "Lexicon::operator >>");
+    return stanfordcpplib::collections::readCollection(is, lex, element, /* descriptor */ "Lexicon::operator >>");
 }
 
 /*
- * 词典的哈希函数。
+ * Hash function for lexicons.
  */
 int hashCode(const Lexicon& lex) {
     return stanfordcpplib::collections::hashCodeCollection(lex);
@@ -588,7 +588,7 @@ static bool scrub(std::string& str) {
     for (size_t i = 0; i < nChars; i++) {
         std::string::value_type ch = tolower(str[i]);
         if (ch < 'a' || ch > 'z') {
-            return false;   // 非法字符串
+            return false;   // illegal string
         } else {
             str[outIndex] = ch;
             outIndex++;

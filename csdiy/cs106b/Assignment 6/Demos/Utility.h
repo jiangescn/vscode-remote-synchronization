@@ -1,9 +1,9 @@
 #pragma once
 
 /**
- * 宏：DISALLOW_COPYING_OF(Type)
+ * Macro: DISALLOW_COPYING_OF(Type)
  *
- * 禁止指定类型的复制/赋值。
+ * Disables copying / assignment of the specified type.
  */
 #define DISALLOW_COPYING_OF(Type)                                           \
     Type(const Type &) = delete;                                            \

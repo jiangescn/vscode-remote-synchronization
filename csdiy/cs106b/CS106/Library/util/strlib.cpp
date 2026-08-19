@@ -1,42 +1,42 @@
 /*
- * 文件：strlib.cpp
+ * File: strlib.cpp
  * ----------------
- * 此文件实现 strlib.h 接口。
+ * This file implements the strlib.h interface.
  * 
  * @version 2018/11/14
- * - 为 bool、char、指针和通用模板类型 T 添加 std::to_string
- * - 修复 pointerToString 的错误（原先添加了两个“0x”前缀）
+ * - added std::to_string for bool, char, pointer, and generic template type T
+ * - bug fix for pointerToString (was putting two "0x" prefixes)
  * @version 2018/09/02
- * - 添加 padLeft、padRight
+ * - added padLeft, padRight
  * @version 2017/10/24
- * - 输出 nullptr，而不是大写的 NULL
+ * - print nullptr instead of null in uppercase
  * @version 2016/11/07
- * - 修复错误：urlDecode 在编码无效时抛出错误（感谢 GitHub @scinart）
+ * - bug fix: urlDecode throws error on invalid encodings (courtesy GitHub @scinart)
  * @version 2016/10/30
- * - 按字母顺序排列函数
- * - 添加接受 char 类型而非 string 的重载：
- *   stringContains、stringIndexOf、stringJoin、stringLastIndexOf、stringReplace、
- *   stringSplit、toLowerCase、toUpperCase
+ * - alphabetized functions
+ * - added overloads that take type char instead of string:
+ *   stringContains, stringIndexOf, stringJoin, stringLastIndexOf, stringReplace,
+ *   stringSplit, toLowerCase, toUpperCase
  * @version 2016/10/13
- * - 修改 writeQuotedString，使其返回 ostream
+ * - modified writeQuotedString to return ostream
  * @version 2016/08/03
- * - 修改 readQuotedString，使其解析失败时不调用 error()
- *   （用于支持符合惯用法、静默失败的 >> 运算符）
+ * - modified readQuotedString not to throw error() on parse failures
+ *   (needed to support idiomatic silent-failing >> operators)
  * @version 2015/11/07
- * - 修复 urlDecode 中的错误（原先未正确解码 % 序列）
+ * - fixed bugs in urlDecode (wasn't decoding % sequences properly, oops)
  * @version 2015/10/26
- * - 添加 charToInteger/integerToChar 函数
+ * - added charToInteger/integerToChar functions
  * @version 2015/06/19
- * - 小幅修复，使 stringToInteger 函数能够使用 int radix 编译
+ * - slight bug fix to make stringToInteger functions compile with int radix
  * @version 2015/05/22
- * - 修复 stringToBool 函数中的小错误
+ * - slight bug fix in stringToBool function
  * @version 2014/10/31
- * - 修复 stringReplace 函数中的无限循环错误
+ * - fixed infinite loop bug in stringReplace function
  * @version 2014/10/19
- * - 按字母顺序排列函数
- * - 为若干现有返回字符串的函数添加“inPlace”原地版本
+ * - alphabetized functions
+ * - added several 'inPlace' variants of existing functions that return strings
  * @version 2014/10/08
- * - 移除“using namespace”语句
+ * - removed 'using namespace' statement
  */
 
 #include "strlib.h"
@@ -49,7 +49,7 @@
 #include "vector.h"
 #include "require.h"
 
-/* 函数原型 */
+/* Function prototypes */
 
 std::string boolToString(bool b) {
     return (b ? "true" : "false");
@@ -94,11 +94,11 @@ bool endsWith(const std::string& str, const std::string& suffix) {
 }
 
 /*
- * 实现说明：equalsIgnoreCase
+ * Implementation notes: equalsIgnoreCase
  * --------------------------------------
- * 此实现使用 for 循环遍历
- * 每个字符串。将每个字符串转换为大写后进行比较
- * 直接处理结果可得到更短但效率较低的实现。
+ * This implementation uses a for loop to cycle through the characters in
+ * each string.  Converting each string to uppercase and then comparing
+ * the results makes for a shorter but less efficient implementation.
  */
 bool equalsIgnoreCase(const std::string& s1, const std::string& s2) {
     if (s1.length() != s2.length()) return false;
@@ -137,9 +137,9 @@ char integerToChar(int n) {
 }
 
 /*
- * 实现说明：数值转换
+ * Implementation notes: numeric conversion
  * ----------------------------------------
- * 这些函数使用 <sstream> 库执行转换。
+ * These functions use the <sstream> library to perform the conversion.
  */
 std::string integerToString(int n, int radix) {
     if (radix <= 0) {
@@ -381,7 +381,7 @@ Vector<std::string> stringSplit(const std::string& str, const std::string& delim
         if (index == std::string::npos) {
             break;
         }
-        // 不要添加空标记；合并相邻/开头的分隔符
+        // don't add empty token, coalesce adjacent/leading delimiters
         if (index != 0) result.add(str2.substr(0, index));
         str2.erase(str2.begin(), str2.begin() + index + delimiter.length());
         count++;
@@ -545,13 +545,13 @@ std::string urlDecode(const std::string& str) {
         } else if (c == '+')  {
             unescaped << ' ';
         } else if (c == '%') {
-            // 如果字符串无效，且之后没有 2 个字符，则抛出错误，
-            // 或此处包含非十六进制字符时（感谢 GitHub @scinart）
+            // throw error if string is invalid and doesn't have 2 char after,
+            // or if it has non-hex chars here (courtesy GitHub @scinart)
             if (i + 2 >= n || !isxdigit(*(i + 1)) || !isxdigit(*(i + 2))) {
                 error("urlDecode: Invalid percent-encoding");
             }
 
-            // 解码 URL 编码的 ASCII 字符，例如 %40 => &
+            // decode a URL-encoded ASCII character, e.g. %40 => &
             char ch1 = *(i + 1);
             char ch2 = *(i + 2);
             int hex1 = (isdigit(ch1) ? (ch1 - '0') : (toupper(ch1) - 'A' + 10));
@@ -571,7 +571,7 @@ std::string urlDecode(const std::string& str) {
 }
 
 void urlDecodeInPlace(std::string& str) {
-    str = urlDecode(str);   // 这里没有实际的效率提升
+    str = urlDecode(str);   // no real efficiency gain here
 }
 
 std::string urlEncode(const std::string& str) {
@@ -594,7 +594,7 @@ std::string urlEncode(const std::string& str) {
 }
 
 void urlEncodeInPlace(std::string& str) {
-    str = urlEncode(str);   // 这里没有实际的效率提升
+    str = urlEncode(str);   // no real efficiency gain here
 }
 
 namespace std {

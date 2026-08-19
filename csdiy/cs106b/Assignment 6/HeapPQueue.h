@@ -5,130 +5,130 @@
 #include "GUI/SimpleTest.h"
 
 /**
- * 使用二叉堆实现的优先队列类型。请回顾作业讲义
- * 了解二叉堆的工作原理。
+ * Priority queue type implemented using a binary heap. Refer back to the assignment handout
+ * for details about how binary heaps work.
  *
- * 提醒一下，你必须使用 new[] 和以下方式自行管理所有内存：
- * delete[]。
+ * As a reminder, you are required to do all your own memory management using new[] and
+ * delete[].
  */
 class HeapPQueue {
 public:
     /**
-     * 创建新的空优先队列。
+     * Creates a new, empty priority queue.
      */
     HeapPQueue();
 
     /**
-     * 清理此优先队列分配的所有内存。请记住，你负责
-     * 用于自行管理内存！
+     * Cleans up all memory allocated by this priorty queue. Remember, you're responsible
+     * for managing your own memory!
      */
     ~HeapPQueue();
 
     /**
-     * 向队列添加新数据点。此操作的运行时间为 O(log n)，
-     * 其中 n 是队列中的元素数量。
+     * Adds a new data point into the queue. This operation runs in time O(log n),
+     * where n is the number of elements in the queue.
      *
-     * @param data 要添加的数据点。
+     * @param data The data point to add.
      */
     void enqueue(const DataPoint& data);
 
     /**
-     * 删除并返回优先队列中权重最低的数据点。如果有多个
-     * 如果多个元素并列具有最低权重，可返回其中任意一个。
+     * Removes and returns the lowest-weight data point in the priority queue. If multiple
+     * elements are tied for having the loweset weight, any one of them may be returned.
      *
-     * 若优先队列为空，此函数调用 error() 报错。
+     * If the priority queue is empty, this function calls error() to report an error.
      *
-     * 此操作必须在 O(log n) 时间内运行，其中 n 是
-     * 队列。
+     * This operation must run in time O(log n), where n is the number of elements in the
+     * queue.
      *
-     * @return 队列中权重最低的数据点。
+     * @return The lowest-weight data point in the queue.
      */
     DataPoint dequeue();
 
     /**
-     * 返回但不移除下一次调用以下方法时会被移除的元素
-     * 出队。
+     * Returns, but does not remove, the element that would next be removed via a call to
+     * dequeue.
      *
-     * 若优先队列为空，此函数调用 error() 报错。
+     * If the priority queue is empty, this function calls error() to report an error.
      *
-     * 此操作必须在 O(1) 时间内运行。
+     * This operation must run in time O(1).
      *
-     * @return 返回值
+     * @return
      */
     DataPoint peek() const;
 
     /**
-     * 返回优先队列是否为空。
+     * Returns whether the priority queue is empty.
      *
-     * 此操作必须在 O(1) 时间内运行。
+     * This operation must run in time O(1).
      *
-     * @return 优先队列是否为空。
+     * @return Whether the priority queue is empty.
      */
     bool isEmpty() const;
 
     /**
-     * 返回此优先队列中的数据点数量。
+     * Returns the number of data points in this priority queue.
      *
-     * 此操作必须在 O(1) 时间内运行。
+     * This operation must run in time O(1).
      *
-     * @return 优先队列中的元素数量。
+     * @return The number of elements in the priority queue.
      */
     int  size() const;
 
-    /* 此函数纯粹用于测试。你可以让它执行任何你
-     * 如何实现，我们评分时不会调用它。过去，学生曾遇到此
-     * 函数打印表示堆的数组，或关于以下内容的信息：
-     * 空间如何分配等。可按需使用！
+    /* This function exists purely for testing purposes. You can have it do whatever you'd
+     * like and we won't be invoking it when grading. In the past, students have had this
+     * function print out the array representing the heap, or information about how much
+     * space is allocated, etc. Feel free to use it as you see fit!
      */
     void printDebugInfo();
 
 private:
-    /* 指向元素数组的指针。我们的测试要求你的实现使用
-     * 元素数组指针必须使用名称“elems”，因此请不要重命名它
-     * 变量。
+    /* Pointer to the array of elements. Our tests expect your implementation to use the
+     * name 'elems' for the pointer to the array of elements, so please do not rename this
+     * variable.
      */
     DataPoint* elems = nullptr;
 
-    /* 优先队列的逻辑大小（堆中存储的元素数量）。
-     * 我们的测试要求此变量存在，因此请不要重命名此变量。
+    /* Logical size of the priority queue (the number of elements stored in the heap).
+     * Our tests expect that this variable exists, so please do not rename this variable.
      */
     int logicalSize = 0;
 
-    /* 优先队列的已分配大小（堆中使用的槽位数）。
-     * 我们的测试要求此变量存在，因此请不要重命名此变量。
+    /* Allocated size of the priority queue (the number of slots used in the heap).
+     * Our tests expect that this variable exists, so please do not rename this variable.
      */
     int allocatedSize = 0;
 
-    /* 控制原始数组大小的常量。
+    /* Constant controlling how big the original array should be.
      *
-     * 选择此值是因为它足够大，可以容纳
-     * 少量元素，适合刚开始时使用
-     * 已启动，但足够小，便于测试调整大小
-     * 行为。你不应编辑此值。
+     * We've picked this value because it's large enough to hold
+     * a small number of elements for when you're just getting
+     * started, but small enough that it's easy to test resizing
+     * behavior. You shouldn't edit this value.
      */
     static const int INITIAL_SIZE = 6;
 
-    /* TODO：添加所需的私有成员变量、成员函数或成员
-     * 所需的类型。可以按任意方式实现此类型，只要
-     * 只要自行完成所有内存管理，就可以采用任意方式，
-     * 不要使用任何容器类型（例如 Vector、HashSet 等），并且
-     * 你的实现使用二叉堆。
+    /* TODO: Add any private member variables, member functions, or member
+     * types that you'd like. You're welcome to implement this type however
+     * you'd like, provided that you do all your own memory management, you
+     * don't use any container types (e.g. Vector, HashSet, etc.), and that
+     * your implementation uses a binary heap.
      *
-     * TODO：提交前删除此注释。
+     * TODO: Delete this comment before submitting.
      */
 
 
 
-    /* 默认情况下，C++ 允许复制对象。问题在于默认复制
-     * 只是逐元素复制，对于指针会产生无效结果。
-     * 此宏禁止复制该类型。有关其工作方式以及
-     * 有关如何重写默认行为的更多信息，请学习 CS106L！
+    /* By default, C++ will let you copy objects. The problem is that the default copy
+     * just does an element-by-element copy, which with pointers will give invalid results.
+     * This macro disables copying of this type. For more details about how this works, and
+     * for more information about how to override the default behavior, take CS106L!
      */
     DISALLOW_COPYING_OF(HeapPQueue);
 
-    /* 允许 STUDENT_TEST 和 PROVIDED_TEST 访问此类的私有部分。
-     * 这使测试能够检查私有字段，确认其值正确
-     * 以及测试特定辅助函数。
+    /* Grants STUDENT_TEST and PROVIDED_TEST access to the private section of this class.
+     * This allows tests to check private fields to make sure they have the right values
+     * and to test specific helper functions.
      */
     ALLOW_TEST_ACCESS();
 };

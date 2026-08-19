@@ -1,20 +1,20 @@
 /*
- * 文件：random.h
+ * File: random.h
  * --------------
- * 此文件导出用于生成伪随机数的函数。
+ * This file exports functions for generating pseudorandom numbers.
  *
  * @version 2019/05/16
- * - 添加接受最小/最大 RGB 的 randomColor
+ * - added randomColor that takes min/max RGB
  * @version 2018/09/25
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2017/10/05
- * - 添加 randomFeedClear
+ * - added randomFeedClear
  * @version 2017/09/28
- * - 将随机“feed”函数移到 autograder 命名空间
+ * - moved random 'feed' functions into autograder namespace
  * @version 2016/08/02
- * - 添加 randomColor、randomColorString
+ * - added randomColor, randomColorString
  * @version 2014/10/19
- * - 按字母顺序排列函数
+ * - alphabetized functions
  */
 
 
@@ -24,67 +24,67 @@
 #include <string>
 
 /**
- * 以 50% 的概率返回 <code>true</code>。
+ * Returns <code>true</code> with 50% probability.
  */
 bool randomBool();
 
 /**
- * 以 <code>p</code> 指定的概率返回 <code>true</code>。
- * 参数 <code>p</code> 必须是介于以下范围的浮点数
- * 0（从不）和 1（总是）。例如，调用
- * <code>randomChance(.30)</code> 有 30% 的概率返回 <code>true</code>
- * 时间。
+ * Returns <code>true</code> with the probability indicated by <code>p</code>.
+ * The argument <code>p</code> must be a floating-point number between
+ * 0 (never) and 1 (always).  For example, calling
+ * <code>randomChance(.30)</code> returns <code>true</code> 30 percent
+ * of the time.
  */
 bool randomChance(double p);
 
 /**
- * 以整数返回随机 RGB 颜色。
- * 另请参阅：gwindow.h convertRGBToColor()
+ * Returns a random RGB color as an integer.
+ * See also: gwindow.h convertRGBToColor()
  */
 int randomColor();
 
 /**
- * 以整数返回随机 RGB 颜色，其中 RGB 分量的值
- * 限制在给定最小值和最大值之间。
- * @throw 如果 min 或 max 不在 [0..255] 内，或 min > max，则抛出 ErrorException
- * 另请参阅：gwindow.h convertRGBToColor()
+ * Returns a random RGB color as an integer, with the value of the RGB components
+ * bounded between the given minimum and maximum.
+ * @throw ErrorException if min or max is not in [0..255] or min > max
+ * See also: gwindow.h convertRGBToColor()
  */
 int randomColor(int minRGB, int maxRGB);
 
 /**
- * 以十六进制字符串返回随机 RGB 颜色，例如品红色为 "#ff00ff"。
- * 另请参阅：gwindow.h convertColorToRGB()
+ * Returns a random RGB color as a hex string like "#ff00ff" for magenta.
+ * See also: gwindow.h convertColorToRGB()
  */
 std::string randomColorString();
 
 /**
- * 以十六进制字符串返回随机 RGB 颜色，例如品红色为 "#ff00ff"，
- * RGB 分量值限制在给定最小值和最大值之间。
- * @throw 如果 min 或 max 不在 [0..255] 内，或 min > max，则抛出 ErrorException
- * 另请参阅：gwindow.h convertColorToRGB()
+ * Returns a random RGB color as a hex string like "#ff00ff" for magenta,
+ * with the value of the RGB components bounded between the given minimum and maximum.
+ * @throw ErrorException if min or max is not in [0..255] or min > max
+ * See also: gwindow.h convertColorToRGB()
  */
 std::string randomColorString(int minRGB, int maxRGB);
 
 /**
- * 返回范围从 <code>low</code> 到以下值的随机整数
- * <code>high</code>，包含该值。
+ * Returns a random integer in the range <code>low</code> to
+ * <code>high</code>, inclusive.
  */
 int randomInteger(int low, int high);
 
 /**
- * 返回半开区间内的随机实数
- * [<code>low</code>&nbsp;..&nbsp;<code>high</code>)。半开区间
- * 区间包含第一个端点，但不包含第二个端点，这
- * 表示结果始终大于或等于
- * 不小于 <code>low</code>，但严格小于 <code>high</code>。
+ * Returns a random real number in the half-open interval
+ * [<code>low</code>&nbsp;..&nbsp;<code>high</code>).  A half-open
+ * interval includes the first endpoint but not the second, which
+ * means that the result is always greater than or equal to
+ * <code>low</code> but strictly less than <code>high</code>.
  */
 double randomReal(double low, double high);
 
 /**
- * 将内部随机数种子设置为指定值。你
- * 可以使用此函数为以下对象设置特定起点：
- * 伪随机序列，或确保程序行为
- * 在调试阶段可重复。
+ * Sets the internal random number seed to the specified value.  You
+ * can use this function to set a specific starting point for the
+ * pseudorandom sequence or to ensure that program behavior is
+ * repeatable during the debugging phase.
  */
 void setRandomSeed(int seed);
 

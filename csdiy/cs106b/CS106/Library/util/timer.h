@@ -1,70 +1,70 @@
 /*
- * 文件：timer.h
+ * File: timer.h
  * -------------
- * 此文件导出 Timer 类，可用于测量经过的
- * 程序在给定时间间隔内的运行时间（毫秒）。
+ * This file exports a Timer class that is useful for measuring the elapsed
+ * time of a program in milliseconds over a given interval.
  *
  * @version 2018/09/25
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  */
 
 #ifndef _timer_h
 #define _timer_h
 
 /**
- * Timer 对象可用于测量经过的
- * 程序在给定时间间隔内的运行时间（毫秒）。
- * 用法示例：
+ * A Timer object is useful for measuring the elapsed
+ * time of a program in milliseconds over a given interval.
+ * Usage example:
  *
  *<pre>
  * Timer tim;
  * tim.start();
- * ... 需要较长时间的代码 ...
+ * ... code that takes a while ...
  * tim.stop();
- * cout << "耗时 " << tim.elapsed() << "ms。" << endl;
+ * cout << "That took " << tim.elapsed() << "ms." << endl;
  *</pre>
  */
 class Timer {
 public:
     /**
-     * 构造新计时器。
-     * 如果传入值为 true 的可选 bool 参数，也会启动计时器。
+     * Constructs a new timer.
+     * If an optional bool parameter of true is passed, also starts the timer.
      */
     Timer(bool autostart = false);
 
     /**
-     * 返回自此计时器以下状态起经过的毫秒数
-     * 已启动。
-     * 如果计时器从未启动，则返回 0。
+     * Returns the number of milliseconds that have elapsed since this timer
+     * was started.
+     * Returns 0 if the timer was never started.
      */
     long elapsed() const;
 
     /**
-     * 如果计时器已启动，则返回 true。
+     * Returns true if the timer has been started.
      */
     bool isStarted() const;
 
     /**
-     * 启动计时器。
-     * 如果计时器已启动，则重新启动它，使其 'elapsed'
-     * 调用时 time 将为 0。
+     * Starts the timer.
+     * If the timer was already started, restarts it such that its 'elapsed'
+     * time will be 0 at the moment of the call.
      */
     void start();
 
     /**
-     * 停止计时器并返回经过的毫秒数。
-     * 如果计时器从未启动，则视为已经过 0 毫秒。
+     * Stops the timer and returns the number of elapsed milliseconds.
+     * If the timer was never started, 0 ms will be considered to have elapsed.
      */
     long stop();
 
     /**
-     * 用于以 Unix 格式获取当前时间的静态实用函数
-     * 自纪元以来的毫秒时间戳。
+     * A static utility function for getting the current time as a Unix
+     * timestamp of milliseconds since the epoch.
      */
     static long currentTimeMS();
 
 private:
-    // 实例变量
+    // instance variables
     long _startMS;
     long _stopMS;
     bool _isStarted;

@@ -1,12 +1,12 @@
 /*
- * 文件：gdiffimage.h
+ * File: gdiffimage.h
  * ------------------
  * 
  * @author Marty Stepp
  * @version 2018/10/12
- * - 添加“用颜色突出显示差异”复选框及功能
+ * - added "highlight diffs in color" checkbox and functionality
  * @version 2018/09/15
- * - 初始版本，由 Java 后端 DiffImage 类转换而来
+ * - initial version, converted from Java back-end DiffImage class
  */
 
 
@@ -26,12 +26,12 @@
 #include "gwindow.h"
 
 /**
- * GDiffImage 是显示两幅图像差异的图形窗口
- * 图像。此类用于实现“比较图形输出”
- * 图形程序的特性，以及各种自动评分器比较。
+ * A GDiffImage is a graphical window that displays differences between two
+ * images.  This class is used to implement the "Compare Graphical Output"
+ * feature of graphical programs, as well as various autograder comparisons.
  *
  * @private
- * TODO：编写文档
+ * TODO: document
  */
 class GDiffImage {
 public:
@@ -51,7 +51,7 @@ private:
     GDiffImage(const std::string& name1,
                GCanvas* image1,
                const std::string& name2,
-               GCanvas* image2);   // 禁止构造
+               GCanvas* image2);   // forbid construction
     virtual ~GDiffImage();
 
     Q_DISABLE_COPY(GDiffImage)

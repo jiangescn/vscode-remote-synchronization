@@ -1,13 +1,13 @@
 /*
- * 文件：consoletext.h
+ * File: consoletext.h
  * -------------------
- * 此文件提供一种使用 console.h 中函数的方式
- * 而不强制使用 Stanford C++ 库的
- * 图形控制台窗口。
+ * This file provides a way to use the functions from console.h
+ * without mandating the use of the Stanford C++ library's
+ * graphical console window.
  * 
  * @author Marty Stepp
  * @version 2018/08/31
- * - 初始版本
+ * - initial version
  */
 
 #define __DONT_ENABLE_QT_GRAPHICAL_CONSOLE

@@ -1,18 +1,18 @@
 /*
- * 文件：gdownloader.cpp
+ * File: gdownloader.cpp
  * ---------------------
- * 此文件实现 gdownloader.h 中声明的 GDownloader 类。
- * 各成员的声明和注释见 .h 文件。
+ * This file implements the GDownloader class as declared in gdownloader.h.
+ * See the .h file for the declarations of each member and comments.
  *
  * @author Marty Stepp
  * @version 2018/09/23
- * - 添加宏检查，以提高与旧 Qt 版本的兼容性
+ * - added macro checks to improve compatibility with old Qt versions
  * @version 2018/09/18
- * - 可用版本；修复了多个线程/Qt 信号问题
+ * - working version; had to fix various threading / Qt signal issues
  * @version 2018/08/23
- * - 重命名为 gdownloader.cpp，以替代 Java 版本
+ * - renamed to gdownloader.cpp to replace Java version
  * @version 2018/08/03
- * - 初始版本
+ * - initial version
  */
 
 #include "gdownloader.h"
@@ -38,7 +38,7 @@ GDownloader::GDownloader()
 }
 
 GDownloader::~GDownloader() {
-    // TODO：删除
+    // TODO: delete
     _manager = nullptr;
     _reply = nullptr;
 }
@@ -49,13 +49,13 @@ std::string GDownloader::downloadAsString(const std::string& url) {
     _httpStatusCode = 0;
     _lastErrorMessage = "";
 
-    // 在 GUI 线程上下载文件并阻塞/等待完成
+    // download the file on gui thread and block/wait for it to finish
     downloadInternal();
 
-    // 将下载内容保存到字符串
+    // save download to string
     saveDownloadedData("downloadAsString");
 
-    // 将下载的文本作为字符串返回（保存在成员变量中）
+    // return downloaded text as string (saved in member variable)
     return _filedata;
 }
 
@@ -65,16 +65,16 @@ void GDownloader::downloadToFile(const std::string& url, const std::string& file
     _httpStatusCode = 0;
     _lastErrorMessage = "";
 
-    // 在 GUI 线程上下载文件并阻塞/等待完成
+    // download the file on gui thread and block/wait for it to finish
     downloadInternal();
 
-    // 写入文件
+    // write to file
     saveDownloadedData("downloadToFile", file);
 }
 
 void GDownloader::downloadInternal() {
-    // 简陋的检查
-    // 在不支持 SSL 时访问 https URL 注定失败，因此不要尝试
+    // Cheezy check
+    // Access https: url if no SSL support present is a lose, so don't even try
     if (!_sslSupported && _url.compare(0, 6, "https:") == 0) {
         reportNoSSL();
         return;
@@ -93,13 +93,13 @@ void GDownloader::downloadInternal() {
 
         _reply = _manager->get(*request);
 
-        // 这些函数似乎没有被调用，并且/或者我没有能触发它们的测试用例
-        // 因此，与其让这里未经测试，我选择禁用
+        // these do not seem to be called and/or I do not have a test case to trigger them
+        // so rather than leave here untested, I am disabling
         //connect(_reply, &QNetworkReply::errorOccurred, this, &GDownloader::fileDownloadError);
         //connect(_reply, &QNetworkReply::sslErrors, this, &GDownloader::sslErrorsReply);
   });
 
-    // 等待下载完成（在学生线程中）
+    // wait for download to finish (in student thread)
     waitForDownload();
 }
 
@@ -112,7 +112,7 @@ std::string GDownloader::getErrorMessage() const {
 }
 
 int GDownloader::getHttpStatusCode() const {
-    // 所有 HTTP 状态码都在 1xx 到 5xx（含）之间
+    // all HTTP status codes are between 1xx and 5xx, inclusive
     return _httpStatusCode >= 100 && _httpStatusCode <= 599 ? _httpStatusCode : 0;
 }
 
@@ -130,7 +130,7 @@ std::string GDownloader::getUserAgent() const {
 
 bool GDownloader::hasError() const {
     if (_httpStatusCode != 0) {
-        // 2xx 值表示成功
+        // values 2xx indicate success
         return _httpStatusCode < 200 || _httpStatusCode > 299;
     } else {
         return !_lastErrorMessage.empty();
@@ -183,13 +183,13 @@ void GDownloader::saveDownloadedData(const std::string& member, const std::strin
     if (_reply) {
         QNetworkReply::NetworkError nerror = _reply->error();
         if (nerror) {
-            // 连接失败；记录错误消息
+            // connection failed; log the error message
             _lastErrorMessage = qtNetworkErrorToString(nerror);
         } else if (filename.empty()) {
-            // 保存到字符串
+            // save to a string
             _filedata = _reply->readAll().toStdString();
         } else {
-            // 保存到文件
+            // save to a file
             QFile outfile(QString::fromStdString(filename));
             if (!outfile.open(QIODevice::WriteOnly)) {
                 error("GDownloader::" + member + ": cannot open file " + filename + " for writing");
@@ -198,7 +198,7 @@ void GDownloader::saveDownloadedData(const std::string& member, const std::strin
             outfile.close();
         }
 
-        // 清理连接
+        // clean up the connection
         _reply->deleteLater();
         _reply = nullptr;
         _downloadComplete = true;
@@ -227,7 +227,7 @@ void GDownloader::reportNoSSL() {
 }
 
 void GDownloader::waitForDownload() {
-    // 等待下载完成
+    // wait for download to finish
     while (!_downloadComplete) {
         GThread::getCurrentThread()->sleep(10);
         if (_reply && _reply->isFinished()) {
@@ -236,7 +236,7 @@ void GDownloader::waitForDownload() {
         }
     }
 
-    // 获取 HTTP 状态码
+    // grab the HTTP status code
     QVariant statusCode = _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if (statusCode.isValid()) {
         _httpStatusCode = statusCode.toInt();

@@ -1,9 +1,9 @@
 /*
- * 文件：queue.h
+ * File: queue.h
  * -------------
- * 此文件导出 <code>Queue</code> 类，它是一种集合
- * 其中值通常按先进先出顺序处理
- * （FIFO，先进先出）顺序。
+ * This file exports the <code>Queue</code> class, a collection
+ * in which values are ordinarily processed in a first-in/first-out
+ * (FIFO) order.
  */
 
 #ifndef _queue_h
@@ -18,131 +18,131 @@
 #include "vector.h"
 
 /*
- * 类：Queue<ValueType>
+ * Class: Queue<ValueType>
  * -----------------------
- * 此类对一种称为<b><i>队列</i></b>的线性结构建模
- * 其中值从一端添加、从另一端移除。
- * 这种规则产生先进先出（FIFO）的行为
- * 这是队列的定义性特征。
+ * This class models a linear structure called a <b><i>queue</i></b>
+ * in which values are added at one end and removed from the other.
+ * This discipline gives rise to a first-in/first-out behavior (FIFO)
+ * that is the defining feature of queues.
  */
 template <typename ValueType>
 class Queue {
 public:
     /*
-     * 构造函数：Queue
-     * 用法：Queue<ValueType> queue;
+     * Constructor: Queue
+     * Usage: Queue<ValueType> queue;
      * ------------------------------
-     * 初始化一个新的空队列。
+     * Initializes a new empty queue.
      */
     Queue() = default;
 
     /*
-     * 构造函数：Queue
-     * 用法：Queue<ValueType> queue {1, 2, 3};
+     * Constructor: Queue
+     * Usage: Queue<ValueType> queue {1, 2, 3};
      * ----------------------------------------
-     * 初始化一个按从前到后顺序存储给定元素的新队列。
+     * Initializes a new queue that stores the given elements from front-back.
      */
     Queue(std::initializer_list<ValueType> list);
 
     /*
-     * 析构函数：~Queue
+     * Destructor: ~Queue
      * ------------------
-     * 释放与此队列关联的任何堆存储。
+     * Frees any heap storage associated with this queue.
      */
     virtual ~Queue() = default;
 
     /*
-     * 方法：clear
-     * 用法：queue.clear();
+     * Method: clear
+     * Usage: queue.clear();
      * ---------------------
-     * 从队列中删除所有元素。
+     * Removes all elements from the queue.
      */
     void clear();
 
     /*
-     * 方法：dequeue
-     * 用法：ValueType first = queue.dequeue();
+     * Method: dequeue
+     * Usage: ValueType first = queue.dequeue();
      * -----------------------------------------
-     * 删除并返回队列中的第一项。
+     * Removes and returns the first item in the queue.
      */
     ValueType dequeue();
 
     /*
-     * 方法：enqueue
-     * 用法：queue.enqueue(value);
+     * Method: enqueue
+     * Usage: queue.enqueue(value);
      * ----------------------------
-     * 将 <code>value</code> 添加到队列末尾。
+     * Adds <code>value</code> to the end of the queue.
      */
     void enqueue(const ValueType& value);
 
     /*
-     * 方法：equals
-     * 用法：if (queue.equals(queue2)) ...
+     * Method: equals
+     * Usage: if (queue.equals(queue2)) ...
      * ------------------------------------
-     * 比较两个队列是否相等。
-     * 如果此队列包含完全相同的内容，则返回 <code>true</code>
-     * 与给定另一个队列相同的值。
-     * 行为与 == 运算符相同。
+     * Compares two queues for equality.
+     * Returns <code>true</code> if this queue contains exactly the same
+     * values as the given other queue.
+     * Identical in behavior to the == operator.
      */
     bool equals(const Queue<ValueType>& queue2) const;
 
     /*
-     * 方法：isEmpty
-     * 用法：if (queue.isEmpty()) ...
+     * Method: isEmpty
+     * Usage: if (queue.isEmpty()) ...
      * -------------------------------
-     * 如果队列不包含元素，则返回 <code>true</code>。
+     * Returns <code>true</code> if the queue contains no elements.
      */
     bool isEmpty() const;
 
     /*
-     * 方法：peek
-     * 用法：ValueType first = queue.peek();
+     * Method: peek
+     * Usage: ValueType first = queue.peek();
      * --------------------------------------
-     * 返回队列中的第一个值，但不移除它。
+     * Returns the first value in the queue, without removing it.
      */
     const ValueType& peek() const;
 
     /*
-     * 方法：size
-     * 用法：int n = queue.size();
+     * Method: size
+     * Usage: int n = queue.size();
      * ----------------------------
-     * 返回队列中的值数量。
+     * Returns the number of values in the queue.
      */
     int size() const;
 
     /*
-     * 方法：toString
-     * 用法：string str = queue.toString();
+     * Method: toString
+     * Usage: string str = queue.toString();
      * -------------------------------------
-     * 将队列转换为可打印的字符串表示。
+     * Converts the queue to a printable string representation.
      */
     std::string toString() const;
 
     /*
-     * 运算符：==
-     * 用法：queue1 == queue2
+     * Operator: ==
+     * Usage: queue1 == queue2
      * -------------------
-     * 如果 <code>queue1</code> 和 <code>queue2</code>，则返回 <code>true</code>
-     * 包含相同元素。
+     * Returns <code>true</code> if <code>queue1</code> and <code>queue2</code>
+     * contain the same elements.
      */
     bool operator ==(const Queue& queue2) const;
 
     /*
-     * 运算符：!=
-     * 用法：queue1 != queue2
+     * Operator: !=
+     * Usage: queue1 != queue2
      * -------------------
-     * 如果 <code>queue1</code> 和 <code>queue2</code>，则返回 <code>true</code>
-     * 不包含相同元素。
+     * Returns <code>true</code> if <code>queue1</code> and <code>queue2</code>
+     * do not contain the same elements.
      */
     bool operator !=(const Queue& queue2) const;
 
     /*
-     * 运算符：<、>、<=、>=
-     * 用法：queue1 < queue2 ...
+     * Operators: <, >, <=, >=
+     * Usage: queue1 < queue2 ...
      * --------------------------
-     * 用于比较两个队列的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two queues.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      */
     bool operator <(const Queue& queue2) const;
     bool operator <=(const Queue& queue2) const;
@@ -155,21 +155,21 @@ public:
     template <typename T>
     friend std::ostream& operator <<(std::ostream& os, const Queue<T>& queue);
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
 private:
-    /* 实例变量 */
+    /* Instance variables */
     Deque<ValueType> _elements;
 };
 
 template <typename ValueType>
 Queue<ValueType>::Queue(std::initializer_list<ValueType> list) : _elements(list) {
-    // 空
+    // empty
 }
 
 template <typename ValueType>
@@ -178,10 +178,10 @@ void Queue<ValueType>::clear() {
 }
 
 /*
- * 实现说明：dequeue、peek
+ * Implementation notes: dequeue, peek
  * -----------------------------------
- * 这些方法必须检查空队列，并报告错误
- * 若不存在第一个元素。
+ * These methods must check for an empty queue and report an error
+ * if there is no first element.
  */
 template <typename ValueType>
 ValueType Queue<ValueType>::dequeue() {
@@ -268,13 +268,13 @@ template <typename ValueType>
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, queue, element, /* 描述符 */ "Queue::operator >>", readOne<ValueType>);
+    return stanfordcpplib::collections::readCollection(is, queue, element, /* descriptor */ "Queue::operator >>", readOne<ValueType>);
 }
 
 
 /*
- * 队列的模板哈希函数。
- * 要求队列中的元素类型具有 hashCode 函数。
+ * Template hash function for queues.
+ * Requires the element type in the queue to have a hashCode function.
  */
 template <typename T>
 int hashCode(const Queue<T>& q) {

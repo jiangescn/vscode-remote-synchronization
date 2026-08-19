@@ -9,20 +9,20 @@
 #include <istream>
 
 /**
- * 表示灾害准备问题测试用例的类型。
+ * Type representing a test case for the Disaster Preparation problem.
  */
 struct DisasterTest {
-    Map<std::string, Set<std::string>> network; // 道路网络
-    Map<std::string, GPoint> cityLocations;     // 每个城市应绘制的位置
+    Map<std::string, Set<std::string>> network; // The road network
+    Map<std::string, GPoint> cityLocations;     // Where each city should be drawn
 };
 
 /**
- * 给定指向 Disaster Preparation 测试用例的流，
- * 从该测试用例中提取数据。
+ * Given a stream pointing at a test case for Disaster Preparation,
+ * pulls the data from that test case.
  *
- * @param source 包含测试用例的流。
- * @return 从文件读取的测试用例。
- * @throws 如果发生错误或文件无效，则抛出 ErrorException。
+ * @param source The stream containing the test case.
+ * @return A test case from the file.
+ * @throws ErrorException If an error occurs or the file is invalid.
  */
 DisasterTest loadDisaster(std::istream& source);
 

@@ -2,64 +2,107 @@
 #include "Combine.h"
 using namespace std;
 
-Vector<DataPoint> combine(const Vector<Vector<DataPoint>>& sequences) {
-    /* TODO：删除下面几行并实现此函数。 */
-    (void) sequences;
-    return {};
+Vector<DataPoint> merge(const Vector<DataPoint> &left, const Vector<DataPoint> &right)
+{
+    Vector<DataPoint> result;
+
+    int i = 0;
+    int j = 0;
+
+    while (i < left.size() && j < right.size())
+    {
+        if (left[i].weight < right[j].weight)
+        {
+            result.add(left[i]);
+            i++;
+        }
+        else
+        {
+            result.add(right[j]);
+            j++;
+        }
+    }
+
+    while (i < left.size())
+    {
+        result.add(left[i]);
+        i++;
+    }
+    while (j < right.size())
+    {
+        result.add(right[j]);
+        j++;
+    }
+
+    return result;
 }
 
+Vector<DataPoint> cbRange(const Vector<Vector<DataPoint>> &sequences, int left, int right)
+{
+    if(left >= right)
+    {
+        return {};
+    }
 
-/* * * * * * 此处以下为测试用例 * * * * * */
+    if(right - left == 1)
+    {
+        return sequences[left];
+    }
 
-/* TODO：在此添加你自己的自定义测试！ */
+    int mid = left + (right - left) / 2;
+    Vector<DataPoint> leftResult = cbRange(sequences, left, mid);
+    Vector<DataPoint> rightResult = cbRange(sequences, mid, right);
 
+    return merge(leftResult, rightResult);
+}
 
+Vector<DataPoint> combine(const Vector<Vector<DataPoint>> &sequences)
+{
+    /* TODO: Delete the next few lines and implement this. */
+    // (void) sequences;
+    // return {};
+    return cbRange(sequences, 0, sequences.size());
+}
 
+/* * * * * * Test Cases Below This Point * * * * * */
 
+/* TODO: Add your own custom tests here! */
 
+/* * * * * Provided Tests Below This Point * * * * */
 
+PROVIDED_TEST("Merges two single-item sequences.")
+{
+    DataPoint amy = {"Amy Liu", 103};
+    DataPoint katherine = {"Katherine Erdman", 106};
 
-
-
-
-
-
-
-
-/* * * * * 此处以下为提供的测试 * * * * */
-
-
-PROVIDED_TEST("Merges two single-item sequences.") {
-    DataPoint amy        = { "Amy Liu",          103 };
-    DataPoint katherine  = { "Katherine Erdman", 106 };
-
-    /* 按两种顺序进行合并，确保结果正确。 */
-    auto merged = combine({{ amy }, { katherine }});
+    /* Try merging in both orders to make sure the result is correct. */
+    auto merged = combine({{amy}, {katherine}});
     EXPECT_EQUAL(merged.size(), 2);
     EXPECT_EQUAL(merged[0], amy);
     EXPECT_EQUAL(merged[1], katherine);
 
-    merged = combine({{ katherine }, { amy }});
+    merged = combine({{katherine}, {amy}});
     EXPECT_EQUAL(merged.size(), 2);
     EXPECT_EQUAL(merged[0], amy);
     EXPECT_EQUAL(merged[1], katherine);
 }
 
-PROVIDED_TEST("Merges four single-item sequences.") {
-    DataPoint amy        = { "Amy Liu",          103 };
-    DataPoint katherine  = { "Katherine Erdman", 106 };
-    DataPoint isabel     = { "Isabel Bush",      107 };
-    DataPoint anna       = { "Anna Saplistki",   161 };
+PROVIDED_TEST("Merges four single-item sequences.")
+{
+    DataPoint amy = {"Amy Liu", 103};
+    DataPoint katherine = {"Katherine Erdman", 106};
+    DataPoint isabel = {"Isabel Bush", 107};
+    DataPoint anna = {"Anna Saplistki", 161};
 
-    /* 尝试按几种不同顺序进行合并。 */
-    auto merged = combine({{ amy }, { katherine }, { isabel }, { anna }});
+    /* Try merging in several different orders. */
+    auto merged = combine({{amy}, {katherine}, {isabel}, {anna}});
     EXPECT_EQUAL(merged.size(), 4);
     EXPECT_EQUAL(merged[0], amy);
     EXPECT_EQUAL(merged[1], katherine);
     EXPECT_EQUAL(merged[2], isabel);
     EXPECT_EQUAL(merged[3], anna);
 
-    merged = combine({{ katherine }, { isabel }, { anna }, { amy }});
+    merged = combine({{katherine}, {isabel}, {anna}, {amy}});
     EXPECT_EQUAL(merged.size(), 4);
     EXPECT_EQUAL(merged[0], amy);
     EXPECT_EQUAL(merged[1], katherine);
@@ -67,34 +110,36 @@ PROVIDED_TEST("Merges four single-item sequences.") {
     EXPECT_EQUAL(merged[3], anna);
 }
 
-PROVIDED_TEST("Merges three single-item sequences.") {
-    DataPoint amy        = { "Amy Liu",          103 };
-    DataPoint katherine  = { "Katherine Erdman", 106 };
-    DataPoint isabel     = { "Isabel Bush",      107 };
+PROVIDED_TEST("Merges three single-item sequences.")
+{
+    DataPoint amy = {"Amy Liu", 103};
+    DataPoint katherine = {"Katherine Erdman", 106};
+    DataPoint isabel = {"Isabel Bush", 107};
 
-    /* 尝试按几种不同顺序进行合并。 */
-    auto merged = combine({{ amy }, { katherine }, { isabel }});
+    /* Try merging in several different orders. */
+    auto merged = combine({{amy}, {katherine}, {isabel}});
     EXPECT_EQUAL(merged.size(), 3);
     EXPECT_EQUAL(merged[0], amy);
     EXPECT_EQUAL(merged[1], katherine);
     EXPECT_EQUAL(merged[2], isabel);
 
-    merged = combine({{ katherine }, { isabel }, { amy }});
+    merged = combine({{katherine}, {isabel}, {amy}});
     EXPECT_EQUAL(merged.size(), 3);
     EXPECT_EQUAL(merged[0], amy);
     EXPECT_EQUAL(merged[1], katherine);
     EXPECT_EQUAL(merged[2], isabel);
 }
 
-PROVIDED_TEST("Merges two lists of different sizes") {
-    Vector<DataPoint> one = { { "B" , 3 }};
+PROVIDED_TEST("Merges two lists of different sizes")
+{
+    Vector<DataPoint> one = {{"B", 3}};
     Vector<DataPoint> two = {
-        { "A" , 2 },
-        { "C" , 4 },
-        { "D" , 5 },
+        {"A", 2},
+        {"C", 4},
+        {"D", 5},
     };
 
-    auto merged = combine({ one, two });
+    auto merged = combine({one, two});
     EXPECT_EQUAL(merged.size(), 4);
     EXPECT_EQUAL(merged[0], two[0]);
     EXPECT_EQUAL(merged[1], one[0]);
@@ -102,46 +147,48 @@ PROVIDED_TEST("Merges two lists of different sizes") {
     EXPECT_EQUAL(merged[3], two[2]);
 }
 
-PROVIDED_TEST("Merges three lists of different sizes") {
+PROVIDED_TEST("Merges three lists of different sizes")
+{
     Vector<DataPoint> one = {
-        { "G" , 7 }
-    };
+        {"G", 7}};
     Vector<DataPoint> two = {
-        { "A" , 1 },
-        { "D" , 4 },
-        { "F" , 6 },
+        {"A", 1},
+        {"D", 4},
+        {"F", 6},
     };
     Vector<DataPoint> three = {
-        { "B" , 2 },
-        { "C" , 3 },
-        { "E" , 5 },
-        { "H" , 8 },
-        { "I" , 9 },
+        {"B", 2},
+        {"C", 3},
+        {"E", 5},
+        {"H", 8},
+        {"I", 9},
     };
 
-    auto merged = combine({ one, two, three });
+    auto merged = combine({one, two, three});
     EXPECT_EQUAL(merged.size(), 9);
 
     Vector<DataPoint> expected;
-    for (int i = 1; i <= 9; i++) {
-        expected += DataPoint{ string(1, 'A' - 1 + i), double(i) };
+    for (int i = 1; i <= 9; i++)
+    {
+        expected += DataPoint{string(1, 'A' - 1 + i), double(i)};
     }
 
     EXPECT_EQUAL(merged, expected);
 }
 
-PROVIDED_TEST("Preserves duplicates in input sequences.") {
+PROVIDED_TEST("Preserves duplicates in input sequences.")
+{
     Vector<DataPoint> one = {
-        { "A" , 1 },
-        { "B" , 3 },
+        {"A", 1},
+        {"B", 3},
     };
     Vector<DataPoint> two = {
-        { "A", 1 },
-        { "B", 2 },
-        { "C", 3 },
-        { "D", 4 },
+        {"A", 1},
+        {"B", 2},
+        {"C", 3},
+        {"D", 4},
     };
-    Vector<Vector<DataPoint>> vec = { one, two };
+    Vector<Vector<DataPoint>> vec = {one, two};
     auto merged = combine(vec);
     EXPECT_EQUAL(merged.size(), 6);
     EXPECT_EQUAL(merged[0].weight, two[0].weight);
@@ -152,18 +199,19 @@ PROVIDED_TEST("Preserves duplicates in input sequences.") {
     EXPECT_EQUAL(merged[5].weight, two[3].weight);
 }
 
-PROVIDED_TEST("Works with negative elements.") {
+PROVIDED_TEST("Works with negative elements.")
+{
     Vector<DataPoint> one = {
-        { "A" , -5 },
-        { "B" , -1 },
-        { "C" ,  2 },
+        {"A", -5},
+        {"B", -1},
+        {"C", 2},
     };
     Vector<DataPoint> two = {
-        { "A", -2 },
-        { "C",  3 },
-        { "D",  4 },
+        {"A", -2},
+        {"C", 3},
+        {"D", 4},
     };
-    Vector<Vector<DataPoint>> vec = { one, two };
+    Vector<Vector<DataPoint>> vec = {one, two};
     auto merged = combine(vec);
     EXPECT_EQUAL(merged.size(), 6);
     EXPECT_EQUAL(merged[0], one[0]);
@@ -174,71 +222,83 @@ PROVIDED_TEST("Works with negative elements.") {
     EXPECT_EQUAL(merged[5], two[2]);
 }
 
-PROVIDED_TEST("Works in the example from the handout.") {
+PROVIDED_TEST("Works in the example from the handout.")
+{
     Vector<Vector<double>> sequences = {
-        { 3, 8, 10, 11, 13, 16 },
-        { 0, 1, 12 },
-        { 4, 9, 17, 19 },
-        { 7 },
-        { 5, 6, 14, 18 },
-        { 2, 15 }
-    };
+        {3, 8, 10, 11, 13, 16},
+        {0, 1, 12},
+        {4, 9, 17, 19},
+        {7},
+        {5, 6, 14, 18},
+        {2, 15}};
 
-    /* 讲义示例使用整数，但我们需要 DataPoint。给每个整数添加标签
-     * 使用空字符串。
+    /* The example in the handout uses integers, but we need DataPoints. Tag each integer
+     * with an empty string.
      */
     Vector<Vector<DataPoint>> dataPoints;
-    for (auto sequence: sequences) {
+    for (auto sequence : sequences)
+    {
         Vector<DataPoint> result;
-        for (double elem: sequence) {
-            result += { "", elem };
+        for (double elem : sequence)
+        {
+            result += {"", elem};
         }
         dataPoints += result;
     }
 
-    /* 合并它们！ */
+    /* Merge them! */
     auto merged = combine(dataPoints);
 
     EXPECT_EQUAL(merged.size(), 20);
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 20; i++)
+    {
         EXPECT_EQUAL(merged[i].weight, i);
     }
 }
 
-PROVIDED_TEST("1,000 sequences with 0 total elements (should take at most a few seconds)") {
+PROVIDED_TEST("1,000 sequences with 0 total elements (should take at most a few seconds)")
+{
     Vector<Vector<DataPoint>> vec;
-    for (int i = 0; i < 1000; i++) vec.add({});
+    for (int i = 0; i < 1000; i++)
+        vec.add({});
     auto merged = combine(vec);
     EXPECT_EQUAL(merged.size(), 0);
 }
 
-PROVIDED_TEST("1,000 sequences with 1 total element") {
-    DataPoint point = { "I'm the only point!", 1 };
-    Vector<Vector<DataPoint>> vec = {{ point }};
-    for (int i = 0; i < 1000 - 1; i++) vec.add({});
+PROVIDED_TEST("1,000 sequences with 1 total element")
+{
+    DataPoint point = {"I'm the only point!", 1};
+    Vector<Vector<DataPoint>> vec = {{point}};
+    for (int i = 0; i < 1000 - 1; i++)
+        vec.add({});
     auto merged = combine(vec);
     EXPECT_EQUAL(merged.size(), 1);
     EXPECT_EQUAL(merged[0], point);
 }
 
-PROVIDED_TEST("1,000 sequences with 1,000 total elements") {
+PROVIDED_TEST("1,000 sequences with 1,000 total elements")
+{
     Vector<Vector<DataPoint>> vec;
-    for (int i = 0; i < 1000; i++) vec.add({{ "", double(i) }});
+    for (int i = 0; i < 1000; i++)
+        vec.add({{"", double(i)}});
     auto merged = combine(vec);
     EXPECT_EQUAL(merged.size(), 1000);
     EXPECT_EQUAL(merged[0].weight, 0);
     EXPECT_EQUAL(merged[999].weight, 999);
 }
 
-PROVIDED_TEST("100 sequences of random lengths") {
+PROVIDED_TEST("100 sequences of random lengths")
+{
     Vector<Vector<DataPoint>> vec;
     int totalElems = 0;
     Vector<int> elems;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++)
+    {
         int length = randomInteger(0, 20);
         Vector<DataPoint> seq;
-        for (int j = 0; j < length; j++) {
-            seq.add({ "", double(j) });
+        for (int j = 0; j < length; j++)
+        {
+            seq.add({"", double(j)});
             totalElems++;
             elems.add(j);
         }
@@ -251,30 +311,35 @@ PROVIDED_TEST("100 sequences of random lengths") {
     EXPECT_EQUAL(merged[totalElems - 1].weight, elems[totalElems - 1]);
 }
 
-PROVIDED_TEST("No elements and no sequences.") {
+PROVIDED_TEST("No elements and no sequences.")
+{
     Vector<Vector<DataPoint>> numbers;
     EXPECT_EQUAL(combine(numbers).size(), 0);
 }
 
-PROVIDED_TEST("Stress test: 25 sequences of 20,000 elements each (should take at most a few seconds).") {
+PROVIDED_TEST("Stress test: 25 sequences of 20,000 elements each (should take at most a few seconds).")
+{
     const int kNumSequences = 25;
-    const int kNumElements  = 20000;
+    const int kNumElements = 20000;
     Vector<Vector<DataPoint>> numbers;
 
-    /* 构建序列。 */
-    for (int i = 0; i < kNumSequences; i++) {
+    /* Build the sequences. */
+    for (int i = 0; i < kNumSequences; i++)
+    {
         Vector<DataPoint> values;
-        for (int j = 0; j < kNumElements; j++) {
-            values.add({ "", double(j) });
+        for (int j = 0; j < kNumElements; j++)
+        {
+            values.add({"", double(j)});
         }
         numbers.add(values);
     }
 
-    /* 合并它们。 */
+    /* Combine them. */
     auto result = combine(numbers);
     EXPECT_EQUAL(result.size(), kNumSequences * kNumElements);
 
-    for (int i = 0; i < result.size(); i++) {
+    for (int i = 0; i < result.size(); i++)
+    {
         EXPECT_EQUAL(result[i].name, "");
         EXPECT_EQUAL(result[i].weight, i / kNumSequences);
     }

@@ -6,7 +6,7 @@
 #include <functional>
 
 namespace SimpleTest {
-    /* 描述测试类别的类型。 */
+    /* Type describing what sort of test a test is. */
     enum class TestType {
         STUDENT,
         PROVIDED,
@@ -14,33 +14,33 @@ namespace SimpleTest {
         MANUAL
     };
 
-    /* 表示测试结果状态的类型。 */
+    /* Type representing how a test turned out. */
     enum class TestResult {
-        WAITING,   // 测试尚未运行
-        RUNNING,   // 测试当前正在运行
-        PASS,      // 测试通过
-        FAIL,      // 测试因 EXPECT、EXPECT_ERROR 等断言失败
-        LEAK,      // 测试通过，但存在内存泄漏
-        EXCEPTION  // 测试因异常而失败
+        WAITING,   // Test not yet run
+        RUNNING,   // Test is currently running
+        PASS,      // Test passed
+        FAIL,      // Test failed due to EXPECT, EXPECT_ERROR, etc. failing
+        LEAK,      // Test passed, but had a memory leak
+        EXCEPTION  // Test failed due to an exception
     };
 
-    /* 表示单个测试的类型。 */
+    /* Type representing a single test. */
     struct Test {
-        /* 基本信息。 */
+        /* Basic information. */
         std::string name;
         TestType type;
         int lineNumber;
 
-        /* 测试结果。 */
+        /* Test results. */
         TestResult result;
         std::string detailMessage;
 
-        /* 仅供内部使用。 */
+        /* For internal use only. */
         std::function<void()> callback;
     };
 
 
-    /* 表示一组测试的类型。 */
+    /* Type representing a group of tests. */
     struct TestGroup {
         std::string name;
 
@@ -49,28 +49,28 @@ namespace SimpleTest {
         size_t numPassed;
     };
 
-    /* 表示可接收和报告内容的显示接口类型
-     * 有关测试的信息。
+    /* Type representing a display interface that can receive and report
+     * information about tests.
      */
     using TestReporter = std::function<void(const Vector<TestGroup> &)>;
 
-    /* 表示决定运行哪些测试的过滤器类型。输入为
-     * 输入为测试的组名和测试本身；若该测试
-     * 应当运行时为 true，否则为 false。
+    /* Type representing a filter on which tests should be run. The input is the
+     * test's group name and the test itself, and the output is true if the test
+     * should be run and false otherwise.
      */
     using TestFilter = std::function<bool(const std::string&, const Test&)>;
 
-    /* 表示用于确定各组顺序的比较器类型
-     * 应当显示。
+    /* Type representing a comparator used to determine the order in which groups
+     * should be displayed.
      */
     using TestGroupComparator = std::function<bool(const std::string&, const std::string&)>;
 
-    /* 运行所有符合给定过滤器的测试，并按以下给定顺序报告各组：
-     * 比较器。
+    /* Runs all tests that match the given filter, reporting groups in the order given by
+     * the comparator.
      *
-     * 若未指定过滤器，则运行所有测试。
+     * If no filter is specified, all tests are run.
      *
-     * 若未指定比较器，则按字母顺序排列测试组。
+     * If no comparator is specified, test groups are ordered alphabetically.
      */
     void run(TestReporter, TestFilter, TestGroupComparator);
     void run(TestReporter, TestFilter);

@@ -1,6 +1,6 @@
-/* 文件：PlayingFair.cpp
+/* File: PlayingFair.cpp
  *
- * TODO：编辑这些注释，说明实现中任何有趣或值得注意的内容。
+ * TODO: Edit these comments to describe anything interesting or noteworthy in your implementation.
  */
 #include "PlayingFair.h"
 #include "GUI/SimpleTest.h"
@@ -8,30 +8,15 @@
 using namespace std;
 
 string aSequenceOfOrder(int n) {
-    /* TODO：删除此行及接下来的两行，然后实现此函数。 */
-    if (n < 0)
-    {
-        error("序列的阶数不能为负数。");
-    }
-    if (n == 0)
-    {
-        return "A";
-    }
-
-    return aSequenceOfOrder(n - 1) + bSequenceOfOrder(n - 1);
+    /* TODO: Delete this line and the next two lines, then implement this function. */
+    (void) n;
+    return "";
 }
 
 string bSequenceOfOrder(int n) {
-    /* TODO：删除此行及接下来的两行，然后实现此函数。 */
-    if (n < 0)
-    {
-        error("序列的阶数不能为负数。");
-    }
-    if (n == 0)
-    {
-        return "B";
-    }
-    return bSequenceOfOrder(n - 1) + aSequenceOfOrder(n - 1);
+    /* TODO: Delete this line and the next two lines, then implement this function. */
+    (void) n;
+    return "";
 }
 
 
@@ -39,10 +24,10 @@ string bSequenceOfOrder(int n) {
 
 
 
-/* * * * * * 提供的测试用例 * * * * * */
+/* * * * * * Provided Test Cases * * * * * */
 
 PROVIDED_TEST("Sequences of order 3 are correct.") {
-    /* 一些非常基本的检查。 */
+    /* Some very basic checks. */
     EXPECT_EQUAL(aSequenceOfOrder(3), "ABBABAAB");
     EXPECT_EQUAL(bSequenceOfOrder(3), "BAABABBA");
 }
@@ -56,7 +41,7 @@ PROVIDED_TEST("Only characters should be As and Bs.") {
 }
 
 PROVIDED_TEST("A-sequence of positive order should have equal As and Bs.") {
-    /* 排除 0 阶序列，它只有一个字符。 */
+    /* Exclude the sequence of order 0, which is just a single character. */
     for (int i = 1; i < 10; i++) {
         int as = 0;
         int bs = 0;
@@ -70,26 +55,26 @@ PROVIDED_TEST("A-sequence of positive order should have equal As and Bs.") {
 }
 
 PROVIDED_TEST("Triggers error on negative inputs.") {
-    /* EXPECT_ERROR 宏期望给定表达式调用 error()。请记住
-     * 需要防范无效输入。
+    /* The EXPECT_ERROR macro expects the given expression to call error(). Remember that
+     * you need to guard against invalid inputs.
      */
     EXPECT_ERROR(aSequenceOfOrder(-137));
     EXPECT_ERROR(bSequenceOfOrder(-137));
 }
 
-/* TODO：需要在此测试套件中添加自己的测试。思考以下类型：
- * 我们在此测试了哪些输入；更重要的是，哪些输入*没有*测试。有些
- * 测试的一般规则：
+/* TODO: You will need to add your own tests into this suite of test cases. Think about the sorts
+ * of inputs we tested here, and, importantly, what sorts of inputs we *didn't* test here. Some
+ * general rules of testing:
  *
- *    1. 尝试极端情况。有哪些很大的情况需要检查？有哪些很小的情况？
+ *    1. Try extreme cases. What are some very large cases to check? What are some very small cases?
  *
- *    2. 保持多样性。可能的输入很多，确保测试能够覆盖
- *       针对并非彼此简单变体的不同情况。
+ *    2. Be diverse. There are a lot of possible inputs out there. Make sure you have tests that account
+ *       for cases that aren't just variations of one another.
  *
- *    3. 尝试刁钻情况。不要只测试标准输入，还要测试一般人想不到的异常输入
- *       实际输入，但仍然完全合法。
+ *    3. Be sneaky. Don't just try standard inputs. Try weird ones that you wouldn't expect anyone to
+ *       actually enter, but which are still perfectly legal.
  *
- * 祝测试顺利！
+ * Happy testing!
  */
 
 

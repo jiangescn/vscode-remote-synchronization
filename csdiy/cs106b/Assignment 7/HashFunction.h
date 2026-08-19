@@ -9,48 +9,48 @@
 template <typename T> class HashFunction {
 public:
     /**
-     * 为给定槽位数构造新的 HashFunction。每个哈希
-     * 以此方式构造的函数将随机初始化。
+     * Constructs a new HashFunction for the given number of slots. Each hash
+     * function constructed this way will be initialized randomly.
      *
-     * 第二个参数是随机种子。设置此值
-     * 如果希望哈希函数始终表现一致，则很有用
-     * 在程序的不同运行之间。
+     * The second argument is a random seed. Setting this value is
+     * useful if you'd like to have your hash function behave consistently
+     * across runs of the program.
      */
     explicit HashFunction(int numSlots, int randomSeed = 0);
 
     /**
-     * 构造新的 HashFunction。此 HashFunction 无法使用，因为
-     * 它不会使用桶数量初始化，而尝试
-     * 使用它会导致运行时错误。
+     * Constructs a new HashFunction. This HashFunction cannot be used bceause
+     * it won't have been initialized with a number of buckets, and trying to
+     * use it will cause a runtime error.
      *
-     * 不应直接使用此构造函数；它仅用于
-     * 可以声明 HashFunction 类型的变量并对其初始化
-     * 稍后。
+     * You shouldn't directly use this constructor; it's only here so that
+     * you can declare variables of type HashFunction and initialize them
+     * later.
      */
     HashFunction();
 
     /**
-     * 构造专门使用底层原始数据的哈希函数
-     * 使用其哈希码作为哈希函数。如果你想确保
-     * 测试时为哈希函数提供可预测的值。
+     * Constructs a hash function that specifically uses the underlying raw
+     * hash code as its hash function. This is useful if you want to guarantee
+     * predictable values for your hash function when testing.
      */
     static HashFunction wrap(int numSlots,
                              std::function<int (const T &)> hashFn);
 
     /**
-     * 返回此哈希函数设计用于操作的槽位数量
-     * 结束。
+     * Returns the number of slots this hash function is designed to operate
+     * over.
      */
     int numSlots() const;
 
     /**
-     * 将哈希函数应用于指定参数。其语法为
-     * 使用此函数是
+     * Applies the hash function to the specified argument. The syntax for
+     * using this function is
      *
      *     hashFn(argument)
      *
-     * 也就是说，可将 HashFunction 类型的变量当作它是
-     * 一个真正的函数，而不是某种类型的变量。
+     * That is, you'll treat the variable of type HashFunction as though it's
+     * an honest-to-goodness function rather than a variable of some type.
      */
     int operator() (const T& argument) const;
 
@@ -63,39 +63,39 @@ private:
                   "Double-click this error message for more details.");
 
     /*
-     * CS106 的同学你好！如果编译错误将你指向此行代码，
-     * 这可能意味着你尝试使用自定义结构体或类创建 HashFunction<T>
-     * 类类型。
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a HashFunction<T> with a custom struct or
+     * class type.
      *
-     * 要为类型 T 提供 HashFunction<T>，类型 T 需要有 hashCode
-     * 已定义函数，并且能够使用 == 运算符比较。如果你被
-     * 如果被引导到这里，说明这两个条件之一未满足。
+     * In order to have a HashFunction<T> for a type T, the type T needs to have a hashCode
+     * function defined and be capable of being compared using the == operator. If you were
+     * directed here, one of those two conditions wasn't met.
      *
-     * 有两种修复方式。第一种是直接不使用自定义
-     * 将该类型与 HashFunction<T> 配合使用。这可能是最简单的选择。
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type in conjunction with HashFunction<T>. This is probably the easiest option.
      *
-     * 第二种修复方式是显式定义 hashCode() 和 operator== 函数
-     * 为你的类型定义。首先按如下方式定义 hashCode：
+     * The second way to fix this is to explicitly define a hashCode() and operator== function
+     * for your type. To do so, first define hashCode as follows:
      *
      *     int hashCode(const YourCustomType& obj) {
      *         return stanfordcpplib::collections::hashCode(obj.data1, obj.data2, ..., obj.dataN);
      *     }
      *
-     * 其中 data1、data2、...、dataN 是该类型的数据成员。例如，如果你有
-     * 自定义类型
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
      *
      *     struct MyType {
      *         int myInt;
      *         string myString;
      *     };
      *
-     * 你需要定义函数
+     * you would define the function
      *
      *     int hashCode(const MyType& obj) {
      *         return stanfordcpplib::collections::hashCode(obj.myInt, obj.myString);
      *     }
      *
-     * 其次，按如下方式定义 operator==：
+     * Second, define operator== as follows:
      *
      *     bool operator== (const YourCustomType& lhs, const YourCustomType& rhs) {
      *         return lhs.data1 == rhs.data1 &&
@@ -104,13 +104,13 @@ private:
      *                lhs.dataN == rhs.dataN;
      *     }
      *
-     * 使用上面的 MyType 示例，我们会编写
+     * Using the MyType example from above, we'd write
      *
      *     bool operator== (const MyType& lhs, const MyType& rhs) {
      *         return lhs.myInt == rhs.myInt && lhs.myString == rhs.myString;
      *     }
      *
-     * 希望这能有所帮助！
+     * Hope this helps!
      */
 };
 
@@ -118,7 +118,7 @@ namespace hashfunction_detail {
     std::function<int(int)> tabulationHashFunction(int seed);
 }
 
-/* * * * * 此处以下为实现部分 * * * * */
+/* * * * * Implementation Below This Point * * * * */
 template <typename T>
 HashFunction<T>::HashFunction(int numSlots, int seed) {
     if (numSlots <= 0) {
@@ -152,7 +152,7 @@ template <typename T> int HashFunction<T>::numSlots() const {
     return mNumSlots;
 }
 
-/* 默认构造函数设置一个始终报告错误的哈希函数。 */
+/* Default constructor sets up a hash function that always reports an error. */
 template <typename T> HashFunction<T>::HashFunction() {
     callback = [](const T&) -> int {
         error("Attempted to use an uninitialized HashFunction object.");
@@ -160,7 +160,7 @@ template <typename T> HashFunction<T>::HashFunction() {
     mNumSlots = 0;
 }
 
-/* 调用运算符会转发给回调。 */
+/* Call operator forwards to the callback. */
 template <typename T> int HashFunction<T>::operator()(const T& arg) const {
     return callback(arg);
 }

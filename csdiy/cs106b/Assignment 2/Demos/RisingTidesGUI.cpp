@@ -31,71 +31,71 @@ namespace {
 
     const string kLoadingText        = "Loading the landscape...";
 
-    /* 读取地形失败时显示的错误消息。 */
+    /* Error message to display when failing to read a terrain. */
     const string kMalformedDataFileMessage = "Oops! Something went wrong reading that data file. If this is a terrain file you designed, double-check the syntax of the file. Otherwise, this isn't your fault.";
 
-    /* 查找文件的位置。 */
+    /* Where to look for files. */
     const string kBasePath = "res/terrains/";
     const string kFileSuffix = ".terrain";
 
-    /* 表示“未选中任何内容”的哨兵值。 */
+    /* Sentinel meaning "nothing is selected. */
     const string kNotSelected = "-";
 
-    /* 错误消息。 */
+    /* Error messages. */
     const string kRemoteDownloadErrorString = "Oops! We weren't able to download that terrain file. This isn't your fault. (Please contact the course staff.)";
     const string kVisualizationErrorString  = "Oops! We weren't able to download that terrain file. (Check your network connection?)";
 
     const size_t kTextInputSize = 15;
 
-    /* 用于水的颜色。 */
-    const int kUnderwaterColor = GBufferedImage::createRgbPixel(0, 49, 83); // 普鲁士蓝
+    /* Color to use for water. */
+    const int kUnderwaterColor = GBufferedImage::createRgbPixel(0, 49, 83); // Prussian blue
 
-    /* 地图的其余部分按以下方案着色。高度被映射
-     * 转换为 0 到 1 之间的实数。然后使用这些实数在
-     * 由在不同间隔处标记的一系列固定颜色点组成。
+    /* The rest of the map is colored according to the following scheme. The heights are mapped
+     * to real numbers between 0 and 1. Those real numbers are then used to interpolate between
+     * a fixed series of color points marked off at various intervals.
      *
-     * RGBPoint 类型表示一个特定 RGB 颜色，并附带一个阈值
-     * 介于 0 和 1 之间，表示该颜色所在位置。
+     * The RGBPoint type represents a particular RGB color annotated with a threshold value
+     * between 0 and 1 indicating where that color sits.
      */
     struct RGBPoint {
         int red, green, blue;
         double threshold;
     };
 
-    /* 绘制地图实际使用的颜色，并附有对应阈值。 */
+    /* The actual colors to use to draw the map, annotated with their threshold values. */
     const vector<RGBPoint> kColors = {
-        {   0, 102,   0, 0.0  },   // 巴基斯坦绿
-        { 154, 205,  50, 0.1  },   // 黄绿色
+        {   0, 102,   0, 0.0  },   // Pakistan green
+        { 154, 205,  50, 0.1  },   // Chartreuse
         { 251, 236,  93, 0.25 },   // Maize
-        { 212, 175,  55, 0.4  },   // 金属金色
-        { 166,  60,  20, 1.01 }    // 赭色。这里的 1.01 用于确保覆盖舍入误差。
+        { 212, 175,  55, 0.4  },   // Metallic gold
+        { 166,  60,  20, 1.01 }    // Sienna. The 1.01 here is to ensure we cover rounding errors.
     };
 
-    /* 在两个量之间进行线性插值。progress 变量范围为 0 到 1。 */
+    /* Linearly interpolates between two quantities. The progress variable runs between 0 and 1. */
     int interpolate(int from, int to, double progress) {
         return from + (to - from) * progress;
     }
 
-    /* 给定绝对高度和与某范围关联的高度范围，返回
-     * 与该高度关联的颜色。
+    /* Given an absolute height and the range of heights associated with a given range, returns
+     * the color associated with that height.
      */
     int colorFor(double height, bool underwater, double lowest, double highest) {
-        /* 如果点位于水下，则始终使用水色。 */
+        /* If the point is underwater, it's always given the water color. */
         if (underwater) return kUnderwaterColor;
 
-        /* 将高度映射到 [0, 1]。 */
+        /* Map height to [0, 1]. */
         double alpha = (height - lowest) / nextafter(highest - lowest, numeric_limits<double>::infinity());
 
-        /* 确定我们位于哪些点之间。 */
+        /* Figure out which points we're between. */
         for (size_t i = 1; i < kColors.size(); i++) {
             if (alpha <= kColors[i].threshold) {
-                /* 进度以两点之间的距离比例衡量。0.0 表示
-                 * “完全位于左端。1.0 表示完全位于右端。”
+                /* Progress is measured by how far between the two points we are. 0.0 means
+                 * "completely at the left end. 1.0 means "completely at the right end."
                  */
                 double progress = (alpha - kColors[i - 1].threshold) /
                                   (kColors[i].threshold - kColors[i - 1].threshold);
 
-                /* 在这些颜色点之间插值以获得整体颜色。 */
+                /* Interpolate between those color points to get our overall color. */
                 int red   = interpolate(kColors[i - 1].red,   kColors[i].red,   progress);
                 int green = interpolate(kColors[i - 1].green, kColors[i].green, progress);
                 int blue  = interpolate(kColors[i - 1].blue,  kColors[i].blue,  progress);
@@ -104,14 +104,14 @@ namespace {
             }
         }
 
-        /* 此代码不可到达。 */
+        /* This code is unreachable. */
         error("Impossible alpha: " + to_string(alpha));
         return 0;
     }
 
-    /* 将给定图像写入输出文件。这样做是因为 GBufferedImage 是高效的
-     * 将图像推送到后端的方法，但不支持调整大小（TODO：验证此项）。
-     * 因此我们将其转储到文件，之后再作为支持调整大小的 GImage 重新加载。
+    /* Draws the given image to the output file. This is done because GBufferedImage is an efficient
+     * way to push the image to the backend, but doesn't support resizing (TODO: validate this).
+     * We therefore dump it to a file and reload it later as a GImage, which does support resizing.
      */
     void renderToFile(const Grid<double>& heights, const Grid<bool>& underwater) {
         double lowest  = *min_element(heights.begin(), heights.end());
@@ -131,7 +131,7 @@ namespace {
         });
     }
 
-    /* 生成一条略带幽默的消息，在所有内容计算时消磨时间。 */
+    /* Generates a semi-humorous message to pass the time as everything computes. */
     string floodMessage() {
         switch (rand() % 4) {
             case 0:  return "Forecasting the flood";
@@ -141,24 +141,24 @@ namespace {
         }
     }
 
-    /* 类型：Terrain
+    /* Type: Terrain
      * ----------------------------------------------------------------------------------
-     * 表示地形的类型，即细分为各个单元格的 Grid<double>，
-     * 每个位置都有相关高度，以及水可以从中流出的水源列表
-     * 向外淹没。
+     * Type representing a terrain as a Grid<double> subdivided into individual cells,
+     * each with an associated height, along with a list of sources from which the water
+     * floods out.
      *
-     * GridLocation 类型是一个简单结构体，只包含行和列。
-     * 它用于将 Grid 中的位置作为单个对象进行跟踪。
+     * The GridLocation type is a simple struct that contains just a row and a column.
+     * It's used as a way of tracking a position in the Grid as a single object.
      */
     struct Terrain {
-        Grid<double> heights;              // 地图上每个点的高度，单位为米。
-        Vector<GridLocation> waterSources; // 哪些位置是水源（如果有）。
+        Grid<double> heights;              // Height of each point on the map, in meters.
+        Vector<GridLocation> waterSources; // Which locations, if any, are water sources.
     };
 
-    /* 从数据文件加载地形。 */
+    /* Loads a terrain from a data file. */
     Terrain loadTerrain(istream& input, GLabel* statusLine) {
-        /* 输入的第一行要么是要下载的 URL，要么是字符串 "local"。
-         * 如果是远程下载，需要先获取文件。
+        /* The first line of the input is either a URL to download or the string "local."
+         * If it's a remote download, we need to fetch the file first.
          */
         string url;
         if (!getline(input, url)) {
@@ -174,7 +174,7 @@ namespace {
                 }
             });
 
-            /* 改为下载该数据。 */
+            /* Go download that data instead. */
             return loadTerrain(*data, statusLine);
         }
 
@@ -190,7 +190,7 @@ namespace {
             error(kMalformedDataFileMessage);
         }
 
-        /* 读取洪水源。 */
+        /* Read the flooding sources. */
         Terrain result;
         for (int i = 0; i < numSources; i++) {
             int row, col;
@@ -201,7 +201,7 @@ namespace {
             result.waterSources.add({ row, col });
         }
 
-        /* 读取高度数据。 */
+        /* Read the height data. */
         result.heights.resize(numRows, numCols);
         for (int row = 0; row < result.heights.numRows(); row++) {
             for (int col = 0; col < result.heights.numCols(); col++) {
@@ -219,7 +219,7 @@ namespace {
         return result;
     }
 
-    /* 返回示例目录中找到的所有样例问题。 */
+    /* Returns all sample problems found in the example directory. */
     vector<string> sampleProblems() {
         vector<string> result;
         for (const auto& file: listDirectory(kBasePath)) {
@@ -230,55 +230,55 @@ namespace {
         return result;
     }
 
-    /* 与水位问题对应的 Problem 类。 */
+    /* Problem class corresponding to the water level problem. */
     class FindWaterLevel: public ProblemHandler {
     public:
-        /* 构造处理程序，假定输入流包含要读取的数据。 */
+        /* Construct handler, assuming the input stream contains the data to read. */
         FindWaterLevel(GWindow& window);
 
-        /* TODO：交互控件的内存发生泄漏。请修复！ */
+        /* TODO: We leak the memory for the interactors. Fix this! */
 
-        /* 文件扩展名。 */
+        /* File extension. */
         static std::string fileExtension();
 
-        /* 响应动作事件。 */
+        /* Respond to action events. */
         void actionPerformed(GObservable* source) override;
 
     protected:
-        /* 绘制当前状态。 */
+        /* Draw the current state of things. */
         void repaint() override;
 
     private:
-        /* 两行项目网格。布局如下
+        /* Two-row grid of items. The layout looks like this
          *
-         *    下拉框   加载     水位：    输入字段     开始！
-         *    ------------------- 状态行 ------------------------
+         *    Dropdown   Load     Water Height:    Input Field     Go!
+         *    ------------------- status line ------------------------
          */
         Temporary<GContainer> container;
 
-        /* 加载文件。 */
+        /* Load file. */
         GComboBox*  terrainChooser;
         GButton*    loadButton;
 
-        /* 输入字段。 */
+        /* Input fields. */
         GLabel*     heightDesc;
         GTextField* heightField;
         GButton*    solveButton;
 
-        /* 状态报告。 */
+        /* Status reporting. */
         GLabel*     statusLine;
 
-        /* 洪泛平原及当前位于水下的部分。 */
+        /* The floodplain and what's currently under water. */
         Terrain plain;
         Grid<bool> underwater;
 
-        /* 当前地形的名称。 */
+        /* Name of the current terrain. */
         string currTerrain = kNotSelected;
 
-        /* 运行洪水模拟。 */
+        /* Runs a flood simulation. */
         void runFlood(double height);
 
-        /* 设置当前活动的地形。 */
+        /* Sets which terrain is currently active. */
         void setActiveTerrain(const string& terrainFile, bool clearHeight);
     };
 
@@ -286,7 +286,7 @@ namespace {
         auto* rawContainer = new GContainer(GContainer::LAYOUT_GRID);
 
         terrainChooser = new GComboBox();
-        terrainChooser->addItem(kNotSelected); // 初始时不显示任何内容
+        terrainChooser->addItem(kNotSelected); // Initially, nothing shows
         for (const string& file: sampleProblems()) {
             terrainChooser->addItem(file);
         }
@@ -312,12 +312,12 @@ namespace {
         setActiveTerrain(kNotSelected, true);
     }
 
-    /* 从给定高度开始运行洪水模拟。 */
+    /* Runs a flood starting from the given height. */
     void FindWaterLevel::runFlood(double height) {
         statusLine->setText(floodMessage() + kRunningCodeText);
         underwater = floodedRegionsIn(plain.heights, plain.waterSources, height);
 
-        /* 将渲染后的图像暂存到磁盘。 */
+        /* Stash the rendered image to disk. */
         statusLine->setText(kRenderingText);
         renderToFile(plain.heights, underwater);
         statusLine->setText(" ");
@@ -325,17 +325,17 @@ namespace {
         requestRepaint();
     }
 
-    /* 渲染洪水结果。 */
+    /* Renders the result of the flood. */
     void FindWaterLevel::repaint() {
-        /* 清空显示内容。 */
+        /* Clear the display. */
         clearDisplay(window(), kBackgroundColor);
 
-        /* 如果世界为空，则不绘制任何内容。 */
+        /* If the world is empty, don't draw anything. */
         if (plain.heights.isEmpty()) return;
 
         GImage image(kOutputFile);
 
-        /* 重新缩放图像以适应窗口。 */
+        /* Rescale the image to fit into the window. */
         double aspectRatio = image.getWidth() / image.getHeight();
         double scale;
         if (aspectRatio > window().getCanvasWidth() / window().getCanvasHeight()) {
@@ -345,13 +345,13 @@ namespace {
         }
         image.scale(scale);
 
-        /* 绘制图像。 */
+        /* Draw the image. */
 
-        /* TODO：截至目前（2019-02-27），缩放 GBufferedImage 时存在一个错误，会导致
-         * 除宽度和高度外，还要应用于其 x 和 y 坐标的变换。因此我们
-         * 必须在此处反转变换。
+        /* TODO: As of now (2/27/19) there is a bug where scaling a GBufferedImage causes the effect of the
+         * transform to be applied to its x and y coordinate in addition to its width and height. We therefore
+         * have to invert the transformation here.
          *
-         * 修复此错误后，删除缩放 x 和 y 坐标的逻辑。
+         * Once this bug is fixed, remove the logic to scale the x and y coordinates.
          */
         window().draw(&image, (window().getCanvasWidth()  - image.getWidth() * scale)  / (2 * scale),
                               (window().getCanvasHeight() - image.getHeight() * scale) / (2 * scale));

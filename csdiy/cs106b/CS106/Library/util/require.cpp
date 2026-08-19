@@ -1,10 +1,10 @@
 /*
- * 文件：require.cpp
+ * File: require.cpp
  * -----------------
- * 此文件实现 require.h 接口。
+ * This file implements the require.h interface.
  *
  * @version 2018/09/05
- * - 初始版本
+ * - initial version
  */
 
 #include "require.h"
@@ -111,4 +111,4 @@ void require(bool test, const std::string& caller, const std::string& details) {
     _spl_assert(test, caller, "", details);
 }
 
-} // 命名空间 require
+} // namespace require

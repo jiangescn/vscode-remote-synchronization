@@ -9,6 +9,10 @@ void solve()
     {
         cout << "循环节 ";
     }
+
+
+    char c = EOF;
+    cout << (int)c << endl;
     
 }
 

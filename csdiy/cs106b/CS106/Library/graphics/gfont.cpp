@@ -1,18 +1,18 @@
 /*
- * 文件：gfont.cpp
+ * File: gfont.cpp
  * ---------------
  *
  * @author Marty Stepp
  * @version 2019/04/30
- * - 为 GText* 添加 changeFontSize
+ * - added changeFontSize for a GText*
  * @version 2018/09/23
- * - 添加宏检查，以提高与旧 Qt 版本的兼容性
+ * - added macro checks to improve compatibility with old Qt versions
  * @version 2018/09/14
- * - 添加 boldFont、italicFont
+ * - added boldFont, italicFont
  * @version 2018/08/23
- * - 重命名为 gfont.cpp，以替代 Java 版本
+ * - renamed to gfont.cpp to replace Java version
  * @version 2018/07/05
- * - 初始版本
+ * - initial version
  */
 
 #include "gfont.h"
@@ -26,12 +26,12 @@
 #include "vector.h"
 
 GFont::GFont() {
-    // 空
+    // empty
 }
 
 void GFont::boldFont(GInteractor* interactor) {
     require::nonNull(interactor, "GFont::boldFont", "interactor");
-    QFont newFont = deriveQFont(toQFont(interactor->getFont()), /* 权重 */ QFont::Bold);
+    QFont newFont = deriveQFont(toQFont(interactor->getFont()), /* weight */ QFont::Bold);
     interactor->setFont(newFont);
 }
 
@@ -53,11 +53,11 @@ QFont GFont::changeFontSize(const QFont& font, int dsize) {
 }
 
 QFont GFont::deriveQFont(const QFont& font, QFont::Weight weight, int size) {
-    return QFont(font.family(), size, weight, /* 斜体 */ font.italic());
+    return QFont(font.family(), size, weight, /* italic */ font.italic());
 }
 
 QFont GFont::deriveQFont(const QFont& font, const std::string& fontFamily, QFont::Weight weight, int size) {
-    return QFont(QString::fromStdString(fontFamily), size, weight, /* 斜体 */ font.italic());
+    return QFont(QString::fromStdString(fontFamily), size, weight, /* italic */ font.italic());
 }
 
 QFont GFont::deriveQFont(const std::string& font, QFont::Weight weight, int size) {
@@ -104,11 +104,11 @@ QFont::StyleHint GFont::getStyleHint(const std::string& fontFamily) {
 void GFont::italicFont(GInteractor* interactor) {
     require::nonNull(interactor, "GFont::boldFont", "interactor");
     QFont oldFont = toQFont(interactor->getFont());
-    QFont newFont(oldFont.family(), oldFont.pointSize(), oldFont.weight(), /* 斜体 */ true);
+    QFont newFont(oldFont.family(), oldFont.pointSize(), oldFont.weight(), /* italic */ true);
     interactor->setFont(newFont);
 }
 
-// 字体字符串示例：
+// example font string:
 // "Courier New-Bold-12"
 std::string GFont::toFontString(const QFont& font) {
     std::ostringstream out;
@@ -130,7 +130,7 @@ std::string GFont::toFontString(const QFont& font) {
         case QFont::Normal:
         case QFont::Medium:
         default:
-            // 非粗体
+            // not bold
             break;
     }
     if (font.italic()) {
@@ -145,7 +145,7 @@ std::string GFont::toFontString(const QFont& font) {
     return out.str();
 }
 
-// 字体字符串示例：
+// example font string:
 // "Courier New-Bold-12"
 QFont GFont::toQFont(const std::string& fontString) {
     Vector<std::string> tokens = stringSplit(trim(fontString), "-");
@@ -156,7 +156,7 @@ QFont GFont::toQFont(const std::string& fontString) {
     std::string fontFamily = "";
     bool fontBold = false;
     bool fontItalic = false;
-    int fontSize = 12;   // 12pt 标准字号
+    int fontSize = 12;   // 12pt standard font size
 
     if (!tokens.isEmpty()) {
         fontFamily = trim(tokens.remove(0));
@@ -166,7 +166,7 @@ QFont GFont::toQFont(const std::string& fontString) {
     }
     for (int i = 0; i < 2; i++) {
         if (!tokens.isEmpty()) {
-            // 标记 2-3 可以是“大小-样式”或“样式-大小”
+            // tokens 2-3 can be size-style or style-size
             std::string fontWeightStr = toLowerCase(trim(tokens.remove(0)));
             if (stringIsInteger(fontWeightStr)) {
                 fontSize = stringToInteger(fontWeightStr);
@@ -197,7 +197,7 @@ QFont GFont::toQFont(const QFont& basisFont, const std::string& fontString) {
     std::string fontFamily = "";
     bool fontBold = basisFont.bold();
     bool fontItalic = basisFont.italic();
-    int fontSize = basisFont.pointSize();   // 12pt 标准字号
+    int fontSize = basisFont.pointSize();   // 12pt standard font size
 
     if (!tokens.isEmpty()) {
         fontFamily = trim(tokens.remove(0));
@@ -207,7 +207,7 @@ QFont GFont::toQFont(const QFont& basisFont, const std::string& fontString) {
     }
     for (int i = 0; i < 2; i++) {
         if (!tokens.isEmpty()) {
-            // 标记 2-3 可以是“大小-样式”或“样式-大小”
+            // tokens 2-3 can be size-style or style-size
             std::string fontWeightStr = toLowerCase(trim(tokens.remove(0)));
             if (stringIsInteger(fontWeightStr)) {
                 fontSize = stringToInteger(fontWeightStr);

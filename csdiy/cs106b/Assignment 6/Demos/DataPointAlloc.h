@@ -5,8 +5,8 @@
 
 struct DataPoint;
 
-/* DataPoint 的自定义分配器，旨在让以下操作更容易：
- * 查看内存错误发生的时刻。
+/* Custom allocator for DataPoints that's designed to make it easier
+ * to see when a memory error occurred.
  */
 namespace DataPointUtils {
     void* dataPointAlloc(size_t size,  bool isVector);
@@ -31,8 +31,8 @@ template <> struct MemoryDiagnostics::Allocator<DataPoint> {
     }
 };
 
-/* 用于更容易发现无效读取或以下问题的额外逻辑
- * 写入 DataPoint。
+/* Extra logic to try to make it easier to spot invalid reads or
+ * writes to DataPoints.
  */
 #define ADD_SAFETY_CHECKS_TO(Type)         \
     std::uint64_t _initializationFlag;     \

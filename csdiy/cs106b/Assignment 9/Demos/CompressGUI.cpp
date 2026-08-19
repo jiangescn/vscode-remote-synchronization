@@ -21,10 +21,10 @@ namespace {
     private:
         Temporary<GColorConsole> mDisplay;
 
-        /* 布局：
+        /* Layout:
          * +--------------------------------------+
-         * |              所选文件               |
-         * |      [ 选择文件 ] [ 压缩 ]         |
+         * |            selected file             |
+         * |     [ choose file ] [ compress ]     |
          * +--------------------------------------+
          */
         Temporary<GContainer> mChrome;
@@ -39,14 +39,14 @@ namespace {
     CompressGUI::CompressGUI(GWindow& window) : ProblemHandler(window) {
         mDisplay = make_temporary<GColorConsole>(window, "CENTER");
 
-        /* 主装饰框。 */
+        /* Main chrome box. */
         mChrome = make_temporary<GContainer>(window, "SOUTH", GContainer::LAYOUT_FLOW_VERTICAL);
 
-        /* 当前选中的文件。 */
+        /* Currently-selected file. */
         selectedFile = new GLabel(kNoFileSelected);
         mChrome->add(selectedFile);
 
-        /* 按钮行容器。 */
+        /* Row box for buttons. */
         GContainer* buttons = new GContainer();
         chooseFileButton = new GButton("Choose file");
         compressButton   = new GButton("Compress!");

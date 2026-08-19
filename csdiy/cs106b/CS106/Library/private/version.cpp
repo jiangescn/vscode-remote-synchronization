@@ -1,8 +1,8 @@
 /*
- * 文件：version.cpp
+ * File: version.cpp
  * -----------------
  * @author Julie Zelenski
- * 针对已安装静态库进行更新
+ * updated for installed static lib
  */
 
 #include "private/build.h"

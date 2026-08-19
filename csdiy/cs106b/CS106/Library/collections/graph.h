@@ -1,8 +1,8 @@
 /*
- * 文件：graph.h
+ * File: graph.h
  * -------------
- * 此文件导出一个参数化 Graph 类，用于表示图，
- * 它由节点（顶点）集合和弧（边）集合组成。
+ * This file exports a parameterized Graph class used to represent graphs,
+ * which consist of a set of nodes (vertices) and a set of arcs (edges).
  */
 
 #ifndef _graph_h
@@ -19,557 +19,557 @@
 #include "tokenscanner.h"
 
 /**
- * 此类表示具有指定节点和弧类型的图。
- * <code>NodeType</code> 和 <code>ArcType</code> 参数表示
- * 分别用于节点和弧的结构体类型或类。
- * 这些类型可以包含客户端所需的任何字段或方法，
- * 但必须包含 <code>Graph</code> 所要求的以下字段
- * 软件包本身：
+ * This class represents a graph with the specified node and arc types.
+ * The <code>NodeType</code> and <code>ArcType</code> parameters indicate
+ * the structure type or class used for nodes and arcs, respectively.
+ * These types can contain any fields or methods required by the client,
+ * but must contain the following fields required by the <code>Graph</code>
+ * package itself:
  *
- * <p><code>NodeType</code> 定义必须包含：
+ * <p>The <code>NodeType</code> definition must include:
  * <ul>
- *   <li>一个名为 <code>name</code> 的 <code>string</code> 字段
- *   <li>一个名为 <code>arcs</code> 的 <code>Set&lt;ArcType *&gt;</code> 字段
+ *   <li>A <code>string</code> field called <code>name</code>
+ *   <li>A <code>Set&lt;ArcType *&gt;</code> field called <code>arcs</code>
  * </ul>
  *
- * <p><code>ArcType</code> 定义必须包含：
+ * <p>The <code>ArcType</code> definition must include:
  * <ul>
- *   <li>一个名为 <code>start</code> 的 <code>NodeType *</code> 字段
- *   <li>一个名为 <code>finish</code> 的 <code>NodeType *</code> 字段
+ *   <li>A <code>NodeType *</code> field called <code>start</code>
+ *   <li>A <code>NodeType *</code> field called <code>finish</code>
  * </ul>
  */
 template <typename NodeType, typename ArcType>
 class Graph {
 public:
     /**
-     * 创建空图。
+     * Creates an empty graph.
      * @bigoh O(1)
      */
     Graph();
 
     /**
-     * 释放用于表示图的内部存储空间。
+     * Frees the internal storage allocated to represent the graph.
      * @bigoh O(V + E)
      */
     virtual ~Graph();
 
     /**
-     * 向图中添加一条从节点 n1 到 n2 的有向弧。
-     * 若在图中找不到任一节点，则将该节点添加到图中。
-     * 返回指向弧的指针，以便客户端需要时保存该值。
+     * Adds a directed arc to the graph from node n1 to n2.
+     * If either node is not found in the graph, said node will be added to the graph.
+     * Returns a pointer to the arc in case the client needs to capture this value.
      * @bigoh O(log V + log E)
      */
     ArcType* addArc(const std::string& n1, const std::string& n2);
 
     /**
-     * 向图中添加一条从节点 n1 到 n2 的有向弧。
-     * 若在图中找不到任一节点，则将该节点添加到图中。
-     * 返回指向弧的指针，以便客户端需要时保存该值。
+     * Adds a directed arc to the graph from node n1 to n2.
+     * If either node is not found in the graph, said node will be added to the graph.
+     * Returns a pointer to the arc in case the client needs to capture this value.
      *
-     * @throw 如果传入的任一指针为空，则抛出 ErrorException
+     * @throw ErrorException if any pointer passed is null
      * @bigoh O(log V + log E)
      */
     ArcType* addArc(NodeType* n1, NodeType* n2);
 
     /**
-     * 将给定弧添加到图中。
-     * 如果传入的起点/终点节点尚不属于该图，
-     * 它们会被添加到图中。
-     * 返回指向弧的指针，以便客户端需要时保存该值。
+     * Adds the given arc to the graph.
+     * If the start/finish nodes passed are not already part of the graph,
+     * they are added to the graph.
+     * Returns a pointer to the arc in case the client needs to capture this value.
      *
-     * 内存管理：一旦将此 ArcType* 指针交给我，所有权归本代码。
-     * 完成后会将其删除/释放。
-     * 无需（也不应）自行释放它。
+     * Memory management: Once you hand me this ArcType* pointer, our code owns it.
+     * We will delete/free it when done with it.
+     * You do not need to (and should not) free it yourself.
      *
-     * @throw 如果传入的任一指针为空，则抛出 ErrorException
+     * @throw ErrorException if any pointer passed is null
      * @bigoh O(log V + log E)
      */
     ArcType* addArc(ArcType* arc);
 
     /**
-     * 向图中添加节点。此方法的第一个版本
-     * 创建适当类型的新节点并初始化其
-     * 字段；第二种假定客户端已创建
-     * 该节点，并直接将其添加到图中。
-     * 返回指向该节点的指针。
-     * 若已存在给定名称的节点，则不执行任何操作。
+     * Adds a node to the graph.  The first version of this method
+     * creates a new node of the appropriate type and initializes its
+     * fields; the second assumes that the client has already created
+     * the node and simply adds it to the graph.
+     * Returns a pointer to the node.
+     * If a node with the given name is already present, does nothing.
      *
-     * 内存管理：一旦你把这个 NodeType* 指针交给我，这段代码就拥有它。
-     * 完成后会将其删除/释放。
-     * 无需（也不应）自行释放它。
+     * Memory management: Once you hand me this NodeType* pointer, our code owns it.
+     * We will delete/free it when done with it.
+     * You do not need to (and should not) free it yourself.
      *
-     * @throw 如果传入的任一指针为空，则抛出 ErrorException
+     * @throw ErrorException if any pointer passed is null
      * @bigoh O(log V)
      */
     NodeType* addNode(const std::string& name);
 
     /**
-     * 向图中添加节点。
-     * 此版本假定客户端已创建节点结构
-     * 并直接将其添加到图中。
-     * 返回指向该节点的指针。
-     * 若已存在给定名称的节点，则不执行任何操作。
+     * Adds a node to the graph.
+     * This version assumes that the client has already created the node structure
+     * and simply adds it to the graph.
+     * Returns a pointer to the node.
+     * If a node with the given name is already present, does nothing.
      *
-     * 内存管理：一旦你把这个 NodeType* 指针交给我，这段代码就拥有它。
-     * 完成后会将其删除/释放。
-     * 无需（也不应）自行释放它。
+     * Memory management: Once you hand me this NodeType* pointer, our code owns it.
+     * We will delete/free it when done with it.
+     * You do not need to (and should not) free it yourself.
      *
-     * @throw 如果传入的任一指针为空，则抛出 ErrorException
+     * @throw ErrorException if any pointer passed is null
      * @bigoh O(log V)
      */
     NodeType* addNode(NodeType* node);
 
     /**
-     * 返回图中的弧数量。
+     * Returns the number of arcs in the graph.
      * @bigoh O(1)
      */
     int arcCount() const;
 
     /**
-     * 按照以下迭代顺序返回图中的最后一个节点
-     * for-each 循环或迭代器。
-     * @throw 如果图为空，则抛出 ErrorException
+     * Returns the last node in the graph in the order as would be returned by
+     * a for-each loop or iterator.
+     * @throw ErrorException if the graph is empty
      * @bigoh O(1)
      */
     NodeType* back() const;
 
     /**
-     * 将图重新初始化为空，移除所有节点和弧
-     * 并释放对应内部结构使用的任何堆存储空间。
+     * Reinitializes the graph to be empty, removing all nodes and arcs
+     * and freeing any heap storage used by their corresponding internal structures.
      * @bigoh O(V + E)
      */
     void clear();
 
     /**
-     * 从图中删除所有弧，并释放其使用的堆存储
-     * 对应的内部结构。图的节点保持不变。
+     * Removes all arcs from the graph, freeing the heap storage used by their
+     * corresponding internal structures. The graph's nodes remain intact.
      * @bigoh O(E)
      */
     void clearArcs();
 
     /**
-     * 从图中移除所有起点为给定节点的弧，
-     * 释放对应内部结构使用的堆存储空间。
-     * 图的节点保持不变。
-     * 如果给定节点指针为 null 或在图中找不到，则不产生任何效果。
+     * Removes all arcs from the graph that start from the given node,
+     * freeing the heap storage used by their corresponding internal structures.
+     * The graph's nodes remain intact.
+     * If the given node pointer is null or not found in the graph, has no effect.
      * @bigoh O(log V + E)
      */
     void clearArcs(NodeType* node);
 
     /**
-     * 从图中移除所有起点为给定节点的弧，
-     * 释放对应内部结构使用的堆存储空间。
-     * 图的节点保持不变。
-     * 如果给定节点在图中找不到，则不产生任何效果。
+     * Removes all arcs from the graph that start from the given node,
+     * freeing the heap storage used by their corresponding internal structures.
+     * The graph's nodes remain intact.
+     * If the given node is not found in the graph, has no effect.
      * @bigoh O(E log E)
      */
     void clearArcs(const std::string& name);
 
     /**
-     * 如果给定两个节点之间直接存在一条弧，则返回 true。
-     * 如果任一节点为 null 或不包含在此图中，则返回 false。
+     * Returns true if there exists an arc directly between the given two nodes.
+     * If either node is null or is not contained in this graph, returns false.
      * @bigoh O(log E)
      */
     bool containsArc(NodeType* node1, NodeType* node2) const;
 
     /**
-     * 如果给定两个节点之间直接存在一条弧，则返回 true。
-     * 若任一节点不在此图中，则返回 false。
+     * Returns true if there exists an arc directly between the given two nodes.
+     * If either node is not contained in this graph, returns false.
      * @bigoh O(log E)
      */
     bool containsArc(const std::string& node1, const std::string& node2) const;
 
     /**
-     * 如果给定弧存在于此图中，则返回 true。
-     * 如果给定弧为 null，或其任一节点不包含在
-     * 此图，则返回 false。
+     * Returns true if the given arc exists in this graph.
+     * If the given arc is null or either of its nodes are not contained in
+     * this graph, returns false.
      * @bigoh O(log E)
      */
     bool containsArc(ArcType* arc) const;
 
     /**
-     * 如果此图中存在具有给定名称的节点，则返回 true。
+     * Returns true if there exists a node in this graph with the given name.
      * @bigoh O(log V)
      */
     bool containsNode(const std::string& name) const;
 
     /**
-     * 如果给定节点属于此图，则返回 true。
-     * 如果传入的指针为 null，则返回 false。
+     * Returns true if the given node is part of this graph.
+     * If the pointer passed is null, returns false.
      * @bigoh O(log V)
      */
     bool containsNode(NodeType* node) const;
 
     /**
-     * 比较两个图是否相等。
-     * 如果此图包含完全相同的内容，则返回 <code>true</code>
-     * 具有与给定另一图相同的节点、弧和连接。
-     * 行为与 == 运算符相同。
+     * Compares two graphs for equality.
+     * Returns <code>true</code> if this graph contains exactly the same
+     * nodes, arcs, and connections as the given other graph.
+     * Identical in behavior to the == operator.
      * @bigoh O(V log V + E log E)
      */
     bool equals(const Graph<NodeType, ArcType>& graph2) const;
 
     /**
-     * 按照以下迭代顺序返回图中的第一个节点
-     * for-each 循环或迭代器。
-     * @throw 如果图为空，则抛出 ErrorException
+     * Returns the first node in the graph in the order as would be returned by
+     * a for-each loop or iterator.
+     * @throw ErrorException if the graph is empty
      * @bigoh O(1)
      */
     NodeType* front() const;
 
     /**
-     * 返回从 node1 到 node2 的弧（如果存在）。
-     * 若给定两节点之间存在多条弧，返回哪一条未作规定。
-     * 如果传入的任一指针为 null 或不存在这样的弧，则返回空指针。
+     * Returns the arc, if any, from node1 to node2.
+     * If multiple arcs exist between the given two nodes, which is returned is unspecified.
+     * If either pointer passed is null or no such arc exists, returns a null pointer.
      * @bigoh O(log V + log E)
      */
     ArcType* getArc(NodeType* node1, NodeType* node2) const;
 
     /**
-     * 返回从 node1 到 node2 的弧（如果存在）。
-     * 若给定两节点之间存在多条弧，返回哪一条未作规定。
-     * 如果不存在这样的弧，则返回空指针。
+     * Returns the arc, if any, from node1 to node2.
+     * If multiple arcs exist between the given two nodes, which is returned is unspecified.
+     * If no such arc exists, returns a null pointer.
      * @bigoh O(log V + log E)
      */
     ArcType* getArc(const std::string& node1, const std::string& node2) const;
 
     /**
-     * 返回图中所有弧的集合。
+     * Returns the set of all arcs in the graph.
      * @bigoh O(1)
      */
     const Set<ArcType*>& getArcSet() const;
 
     /**
-     * 返回从指定节点出发的所有弧的集合，
-     * 表示为指向其节点结构的指针。
-     * 如果传入的指针为 null，或给定节点在图中找不到，
-     * 返回空集合。
+     * Returns the set of all arcs that start at the specified node,
+     * indicated as a pointer to its node structure.
+     * If the pointer passed is null or the given node is not found in the graph,
+     * returns an empty set.
      * @bigoh O(1)
      */
     const Set<ArcType*>& getArcSet(NodeType* node) const;
 
     /**
-     * 返回从指定节点出发的所有弧的集合。
-     * 如果给定节点在图中找不到，则返回空集合。
+     * Returns the set of all arcs that start at the specified node.
+     * If the given node is not found in the graph, returns an empty set.
      * @bigoh O(1)
      */
     const Set<ArcType*>& getArcSet(const std::string& name) const;
 
     /**
-     * 返回从其他节点到给定节点的出向弧集合。
-     * 换言之，getInverseArcSet(n1) 是满足以下条件的所有节点 n2 的集合：
-     * 使得存在一条从 n2 出发并在 n1 结束的弧 E。
+     * Returns the set of outbound arcs to the given node from other nodes.
+     * In other words, getInverseArcSet(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n2 and ending at n1.
      *
-     * 若传入的任一指针为空，或在以下对象中找不到给定节点：
-     * 在此图中，则返回空集合。
+     * If any pointer passed is null, or if the given node is not found
+     * in this graph, returns an empty set.
      * @bigoh O(E)
      */
     const Set<ArcType*> getInverseArcSet(NodeType* node) const;
 
     /**
-     * 返回从其他节点到给定节点的出向弧集合。
-     * 换言之，getInverseArcSet(n1) 是满足以下条件的所有节点 n2 的集合：
-     * 使得存在一条从 n2 出发并在 n1 结束的弧 E。
+     * Returns the set of outbound arcs to the given node from other nodes.
+     * In other words, getInverseArcSet(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n2 and ending at n1.
      *
-     * 若在此图中找不到给定节点，则返回空集合。
+     * If the given node is not found in this graph, returns an empty set.
      * @bigoh O(E)
      */
     const Set<ArcType*> getInverseArcSet(const std::string& name) const;
 
     /**
-     * 返回指定节点邻居的节点名称字符串集合
-     * 给定节点。
-     * 换言之，getInverseNeighborNames(n1) 是满足以下条件的所有字符串 n2 的集合：
-     * 使得存在一条从 n2 出发并在 n1 结束的弧 E。
+     * Returns the set of strings of names of nodes that are neighbors of the
+     * given node.
+     * In other words, getInverseNeighborNames(n1) is the set of all strings n2
+     * such that there exists an arc E starting from n2 and ending at n1.
      *
-     * 若传入的任一指针为空，或在以下对象中找不到给定节点：
-     * 在此图中，则返回空集合。
+     * If any pointer passed is null, or if the given node is not found
+     * in this graph, returns an empty set.
      * @bigoh O(E)
      */
     Set<std::string> getInverseNeighborNames(NodeType* node) const;
 
     /**
-     * 返回指定节点邻居的节点名称字符串集合
-     * 给定节点。
-     * 换言之，getInverseNeighborNames(n1) 是满足以下条件的所有字符串 n2 的集合：
-     * 使得存在一条从 n2 出发并在 n1 结束的弧 E。
+     * Returns the set of strings of names of nodes that are neighbors of the
+     * given node.
+     * In other words, getInverseNeighborNames(n1) is the set of all strings n2
+     * such that there exists an arc E starting from n2 and ending at n1.
      *
-     * 若在此图中找不到给定节点，则返回空集合。
+     * If the given node is not found in this graph, returns an empty set.
      * @bigoh O(E)
      */
     Set<std::string> getInverseNeighborNames(const std::string& node) const;
 
     /**
-     * 返回指定节点的所有邻接节点集合。
-     * 换言之，getInverseNeighbors(n1) 是满足以下条件的所有节点 n2 的集合：
-     * 使得存在一条从 n2 出发并在 n1 结束的弧 E。
+     * Returns the set of nodes that are neighbors of the specified node.
+     * In other words, getInverseNeighbors(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n2 and ending at n1.
      *
-     * 若传入的任一指针为空，或在以下对象中找不到给定节点：
-     * 在此图中，则返回空集合。
+     * If any pointer passed is null, or if the given node is not found
+     * in this graph, returns an empty set.
      * @bigoh O(E)
      */
     Set<NodeType*> getInverseNeighbors(NodeType* node) const;
 
     /**
-     * 返回指定节点的所有邻接节点集合。
-     * 换言之，getInverseNeighbors(n1) 是满足以下条件的所有节点 n2 的集合：
-     * 使得存在一条从 n2 出发并在 n1 结束的弧 E。
+     * Returns the set of nodes that are neighbors of the specified node.
+     * In other words, getInverseNeighbors(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n2 and ending at n1.
      *
-     * 若在此图中找不到给定节点，则返回空集合。
+     * If the given node is not found in this graph, returns an empty set.
      * @bigoh O(E)
      */
     Set<NodeType*> getInverseNeighbors(const std::string& node) const;
 
     /**
-     * 返回指定节点所有邻居的节点名称集合。
-     * 换言之，getNeighbors(n1) 是满足以下条件的所有字符串 n2 的集合：
-     * 使得存在一条从 n1 出发并在 n2 结束的弧 E。
+     * Returns the set of node names that are neighbors of the specified node.
+     * In other words, getNeighbors(n1) is the set of all strings n2
+     * such that there exists an arc E starting from n1 and ending at n2.
      *
-     * 若传入的任一指针为空，或在以下对象中找不到给定节点：
-     * 在此图中，则返回空集合。
+     * If any pointer passed is null, or if the given node is not found
+     * in this graph, returns an empty set.
      * @bigoh O(log V)
      */
     Set<std::string> getNeighborNames(NodeType* node) const;
 
     /**
-     * 返回指定节点所有邻居的节点名称集合。
-     * 换言之，getNeighbors(n1) 是满足以下条件的所有字符串 n2 的集合：
-     * 使得存在一条从 n1 出发并在 n2 结束的弧 E。
+     * Returns the set of node names that are neighbors of the specified node.
+     * In other words, getNeighbors(n1) is the set of all strings n2
+     * such that there exists an arc E starting from n1 and ending at n2.
      *
-     * 若在此图中找不到给定节点，则返回空集合。
+     * If the given node is not found in this graph, returns an empty set.
      * @bigoh O(log V)
      */
     Set<std::string> getNeighborNames(const std::string& node) const;
 
     /**
-     * 返回指定节点的所有邻接节点集合。
-     * 换言之，getNeighbors(n1) 是满足以下条件的所有节点 n2 的集合：
-     * 使得存在一条从 n1 出发并在 n2 结束的弧 E。
+     * Returns the set of nodes that are neighbors of the specified node.
+     * In other words, getNeighbors(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n1 and ending at n2.
      *
-     * 若传入的任一指针为空，或在以下对象中找不到给定节点：
-     * 在此图中，则返回空集合。
+     * If any pointer passed is null, or if the given node is not found
+     * in this graph, returns an empty set.
      * @bigoh O(log V)
      */
     Set<NodeType*> getNeighbors(NodeType* node) const;
 
     /**
-     * 返回指定节点的所有邻接节点集合。
-     * 换言之，getNeighbors(n1) 是满足以下条件的所有节点 n2 的集合：
-     * 使得存在一条从 n1 出发并在 n2 结束的弧 E。
+     * Returns the set of nodes that are neighbors of the specified node.
+     * In other words, getNeighbors(n1) is the set of all nodes n2
+     * such that there exists an arc E starting from n1 and ending at n2.
      *
-     * 若在此图中找不到给定节点，则返回空集合。
+     * If the given node is not found in this graph, returns an empty set.
      * @bigoh O(log V)
      */
     Set<NodeType*> getNeighbors(const std::string& node) const;
 
     /**
-     * 在附加到图的名称表中查找节点，并
-     * 返回指向该节点的指针。
-     * 如果不存在指定名称的节点，则返回 <code>nullptr</code>。
+     * Looks up a node in the name table attached to the graph and
+     * returns a pointer to that node.
+     * If no node with the specified name exists, returns <code>nullptr</code>.
      * @bigoh O(log V)
      */
     NodeType* getNode(const std::string& name) const;
 
     /**
-     * 返回图中所有节点名称的集合。
-     * 类似于 getNodeSet，但返回字符串集合而不是以下集合
-     * 节点指针。
+     * Returns the set of the names of all nodes in the graph.
+     * Similar to getNodeSet but returns a set of strings rather than a set
+     * of pointers to nodes.
      * @bigoh O(V log V)
      */
     Set<std::string> getNodeNames() const;
 
     /**
-     * 返回图中所有节点的集合。
-     * 这些是指向内部 NodeType* 结构的直接指针，位于
-     * 图，因此你对它们所做的任何修改都会反映到图中。
+     * Returns the set of all nodes in the graph.
+     * These are direct pointers to the internal NodeType* structures in the
+     * graph, so any modifications you make to them will be reflected in the graph.
      * @bigoh O(1)
      */
     const Set<NodeType*>& getNodeSet() const;
 
     /**
-     * 如果图中包含从某处出发的弧，则返回 <code>true</code>
-     * 从 <code>n1</code> 到 <code>n2</code>。
-     * 如果传入的任一指针为 null，或任一节点不包含在
-     * 在此图中，则返回 false。
+     * Returns <code>true</code> if the graph contains an arc from
+     * <code>n1</code> to <code>n2</code>.
+     * If any pointer passed is null, or if either node is not contained
+     * in this graph, returns false.
      * @bigoh O(log V)
      */
     bool isConnected(NodeType* n1, NodeType* n2) const;
 
     /**
-     * 如果图中包含从某处出发的弧，则返回 <code>true</code>
-     * 从 <code>n1</code> 到 <code>n2</code>。
-     * 若任一节点不在此图中，则返回 false。
+     * Returns <code>true</code> if the graph contains an arc from
+     * <code>n1</code> to <code>n2</code>.
+     * If either node is not contained in this graph, returns false.
      * @bigoh O(log V)
      */
     bool isConnected(const std::string& s1, const std::string& s2) const;
 
     /**
-     * 如果图中包含从 v1 到 v2 的边，则返回 true。
-     * 若在图中找不到任一所给顶点，则返回 false。
+     * Returns true if the graph contains an edge from v1 to v2.
+     * If either of the vertexes supplied is not found in the graph, returns false.
      * @bigoh O(log V)
      */
     bool isNeighbor(const std::string& node1, const std::string& node2) const;
 
     /**
-     * 如果图中包含从 v1 到 v2 的边，则返回 true。
-     * 若任一所给顶点为空或在图中找不到，则返回 false。
+     * Returns true if the graph contains an edge from v1 to v2.
+     * If either of the vertexes supplied is null or is not found in the graph, returns false.
      * @bigoh O(log V)
      */
     bool isNeighbor(NodeType* node1, NodeType* node2) const;
 
     /**
-     * 如果图不包含顶点，则返回 <code>true</code>。
+     * Returns <code>true</code> if the graph contains no vertexes.
      * @bigoh O(1)
      */
     bool isEmpty() const;
 
     /**
-     * 返回图中的节点数。
-     * 等价于 size()。
+     * Returns the number of nodes in the graph.
+     * Equivalent to size().
      * @bigoh O(1)
      */
     int nodeCount() const;
 
     /**
-     * 从图中删除从 v1 到 v2 的弧，通过端点名称指定。
-     * 若有多条弧连接指定端点，则全部移除。
-     * 若没有弧连接给定端点，或找不到给定弧，
-     * 该调用不产生任何效果。
+     * Removes an arc from v1 to v2 in the graph, specified by the names of its endpoints.
+     * If more than one arc connects the specified endpoints, all of them are removed.
+     * If no arc connects the given endpoints, or the given arc is not found,
+     * the call has no effect.
      * @bigoh O(E + log V)
      */
     void removeArc(const std::string& s1, const std::string& s2);
 
     /**
-     * 从图中删除从 v1 到 v2 的弧，通过节点指针指定
-     * 在其端点处。
-     * 若有多条弧连接指定端点，则全部移除。
-     * 若没有弧连接给定端点，或找不到给定弧，
-     * 该调用不产生任何效果。
+     * Removes an arc from v1 to v2 in the graph, specified by the node pointers
+     * at its endpoints.
+     * If more than one arc connects the specified endpoints, all of them are removed.
+     * If no arc connects the given endpoints, or the given arc is not found,
+     * the call has no effect.
      * @bigoh O(E + log V)
      */
     void removeArc(NodeType* n1, NodeType* n2);
 
     /**
-     * 从图中删除给定弧，通过弧指针指定。
-     * 若有多条弧连接指定端点，则全部移除。
-     * 若没有弧连接给定端点，或找不到给定弧，
-     * 该调用不产生任何效果。
+     * Removes the given arc from the graph, specified as an arc pointer.
+     * If more than one arc connects the specified endpoints, all of them are removed.
+     * If no arc connects the given endpoints, or the given arc is not found,
+     * the call has no effect.
      *
-     * 内存管理：使用完毕后，本代码会删除/释放 ArcType* 对象。
-     * 无需（也不应）自行释放它。
+     * Memory management: Our code will delete/free the ArcType* object when done with it.
+     * You do not need to (and should not) free it yourself.
      * @bigoh O(log E + log V)
      */
     void removeArc(ArcType* arc);
 
     /**
-     * 从图中删除具有给定名称的节点。
-     * 移除节点也会移除所有包含该节点的弧。
-     * 如果传入的节点名称不属于该图，
-     * 该调用不产生任何效果。
+     * Removes the node with the given name from the graph.
+     * Removing a node also removes all arcs that contain that node.
+     * If a node name is passed that is not part of the graph,
+     * the call has no effect.
      * @bigoh O(E + log V)
      */
     void removeNode(const std::string& name);
 
     /**
-     * 从图中删除节点，通过指针值指定。
-     * 移除节点也会移除所有包含该节点的弧。
-     * 如果传入的节点或名称为 null，或不属于该图，
-     * 该调用不产生任何效果。
+     * Removes a node from the graph, specified as a pointer value.
+     * Removing a node also removes all arcs that contain that node.
+     * If a node or name is passed that is null or is not part of the graph,
+     * the call has no effect.
      *
-     * 内存管理：使用完毕后，本代码会删除/释放 NodeType* 对象。
-     * 无需（也不应）自行释放它。
+     * Memory management: Our code will delete/free the NodeType* object when done with it.
+     * You do not need to (and should not) free it yourself.
      * @bigoh O(E + log V)
      */
     void removeNode(NodeType* node);
 
     /**
-     * 从扫描器读取一条弧的数据。
-     * <code>forward</code> 参数指向正向的弧。
-     * 如果弧是无向的，<code>backward</code> 指向反向弧；
-     * 对于有向弧，<code>backward</code> 指针为 <code>nullptr</code>。
+     * Reads the data for an arc from the scanner.
+     * The <code>forward</code> argument points to the arc in the forward direction.
+     * If the arc is undirected, <code>backward</code> points to the reverse arc;
+     * for directed arcs, the <code>backward</code> pointer is <code>nullptr</code>.
      *
-     * 此方法的默认实现为空。
-     * 希望初始化弧中其他字段的客户端必须重写
-     * 此方法，使其按情况初始化一条或两条弧。
+     * The default implementation of this method is empty.
+     * Clients that want to initialize other fields in the arc must override
+     * this method so that it initializes one or both arc, as appropriate.
      */
-    virtual void scanArcData(TokenScanner &, ArcType* /*向前*/, ArcType* /*向后*/) {
-        // 空
+    virtual void scanArcData(TokenScanner &, ArcType* /*forward*/, ArcType* /*backward*/) {
+        // empty
     }
 
     /**
-     * 此方法读取图的一个“条目”，它可以是节点
-     * 节点描述或弧描述。<code>scanGraphEntry</code>
-     * 如果成功读取一个条目，此方法返回 <code>true</code>，否则
-     * 在文件末尾或遇到无法解析的文本时返回 <code>false</code>
-     * 识别为图条目。
+     * This method reads one "entry" for the graph, which is either a node
+     * description or an arc description.  The <code>scanGraphEntry</code>
+     * method returns <code>true</code> if it reads an entry, and
+     * <code>false</code> at the end of file or at text that cannot be
+     * recognized as a graph entry.
      *
-     * 节点条目由节点名称组成（名称可能带引号
-     * 如果其中包含特殊字符），后面可选地跟随相关数据
-     * 该节点。弧的描述具有以下形式之一：
+     * Node entries consist of the name of a node (which may be quoted
+     * if it contains special characters), optionally followed by data for
+     * the node.  Arc descriptions have one of the following forms:
      *
      * <pre>
      * n1 -> n2
      * n1 - n2
      * </pre>
      *
-     * 任一形式后面都可跟随弧的数据。
-     * 第一种形式创建一条有向弧；第二种创建两条弧，
-     * 每个方向一条。
+     * either of which can be followed by data for the arc.
+     * The first form creates a single directed arc; the second creates two arcs,
+     * one in each direction.
      *
-     * 希望读取节点或弧数据的客户端必须重写空的
-     * <code>scanNodeData</code> 和 <code>scanArcData</code> 的各版本
-     * 包含在此接口中。
+     * Clients who want to read node or arc data must override the empty
+     * versions of <code>scanNodeData</code> and <code>scanArcData</code>
+     * included in this interface.
      */
     virtual bool scanGraphEntry(TokenScanner& scanner);
 
     /**
-     * 从扫描器读取指定节点的数据。
-     * 此方法的默认实现为空。
-     * 希望根据标记初始化节点中其他字段的客户端
-     * 流必须重写此方法。
+     * Reads the data for the specified node from the scanner.
+     * The default implementation of this method is empty.
+     * Clients that want to initialize other fields in the node from the token
+     * stream must override this method.
      */
     virtual void scanNodeData(TokenScanner&, NodeType*) {
-        /* 空 */
+        /* Empty */
     }
 
     /**
-     * 返回图中的节点数。
-     * 等价于 nodeCount。
+     * Returns the number of nodes in the graph.
+     * Equivalent to nodeCount.
      * @bigoh O(1)
      */
     int size() const;
 
     /**
-     * 将图转换为可打印的字符串表示。
-     * @return 字符串，例如 <code>"{A, B, C, D, A - B, B - D, C - D}"</code>。
+     * Converts the graph to a printable string representation.
+     * @return a string such as <code>"{A, B, C, D, A - B, B - D, C - D}"</code>.
      * @bigoh O(V + E)
      */
     std::string toString() const;
 
     /**
-     * 将弧的数据写入输出流。
-     * 此方法的默认实现为空。
-     * 希望存储弧中其他字段的客户端必须重写此方法
-     * 方法，使其以 scanArcData 可读取的形式写入数据。
+     * Writes the data for the arc to the output stream.
+     * The default implementation of this method is empty.
+     * Clients that want to store other fields from the arc must override this
+     * method so that it writes that data in a form that scanArcData can read.
      */
     virtual void writeArcData(std::ostream&, ArcType*) const {
-        // 空
+        // empty
     }
 
     /**
-     * 将节点的数据写入输出流。
-     * 此方法的默认实现为空。
-     * 希望存储节点中其他字段的客户端必须重写此方法
-     * 方法，使其以 scanNodeData 可读取的形式写入数据。
+     * Writes the data for the node to the output stream.
+     * The default implementation of this method is empty.
+     * Clients that want to store other fields from the node must override this
+     * method so that it writes that data in a form that scanNodeData can read.
      */
     virtual void writeNodeData(std::ostream&, NodeType*) const {
-        // 空
+        // empty
     }
 
     using graph_iterator = typename Set<NodeType *>::const_iterator;
 
     /**
-     * 返回位于图中第一个顶点的 STL 迭代器。
+     * Returns an STL iterator positioned at the first vertex in the graph.
      * @bigoh O(1)
      */
     graph_iterator begin() const {
@@ -577,7 +577,7 @@ public:
     }
 
     /**
-     * 返回位于图中最后一个顶点之后的 STL 迭代器。
+     * Returns an STL iterator positioned after the last vertex in the graph.
      * @bigoh O(1)
      */
     graph_iterator end() const {
@@ -585,72 +585,72 @@ public:
     }
 
     /**
-     * 用于比较两个图的关系运算符。
-     * ==、!= 运算符要求 ValueType 定义 == 运算符
-     * 以便测试元素是否相等。
+     * Relational operators to compare two graphs.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
      * @bigoh O(V log V + E log E)
      */
     bool operator ==(const Graph& graph2) const;
 
     /**
-     * 用于比较两个图的关系运算符。
-     * ==、!= 运算符要求 ValueType 定义 == 运算符
-     * 以便测试元素是否相等。
+     * Relational operators to compare two graphs.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
      * @bigoh O(V log V + E log E)
      */
     bool operator !=(const Graph& graph2) const;
 
     /**
-     * 用于比较两个图的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(V log V + E log E)
      */
     bool operator <(const Graph& graph2) const;
 
     /**
-     * 用于比较两个图的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(V log V + E log E)
      */
     bool operator <=(const Graph& graph2) const;
 
     /**
-     * 用于比较两个图的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(V log V + E log E)
      */
     bool operator >(const Graph& graph2) const;
 
     /**
-     * 用于比较两个图的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two graphs.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      * @bigoh O(V log V + E log E)
      */
     bool operator >=(const Graph& graph2) const;
 
 private:
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
     /**
-     * 此模板类规定节点和弧的排序方式。
-     * 节点按节点名称的字母顺序处理；弧则
-     * 比较方式基本相同，先查看起始节点，然后
-     * 然后，如果起始节点
-     * 匹配。不过，这些函数只有在以下情况下才表示相等
-     * 参数相同，即它们位于同一
-     * 地址。例如，如果两条不同的弧连接同一对
-     * 节点（在图抽象中完全合法，并且可以
-     * 例如，可用于表示以下对象之间的多种出行方式：
-     * 两个节点），这些弧并不相同。
+     * This template class establishes the ordering for nodes and arcs.
+     * Nodes are processed in alphabetical order by node name; arcs are
+     * compared in much the same way, looking first at the start node and
+     * then continuing on to look at the finish node if the start nodes
+     * match.  These functions, however, indicate equality only if the
+     * arguments are identical, in the sense that they are at the same
+     * address.  If two distinct arcs, for example, connect the same pair
+     * of nodes (which is perfectly legal in the graph abstraction and can
+     * be used, for example, to represent multiple modes of travel between
+     * two nodes), those arcs are not the same.
      *
      * @private
      */
@@ -665,29 +665,29 @@ private:
         }
     };
 
-    Set<NodeType*> _nodes{GraphComparator()}; /* 图中的节点集合 */
-    Set<ArcType*> _arcs{GraphComparator()};   /* 图中的弧集合  */
-    Map<std::string, NodeType*> _nodeMap;     /* 从名称到节点的映射     */
+    Set<NodeType*> _nodes{GraphComparator()}; /* The set of nodes in the graph */
+    Set<ArcType*> _arcs{GraphComparator()};   /* The set of arcs in the graph  */
+    Map<std::string, NodeType*> _nodeMap;     /* A map from names to nodes     */
 
 public:
     /**
-     * 这些函数是类的公共接口的一部分，但
-     * 在此定义，以避免给 Graph 类增加混淆。
+     * These functions are part of the public interface of the class but are
+     * defined here to avoid adding confusion to the Graph class.
      *
      * @private
      */
     Graph& operator =(const Graph& src);
 
     /**
-     * 这些函数是类的公共接口的一部分，但
-     * 在此定义，以避免给 Graph 类增加混淆。
+     * These functions are part of the public interface of the class but are
+     * defined here to avoid adding confusion to the Graph class.
      *
      * @private
      */
     Graph(const Graph& src);
 
     /**
-     * 比较两个节点在集合中的排序顺序。
+     * Compares two nodes for ordering within a set.
      *
      * @private
      */
@@ -705,7 +705,7 @@ public:
     }
 
     /**
-     * 比较两条弧在集合中的排序顺序。
+     * Compares two arcs for ordering within a set.
      *
      * @private
      */
@@ -738,16 +738,16 @@ private:
 };
 
 /*
- * 实现说明：Graph 构造函数
+ * Implementation notes: Graph constructor
  * ---------------------------------------
- * 尽管 Graph 构造函数主体为空，但重要的
- * 工作由初始化器完成，它确保节点和
- * 为 arcs 集合提供正确的比较函数。
+ * Even though the body of the Graph constructor is empty, important
+ * work is done by the initializers, which ensure that the nodes and
+ * arcs set are given the correct comparison functions.
  */
 
 template <typename NodeType, typename ArcType>
 Graph<NodeType, ArcType>::Graph() {
-    // 空
+    // empty
 }
 
 template <typename NodeType, typename ArcType>
@@ -756,12 +756,12 @@ Graph<NodeType, ArcType>::Graph(const Graph& src) {
 }
 
 /*
- * 实现说明：Graph 析构函数
+ * Implementation notes: Graph destructor
  * --------------------------------------
- * 析构函数必须释放此图使用的所有堆存储，以
- * 表示节点和弧。clear 方法还必须回收
- * 这块内存，因此析构函数只需调用
- * 清除以执行工作。
+ * The destructor must free all heap storage used by this graph to
+ * represent the nodes and arcs.  The clear method must also reclaim
+ * this memory, which means that the destructor can simply call
+ * clear to do the work.
  */
 template <typename NodeType, typename ArcType>
 Graph<NodeType, ArcType>::~Graph() {
@@ -769,11 +769,11 @@ Graph<NodeType, ArcType>::~Graph() {
 }
 
 /*
- * 实现说明：addArc
+ * Implementation notes: addArc
  * ----------------------------
- * addArc 方法有三种形式，如以下内容所述
- * 接口。不过，每种方法形式的代码
- * 相当直接。
+ * The addArc method appears in three forms, as described in the
+ * interface.  The code for each form of the method, however, is
+ * quite straightforward.
  */
 template <typename NodeType, typename ArcType>
 ArcType* Graph<NodeType, ArcType>::addArc(const std::string& s1, const std::string& s2) {
@@ -810,19 +810,19 @@ ArcType* Graph<NodeType, ArcType>::addArc(ArcType* arc) {
 }
 
 /*
- * 实现说明：addNode
+ * Implementation notes: addNode
  * -----------------------------
- * addNode 方法有两种形式：一种创建节点
- * 从其名称，以及假定客户端已创建的版本
- * 新节点。无论哪种情况，实现都必须添加该节点
- * 图的节点集合，并添加名称到节点的关联
- * 到节点映射中。
+ * The addNode method appears in two forms: one that creates a node
+ * from its name and one that assumes that the client has created
+ * the new node.  In each case, the implementation must add the node
+ * the set of nodes for the graph and add the name-to-node association
+ * to the node map.
  */
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::addNode(const std::string& name) {
     NodeType* node = getNode(name);
     if (node) {
-        return node;   // 顶点已存在
+        return node;   // vertex already exists
     }
     node = new NodeType();
     node->arcs = Set<ArcType*>(GraphComparator());
@@ -835,7 +835,7 @@ NodeType* Graph<NodeType, ArcType>::addNode(NodeType* node) {
     verifyNotNull(node, "addNode");
     NodeType* existingNode = getNode(node->name);
     if (existingNode) {
-        *existingNode = *node;   // 从参数复制状态
+        *existingNode = *node;   // copy state from parameter
         return existingNode;
     } else {
         _nodes.add(node);
@@ -858,11 +858,11 @@ NodeType* Graph<NodeType, ArcType>::back() const {
 }
 
 /*
- * 实现说明：clear
+ * Implementation notes: clear
  * ---------------------------
- * clear 的实现首先释放
- * 各自的集合，然后使用 Set 类的 clear 方法
- * 确保这些集合为空。
+ * The implementation of clear first frees the nodes and arcs in
+ * their respective sets and then uses the Set class clear method
+ * to ensure that these sets are empty.
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clear() {
@@ -879,7 +879,7 @@ void Graph<NodeType, ArcType>::clear() {
 
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clearArcs() {
-    Set<ArcType*> arcsCopy = getArcSet();   // 创建副本
+    Set<ArcType*> arcsCopy = getArcSet();   // makes a copy
     for (ArcType* arc : arcsCopy) {
         removeArc(arc);
     }
@@ -888,7 +888,7 @@ void Graph<NodeType, ArcType>::clearArcs() {
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clearArcs(NodeType* node) {
     if (isExistingNode(node)) {
-        Set<ArcType*> arcsCopy = getArcSet(node);   // 创建副本
+        Set<ArcType*> arcsCopy = getArcSet(node);   // makes a copy
         for (ArcType* arc : arcsCopy) {
             removeArc(arc);
         }
@@ -897,7 +897,7 @@ void Graph<NodeType, ArcType>::clearArcs(NodeType* node) {
 
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clearArcs(const std::string& name) {
-    Set<ArcType*> arcsCopy = getArcSet(name);   // 创建副本
+    Set<ArcType*> arcsCopy = getArcSet(name);   // makes a copy
     for (ArcType* arc : arcsCopy) {
         removeArc(arc);
     }
@@ -978,7 +978,7 @@ const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet(NodeType* node) const {
     if (isExistingNode(node)) {
         return node->arcs;
     } else {
-        static Set<ArcType*> set;   // 空
+        static Set<ArcType*> set;   // empty
         return set;
     }
 }
@@ -1093,10 +1093,10 @@ Set<std::string> Graph<NodeType, ArcType>::getNeighborNames(const std::string& n
 }
 
 /*
- * 实现说明：getNeighbors
+ * Implementation notes: getNeighbors
  * ----------------------------------
- * 此实现每次都会重新计算集合，这在合理范围内
- * 如果节点度数较小，则效率较高。
+ * This implementation recomputes the set each time, which is reasonably
+ * efficient if the degree of the node is small.
  */
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(NodeType* node) const {
@@ -1115,12 +1115,12 @@ Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(const std::string& name) c
 }
 
 /*
- * 实现说明：getNode、getExistingNode
+ * Implementation notes: getNode, getExistingNode
  * ----------------------------------------------
- * getNode 方法只是从映射中查找名称，这会正确地
- * 如果找不到名称，则返回 nullptr。以下对象中的其他方法
- * 实现中应改为调用私有方法 getExistingNode，
- * 它会检查 null 值并报告错误。
+ * The getNode method simply looks up the name in the map, which correctly
+ * returns nullptr if the name is not found.  Other methods in the
+ * implementation call the private method getExistingNode instead,
+ * which checks for a null value and signals an error.
  */
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::getNode(const std::string& name) const {
@@ -1137,11 +1137,11 @@ Set<std::string> Graph<NodeType, ArcType>::getNodeNames() const {
 }
 
 /*
- * 实现说明：getNodeSet、getArcSet
+ * Implementation notes: getNodeSet, getArcSet
  * -------------------------------------------
- * 这些方法只是返回客户端请求的集合。
- * 为提高效率，集合通过引用返回，因为这样做
- * 无需复制集合。
+ * These methods simply return the set requested by the client.  The
+ * sets are returned by reference for efficiency, because doing so
+ * eliminates the need to copy the set.
  */
 template <typename NodeType, typename ArcType>
 const Set<NodeType*>& Graph<NodeType, ArcType>::getNodeSet() const {
@@ -1149,16 +1149,16 @@ const Set<NodeType*>& Graph<NodeType, ArcType>::getNodeSet() const {
 }
 
 /*
- * 实现说明：isConnected
+ * Implementation notes: isConnected
  * ---------------------------------
- * 如果从 n1 出发的任一弧终止于 n2，则节点 n1 与 n2 相连。
- * 此方法的两个版本允许以以下任一种方式指定节点：
- * 通过节点指针或名称。
+ * Node n1 is connected to n2 if any of the arcs leaving n1 finish at n2.
+ * The two versions of this method allow nodes to be specified either as
+ * node pointers or by name.
  */
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isConnected(NodeType* n1, NodeType* n2) const {
-    // 不要在此调用 verifyExistingNode，因为它会抛出错误
-    // 如果找不到 n1 或 n2；调用应当返回 false
+    // don't call verifyExistingNode here because it will throw an error
+    // if n1 or n2 is not found; should just make the call return false
     if (!isExistingNode(n1) || !isExistingNode(n2)) {
         return false;
     }
@@ -1172,8 +1172,8 @@ bool Graph<NodeType, ArcType>::isConnected(NodeType* n1, NodeType* n2) const {
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isConnected(const std::string& s1, const std::string& s2) const {
-    // 不要在此调用 getExistingNode，因为它会抛出错误
-    // 如果找不到 s1 或 s2；调用应当返回 false
+    // don't call getExistingNode here because it will throw an error
+    // if s1 or s2 is not found; should just make the call return false
     return isConnected(_nodeMap.get(s1), _nodeMap.get(s2));
 }
 
@@ -1198,26 +1198,26 @@ int Graph<NodeType, ArcType>::nodeCount() const {
 }
 
 /*
- * 实现说明：removeArc
+ * Implementation notes: removeArc
  * -------------------------------
- * 这些方法从图中移除弧，通常只需
- * 本质上是从两个集合中移除该弧：图中的弧集合以及
- * 整个图以及起始节点中的弧集合。该
- * 不过，对于通过端点指定弧的删除方法，
- * 必须考虑可能存在多个
- * 这样的弧并删除全部。
+ * These methods remove arcs from the graph, which is ordinarily simply
+ * a matter of removing the arc from two sets: the set of arcs in the
+ * graph as a whole and the set of arcs in the starting node.  The
+ * methods that remove an arc specified by its endpoints, however,
+ * must take account of the fact that there might be more than one
+ * such arc and delete all of them.
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeArc(const std::string& s1, const std::string& s2) {
-    // 不要在此调用 getExistingNode，因为它会抛出错误
-    // 如果找不到 s1 或 s2；调用应当不产生任何效果
+    // don't call getExistingNode here because it will throw an error
+    // if s1 or s2 is not found; should just make the call have no effect
     removeArc(_nodeMap.get(s1), _nodeMap.get(s2));
 }
 
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeArc(NodeType* n1, NodeType* n2) {
-    // 不要在此调用 verifyExistingNode，因为它会抛出错误
-    // 如果找不到 n1 或 n2；调用应当不产生任何效果
+    // don't call verifyExistingNode here because it will throw an error
+    // if n1 or n2 is not found; should just make the call have no effect
     if (!isExistingNode(n1) || !isExistingNode(n2)) {
         return;
     }
@@ -1243,24 +1243,24 @@ void Graph<NodeType, ArcType>::removeArc(ArcType* arc) {
 }
 
 /*
- * 实现说明：removeNode
+ * Implementation notes: removeNode
  * --------------------------------
- * removeNode 方法必须移除指定节点，但必须
- * 还要移除图中包含该节点的所有弧。为避免
- * 由于在迭代期间更改节点集合，此实现会创建
- * 需要删除的弧向量。
+ * The removeNode method must remove the specified node but must
+ * also remove any arcs in the graph containing the node.  To avoid
+ * changing the node set during iteration, this implementation creates
+ * a vector of arcs that require deletion.
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeNode(const std::string& name) {
-    // 不要在此调用 getExistingNode，因为它会抛出错误
-    // 如果找不到 name；调用应当不产生任何效果
+    // don't call getExistingNode here because it will throw an error
+    // if name is not found; should just make the call have no effect
     removeNode(_nodeMap.get(name));
 }
 
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
-    // 不要在此调用 verifyExistingNode，因为它会抛出错误
-    // 如果找不到节点；调用应当不产生任何效果
+    // don't call verifyExistingNode here because it will throw an error
+    // if node is not found; should just make the call have no effect
     if (!isExistingNode(node)) {
         return;
     }
@@ -1279,11 +1279,11 @@ void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
 }
 
 /*
- * 实现说明：scanGraphEntry
+ * Implementation notes: scanGraphEntry
  * ------------------------------------
- * scanGraphEntry 及其辅助方法接收一个已
- * 初始化为输入流，并启用 ignoreWhitespace 选项，
- * 已设置 scanStrings 和 scanNumbers。
+ * The scanGraphEntry and its helper methods take a scanner that is
+ * initialized to the input stream and has the options ignoreWhitespace,
+ * scanStrings, and scanNumbers set.
  */
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::scanGraphEntry(TokenScanner& scanner) {
@@ -1339,11 +1339,11 @@ NodeType* Graph<NodeType, ArcType>::scanNode(TokenScanner& scanner) {
 }
 
 /*
- * 实现说明：size、isEmpty
+ * Implementation notes: size, isEmpty
  * -----------------------------------
- * 这些方法根据节点集合定义，因此实现
- * 只是将请求转发到那里。请注意，以下情况不可能发生
- * 若图中没有节点，则图不可能包含弧。
+ * These methods are defined in terms of the node set, so the implementation
+ * simply forwards the request there.  Note that it is impossible for a
+ * graph to have arcs if it has no nodes.
  */
 template <typename NodeType, typename ArcType>
 int Graph<NodeType, ArcType>::size() const {
@@ -1358,10 +1358,10 @@ std::string Graph<NodeType, ArcType>::toString() const {
 }
 
 /*
- * 实现说明：operator =、复制构造函数
+ * Implementation notes: operator =, copy constructor
  * -------------------------------------------------
- * 这些方法确保复制图时会创建一个全新的
- * 节点和弧的并行结构。
+ * These methods ensure that copying a graph creates an entirely new
+ * parallel structure of nodes and arcs.
  */
 template <typename NodeType, typename ArcType>
 Graph<NodeType,ArcType>&
@@ -1374,10 +1374,10 @@ Graph<NodeType, ArcType>::operator =(const Graph& src) {
 }
 
 /*
- * 私有方法：deepCopy
+ * Private method: deepCopy
  * ------------------------
- * 从复制构造函数和 operator= 中提取的公共代码，用于
- * 从另一个图复制内容。
+ * Common code factored out of the copy constructor and operator= to
+ * copy the contents from the other graph.
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::deepCopy(const Graph& src) {
@@ -1398,14 +1398,14 @@ void Graph<NodeType, ArcType>::deepCopy(const Graph& src) {
 
 
 /**
- * 使用 <、<=、==、!=、>、>= 关系运算符比较两个图。
- * 比较顶点，包括其相邻弧。
+ * Compares two graphs for <, <=, ==, !=, >, >= relational operators.
+ * Vertices are compared, including their neighboring arcs.
  *
  * @private
  */
 template <typename NodeType, typename ArcType>
 int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph2) const {
-    // 优化：如果确实是同一图，则返回 true
+    // optimization: if literally the same graph, return true
     if (this == &graph2) {
         return 0;
     }
@@ -1416,18 +1416,18 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
     auto g2end = graph2.end();
 
     while (itr1 != g1end && itr2 != g2end) {
-        // 逐对比较迭代器中的各元素
+        // compare each pair of elements from iterators
         NodeType* node1 = *itr1;
         NodeType* node2 = *itr2;
 
-        // 优化：如果确实是同一节点，则相等；无需比较
+        // optimization: if literally same node, equal; don't compare
         if (node1 != node2) {
-            // 首先检查名称
+            // first check names
             if (node1->name != node2->name) {
                 return node1->name.compare(node2->name);
             }
 
-            // 然后两两检查所有弧
+            // then check all arcs, pairwise
             auto eitr1 = node1->arcs.begin();
             auto eitr2 = node2->arcs.begin();
             auto e1end = node1->arcs.end();
@@ -1436,9 +1436,9 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
                 ArcType* arc1 = *eitr1;
                 ArcType* arc2 = *eitr2;
 
-                // 优化：如果确实是同一条弧，则相等；无需比较
+                // optimization: if literally same arc, equal; don't compare
                 if (arc1 != arc2) {
-                    // 先检查起始顶点名称，再检查终止顶点名称
+                    // first check start vertex names, then end vertex names
                     if (arc1->start->name != arc2->start->name) {
                         return arc1->start->name.compare(arc2->start->name);
                     } else if (arc1->finish->name != arc2->finish->name) {
@@ -1449,10 +1449,10 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
                 eitr2++;
             }
 
-            // 如果执行到这里，表示我的所有内容都与 graph2 匹配，因此要么弧相等，
-            // 或其中一个更短（弧更少），因此更小
+            // if we get here, everything from me matched graph2, so either arcs equal,
+            // or one is shorter than the other (fewer arcs) and is therefore less
             if (eitr1 == e1end && eitr2 == e2end) {
-                // 继续
+                // keep going
             } else if (eitr1 == e1end) {
                 return -1;
             } else {
@@ -1460,14 +1460,14 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
             }
         }
 
-        // 如果执行到这里，表示这两个顶点及其出弧
-        // 两者相等；因此前进到下一个元素
+        // if we get here, those two vertices and their outbound arcs
+        // were equal; so advance to next element
         itr1++;
         itr2++;
     }
 
-    // 如果执行到这里，表示我的所有内容都与 graph2 匹配，因此要么相等，
-    // 或其中一个更短（顶点更少），因此更小
+    // if we get here, everything from me matched graph2, so either equal,
+    // or one is shorter than the other (fewer vertices) and is therefore less
     if (itr1 == g1end && itr2 == g2end) {
         return 0;
     } else if (itr1 == g1end) {
@@ -1478,11 +1478,11 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
 }
 
 /*
- * 运算符
+ * Operators
  */
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::operator ==(const Graph& graph2) const {
-    // 优化：如果大小不同，则图不相等
+    // optimization: if sizes not same, graphs not equal
     if (_nodes.size() != graph2._nodes.size()
             || _arcs.size() != graph2._arcs.size()
             || _nodeMap.size() != graph2._nodeMap.size()) {
@@ -1517,12 +1517,12 @@ bool Graph<NodeType, ArcType>::operator >=(const Graph& graph2) const {
 }
 
 /**
- * 将给定图写入给定输出流。
- * 图的插入和提取运算符更加复杂
- * 比标准集合类型更复杂，因为节点和弧可以
- * 包含客户端特定数据。为确保此信息
- * 为了让这些运算符正确写入和读取，客户端必须重写
- * 方法 writeNodeData、writeArcData、scanNodeData 和 scanArcData。
+ * Writes the given graph to the given output stream.
+ * The insertion and extraction operators for graphs are more complicated
+ * than for the standard collection types because the nodes and arcs can
+ * contain client-specific data.  To ensure that this information is
+ * correctly written and read by these operators, clients must override
+ * the methods writeNodeData, writeArcData, scanNodeData, and scanArcData.
  */
 template <typename NodeType, typename ArcType>
 std::ostream& operator <<(std::ostream& os, const Graph<NodeType, ArcType>& g) {
@@ -1547,12 +1547,12 @@ std::ostream& operator <<(std::ostream& os, const Graph<NodeType, ArcType>& g) {
 }
 
 /**
- * 从给定输入流读取给定图。
- * 图的插入和提取运算符更加复杂
- * 比标准集合类型更复杂，因为节点和弧可以
- * 包含客户端特定数据。为确保此信息
- * 为了让这些运算符正确写入和读取，客户端必须重写
- * 方法 writeNodeData、writeArcData、scanNodeData 和 scanArcData。
+ * Reads the given graph from the given input stream.
+ * The insertion and extraction operators for graphs are more complicated
+ * than for the standard collection types because the nodes and arcs can
+ * contain client-specific data.  To ensure that this information is
+ * correctly written and read by these operators, clients must override
+ * the methods writeNodeData, writeArcData, scanNodeData, and scanArcData.
  */
 template <typename NodeType, typename ArcType>
 std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
@@ -1585,7 +1585,7 @@ std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
 }
 
 /**
- * 用于图的模板哈希函数。
+ * Template hash function for graphs.
  */
 template <typename NodeType, typename ArcType>
 int hashCode(const Graph<NodeType, ArcType>& graph) {

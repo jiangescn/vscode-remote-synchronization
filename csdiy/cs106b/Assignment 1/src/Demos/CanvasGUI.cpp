@@ -9,16 +9,16 @@
 using namespace std;
 
 namespace {
-    /* 从窗口边框到内容区域的内边距。 */
+    /* Padding from window border to content area. */
     const double kPadding = 20;
 
-    /* 窗口背景色——用于画布以外的所有区域。 */
-    const string kWindowColor = "#A4DDED"; // 非摄影蓝：颜色足够深，可以清晰地
-                                           // 边框颜色不能太暗，以免边框上的线
-                                           // 将不可见
+    /* Window background color - used for everything but the canvas. */
+    const string kWindowColor = "#A4DDED"; // Non-Photo Blue: dark enough to clearly make a
+                                           // border, not so dark that lines on the border
+                                           // won't be seen
 
-    /* 画布颜色。 */
-    const string kCanvasColor = "#FFFFFF"; // 为简单起见，使用纯白色
+    /* Canvas color. */
+    const string kCanvasColor = "#FFFFFF"; // Pure white, for simplicity
 
     class PlotterGUI: public ProblemHandler {
     public:
@@ -34,15 +34,15 @@ namespace {
     private:
         void addLine(double x, double y, double width, double height, PenStyle style);
 
-        /* 几何。 */
+        /* Geometry. */
         double baseX, baseY, scale;
 
-        double lastX, lastY; // 在真实坐标中
+        double lastX, lastY; // In real coordinates
 
         double mouseToX(double mouseX) const;
         double mouseToY(double mouseY) const;
 
-        /* 要绘制的线条。 */
+        /* Lines to plot. */
         vector<unique_ptr<GLine>> lines;
         ostringstream commands;
 
@@ -51,20 +51,20 @@ namespace {
         Temporary<GTextField> mColor;
         Temporary<GTextField> mWidth;
 
-        /* 初始化辅助函数。 */
+        /* Initialization helpers. */
         void calculateGeometry();
         void setUpChrome();
     };
 
-    /* 构造函数设置图形并将我们注册为唯一 GUI。 */
+    /* Constructor sets up graphics and hooks us in as the One True GUI. */
     PlotterGUI::PlotterGUI(GWindow& window) : ProblemHandler(window) {
         setUpChrome();
         calculateGeometry();
     }
 
-    /* 从全局图形系统连接到绘制线条的挂钩。 */
+    /* Hook from the global graphics system to drawing a line. */
     void PlotterGUI::addLine(double x0, double y0, double x1, double y1, PenStyle style) {
-        /* TODO：当 C++14 得到全面支持后，使用 make_unique。 */
+        /* TODO: Once C++14 support is everywhere, use make_unique. */
         unique_ptr<GLine> line(new GLine(x0 * scale + baseX, -y0 * scale + baseY,
                                          x1 * scale + baseX, -y1 * scale + baseY));
         line->setColor(style.color);
@@ -74,20 +74,20 @@ namespace {
         requestRepaint();
     }
 
-    /* 计算窗口几何信息——缩放比例、基础 X、基础 Y 等。 */
+    /* Calculates window geometry information - scale, base X, base Y, etc. */
     void PlotterGUI::calculateGeometry() {
-        /* 计算缩放到窗口宽度和高度所需的缩放因子。 */
+        /* Computing the scaling factors needed to scale to the window width and window height. */
         double width  = window().getCanvasWidth()  - 2 * kPadding;
         double height = window().getCanvasHeight() - 2 * kPadding;
 
         scale = min(width, height) / 2.0;
 
-        /* 根据缩放比例计算基础 x 和 y。 */
+        /* Compute base x and y based on the scale. */
         baseX = kPadding + width / 2.0;
         baseY = kPadding + height / 2.0;
     }
 
-    /* 设置窗口控件（“装饰”）。 */
+    /* Sets up window controls ("chrome"). */
     void PlotterGUI::setUpChrome() {
         mFilename = Temporary<GTextField>(new GTextField("(filename)"), window(), "SOUTH");
         mSave     = Temporary<GButton>(new GButton("Save"), window(), "SOUTH");
@@ -96,8 +96,8 @@ namespace {
     }
 
     void PlotterGUI::repaint() {
-        /* 必须在线条上方绘制边框，以防绘图器
-         * 越界！
+        /* We have to draw the border on top of the lines in case the plotter
+         * goes out of bounds!
          */
         clearDisplay(window(), kCanvasColor);
 
@@ -105,10 +105,10 @@ namespace {
             window().draw(*line);
         }
 
-        /* 在画布上方、左侧、右侧和下方绘制。 */
+        /* Draw above, to the left of, to the right of, and below the canvas. */
         window().setColor(kWindowColor);
-        window().fillRect(0, 0, baseX - scale, window().getHeight()); // 左侧
-        window().fillRect(baseX + scale, 0, window().getWidth() - baseX - scale, window().getHeight()); // 右侧
+        window().fillRect(0, 0, baseX - scale, window().getHeight()); // Left
+        window().fillRect(baseX + scale, 0, window().getWidth() - baseX - scale, window().getHeight()); // Right
         window().fillRect(0, 0, window().getWidth(), baseY - scale);
         window().fillRect(0, baseY + scale, window().getWidth(), window().getHeight() - baseY - scale);
     }

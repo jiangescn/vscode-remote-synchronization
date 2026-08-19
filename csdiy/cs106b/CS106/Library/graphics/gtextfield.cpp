@@ -1,21 +1,21 @@
 /*
- * 文件：gtextfield.cpp
+ * File: gtextfield.cpp
  * --------------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加按键事件
+ * - added key events
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2019/02/01
- * - 按键导致文本变化时发出 CHANGE_EVENT
+ * - emit CHANGE_EVENT on key presses when text changes
  * @version 2018/08/23
- * - 重命名为 gtextfield.cpp，以替代 Java 版本
+ * - renamed to gtextfield.cpp to replace Java version
  * @version 2018/06/29
- * - 添加 textChange 事件
- * - 添加自动补全
+ * - added textChange event
+ * - added autocompletion
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 #include "gtextfield.h"
@@ -42,7 +42,7 @@ GTextField::GTextField(const std::string& text, int charsWide, QWidget* parent)
     if (charsWide > 0) {
         setCharsWide(charsWide);
     }
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::GTextField(int charsWide, QWidget* parent)
@@ -56,7 +56,7 @@ GTextField::GTextField(int charsWide, QWidget* parent)
     if (charsWide > 0) {
         setCharsWide(charsWide);
     }
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
@@ -67,7 +67,7 @@ GTextField::GTextField(int value, int min, int max, int step, QWidget* parent) {
         _iqspinbox->setValue(value);
         _inputType = GTextField::INPUT_TYPE_INTEGER;
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::GTextField(double value, double min, double max, double step, QWidget* parent) {
@@ -78,11 +78,11 @@ GTextField::GTextField(double value, double min, double max, double step, QWidge
         _iqdoublespinbox->setValue(value);
         _inputType = GTextField::INPUT_TYPE_REAL;
     });
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTextField::~GTextField() {
-    // TODO：delete _iqlineedit;
+    // TODO: delete _iqlineedit;
     if (_iqlineedit) {
         _iqlineedit->detach();
         _iqlineedit = nullptr;
@@ -124,17 +124,17 @@ _Internal_QWidget* GTextField::getInternalWidget() const {
 int GTextField::getMaxLength() const {
     int maxLength = _iqlineedit->maxLength();
 
-    // Qt 默认最大文本长度为 32767
+    // Qt has default max text length of 32767
     maxLength = maxLength == 32767 ? 0 : maxLength;
 
     if (_inputType == GTextField::INPUT_TYPE_TEXT) {
-        // 空
+        // empty
     } else if (_inputType == GTextField::INPUT_TYPE_INTEGER) {
         std::string maxStr = std::to_string(_iqspinbox->maximum());
         maxLength = std::max(maxLength, (int) maxStr.length());
     } else {
         std::string maxStr = std::to_string(_iqdoublespinbox->maximum());
-        maxLength = std::max(maxLength, (int) maxStr.length());   // TODO：对于小数值可能不正确
+        maxLength = std::max(maxLength, (int) maxStr.length());   // TODO: may be incorrect w/ decimal value
     }
 
     return maxLength;
@@ -243,8 +243,8 @@ void GTextField::setAutocompleteList(const Vector<std::string>& strings) {
                 stringList.push_back(QString::fromStdString(s));
             }
         }
-        QStringListModel* model = new QStringListModel(stringList, _iqlineedit);   // TODO（待办）：内存泄漏
-        QCompleter* completer = new QCompleter(model, _iqlineedit);                // TODO（待办）：内存泄漏
+        QStringListModel* model = new QStringListModel(stringList, _iqlineedit);   // TODO: MEMORY LEAK
+        QCompleter* completer = new QCompleter(model, _iqlineedit);                // TODO: MEMORY LEAK
         completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         completer->setCompletionMode(QCompleter::PopupCompletion);
@@ -271,7 +271,7 @@ void GTextField::setAutocompleteEnabled(bool enabled) {
             }
         }
     });
-    // TODO：能够重新设置为 false
+    // TODO: ability to set back to false
 }
 
 void GTextField::setCharsWide(int charsWide) {
@@ -402,20 +402,20 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
         return;
     }
     GEvent textChangeEvent(
-                /* 类  */ KEY_EVENT,
-                /* 类型   */ KEY_TYPED,
-                /* 名称   */ "textchange",
-                /* 来源 */ _gtextfield);
+                /* class  */ KEY_EVENT,
+                /* type   */ KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _gtextfield);
     textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
     _gtextfield->fireEvent(textChangeEvent);
 
-    // 错误修复：为向后兼容，同时触发 CHANGE_EVENT
-    // （仅发送给旧式 waitForEvent 函数）
+    // BUGFIX: for backward compatibility, also fire a CHANGE_EVENT
+    // (emits only to the old-style waitForEvent function)
     GEvent changeEvent(
-                /* 类  */ CHANGE_EVENT,
-                /* 类型   */ STATE_CHANGED,
-                /* 名称   */ "statechange",
-                /* 来源 */ _gtextfield);
+                /* class  */ CHANGE_EVENT,
+                /* type   */ STATE_CHANGED,
+                /* name   */ "statechange",
+                /* source */ _gtextfield);
     changeEvent.setActionCommand(_gtextfield->getActionCommand());
     _gtextfield->fireEvent(changeEvent);
 }
@@ -423,13 +423,13 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
 void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QLineEdit::keyPressEvent", "event");
     if (_gtextfield && _gtextfield->isAcceptingEvent("action")) {
-        QLineEdit::keyPressEvent(event);   // 调用父类实现
+        QLineEdit::keyPressEvent(event);   // call super
         if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
             GEvent actionEvent(
-                        /* 类  */ ACTION_EVENT,
-                        /* 类型   */ ACTION_PERFORMED,
-                        /* 名称   */ "action",
-                        /* 来源 */ _gtextfield);
+                        /* class  */ ACTION_EVENT,
+                        /* type   */ ACTION_PERFORMED,
+                        /* name   */ "action",
+                        /* source */ _gtextfield);
             actionEvent.setActionCommand(_gtextfield->getActionCommand());
             _gtextfield->fireEvent(actionEvent);
         }
@@ -437,10 +437,10 @@ void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
         event->accept();
         _gtextfield->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
-            QLineEdit::keyPressEvent(event);   // 调用父类实现
+            QLineEdit::keyPressEvent(event);   // call super
         }
     } else {
-        QLineEdit::keyPressEvent(event);   // 调用父类实现
+        QLineEdit::keyPressEvent(event);   // call super
     }
 }
 
@@ -450,10 +450,10 @@ void _Internal_QLineEdit::keyReleaseEvent(QKeyEvent* event) {
         event->accept();
         _gtextfield->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
-            QLineEdit::keyReleaseEvent(event);   // 调用父类实现
+            QLineEdit::keyReleaseEvent(event);   // call super
         }
     } else {
-        QLineEdit::keyReleaseEvent(event);   // 调用父类实现
+        QLineEdit::keyReleaseEvent(event);   // call super
     }
 }
 
@@ -483,10 +483,10 @@ void _Internal_QSpinBox::handleTextChange(const QString&) {
         return;
     }
     GEvent textChangeEvent(
-                /* 类  */ KEY_EVENT,
-                /* 类型   */ KEY_TYPED,
-                /* 名称   */ "textchange",
-                /* 来源 */ _gtextfield);
+                /* class  */ KEY_EVENT,
+                /* type   */ KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _gtextfield);
     textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
     _gtextfield->fireEvent(textChangeEvent);
 }
@@ -494,13 +494,13 @@ void _Internal_QSpinBox::handleTextChange(const QString&) {
 void _Internal_QSpinBox::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QSpinBox::keyPressEvent", "event");
     if (_gtextfield && _gtextfield->isAcceptingEvent("action")) {
-        QSpinBox::keyPressEvent(event);   // 调用父类实现
+        QSpinBox::keyPressEvent(event);   // call super
         if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
             GEvent actionEvent(
-                        /* 类  */ ACTION_EVENT,
-                        /* 类型   */ ACTION_PERFORMED,
-                        /* 名称   */ "action",
-                        /* 来源 */ _gtextfield);
+                        /* class  */ ACTION_EVENT,
+                        /* type   */ ACTION_PERFORMED,
+                        /* name   */ "action",
+                        /* source */ _gtextfield);
             actionEvent.setActionCommand(_gtextfield->getActionCommand());
             _gtextfield->fireEvent(actionEvent);
         }
@@ -508,10 +508,10 @@ void _Internal_QSpinBox::keyPressEvent(QKeyEvent* event) {
         event->accept();
         _gtextfield->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
-            QSpinBox::keyPressEvent(event);   // 调用父类实现
+            QSpinBox::keyPressEvent(event);   // call super
         }
     } else {
-        QSpinBox::keyPressEvent(event);   // 调用父类实现
+        QSpinBox::keyPressEvent(event);   // call super
     }
 }
 
@@ -521,10 +521,10 @@ void _Internal_QSpinBox::keyReleaseEvent(QKeyEvent* event) {
         event->accept();
         _gtextfield->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
-            QSpinBox::keyReleaseEvent(event);   // 调用父类实现
+            QSpinBox::keyReleaseEvent(event);   // call super
         }
     } else {
-        QSpinBox::keyReleaseEvent(event);   // 调用父类实现
+        QSpinBox::keyReleaseEvent(event);   // call super
     }
 }
 
@@ -558,10 +558,10 @@ void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
         return;
     }
     GEvent textChangeEvent(
-                /* 类  */ KEY_EVENT,
-                /* 类型   */ KEY_TYPED,
-                /* 名称   */ "textchange",
-                /* 来源 */ _gtextfield);
+                /* class  */ KEY_EVENT,
+                /* type   */ KEY_TYPED,
+                /* name   */ "textchange",
+                /* source */ _gtextfield);
     textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
     _gtextfield->fireEvent(textChangeEvent);
 }
@@ -569,13 +569,13 @@ void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
 void _Internal_QDoubleSpinBox::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QDoubleSpinBox::keyPressEvent", "event");
     if (_gtextfield && _gtextfield->isAcceptingEvent("action")) {
-        QDoubleSpinBox::keyPressEvent(event);   // 调用父类实现
+        QDoubleSpinBox::keyPressEvent(event);   // call super
         if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
             GEvent actionEvent(
-                        /* 类  */ ACTION_EVENT,
-                        /* 类型   */ ACTION_PERFORMED,
-                        /* 名称   */ "action",
-                        /* 来源 */ _gtextfield);
+                        /* class  */ ACTION_EVENT,
+                        /* type   */ ACTION_PERFORMED,
+                        /* name   */ "action",
+                        /* source */ _gtextfield);
             actionEvent.setActionCommand(_gtextfield->getActionCommand());
             _gtextfield->fireEvent(actionEvent);
         }
@@ -583,10 +583,10 @@ void _Internal_QDoubleSpinBox::keyPressEvent(QKeyEvent* event) {
         event->accept();
         _gtextfield->fireGEvent(event, KEY_PRESSED, "keypress");
         if (event->isAccepted()) {
-            QDoubleSpinBox::keyPressEvent(event);   // 调用父类实现
+            QDoubleSpinBox::keyPressEvent(event);   // call super
         }
     } else {
-        QDoubleSpinBox::keyPressEvent(event);   // 调用父类实现
+        QDoubleSpinBox::keyPressEvent(event);   // call super
     }
 }
 
@@ -596,10 +596,10 @@ void _Internal_QDoubleSpinBox::keyReleaseEvent(QKeyEvent* event) {
         event->accept();
         _gtextfield->fireGEvent(event, KEY_RELEASED, "keyrelease");
         if (event->isAccepted()) {
-            QDoubleSpinBox::keyReleaseEvent(event);   // 调用父类实现
+            QDoubleSpinBox::keyReleaseEvent(event);   // call super
         }
     } else {
-        QDoubleSpinBox::keyReleaseEvent(event);   // 调用父类实现
+        QDoubleSpinBox::keyReleaseEvent(event);   // call super
     }
 }
 

@@ -3,12 +3,12 @@
 #include <sstream>
 using namespace std;
 
-/* 两个点相减得到向量。 */
+/* Subtracting two points gives a vector. */
 GVector operator- (const GPoint& p1, const GPoint& p2) {
     return { p1.x - p2.x, p1.y - p2.y };
 }
 
-/* 两个向量相减得到向量。 */
+/* Subtracting two vectors gives a vector. */
 GVector operator- (const GVector& v1, const GVector& v2) {
     return { v1.x - v2.x, v1.y - v2. y };
 }
@@ -18,7 +18,7 @@ GVector& operator-= (GVector& lhs, const GVector& rhs) {
     return lhs;
 }
 
-/* 点与向量相加得到点。 */
+/* Adding a point and a vector gives a point. */
 GPoint  operator+ (const GVector& v, const GPoint& p) {
     return { v.x + p.x, v.y + p.y };
 }
@@ -38,7 +38,7 @@ GPoint& operator-= (GPoint& lhs, const GVector& rhs) {
     return lhs;
 }
 
-/* 两个向量相加得到向量。 */
+/* Adding two vectors gives a vector. */
 GVector  operator+ (const GVector& v1, const GVector& v2) {
     return { v1.x + v2.x, v1.y + v2.y };
 }
@@ -48,7 +48,7 @@ GVector& operator+= (GVector& lhs, const GVector& rhs) {
     return lhs;
 }
 
-/* 缩放向量会按比例缩放其分量。 */
+/* Scaling a vector scales the components. */
 GVector  operator* (const GVector& v, double scalar) {
     return { v.x * scalar, v.y * scalar };
 }
@@ -68,7 +68,7 @@ GVector& operator/= (GVector& lhs, double scalar) {
     return lhs *= (1.0 / scalar);
 }
 
-/* 大小和归一化。 */
+/* Magnitude and normalization. */
 double magnitudeOf(const GVector& v) {
     return sqrt(v.x * v.x + v.y * v.y);
 }
@@ -76,14 +76,14 @@ GVector normalizationOf(const GVector& v) {
     return v / magnitudeOf(v);
 }
 
-/* 按弧度角旋转。 */
+/* Rotation by an angle in radians. */
 GVector rotate(const GVector& v, double theta) {
-    /* 旋转矩阵为
+    /* Rotation matrix is
      *
      *   | cos T  -sin T |
      *   | sin T   cos T |
      *
-     * 因此，将向量 v 旋转角度 theta 可得
+     * So rotating a vector v about an angle theta gives
      *
      *   | cos T  -sin T | |x|   | x cos T - y sin T |
      *   | sin T   cos T | |y| = | x sin T + y cos T |
@@ -94,7 +94,7 @@ GVector rotate(const GVector& v, double theta) {
     };
 }
 
-/* 可直接通过正弦和余弦计算单位向量。 */
+/* A unit vector can be computed straight from sines and cosines. */
 GVector unitToward(double theta) {
     return { cos(theta), sin(theta) };
 }

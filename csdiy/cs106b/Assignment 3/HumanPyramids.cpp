@@ -1,20 +1,49 @@
 #include "HumanPyramids.h"
+#include "error.h"
+#include "grid.h"
 using namespace std;
 
 /* TODO：有关此函数应执行什么操作的更多信息，请参阅 HumanPyramids.h。
  * 然后删除此注释。
  */
-double weightOnBackOf(int row, int col, int pyramidHeight) {
-    /* TODO：删除接下来的几行并实现此函数。 */
-    (void) row;
-    (void) col;
-    (void) pyramidHeight;
-    return 0;
+
+
+double Help(int row, int col, int pyramidHeight, Grid<double>& vi)
+{
+    if(vi[{row, col}])
+    {
+        return vi[{row, col}];
+    }
+
+    if(row == 0)
+    {
+        return vi[{row, col}] = 0;
+    }
+    if(col == 0)
+    {
+        return vi[{row, col}] = (160.0 + Help(row - 1, col, pyramidHeight, vi)) / 2.0;
+    }
+    if(row == col)
+    {
+        return vi[{row, col}] = (160.0 + Help(row - 1, col - 1, pyramidHeight, vi)) / 2.0;
+    }
+
+    double l = (160.0 + Help(row - 1, col - 1, pyramidHeight, vi)) / 2.0;
+    double r = (160.0 + Help(row - 1, col, pyramidHeight, vi)) / 2.0;
+
+    return vi[{row, col}] = l + r;
 }
 
+double weightOnBackOf(int row, int col, int pyramidHeight) {
+    /* TODO：删除接下来的几行并实现此函数。 */
+    if(row < 0 || col < 0 || col > row || row >= pyramidHeight)
+    {
+        error("错误的位置");
+    }
+    Grid<double> vi(pyramidHeight, pyramidHeight, 0.0);
 
-
-
+    return Help(row, col, pyramidHeight, vi);
+}
 
 
 /* * * * * * 测试用例 * * * * * */
@@ -23,12 +52,6 @@ double weightOnBackOf(int row, int col, int pyramidHeight) {
 /* TODO：在此添加你自己的测试。方法你已经熟悉了——寻找边界情况，并考虑
  * 极小、极大的情况等。
  */
-
-
-
-
-
-
 
 
 
@@ -55,7 +78,7 @@ PROVIDED_TEST("Stress test: Memoization is implemented (should take under a seco
      * 紧接在此行后的那一行——以 SHOW_ERROR 开头的行——一旦
      * 实现记忆化后，用它测试实现是否正确。
      */
-    SHOW_ERROR("This test is configured to always fail until you delete this line from\n         HumanPyramids.cpp. Once you have implemented memoization and want\n         to check whether it works correctly, remove the indicated line.");
+    // SHOW_ERROR("This test is configured to always fail until you delete this line from\n         HumanPyramids.cpp. Once you have implemented memoization and want\n         to check whether it works correctly, remove the indicated line.");
 
     /* 不要删除此处以下任何内容。:-) */
 

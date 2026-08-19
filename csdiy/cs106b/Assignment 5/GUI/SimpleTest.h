@@ -1,89 +1,89 @@
 #pragma once
 
-/* 检查给定条件是否为 true。若是，则不执行任何操作；若条件
- * 为 false，则测试失败。例如：
+/* Checks whether the given condition is true. If so, nothing happens. If the condition
+ * is false, then the test fails. For example:
  *
  *     EXPECT(vec.isEmpty());
  *     EXPECT(history.next() == "Dik-dik");
  */
-#define EXPECT(condition) /* 某些无需关注的内部内容。 */
+#define EXPECT(condition) /* Something internal you shouldn't worry about. */
 
-/* 检查给定表达式是否调用 error() 处理程序。若是，则不执行任何操作。
- * 否则测试失败。可用它确认某个表达式
- * 预期会触发异常的表达式确实触发异常。例如：
+/* Checks whether the given expression calls the error() handler. If so, nothing happens.
+ * If not, then the test fails. You can use this to confirm that an expression that is
+ * supposed to trigger an exception indeed does so. For example:
  *
  *     Vector<int> myVec;
- *     EXPECT_ERROR(myVec.get(0));    // 不执行任何操作，因为 myVec.get(0) 的确会触发 error()。
- *     EXPECT_ERROR(myVec.isEmpty()); // 测试失败，因为这里不会产生错误。
+ *     EXPECT_ERROR(myVec.get(0));    // Nothing happens, since myVec.get(0) does trigger error().
+ *     EXPECT_ERROR(myVec.isEmpty()); // The test fails because no error would be generated here.
  */
-#define EXPECT_ERROR(expression) /* 某些无需关注的内部内容。 */
+#define EXPECT_ERROR(expression) /* Something internal you shouldn't worry about. */
 
-/* 检查给定表达式是否不调用 error() 处理程序。若未调用 error()，
- * 被调用时不执行任何操作。若调用 error()，测试失败。
+/* Checks whether the given expression doesn't call the error() handler. If error() is not
+ * called, nothing happens. If error() is called, the test fails.
  *
  *     Vector<int> myVec;
- *     EXPECT_NO_ERROR(myVec.isEmpty()); // 不执行任何操作；没有产生错误。
- *     EXPECT_NO_ERROR(myVec.get(0));    // 测试失败；此操作会触发错误。
+ *     EXPECT_NO_ERROR(myVec.isEmpty()); // Nothing happens; no error generated.
+ *     EXPECT_NO_ERROR(myVec.get(0));    // Test fails; this triggers an error.
  */
-#define EXPECT_NO_ERROR(expression) /* 某些无需关注的内部内容。 */
+#define EXPECT_NO_ERROR(expression) /* Something internal you shouldn't worry about. */
 
-/* 检查两个对象是否相等。若相等，则不执行任何操作；否则测试失败
- * 并报告这两个值分别是什么。预期第一个值应当是
- * 学生的值，第二个值应当是正确答案。例如：
+/* Checks whether two objects are equal. If so, nothing happens. If not, then the test fails
+ * and reports what the two values were. The expectation is that the first value should be
+ * the student's value and the second should be the correct answer. For example:
  *
  *     EXPECT_EQUAL(studentValue, referenceValue)
  */
-#define EXPECT_EQUAL(student, reference) /* 某些无需关注的内部内容。 */
+#define EXPECT_EQUAL(student, reference) /* Something internal you shouldn't worry about. */
 
-/* 检查两个对象是否不相等。若不相等，则不执行任何操作；否则测试失败
- * 并报告这两个值分别是什么。预期第一个值应当是
- * 学生的值，第二个值应当是正确答案。例如：
+/* Checks whether two objects are not equal. If so, nothing happens. If not, then the test fails
+ * and reports what the two values were. The expectation is that the first value should be
+ * the student's value and the second should be the correct answer. For example:
  *
  *     EXPECT_EQUAL(studentValue, referenceValue)
  */
-#define EXPECT_NOT_EQUAL(student, reference) /* 某些无需关注的内部内容。 */
+#define EXPECT_NOT_EQUAL(student, reference) /* Something internal you shouldn't worry about. */
 
-/* 检查两个对象是否满足给定关系。若满足，则不执行任何操作；否则
- * 测试失败并报告这两个值。预期第一个值
- * 第一个应当是学生的值，第二个应当是正确答案。
+/* Checks whether two objects are related in the given way. If so, nothing happens. If not, then
+ * the test fails and reports what the two values were. The expectation is that the first value
+ * should be the student's value and the second should be the correct answer.
  */
-#define EXPECT_LESS_THAN(student, reference)                /* 某些无需关注的内部内容。 */
-#define EXPECT_GREATER_THAN(student, reference)             /* 某些无需关注的内部内容。 */
-#define EXPECT_LESS_THAN_OR_EQUAL_TO(student, reference)    /* 某些无需关注的内部内容。 */
-#define EXPECT_GREATER_THAN_OR_EQUAL_TO(student, reference) /* 某些无需关注的内部内容。 */
+#define EXPECT_LESS_THAN(student, reference)                /* Something internal you shouldn't worry about. */
+#define EXPECT_GREATER_THAN(student, reference)             /* Something internal you shouldn't worry about. */
+#define EXPECT_LESS_THAN_OR_EQUAL_TO(student, reference)    /* Something internal you shouldn't worry about. */
+#define EXPECT_GREATER_THAN_OR_EQUAL_TO(student, reference) /* Something internal you shouldn't worry about. */
 
-/* 使给定测试失败，并输出指定错误消息。例如：
+/* Fails the given test, printing out the specified error message. For example:
  *
- *     SHOW_ERROR("出现了错误。");
+ *     SHOW_ERROR("Something went wrong.");
  */
 #define SHOW_ERROR(message);
 
-/* 定义一个新测试用例。可以在测试用例内部编写任意需要的代码，
- * 不过在测试用例中通常会使用 EXPECT 和 EXPECT_ERROR，因为它们
- * 真正执行测试的内容。
+/* Defines a new test case. You can write whatever code you want inside of the test case,
+ * but you'll likely want to use EXPECT and EXPECT_ERROR in your test cases, as they're
+ * what actually perform tests.
  *
- * 定义新测试用例的语法为
+ * The syntax for defining a new test case is
  *
- *    STUDENT_TEST("测试用例说明") {
- *       ……任意编写你需要的代码……
+ *    STUDENT_TEST("Description of Test Case") {
+ *       ... whatever code you'd like! ...
  *    }
  */
-#define STUDENT_TEST(name) /* 某些无需关注的内部内容。 */
+#define STUDENT_TEST(name) /* Something internal you shouldn't worry about. */
 
-/* 允许 SimpleTest 测试用例访问给定类的私有字段。这是
- * 使用 SimpleTest 检查类内部状态时很有用。
+/* Allows SimpleTest test cases to access the private fields of the given class. This is
+ * useful for inspecting inside a class using SimpleTest.
  *
- * 使用方法为
+ * The syntax for using this is
  *
  *     class MyClass {
  *     public:
  *        // ... //
  *
- *     private（私有）：
+ *     private:
  *        ALLOW_TEST_ACCESS();
  *     }
  */
-#define ALLOW_TEST_ACCESS() /* 某些无需关注的内部内容。 */
+#define ALLOW_TEST_ACCESS() /* Something internal you shouldn't worry about. */
 
 
 
@@ -96,8 +96,8 @@
 
 
 /******************************************************************************
- * 此处以下完全是实现细节。你不应当                         *
- * 无需引用或使用此处以下的任何内容。                         *
+ * Everything below this point is purely implementation details. You should   *
+ * not need to reference or use anything below here.                          *
  ******************************************************************************/
 
 
@@ -124,26 +124,26 @@
 #include <algorithm>
 
 namespace SIMPLE_TEST_CASE {
-    /* 模板函数，其各个特化就是实际测试用例。所有测试用例都
-     * 作为此单一函数的特化，使 ALLOW_TEST_ACCESS 宏能够令
-     * 使此模板的所有特化成为给定类型的友元，这是相应机制
-     * 从而允许这些函数在类内部访问。
+    /* Template function whose specializations are actual test cases. We have all test cases
+     * as specializations of this single function so that the ALLOW_TEST_ACCESS macro can make
+     * all specializations of this template friends of the given type, which is the mechanism
+     * that allows those functions internal access to the class.
      *
-     * 将其置于独立命名空间中，以防测试用例内部的名称查找
-     * 意外引用 SimpleTest 的内部函数。（有一个学期确实发生过这种情况，而且它
-     * 调试起来一团糟！）
+     * This is placed in its own namespace so that name lookups inside of test cases don't
+     * accidentally pick up SimpleTest internal functions. (That happened one quarter and it
+     * was a mess to debug!)
      */
     template <const char* file, int line> void testCase();
 }
 
 namespace SimpleTest {
     namespace Internal {
-        /* 表示顶层测试映射中键的类型。它是
-         * 声明该测试的文件名。
+        /* Type representing a key in the top-level testing map. It's the
+         * name of the file in which the test was declared.
          */
         using TestKey = std::string;
 
-        /* 表示测试用例的类型。 */
+        /* Type representing a test case. */
         struct TestCase {
             std::string name;
             TestType type;
@@ -151,44 +151,44 @@ namespace SimpleTest {
             std::function<void()> callback;
         };
 
-        /* 顶层测试映射。此对象定义为函数而非静态变量
-         * 确保它能与静态初始化器正确配合。
+        /* The top-level tests map. This is defined as a function rather than a static variable
+         * to ensure that it plays well with static initializers.
          */
         std::map<TestKey, std::multimap<int, TestCase>>& rawTests();
 
-        /* 表示测试用例失败的异常类型。 */
+        /* Exception type signifying that a test case failed. */
         class TestFailedException: public std::logic_error {
         public:
             TestFailedException(const std::string& message, std::size_t line);
         };
 
-        /* 唯一用途是将测试用例放入测试组的对象。 */
+        /* Object whose sole purpose is to put a test case into a group of tests. */
         class TestCaseAdder {
         public:
             TestCaseAdder(const TestKey& key, int lineNumber, const std::string& name, TestType type, std::function<void()> test);
         };
 
-        /**** 定义用于添加新测试用例的宏。 ****/
+        /**** Defines the macro that adds a new test case. ****/
 
         #define JOIN(x, y) x ## y
 
-        /* 通用测试添加器，由 STUDENT_TEST、PROVIDED_TEST 等接入。
-         * 由于预处理器的工作方式，这里需要多层间接展开。
-         * 第一层展开为所需结构的骨架。
+        /* Generic test-adder, which is hooked into by STUDENT_TEST, PROVIDED_TEST, etc.
+         * We need several levels of indirection here because of how the preprocessor works.
+         * This first layer expands out to the skeleton of what we want.
          */
         #define ADD_TEST(name, type) DO_ADD_TEST(_testCase, _adder, name, type, __FILE__, __LINE__)
 
-        /* 设置此层间接访问，是为了让 line 展开为 __LINE__，并让
-         * 从那里映射到真实行号。这里仍不能进行词元拼接，因为
-         * 更进一步的一层间接访问。
+        /* This level of indirection exists so that line will be expanded to __LINE__ and
+         * from there to the true line number. We still can't token-paste it here, since
+         * the even further level of indirection.
          *
-         * 这里的基本思路如下：需要创建 TestCaseAdder 来安装
-         * 静态初始化器运行时的测试函数。该初始化器会安装一个
-         * testCase() 模板的特化。该模板以一个
-         * 使用 const char*（当前文件）和 int（行号）保证唯一性
-         * 跨翻译单元使用。但是，要将 const char* 作为模板参数传递，
-         * 需要让它引用具有链接属性的对象，因此创建一个包含以下内容的静态数组
-         * 先比较文件名。
+         * The basic idea here is the following: we need to create a TestCaseAdder to install
+         * the test function when static initializers run. That initializer will install a
+         * specialization of the testCase() template. That template is parameterized on a
+         * const char* (current file) and and int (line number) to guarantee uniqueness
+         * across translation units. However, to pass a const char* as a template argument,
+         * we need it to refer to something with linkage, so we create a static array containing
+         * the filename first.
          */
         #define DO_ADD_TEST(fn, adder, name, type, file, line)\
             static constexpr char JOIN(_testName, line)[] = file; \
@@ -196,14 +196,14 @@ namespace SimpleTest {
             static SimpleTest::Internal::TestCaseAdder JOIN(adder, line)(file, line, name, type, SIMPLE_TEST_CASE::testCase<JOIN(_testName, line), line>);\
             template <> void SIMPLE_TEST_CASE::testCase<JOIN(_testName, line), line>()
 
-        /***** 添加特定测试用例。 *****/
+        /***** Specific test case additions. *****/
         #undef STUDENT_TEST
         #define STUDENT_TEST(name) ADD_TEST(name, SimpleTest::TestType::STUDENT)
         #define PROVIDED_TEST(name) ADD_TEST(name, SimpleTest::TestType::PROVIDED)
         #define AUTOGRADER_TEST(name) ADD_TEST(name, SimpleTest::TestType::AUTOGRADER)
         #define MANUAL_TEST(name) ADD_TEST(name, SimpleTest::TestType::MANUAL)
 
-        /***** 用于实现测试原语的宏。 *****/
+        /***** Macros used to implement testing primitives. *****/
         [[ noreturn ]] void doFail(const std::string &message, std::size_t line);
 
         #undef EXPECT
@@ -216,7 +216,7 @@ namespace SimpleTest {
                 (void)(condition); \
                 SimpleTest::Internal::doFail("EXPECT_ERROR: " #condition " did not call error().", __LINE__); \
             } catch (const ErrorException& ) { \
-                /* 不执行任何操作。 */ \
+                /* Do nothing. */ \
             }\
         } while(0)
 
@@ -229,12 +229,12 @@ namespace SimpleTest {
             }\
         } while(0)
 
-        /* * * * EXPECT_EQUAL 的美化输出器 * * * */
+        /* * * * Pretty-Printers for EXPECT_EQUAL * * * */
         inline std::string debugFriendlyString(char c) {
             return quotedVersionOf(c);
         }
 
-        /* 用引号包围字符串后输出。 */
+        /* Print strings in quotes. */
         inline std::string debugFriendlyString(const std::string& s) {
             return quotedVersionOf(s);
         }
@@ -245,12 +245,12 @@ namespace SimpleTest {
             return debugFriendlyString((const char *)s);
         }
 
-        /* 将 bool 值按字符串输出。 */
+        /* Print bools as strings. */
         inline std::string debugFriendlyString(bool value) {
             return value? "true" : "false";
         }
 
-        /* 以最高精度输出 float/double。 */
+        /* Print float/double with maximum precision. */
         inline std::string debugFriendlyString(float value) {
             std::ostringstream result;
             result << std::setprecision(FLT_DIG+1) << value << "f";
@@ -263,14 +263,14 @@ namespace SimpleTest {
             return result.str();
         }
 
-        /* 将 nullptr 按其本义输出。 */
+        /* Print nullptr as such. */
         inline std::string debugFriendlyString(std::nullptr_t) {
             return "nullptr";
         }
 
         template <typename T>
         inline std::string debugFriendlyString(T* ptr) {
-            /* 将空指针按其本义输出。 */
+            /* Print null pointers as such. */
             if (ptr == nullptr) return "nullptr";
 
             std::ostringstream converter;
@@ -278,16 +278,16 @@ namespace SimpleTest {
             return converter.str();
         }
 
-        /* 其他所有内容使用流插入运算符输出。 */
+        /* Print everything else using stream insertion. */
         template <typename T> std::string debugFriendlyString(const T& value) {
             std::ostringstream result;
             result << value;
             return result.str();
         }
 
-        /* * * * 相等性比较 * * * */
+        /* * * * Equality comparisons * * * */
 
-        /* 实数的相等性比较采用模糊比较。 */
+        /* Equality comparisons are fuzzy for real numbers. */
         inline bool areEqual(double lhs, double rhs) {
             double tolerance = std::max(std::abs(lhs), std::abs(rhs)) * DBL_EPSILON;
             return std::abs(lhs - rhs) <= tolerance;
@@ -317,7 +317,7 @@ namespace SimpleTest {
             return lhs >= rhs;
         }
 
-        /* 截断过长字符串 */
+        /* Truncate long strings */
         inline std::string abbreviate(const std::string& s, size_t maxLen = 300) {
             return s.length() < maxLen ? s : s.substr(0, maxLen) + " ...";
         }

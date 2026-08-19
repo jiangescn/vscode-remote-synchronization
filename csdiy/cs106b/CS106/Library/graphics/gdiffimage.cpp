@@ -1,17 +1,17 @@
 /*
- * 文件：gdiffimage.cpp
+ * File: gdiffimage.cpp
  * --------------------
  * 
  * @author Marty Stepp
  * @version 2019/04/23
- * - 可以按 Escape 键关闭窗口
+ * - can press Escape key to close window
  * @version 2018/10/12
- * - 添加“用颜色突出显示差异”复选框及功能
+ * - added "highlight diffs in color" checkbox and functionality
  * @version 2018/09/15
- * - 初始版本，由 Java 后端 DiffImage 类转换而来
+ * - initial version, converted from Java back-end DiffImage class
  */
 
-// TODO：释放内存
+// TODO: free memory
 
 #include "gdiffimage.h"
 #include <iostream>
@@ -23,18 +23,18 @@
 #include "gthread.h"
 #include "require.h"
 
-/*静态*/ const std::string GDiffImage::HIGHLIGHT_COLOR_DEFAULT = "#e000e0";   // 224, 0, 224
+/*static*/ const std::string GDiffImage::HIGHLIGHT_COLOR_DEFAULT = "#e000e0";   // 224, 0, 224
 
-/*静态*/ void GDiffImage::showDialog(
+/*static*/ void GDiffImage::showDialog(
         const std::string& name1,
         GCanvas* image1,
         const std::string& name2,
         GCanvas* image2) {
-    // TODO：关闭时释放内存
+    // TODO: free memory on close
     new GDiffImage(name1, image1, name2, image2);
 }
 
-/*静态*/ void GDiffImage::showDialog(
+/*static*/ void GDiffImage::showDialog(
         const std::string& name1,
         const std::string& imageFile1,
         const std::string& name2,
@@ -58,14 +58,14 @@ GDiffImage::GDiffImage(
     int diffPixelsCount = image1->countDiffPixels(image2);
     _image2->setOpacity(0.5);
 
-    // 设置窗口和控件
+    // set up window and widgets
     _window = new GWindow(800, 600);
     _window->setTitle("Compare Graphical Output");
     // _window->setResizable(false);
     _window->setAutoRepaint(false);
 
-    // 按下 Escape 时调用函数关闭窗口
-    // （与 gdiffgui.cpp 中的代码类似）
+    // function to close the window when Escape is pressed
+    // (similar to code in gdiffgui.cpp)
     auto windowCloseLambda = [this](GEvent event) {
         if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
             _window->close();
@@ -103,17 +103,17 @@ GDiffImage::GDiffImage(
     _imageLabel2 = new GLabel(name2);
     _southPixelLabel = new GLabel("");
 
-    // TODO？
+    // TODO?
     // setupMenuBar();
 
-    // 执行布局
+    // do layout
     GContainer* south = new GContainer(GContainer::LAYOUT_FLOW_VERTICAL);
     GContainer* south1 = new GContainer();
     south1->add(_imageLabel1);
     south1->add(_slider);
     south1->add(_imageLabel2);
     south->add(south1);
-    // 20px 支撑空间？
+    // 20px strut?
 
     GContainer* south2 = new GContainer();
     south2->add(_diffPixelsLabel);
@@ -128,7 +128,7 @@ GDiffImage::GDiffImage(
 
     _window->addToRegion(south, GWindow::REGION_SOUTH);
 
-    // 触发画布更新
+    // poke the canvas
     double canvasWidth  = std::max(_image1->getWidth(),  _image2->getWidth());
     double canvasHeight = std::max(_image1->getHeight(), _image2->getHeight());
     // _window->add(_image1);
@@ -147,7 +147,7 @@ GDiffImage::GDiffImage(
                 + " actual: " + getPixelString(_image2, x, y));
     });
 
-    // 设置事件
+    // set up events
     _window->setCanvasSize(canvasWidth, canvasHeight);
     _window->drawPixel(0, 0, 0xffffff);
     drawImages();
@@ -157,7 +157,7 @@ GDiffImage::GDiffImage(
 }
 
 GDiffImage::~GDiffImage() {
-    // TODO：删除
+    // TODO: delete
     _window = nullptr;
     _slider = nullptr;
     _highlightDiffsBox = nullptr;
@@ -166,9 +166,9 @@ GDiffImage::~GDiffImage() {
 
 void GDiffImage::chooseHighlightColor() {
     std::string color = GColorChooser::showDialog(
-            /* 父级 */ _window,
-            /* 标题 */ "Choose a highlight color",
-            /* 初始颜色 */ _highlightColor);
+            /* parent */ _window,
+            /* title */ "Choose a highlight color",
+            /* initial color */ _highlightColor);
     if (color.empty()) {
         return;
     }
@@ -182,7 +182,7 @@ void GDiffImage::drawImages() {
     _window->clearCanvas();
     if (_highlightDiffsBox->isChecked()) {
         GThread::runOnQtGuiThreadAsync([this]() {
-            // 绘制高亮的差异（如果需要）
+            // draw the highlighted diffs (if so desired)
             int w1 = _image1->getWidth();
             int h1 = _image1->getHeight();
             int w2 = _image2->getWidth();
@@ -196,8 +196,8 @@ void GDiffImage::drawImages() {
             }
             QImage* imgDiff = _imageDiffs->getQImage();
 
-            // 检查每一对像素
-            // （为提高速度，直接访问原始 QImage）
+            // check each pair of pixels
+            // (access raw QImages for speed)
             int highlightColor = GColor::convertColorToRGB(_highlightColor) | 0xff000000;
             QImage* img1 = _image1->getQImage();
             QImage* img2 = _image2->getQImage();
@@ -212,7 +212,7 @@ void GDiffImage::drawImages() {
         });
     } else {
         _window->draw(_image1);
-        _window->draw(_image2);   // 可能具有小于 1 的不透明度
+        _window->draw(_image2);   // possibly at sub-1 opacity
     }
 
     _window->repaint();

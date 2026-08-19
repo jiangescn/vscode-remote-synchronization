@@ -1,9 +1,9 @@
 /****************************************************************************
-** 读取 C++ 文件“gwindow.h”生成的元对象代码
+** Meta object code from reading C++ file 'gwindow.h'
 **
-** 创建工具：Qt 元对象编译器 69 版（Qt 6.9.1）
+** Created by: The Qt Meta Object Compiler version 69 (Qt 6.9.1)
 **
-** 警告！对此文件所做的所有更改都将丢失！
+** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
 #include "../../../Library/graphics/gwindow.h"
@@ -32,7 +32,7 @@ QT_WARNING_DISABLE_DEPRECATED
 QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
 struct qt_meta_tag_ZN21_Internal_QMainWindowE_t {};
-} // 未命名命名空间
+} // unnamed namespace
 
 template <> constexpr inline auto _Internal_QMainWindow::qt_create_metaobjectdata<qt_meta_tag_ZN21_Internal_QMainWindowE_t>()
 {
@@ -47,7 +47,7 @@ template <> constexpr inline auto _Internal_QMainWindow::qt_create_metaobjectdat
     };
 
     QtMocHelpers::UintData qt_methods {
-        // 槽 'handleMenuAction'
+        // Slot 'handleMenuAction'
         QtMocHelpers::SlotData<void(const std::string &, const std::string &)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 3, 4 }, { 0x80000000 | 3, 5 },
         }}),

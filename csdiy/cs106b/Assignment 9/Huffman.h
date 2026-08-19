@@ -7,28 +7,28 @@
 #include <ostream>
 
 /**
- * 表示编码树中节点的类型。每个节点存储两个指针，
- * 一条指向标签为 0 的子节点，另一条指向标签为 1 的子节点。
+ * Type representing a node in an encoding tree. Each node stores two pointers,
+ * one to the child labeled 0 and one to the child labeled 1.
  *
- * 树中的每个节点都有一个关联字符。但是，此字段
- * 仅当节点是叶节点（即没有子节点的节点）时才有意义。
- * 除非确定节点中的字符
- * 节点是叶节点。
+ * Each node in the tree has an associated character. However, this field is
+ * only meaningful if the node is a leaf (that is, a node with no children).
+ * You should not touch the character in the node unless you are sure that the
+ * node is a leaf.
  *
- * 完成本作业时不要修改此类型。
+ * Do not modify this type when working on this assignment.
  */
 struct EncodingTreeNode {
     char ch;
     EncodingTreeNode* zero;
     EncodingTreeNode* one;
 
-    TRACK_ALLOCATIONS_OF(EncodingTreeNode); // 用于测试
+    TRACK_ALLOCATIONS_OF(EncodingTreeNode); // For testing
 };
 
 /**
- * 表示 Huffman 编码文件的类型。
+ * Type representing a Huffman-coded file.
  *
- * 完成本作业时不要修改此类型。
+ * Do not modify this type when working on this assignment.
  */
 struct HuffmanResult {
     Queue<Bit>  treeBits;
@@ -36,13 +36,13 @@ struct HuffmanResult {
     Queue<Bit>  messageBits;
 };
 
-/* 出于调试目的，可以将 HuffmanResult 对象打印到 cout，以查看
- * 它们包含什么。
+/* For debugging purposes, you can print HuffmanResult objects to cout to see
+ * what they contain.
  */
 std::ostream& operator<< (std::ostream& out, const HuffmanResult& file);
 
 /**
- * 端到端处理例程。
+ * End-to-end processing routines.
  */
 HuffmanResult compress(const std::string& text);
 std::string decompress(HuffmanResult& file);

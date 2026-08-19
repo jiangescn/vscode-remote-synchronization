@@ -1,7 +1,7 @@
 /*
- * 文件：HanoiGraphics.h
+ * File: HanoiGraphics.h
  * --------------
- * 此文件定义图形版汉诺塔函数的接口。
+ * This file defines the interface for the graphical Hanoi functions.
  */
 
 #ifndef HanoiGraphics_Included
@@ -16,24 +16,24 @@ enum class AnimationSpeed {
 };
 
 /*
- * 函数：initHanoiDisplay
- * 用法：initHanoiDisplay(5, AnimationSpeed::MOLASSES);
+ * Function: initHanoiDisplay
+ * Usage: initHanoiDisplay(5, AnimationSpeed::MOLASSES);
  * -------------------------------
- * 初始化图形窗口并绘制起始配置
- * 用于 n 个圆盘的汉诺塔问题。速度由以下参数决定：
- * 最后一个参数。
+ * Initializes the graphics window and draws the starting configuration
+ * for a Towers of Hanoi puzzle for n disks. The speed is determined by
+ * the final parameter.
  */
 
 void initHanoiDisplay(int n, AnimationSpeed speed = AnimationSpeed::MOLASSES);
 
 /*
- * 函数：moveSingleDisk
- * 用法：moveSingleDisk(char start, char finish);
+ * Function: moveSingleDisk
+ * Usage: moveSingleDisk(char start, char finish);
  * -----------------------------------------------
- * 将一个圆盘从起始塔移动到目标塔
- * 塔。如果起始塔
- * 为空，或移动违反汉诺塔规则
- * 将较大圆盘放在较小圆盘上会违反谜题规则。
+ * Moves a single disk from the start tower to the finish
+ * tower.  This method generates an error if the start tower
+ * is empty or if the move violates the rules of the Hanoi
+ * puzzle by placing a larger disk on top of a smaller one.
  */
 
 void moveSingleDisk(char start, char finish);

@@ -9,7 +9,7 @@ void MiniGUI::Detail::autograderMain() {
     int argc = QtGui::instance()->getArgc();
     char** argv = QtGui::instance()->getArgv();
 
-    /* 需要知道要运行什么。 */
+    /* Need to know what to run. */
     if (argc == 1) {
         cerr << "Usage: autograder test-filename" << endl;
         _Exit(-1);
@@ -17,12 +17,12 @@ void MiniGUI::Detail::autograderMain() {
 
     string testFileName = argv[1];
 
-    /* 在控制台模式下运行所有测试，只包含自动评分测试。 */
+    /* Run all tests in console mode, only including autograder tests. */
     runConsoleModeTests([testFileName](const string& filename, const SimpleTest::Test& test) {
         return test.type == SimpleTest::TestType::AUTOGRADER &&
                filename == testFileName;
     }, true);
 
-    /* 强制中止；处理结束。 */
+    /* Hard abort; we're done. */
     _Exit(0);
 }

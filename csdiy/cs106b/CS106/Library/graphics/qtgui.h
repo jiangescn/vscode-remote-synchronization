@@ -1,14 +1,14 @@
 /*
- * 文件：qtgui.h
+ * File: qtgui.h
  * -------------
  *
  * @author Marty Stepp
  * @version 2018/09/09
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 qtgui.h
+ * - renamed to qtgui.h
  * @version 2018/07/03
- * - 初始版本
+ * - initial version
  */
 
 
@@ -34,10 +34,10 @@ public:
 
 
 /**
- * 此类包含用于初始化和管理整体
- * 库中基于 Qt 的 GUI 系统。
- * 学生和客户端通常无需直接与此类交互
- * 直接。
+ * This class contains functionality for initializing and managing the overall
+ * Qt-based GUI system of the library.
+ * Students and clients generally do not need to interact with this class
+ * directly.
  * @private
  */
 class QtGui : public QObject {
@@ -45,52 +45,52 @@ class QtGui : public QObject {
 
 public:
     /**
-     * 关闭 Qt 图形系统。
+     * Shuts down the Qt graphics system.
      */
     void exitGraphics(int exitCode = 0);
 
 
     /**
-     * 返回应用程序的显示名称（用作
-     * 窗口和菜单的标题）。如果名称（尚）不可用，
-     * 返回空字符串。
+     * Returns the display name of the application (used as
+     * title for window and menu). If name not (yet) available,
+     * returns empty string.
      */
     std::string getApplicationDisplayName() const;
 
     /**
-     * 返回传给 main() 函数的参数数量。
-     * 字符串参数本身可以使用 getArgv 查看。
+     * Returns the count of arguments passed to the main() function.
+     * The string arguments themselves can be examined using getArgv.
      */
     int getArgc() const;
 
     /**
-     * 返回传给 main() 函数的字符串参数。
-     * 参数数量通过 getArgc 获取。
+     * Returns the string arguments passed to the main() function.
+     * The number of arguments is found using getArgc.
      */
     char** getArgv() const;
 
     /**
-     * 如果 Qt 图形子系统尚未初始化，则进行初始化。
-     * 客户端无需直接调用此函数，因为它会被
-     * 在 main() 运行之前由库自动执行。
+     * Initializes the Qt graphics subsystem if it is not initialized already.
+     * Clients do not need to call this directly because it is called
+     * automatically by the library before main() runs.
      */
     void initializeQt();
 
     /**
-     * 返回指向图形库 QtGui 对象的指针。
+     * Returns a pointer to the QtGui object for the graphical library.
      */
     static QtGui* instance();
 
     /**
-     * 在运行 main 之前设置 argc 和 argv 值。
+     * Sets the argc and argv values before main is run.
      */
     void setArgs(int argc, char** argv);
 
     /**
-     * 运行事件循环，调用返回 int 的给定函数。
-     * 事件循环将阻塞，直到图形程序运行完毕。
-     * 如果 exitAfter 参数为 true，则在事件后调用 exitGraphics
-     * 循环结束。
+     * Runs an event loop that calls the given function that returns an int.
+     * The event loop will block until the graphical program is done running.
+     * If the exitAfter argument is true, calls exitGraphics after the event
+     * loop is finished.
      */
     void startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter = true);
 
@@ -99,18 +99,18 @@ public:
 
 public slots:
     /**
-     * Qt 事件队列使用的槽函数。
+     * A slot used by the Qt event queue.
      */
     void processEventFromQueue();
 
 private:
     Q_DISABLE_COPY(QtGui)
 
-    QtGui();   // 禁止构造
+    QtGui();   // forbid construction
 
     /**
-     * 返回指向整个 Qt 应用程序的指针。
-     * 如果应用程序尚未初始化，此值将为 null。
+     * Returns a pointer to the overall Qt application.
+     * This will be null if the application has not yet been initialized.
      */
     QSPLApplication* getApplication();
 
@@ -130,7 +130,7 @@ private:
 
 namespace stanfordcpplib {
 /*
- * 学生线程关闭时运行的代码。
+ * Code that runs when student thread shuts down.
  * @private
  */
 void studentThreadHasExited(const std::string& reason);

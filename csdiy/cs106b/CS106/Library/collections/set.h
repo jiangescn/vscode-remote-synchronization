@@ -1,8 +1,8 @@
 /*
- * 文件：set.h
+ * File: set.h
  * -----------
- * 此文件导出 <code>Set</code> 类，该类实现
- * 用于存储一组不同元素的集合。
+ * This file exports the <code>Set</code> class, which implements a
+ * collection for storing a set of distinct elements.
  */
 
 #ifndef _set_h
@@ -17,7 +17,7 @@
 #include "collections.h"
 #include "map.h"
 
-/* Set 的特征类型，它包装了底层 Map。 */
+/* Traits type for the Set, which wraps an underlying Map. */
 namespace stanfordcpplib {
     namespace collections {
         template <typename T> struct SetTraits {
@@ -27,83 +27,83 @@ namespace stanfordcpplib {
                 return "Set";
             }
 
-            /* Set 类型确实允许你通过传入
-             * 以及一个 std::function。
+            /* The Set type does allow you to construct the underlying Map by handing
+             * along a std::function.
              */
             template <typename Function>
             static MapType construct(Function comparator) {
                 static_assert(std::is_assignable<std::function<bool(const ValueType&, const ValueType&)>, Function>::value,
                               "Oops! Seems like you tried to initialize a Set incorrectly. Click here for details.");
                 /*
-                 * 同学你好！如果你看到此消息，说明你尝试了
-                 * 错误地初始化 Set。例如，可能尝试编写
-                 * 类似这样：
+                 * Hello student! If you are reading this message, it means that you tried to
+                 * initialize a Set improperly. For example, you might have tried to write
+                 * something like this:
                  *
-                 *     Set<int> mySet = 137; // 错误！
+                 *     Set<int> mySet = 137; // Oops!
                  *
-                 * 例如，这里试图将 int 赋值给 Set<int>。
+                 * Here, for example, you're trying to assign an int to a Set<int>.
                  *
-                 * 或者你可能有一个类似如下的函数：
+                 * or perhaps you had a function like this one:
                  *
                  *     void myFunction(Set<int>& mySet);
                  *
-                 * 而你的调用方式是
+                 * and you called it by writing
                  *
-                 *     myFunction(someSet + someOtherSet); // 错误用法！
-                 *     myFunction({ });                    // 错误用法！
+                 *     myFunction(someSet + someOtherSet); // Oops!
+                 *     myFunction({ });                    // Oops!
                  *
-                 * 在这些情况下，你试图向一个接受以下参数的函数传入值：
-                 * 通过（非 const）引用接收参数。C++ 不允许这样做。
+                 * In these cases, you're trying to pass a value into a function that takes
+                 * its argument by (non-const) reference. C++ doesn't allow you to do this.
                  *
-                 * 要查看实际错误来源，请查看错误消息列表
-                 * 在 Qt Creator 中。你应当看到一行写着“required from here”，它
-                 * 指向代码中的某处。那才是导致问题的实际代码行
-                 * 问题所在，因此双击该错误消息，查看它将你带到哪里
-                 * 你。现在知道该去哪里查看了！
+                 * To see where the actual error comes from, look in the list of error messages
+                 * in Qt Creator. You should see a line that says "required from here" that
+                 * points somewhere in your code. That's the actual line you wrote that caused
+                 * the problem, so double-click on that error message and see where it takes
+                 * you. Now you know where to look!
                  *
-                 * 希望这能有所帮助！
+                 * Hope this helps!
                  */
                 return MapType(comparator);
             }
 
-            /* 也可以默认构造它。 */
+            /* You can also default-construct it. */
             static MapType construct() {
                 return {};
             }
 
-            /* 但不能传入任何其他参数。 */
+            /* However, you can't pass in any other arguments. */
             template <typename... Args>
             static void construct(MapType &, Args&&...) {
                 static_assert(Fail<Args...>::value, "Oops! Seems like you tried to initialize a Set incorrectly. Click here for details.");
 
                 /*
-                 * 同学你好！如果你看到此消息，说明你尝试了
-                 * 错误地初始化 Set。例如，可能尝试编写
-                 * 类似这样：
+                 * Hello student! If you are reading this message, it means that you tried to
+                 * initialize a Set improperly. For example, you might have tried to write
+                 * something like this:
                  *
-                 *     Set<int> mySet = 137; // 错误！
+                 *     Set<int> mySet = 137; // Oops!
                  *
-                 * 例如，这里试图将 int 赋值给 Set<int>。
+                 * Here, for example, you're trying to assign an int to a Set<int>.
                  *
-                 * 或者你可能有一个类似如下的函数：
+                 * or perhaps you had a function like this one:
                  *
                  *     void myFunction(Set<int>& mySet);
                  *
-                 * 而你的调用方式是
+                 * and you called it by writing
                  *
-                 *     myFunction(someSet + someOtherSet); // 错误用法！
-                 *     myFunction({ });                    // 错误用法！
+                 *     myFunction(someSet + someOtherSet); // Oops!
+                 *     myFunction({ });                    // Oops!
                  *
-                 * 在这些情况下，你试图向一个接受以下参数的函数传入值：
-                 * 通过（非 const）引用接收参数。C++ 不允许这样做。
+                 * In these cases, you're trying to pass a value into a function that takes
+                 * its argument by (non-const) reference. C++ doesn't allow you to do this.
                  *
-                 * 要查看实际错误来源，请查看错误消息列表
-                 * 在 Qt Creator 中。你应当看到一行写着“required from here”，它
-                 * 指向代码中的某处。那才是导致问题的实际代码行
-                 * 问题所在，因此双击该错误消息，查看它将你带到哪里
-                 * 你。现在知道该去哪里查看了！
+                 * To see where the actual error comes from, look in the list of error messages
+                 * in Qt Creator. You should see a line that says "required from here" that
+                 * points somewhere in your code. That's the actual line you wrote that caused
+                 * the problem, so double-click on that error message and see where it takes
+                 * you. Now you know where to look!
                  *
-                 * 希望这能有所帮助！
+                 * Hope this helps!
                  */
                 error("static_assert failed?");
             }
@@ -112,8 +112,8 @@ namespace stanfordcpplib {
 }
 
 /*
- * 按排序顺序存储的一组元素。元素必须可比较
- * 使用 < 运算符，以便存储在此处。
+ * A set of elements stored in sorted order. The elements must be comparable
+ * using the < operator in order to be stored here.
  */
 template <typename ValueType>
     using Set = stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<ValueType>>;

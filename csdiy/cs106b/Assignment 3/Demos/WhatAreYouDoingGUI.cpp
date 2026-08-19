@@ -22,7 +22,7 @@ namespace {
         Temporary<GButton>       mClear;
     };
 
-    /* 切换字符串中字母的大小写。 */
+    /* Toggles the case of a string. */
     string toggleCaseIn(string result) {
         for (char& ch: result) {
             if (isalpha(ch)) {
@@ -41,8 +41,8 @@ namespace {
         }
 
         sort(result.begin(), result.end(), [](const string& lhs, const string& rhs) {
-            /* 比较前反转字符串大小写，使得
-             * 小写字母排在大写字母之前。
+            /* Reverse the case of the strings before comparing, so that
+             * lower case precedes upper-case.
              */
             return toggleCaseIn(lhs) < toggleCaseIn(rhs);
         });
@@ -79,10 +79,10 @@ namespace {
 Vector<string> tokenize(const string& str) {
     Vector<string> result;
 
-    /* TokenScanner 能完成我们想要的大部分工作，但并非全部。具体来说，我们可以
-     * 要么将包含单引号的字符串整体拼接，要么将其拆开
-     * 分开。我们会将引号视为字符串的一部分，然后如果
-     * 如果字符串看起来像单引号中的内容，我们会将其拆开。
+    /* The TokenScanner does most, but not all, of what we want. Specifically, we can
+     * either glob together strings that include single quotes or have them broken
+     * apart. We'll include quotation marks as part of the string, and then if the
+     * string appears to be something in single quotes we'll break it apart.
      */
     TokenScanner scanner(str);
     scanner.addWordCharacters("'");

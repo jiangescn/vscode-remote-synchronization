@@ -3,10 +3,10 @@
 #include "map.h"
 #include <string>
 
-/* 使用以下方法将 numSeats 个众议院席位分配给给定州集合：
- * Huntington-Hill 方法。假定席位数至少足够
- * 让每个州获得一个席位；如果情况不是这样，此函数
- * 报告 error()。随后函数返回一个 Map，其键为各州
- * 其值是分配给该州的席位数量。
+/* Apportions numSeats House seats to the given collection of states using the
+ * Huntington-Hill method. It's assumed that there are at least enough seats
+ * for each of the states to get one seat; if that isn't the case, this function
+ * reports an error(). The function then returns a Map whose keys are the states
+ * and whose values are the number of seats allocated to that state.
  */
 Map<std::string, int> apportion(const Map<std::string, int>& populations, int numSeats);

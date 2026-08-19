@@ -7,10 +7,10 @@
 #include "strlib.h"
 
 /**
- * 给定数字，返回用逗号分隔各位数字的版本。
+ * Given a number, returns a version of that number with commas separating the digits.
  *
- * @param val 目标数字
- * @return 添加逗号后的数字。
+ * @param val The number in question
+ * @return The number with commas added.
  */
 template <typename IntegerType> std::string addCommasTo(IntegerType val) {
     std::string asStr = std::to_string(val);
@@ -18,13 +18,13 @@ template <typename IntegerType> std::string addCommasTo(IntegerType val) {
 
     std::string result;
     for (size_t i = 0; i < length; i++) {
-        /* 从源字符串末尾向前遍历，以确定逗号应放在何处
-         * 会简单得多。
+        /* Run backwards through the source string so determining where commas go
+         * becomes a lot easier.
          */
         result = asStr[length - 1 - i] + result;
 
-        /* 若已添加三个字符但尚未
-         * 即将用完所有数字。
+        /* Put commas in provided we've already added three characters, but aren't
+         * about to use all the digits up.
          */
         if (i % 3 == 2 && i < length - 1) {
             result = ',' + result;
@@ -33,38 +33,38 @@ template <typename IntegerType> std::string addCommasTo(IntegerType val) {
     return result;
 }
 
-/* 给定数量，返回该数量加上正确复数形式的字符串
- * 其实际内容的可读版本。
+/* Given a quantity, returns a string of that quantity plus an appropriately-pluralized
+ * version of what it is.
  */
 template <typename ValueType>
 std::string pluralize(const ValueType& value, const std::string& singular, const std::string& plural) {
     return addCommasTo(value) + " " + (value == 1? singular : plural);
 }
 
-/* 除非另有指定，否则假定通过添加 s 构成复数。 */
+/* Assume we suffix with s to pluralize unless specified otherwise. */
 template <typename ValueType>
 std::string pluralize(const ValueType& value, const std::string& singular) {
     return pluralize(value, singular, singular + "s");
 }
 
 /**
- * 给定字符串或字符，以类似 C++14 std::quoted 的方式为其加引号。
+ * Given a string or character, quotes that string in a manner similar to C++14's std::quoted.
  *
- * @param input 要转义的文本。
- * @return 该字符串加引号后的版本。
+ * @param input The text to escape.
+ * @return A quoted version of that string.
  */
 std::string quotedVersionOf(const std::string& input);
 std::string quotedVersionOf(char input);
 
 /**
- * 通用 printf 替换函数。给定一个包含如下形式替换位置的字符串
- * %s 和若干参数，将每个 %s 占位位置替换为相应的
- * 参数。
+ * Generic printf replacement. Given a string containing replacement sites of the form
+ * %s and a number of arguments, replaces each of the %s sites with the appropriate
+ * argument.
  *
- * 若参数数量错误，此函数会报告错误。
+ * If the number of arguments is wrong, this function will report an error.
  *
- * @param text 含占位符的文本。
- * @param args 用于替换这些占位符的内容。
+ * @param text The text, with placeholders.
+ * @param args Replacements to use in those placeholders.
  */
 std::string format(const std::string& pattern);
 
@@ -105,23 +105,23 @@ std::string format(const std::string& pattern, char first, Args&&... args) {
 }
 
 /**
- * 使用指定连词连接一组字符串。例如：
- * 我们可能得到
+ * Joins a collection of strings together with the indicated conjunction. For example,
+ * we might get back
  *
  *    A
- *    A 和 B
- *    A、B 和 C
+ *    A and B
+ *    A, B, and C
  *
- * @param strings 要连接的字符串
- * @param conjunction 用于连接这些项目的连词
- * @return 使用指定连词连接各项所得的字符串
+ * @param strings The strings to join
+ * @param conjunction Which conjunction to join them with
+ * @return A string of the items joined via the conjunction
  */
 template <typename Container>
 std::string conjunctionJoin(const Container& container, const std::string& conjunction) {
     if (container.size() == 1) return *container.begin();
     if (container.size() == 2) return *container.begin() + " " + conjunction + " " + *next(container.begin());
 
-    /* 构造字符串 x1、x2、x3、...、conjunction xn。 */
+    /* Form the string x1, x2, x3, ..., conjunction xn. */
     std::string result;
     for (auto itr = container.begin(); itr != container.end();  ++itr) {
         if (itr != container.begin()) result += ", ";

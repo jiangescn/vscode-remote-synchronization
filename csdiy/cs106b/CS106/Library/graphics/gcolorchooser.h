@@ -1,17 +1,17 @@
 /*
- * 文件：gcolorchooser.h
+ * File: gcolorchooser.h
  * ---------------------
- * 此文件定义支持
- * 弹出图形对话框以选择颜色。
+ * This file defines the <code>GColorChooser</code> class which supports
+ * popping up graphical dialog boxes to select colors.
  * 
  * @author Marty Stepp
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
- * - 添加接受 GWindow* parent 的重载
+ * - added doc comments for new documentation generation
+ * - added overloads that accept GWindow* parent
  * @version 2018/08/23
- * - 重命名为 gcolorchooser.h，以替代 Java 版本
+ * - renamed to gcolorchooser.h to replace Java version
  * @version 2018/07/29
- * - 初始版本
+ * - initial version
  */
 
 
@@ -24,57 +24,57 @@
 #include "gwindow.h"
 
 /**
- * GColorChooser 类包含用于弹出颜色选择
- * 允许用户选择颜色的对话框。
- * 每个方法都会阻塞，直到选择颜色并关闭对话框，
- * 返回用户选择的颜色（如果用户取消，则为空字符串）。
+ * The GColorChooser class contains static methods for popping up color-choosing
+ * dialog boxes that allow the user to select a color.
+ * Each method blocks until the color is chosen and the dialog is closed,
+ * returning the color the user chose (or an empty string if the user canceled).
  */
 class GColorChooser {
 public:
     /**
-     * 弹出颜色选择对话框，使用给定的顶部标题文本、
-     * 并预先选中给定的初始颜色。
-     * 返回所选颜色的颜色字符串，例如 "#ff0077" 或 "blue"。
+     * Pops up a color chooser dialog with the given top title text,
+     * with the given initial color selected.
+     * Returns the color that was chosen as a color string such as "#ff0077" or "blue".
      */
     static std::string showDialog(const std::string& title, int initialColor);
 
     /**
-     * 弹出颜色选择对话框，使用给定的顶部标题文本、
-     * 并预先选中给定的初始颜色。
-     * 返回所选颜色的颜色字符串，例如 "#ff0077" 或 "blue"。
+     * Pops up a color chooser dialog with the given top title text,
+     * with the given initial color selected.
+     * Returns the color that was chosen as a color string such as "#ff0077" or "blue".
      */
     static std::string showDialog(GWindow* parent, const std::string& title, int initialColor);
 
     /**
-     * 弹出颜色选择对话框，使用给定的顶部标题文本、
-     * 并预先选中给定的初始颜色。
-     * 返回所选颜色的颜色字符串，例如 "#ff0077" 或 "blue"。
+     * Pops up a color chooser dialog with the given top title text,
+     * with the given initial color selected.
+     * Returns the color that was chosen as a color string such as "#ff0077" or "blue".
      */
     static std::string showDialog(QWidget* parent, const std::string& title, int initialColor);
 
     /**
-     * 弹出颜色选择对话框，使用给定的顶部标题文本、
-     * 并预先选中给定的初始颜色。
-     * 返回所选颜色的颜色字符串，例如 "#ff0077" 或 "blue"。
+     * Pops up a color chooser dialog with the given top title text,
+     * with the given initial color selected.
+     * Returns the color that was chosen as a color string such as "#ff0077" or "blue".
      */
     static std::string showDialog(const std::string& title = "", const std::string& initialColor = "");
 
     /**
-     * 弹出颜色选择对话框，使用给定的顶部标题文本、
-     * 并预先选中给定的初始颜色。
-     * 返回所选颜色的颜色字符串，例如 "#ff0077" 或 "blue"。
+     * Pops up a color chooser dialog with the given top title text,
+     * with the given initial color selected.
+     * Returns the color that was chosen as a color string such as "#ff0077" or "blue".
      */
     static std::string showDialog(GWindow* parent, const std::string& title = "", const std::string& initialColor = "");
 
     /**
-     * 弹出颜色选择对话框，使用给定的顶部标题文本、
-     * 并预先选中给定的初始颜色。
-     * 返回所选颜色的颜色字符串，例如 "#ff0077" 或 "blue"。
+     * Pops up a color chooser dialog with the given top title text,
+     * with the given initial color selected.
+     * Returns the color that was chosen as a color string such as "#ff0077" or "blue".
      */
     static std::string showDialog(QWidget* parent, const std::string& title = "", const std::string& initialColor = "");
 
 private:
-    GColorChooser();   // 阻止构造
+    GColorChooser();   // prevent construction
 };
 
 #endif // _gcolorchooser_h

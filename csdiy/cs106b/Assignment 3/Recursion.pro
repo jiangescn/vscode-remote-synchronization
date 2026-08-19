@@ -1,9 +1,9 @@
 ###############################################################################
-# CS106B/X 学生程序的项目文件
+# Project file for CS106B/X student program
 #
-# @version 2021 秋季学期，适用于 Qt 6
+# @version Fall Quarter 2021 for Qt 6
 # @author Julie Zelenski
-#   使用已安装的静态库构建客户端程序
+#   build client program using installed static library
 ###############################################################################
 
 SPL_VERSION = 2021.1
@@ -11,14 +11,14 @@ SPL_URL = https://web.stanford.edu/dept/cs_edu/qt
 
 TEMPLATE    =   app
 QT          +=  core gui widgets network
-CONFIG      +=  silent debug         # 始终使用静默构建和调试符号
-CONFIG      -=  depend_includepath   # 库头文件不会变化，不添加依赖关系
+CONFIG      +=  silent debug         # quiet build and debug symbols always
+CONFIG      -=  depend_includepath   # library headers not changing, don't add depend
 
 ###############################################################################
-#       查找/使用已安装版本的 cs106 库及头文件                #
+#       Find/use installed version of cs106 lib and headers                   #
 ###############################################################################
 
-# 库通过 QtStandardPaths 安装到每个用户可写的数据位置
+# Library installed into per-user writable data location from QtStandardPaths
 win32|win64     { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
 USER_DATA_DIR   =   $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDataLocation)
 
@@ -26,77 +26,77 @@ SPL_DIR         =   $${USER_DATA_DIR}/cs106
 STATIC_LIB      =   $$system_path($${SPL_DIR}/lib/libcs106.a)
 SPL_VERSION_FILE =  $$system_path($${SPL_DIR}/lib/version$${SPL_VERSION})
 
-# 构建前使用额外目标作为先决条件，确认库是否存在
+# Confirm presence of lib before build using extra target as prereq
 check_lib.target    =  "$${STATIC_LIB}"
 check_lib.commands  =  $(error No CS106 library found. Install CS106 package following instructions at $${SPL_URL})
 QMAKE_EXTRA_TARGETS +=  check_lib
 PRE_TARGETDEPS       +=  $${check_lib.target}
 
-# 确认当前库版本
+# Confirm version of library is current
 check_version.target    =  "$${SPL_VERSION_FILE}"
 check_version.commands  =  $(error Cannot find version $${SPL_VERSION} of CS106 library. Install CS106 package following instructions at $${SPL_URL})
 QMAKE_EXTRA_TARGETS +=  check_version
 PRE_TARGETDEPS       +=  $${check_version.target}
 
-# 链接 libcs106.a，并将库头文件目录加入搜索路径
-# libcs106 依赖 libpthread，在此添加链接选项
+# link against libcs106.a, add library headers to search path
+# libcs106 requires libpthread, add link here
 LIBS            +=  -lcs106 -lpthread
 QMAKE_LFLAGS    =   -L$$shell_quote($${SPL_DIR}/lib)
-# 将 PWD 放在搜索列表首位，以便在需要时由本地副本覆盖
+# put PWD first in search list to allow local copy to shadow if needed
 INCLUDEPATH     +=  $$PWD "$${SPL_DIR}/include"
 
 ###############################################################################
-#       使用自定义设置配置项目                                #
+#       Configure project with custom settings                                #
 ###############################################################################
 
-# 移除目标可执行文件名中的空格，以提高 Windows 兼容性
+# remove spaces from target executable for better Windows compatibility
 TARGET      =   $$replace(TARGET, " ", _)
 
-# 将 DESTDIR 设为项目根目录；可执行文件/应用会部署并在此运行
+# set DESTDIR to project root dir, this is where executable/app will deploy and run
 DESTDIR     =   $$PWD
 
-# 学生编写普通的 main() 函数，但它必须在一个
-# 负责库初始化/清理的包装 main()。重命名学生的
-# 用于区分两个 main() 函数并避免符号冲突
-# 若想知道为什么是 main->qMain->studentMain，请询问 Julie
+# student writes ordinary main() function, but it must be called within a
+# wrapper main() that handles library setup/teardown. Rename student's
+# to distinguish between the two main() functions and avoid symbol clash
+# Ask Julie if you are curious why main->qMain->studentMain
 DEFINES     +=  main=qMain qMain=studentMain
 
 ###############################################################################
-#       收集要显示在 Qt Creator 项目浏览器中的文件           #
+#       Gather files to list in Qt Creator project browser                    #
 ###############################################################################
 
-# 设置诱饵项，使 Qt Creator 允许全局通配文件与用户添加的文件共存
-# Qt 查找第一行“SOURCES *=”，并在此列出用户添加的 .cpp/.h 文件。
-# 随后我们自行使用通配方式将文件添加到 SOURCES。运算符 *= 会去重
-# 条目，因此无需担心重复项
+# honeypot to trick Qt Creator to allow glob-all to coexist with user-added files
+# Qt looks for first 'SOURCES *=' line and lists user-added .cpp/h files there.
+# Afterward we glob-add files to SOURCES ourselves. Operator *= will unique
+# entries, so no worries about duplicates
 SOURCES         *=  ""
 HEADERS         *=  ""
 
-# 收集项目文件夹内的所有 .cpp 或 .h 文件（学生代码/起始代码）。
-# 第二个参数 true 表示递归搜索
+# Gather any .cpp or .h files within the project folder (student/starter code).
+# Second argument true makes search recursive
 SOURCES         *=  $$files(*.cpp, true)
 HEADERS         *=  $$files(*.h, true)
 
-# 从 res 目录收集资源文件（图像/声音等），并列在“其他文件”下
+# Gather resource files (image/sound/etc) from res dir, list under "Other files"
 OTHER_FILES     *=  $$files(res/*, true)
-# 从根目录或任意子目录递归收集文本文件
+# Gather text files from root dir or anywhere recursively
 OTHER_FILES     *=  $$files(*.txt, true)
 
 ###############################################################################
-#       配置编译器和编译选项                                     #
+#       Configure compiler, compile flags                                     #
 ###############################################################################
 
-# 配置 C++ 编译器选项
-# （通常会启用许多警告/错误，以加强编译期检查。
-# 为避免混淆，关闭了少数过于苛刻或容易误解的错误。）
+# Configure flags for the C++ compiler
+# (In general, many warnings/errors are enabled to tighten compile-time checking.
+# A few overly pedantic/confusing errors are turned off to avoid confusion.)
 
-CONFIG          +=  sdk_no_version_check   # 消除 Mac OS X 上的无意义警告
+CONFIG          +=  sdk_no_version_check   # removes spurious warnings on Mac OS X
 
-# MinGW 编译器支持较滞后，为稳妥起见，在所有平台上都使用 C++11
-# 而不是进行特殊处理
+# MinGW compiler lags, be conservative and use C++11 on all platforms
+# rather than special case
 CONFIG          +=  c++11
 
-# WARN_ON 包含 -Wall -Wextra，并增删少量特定警告
+# WARN_ON has -Wall -Wextra, add/remove a few specific warnings
 QMAKE_CXXFLAGS_WARN_ON      +=  -Werror=return-type
 QMAKE_CXXFLAGS_WARN_ON      +=  -Werror=uninitialized
 QMAKE_CXXFLAGS_WARN_ON      +=  -Wunused-parameter
@@ -106,20 +106,20 @@ QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-sign-compare
 QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-sign-conversion
 QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-unused-const-variable
 
-*-clang { # clang 专用警告选项
+*-clang { # warning flags specific to clang
     QMAKE_CXXFLAGS_WARN_ON  +=  -Wempty-init-stmt
     QMAKE_CXXFLAGS_WARN_ON  +=  -Wignored-qualifiers
 }
 
-*-g++ {   # g++ 专用警告选项
+*-g++ {   # warning flags specific to g++
     QMAKE_CXXFLAGS_WARN_ON  +=  -Wlogical-op
 }
 
 ###############################################################################
-#       检测/报告项目结构中的错误                             #
+#       Detect/report errors in project structure                             #
 ###############################################################################
 
-# 若直接从 ZIP 压缩包内部打开项目，则报错（Windows 上的常见错误）
+# error if project opened from within a ZIP archive (common mistake on Windows)
 win32|win64 {
     contains(PWD, .*\.zip.*) | contains(PWD, .*\.ZIP.*) {
         message( "*******************************************************************" )
@@ -131,10 +131,10 @@ win32|win64 {
     }
 }
 
-# 若目录名包含可能给 qmake/make/shell 带来问题的字符，则报错
+# error if name of directory has chars that may cause trouble for qmake/make/shell
 PROJECT_DIR = $$basename(PWD)
 FOUND  = $$PROJECT_DIR
-FOUND ~= s|[a-z A-Z 0-9 _.+-]||   # 可以使用空格和有限的标点；$、%、& 可能有风险
+FOUND ~= s|[a-z A-Z 0-9 _.+-]||   # yes, spaces ok, limited punctuation, $ % & are dicey
 !isEmpty(FOUND) {
     message( "*******************************************************************" )
     message( "*** ERROR: The name of your project directory has disallowed characters." )

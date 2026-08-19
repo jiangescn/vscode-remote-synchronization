@@ -1,21 +1,21 @@
 /*
- * 文件：gtable.cpp
+ * File: gtable.cpp
  * ----------------
- * 此文件实现 GTable.h 接口。
- * 每个成员的文档见该文件。
+ * This file implements the GTable.h interface.
+ * See that file for documentation of each member.
  *
  * @author Marty Stepp
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/09/06
- * - 添加边界检查和 require() 调用
+ * - added bounds-checking and require() calls
  * @version 2018/08/23
- * - 重命名为 gtable.cpp，以替代 Java 版本
+ * - renamed to gtable.cpp to replace Java version
  * @version 2018/07/21
- * - 为单元格、行、列、表格添加富格式
- * - 改进事件处理
+ * - rich formatting on cell, row, column, table
+ * - improved event handling
  * @version 2018/07/17
- * - 初始版本，基于 gtable.h
+ * - initial version, based on gtable.h
  * @since 2018/07/17
  */
 
@@ -47,11 +47,11 @@ GTable::GTable(int rows, int columns, double width, double height, QWidget* pare
     });
     require::nonNegative2D(rows, columns, "GTable::constructor", "rows", "columns");
     require::nonNegative2D(width, height, "GTable::constructor", "width", "height");
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GTable::~GTable() {
-    // TODO：delete _iqtableview;
+    // TODO: delete _iqtableview;
     _iqtableview->detach();
     _iqtableview = nullptr;
 }
@@ -84,24 +84,24 @@ void GTable::checkRow(const std::string& member, int row) const {
 void GTable::clear() {
     GThread::runOnQtGuiThread([this]() {
         _iqtableview->clear();
-        // 出于某种原因，清空表格也会清除 Excel 风格列标题
+        // for some reason, clearing a table also wipes the Excel-style column headers
         updateColumnHeaders();
     });
 }
 
 void GTable::clearCell(int row, int column) {
     checkIndex("clearCell", row, column);
-    set(row, column, /* 文本 */ "");
+    set(row, column, /* text */ "");
 }
 
 void GTable::clearFormatting() {
     GThread::runOnQtGuiThread([this]() {
-        // 清除所有行、列和全局表格样式记录
+        // clear out all records of row, column, and global table styles
         _columnStyles.clear();
         _rowStyles.clear();
         _globalCellStyle = TableStyle::unset();
 
-        // 设置每个单元格的格式
+        // set the formatting on each cell
         for (int row = 0, nr = numRows(), nc = numCols(); row < nr; row++) {
             for (int col = 0; col < nc; col++) {
                 clearCellFormatting(row, col);
@@ -150,7 +150,7 @@ void GTable::ensureDefaultFormatting() const {
         _defaultCellStyle.background = palette.base().color().rgb() & 0x00ffffff;
         _defaultCellStyle.foreground = palette.text().color().rgb() & 0x00ffffff;
         _defaultCellStyle.font       = GFont::toFontString(thisHack->_iqtableview->font());
-        _defaultCellStyle.alignment  = ALIGN_LEFT;   // TODO：向单元格查询其对齐方式
+        _defaultCellStyle.alignment  = ALIGN_LEFT;   // TODO: ask cell for its alignment
     }
 }
 
@@ -192,7 +192,7 @@ _Internal_QWidget* GTable::getInternalWidget() const {
 }
 
 GTable::TableStyle GTable::getMergedStyleForCell(int row, int column) {
-    // 样式优先级：单元格 > 列 > 行 > 全局
+    // style precedence: cell > column > row > global
     ensureDefaultFormatting();
     TableStyle style = _defaultCellStyle;
     style.mergeWith(_globalCellStyle);
@@ -306,17 +306,17 @@ void GTable::resize(int newNumRows, int newNumCols) {
         _iqtableview->setRowCount(newNumRows);
         _iqtableview->setColumnCount(newNumCols);
 
-        // 确保每列显示正确的表头
+        // make sure proper headers showing on each column
         if (newNumCols > oldNumCols) {
             updateColumnHeaders();
         }
 
-        // 向新添加的单元格应用适当样式
+        // apply appropriate styles to newly added cells
         if (newNumRows > oldNumRows || newNumCols > oldNumCols) {
             for (int row = 0; row < newNumRows; row++) {
                 for (int col = 0; col < newNumCols; col++) {
                     if (row >= oldNumRows || col >= oldNumCols) {
-                        // 确定适当样式（行、列、全局等）并应用
+                        // figure out appropriate style (row, col, global, etc.) and apply it
                         TableStyle style = getMergedStyleForCell(row, col);
                         applyStyleToCell(row, col, style);
                     }
@@ -349,15 +349,15 @@ void GTable::set(int row, int column, const std::string& text) {
 
 void GTable::setBackground(int rgb) {
     // GInteractor::setBackground(rgb);
-    // （不要调用 super；那会设置标题及其他所有部分的背景色）
+    // (don't call super; that will set the BG of the headers and everything)
 
     GThread::runOnQtGuiThread([this, rgb]() {
-        // 将此背景色保存到全局单元格样式中（供 resize() 等操作后的单元格使用）
+        // save this background color in the global cell style (for later cells on resize() etc)
         ensureDefaultFormatting();
         _globalCellStyle.background = rgb;
 
-        // 从所有行/列样式中移除背景色，因为它们已被
-        // 现在由此全局背景颜色样式覆盖
+        // remove background colors from any row/column styles because they are
+        // now overridden by this global background color style
         TableStyle unset = TableStyle::unset();
         for (int row : _rowStyles) {
             _rowStyles[row].background = unset.background;
@@ -366,7 +366,7 @@ void GTable::setBackground(int rgb) {
             _columnStyles[col].background = unset.background;
         }
 
-        // 设置每个单元格的背景色
+        // set each cell's background color
         for (int row = 0, nr = numRows(); row < nr; row++) {
             for (int col = 0, nc = numCols(); col < nc; col++) {
                 setCellBackgroundInternal(row, col, rgb);
@@ -382,7 +382,7 @@ void GTable::setBackground(const std::string& color) {
 void GTable::setCellAlignment(int row, int column, HorizontalAlignment alignment) {
     checkIndex("setCellAlignment", row, column);
     GThread::runOnQtGuiThread([this, row, column, alignment]() {
-        setCellAlignmentInternal(row, column, alignment);   // 执行实际工作
+        setCellAlignmentInternal(row, column, alignment);   // do the actual work
     });
 }
 
@@ -395,7 +395,7 @@ void GTable::setCellAlignmentInternal(int row, int column, HorizontalAlignment a
 void GTable::setCellBackground(int row, int column, int rgb) {
     checkIndex("setCellBackground", row, column);
     GThread::runOnQtGuiThread([this, row, column, rgb]() {
-        setCellBackgroundInternal(row, column, rgb);   // 执行实际工作
+        setCellBackgroundInternal(row, column, rgb);   // do the actual work
     });
 }
 
@@ -410,7 +410,7 @@ void GTable::setCellBackgroundInternal(int row, int column, int rgb) {
 void GTable::setCellFont(int row, int column, const std::string& font) {
     checkIndex("setCellFont", row, column);
     GThread::runOnQtGuiThread([this, row, column, font]() {
-        setCellFontInternal(row, column, font);   // 执行实际工作
+        setCellFontInternal(row, column, font);   // do the actual work
     });
 }
 
@@ -421,7 +421,7 @@ void GTable::setCellFontInternal(int row, int column, const std::string& font) {
 void GTable::setCellForeground(int row, int column, int rgb) {
     checkIndex("setCellForeground", row, column);
     GThread::runOnQtGuiThread([this, row, column, rgb]() {
-        setCellForegroundInternal(row, column, rgb);   // 执行实际工作
+        setCellForegroundInternal(row, column, rgb);   // do the actual work
     });
 }
 
@@ -447,11 +447,11 @@ void GTable::setColumnAlignment(int column, HorizontalAlignment alignment) {
     checkColumn("setColumnAlignment", column);
 
     GThread::runOnQtGuiThread([this, column, alignment]() {
-        // 将此对齐方式保存到列样式中（供 resize() 等操作后的单元格使用）
+        // save this alignment in the column style (for later cells on resize() etc)
         ensureColumnStyle(column);
         _columnStyles[column].alignment = alignment;
 
-        // 设置该列中每个单元格的对齐方式
+        // set each cell's alignment in that column
         for (int row = 0, nr = numRows(); row < nr; row++) {
             setCellAlignmentInternal(row, column, alignment);
         }
@@ -462,11 +462,11 @@ void GTable::setColumnBackground(int column, int rgb) {
     checkColumn("setColumnBackground", column);
 
     GThread::runOnQtGuiThread([this, column, rgb]() {
-        // 将此背景色保存到列样式中（供 resize() 等操作后的单元格使用）
+        // save this background color in the column style (for later cells on resize() etc)
         ensureColumnStyle(column);
         _columnStyles[column].background = rgb;
 
-        // 设置该列中每个单元格的背景色
+        // set each cell's background color in that column
         for (int row = 0, nr = numRows(); row < nr; row++) {
             setCellBackgroundInternal(row, column, rgb);
         }
@@ -481,11 +481,11 @@ void GTable::setColumnFont(int column, const std::string& font) {
     checkColumn("setColumnFont", column);
 
     GThread::runOnQtGuiThread([this, column, font]() {
-        // 将此字体保存到列样式中（供 resize() 等操作后的单元格使用）
+        // save this font in the column style (for later cells on resize() etc)
         ensureColumnStyle(column);
         _columnStyles[column].font = font;
 
-        // 设置该列中每个单元格的字体
+        // set each cell's font in that column
         for (int row = 0, nr = numRows(); row < nr; row++) {
             setCellFontInternal(row, column, font);
         }
@@ -496,11 +496,11 @@ void GTable::setColumnForeground(int column, int rgb) {
     checkColumn("setColumnForeground", column);
 
     GThread::runOnQtGuiThread([this, column, rgb]() {
-        // 将此前景色保存到列样式中（供 resize() 等操作后的单元格使用）
+        // save this foreground color in the column style (for later cells on resize() etc)
         ensureColumnStyle(column);
         _columnStyles[column].foreground = rgb;
 
-        // 设置该列中每个单元格的前景色
+        // set each cell's foreground color in that column
         for (int row = 0, nr = numRows(); row < nr; row++) {
             setCellForegroundInternal(row, column, rgb);
         }
@@ -515,11 +515,11 @@ void GTable::setColumnHeaderStyle(GTable::ColumnHeaderStyle style) {
     GThread::runOnQtGuiThread([this, style]() {
         _columnHeaderStyle = style;
         if (style == GTable::COLUMN_HEADER_NONE) {
-            // 没有表头
+            // no headers
             setRowColumnHeadersVisible(false);
             return;
         } else {
-            // 构建要显示的列名列表
+            // build list of column names to display
             updateColumnHeaders();
             _iqtableview->horizontalHeader()->setVisible(true);
             _iqtableview->verticalHeader()->setVisible(true);
@@ -569,15 +569,15 @@ void GTable::setFont(const QFont& font) {
 }
 
 void GTable::setFont(const std::string& font) {
-    GInteractor::setFont(font);   // 调用父类实现
+    GInteractor::setFont(font);   // call super
 
     GThread::runOnQtGuiThread([this, font]() {
-        // 将此字体保存到全局单元格样式中（供 resize() 等操作后的单元格使用）
+        // save this font in the global cell style (for later cells on resize() etc)
         ensureDefaultFormatting();
         _globalCellStyle.font = font;
 
-        // 从所有行/列样式中移除字体，因为它们已被
-        // 现在由此全局字体样式覆盖
+        // remove fonts from any row/column styles because they are
+        // now overridden by this global font style
         TableStyle unset = TableStyle::unset();
         for (int row : _rowStyles) {
             _rowStyles[row].font = unset.font;
@@ -586,7 +586,7 @@ void GTable::setFont(const std::string& font) {
             _columnStyles[col].font = unset.font;
         }
 
-        // 设置每个单元格的前景色
+        // set each cell's foreground color
         for (int row = 0, nr = numRows(); row < nr; row++) {
             for (int col = 0, nc = numCols(); col < nc; col++) {
                 setCellFontInternal(row, col, font);
@@ -598,14 +598,14 @@ void GTable::setFont(const std::string& font) {
 void GTable::setForeground(int rgb) {
     GThread::runOnQtGuiThread([this, rgb]() {
         // GInteractor::setForeground(rgb);
-        // （不要调用 super；那会设置滚动条及其他所有部分的前景色）
+        // (don't call super; that will set the FG of the scrollbars and everything)
 
-        // 将此前景色保存到全局单元格样式中（供 resize() 等操作后的单元格使用）
+        // save this foreground color in the global cell style (for later cells on resize() etc)
         ensureDefaultFormatting();
         _globalCellStyle.foreground = rgb;
 
-        // 从所有行/列样式中移除前景色，因为它们已被
-        // 现在由此全局前景颜色样式覆盖
+        // remove foreground colors from any row/column styles because they are
+        // now overridden by this global foreground color style
         TableStyle unset = TableStyle::unset();
         for (int row : _rowStyles) {
             _rowStyles[row].foreground = unset.foreground;
@@ -614,7 +614,7 @@ void GTable::setForeground(int rgb) {
             _columnStyles[col].foreground = unset.foreground;
         }
 
-        // 设置每个单元格的前景色
+        // set each cell's foreground color
         for (int row = 0, nr = numRows(); row < nr; row++) {
             for (int col = 0, nc = numCols(); col < nc; col++) {
                 setCellForegroundInternal(row, col, rgb);
@@ -629,13 +629,13 @@ void GTable::setForeground(const std::string& color) {
 
 void GTable::setHorizontalAlignment(HorizontalAlignment alignment) {
     GThread::runOnQtGuiThread([this, alignment]() {
-        // 将此对齐方式保存到全局单元格样式中（供 resize() 等操作后的单元格使用）
+        // save this alignment in the global cell style (for later cells on resize() etc)
         ensureDefaultFormatting();
 
         _globalCellStyle.alignment = alignment;
 
-        // 从所有行/列样式中移除对齐设置，因为它们已被
-        // 现在由此全局对齐样式覆盖
+        // remove alignment from any row/column styles because they are
+        // now overridden by this global alignment style
         TableStyle unset = TableStyle::unset();
         for (int row : _rowStyles) {
             _rowStyles[row].alignment = unset.alignment;
@@ -644,7 +644,7 @@ void GTable::setHorizontalAlignment(HorizontalAlignment alignment) {
             _columnStyles[col].alignment = unset.alignment;
         }
 
-        // 设置每个单元格的水平对齐方式
+        // set each cell's horizontal alignment
         for (int row = 0, nr = numRows(), nc = numCols(); row < nr; row++) {
             for (int col = 0; col < nc; col++) {
                 setCellAlignmentInternal(row, col, alignment);
@@ -656,12 +656,12 @@ void GTable::setHorizontalAlignment(HorizontalAlignment alignment) {
 void GTable::setRowAlignment(int row, HorizontalAlignment alignment) {
     checkRow("setRowAlignment", row);
 
-    // 将此对齐方式保存到行样式中（供 resize() 等操作后的单元格使用）
+    // save this alignment in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, alignment]() {
         ensureRowStyle(row);
         _rowStyles[row].alignment = alignment;
 
-        // 设置该行中每个单元格的对齐方式
+        // set each cell's alignment in that row
         for (int col = 0, nc = numCols(); col < nc; col++) {
             setCellAlignmentInternal(row, col, alignment);
         }
@@ -671,12 +671,12 @@ void GTable::setRowAlignment(int row, HorizontalAlignment alignment) {
 void GTable::setRowBackground(int row, int rgb) {
     checkRow("setRowBackground", row);
 
-    // 将此背景色保存到行样式中（供 resize() 等操作后的单元格使用）
+    // save this background color in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, rgb]() {
         ensureRowStyle(row);
         _rowStyles[row].background = rgb;
 
-        // 设置该行中每个单元格的背景色
+        // set each cell's background color in that row
         for (int col = 0, nc = numCols(); col < nc; col++) {
             setCellBackgroundInternal(row, col, rgb);
         }
@@ -690,12 +690,12 @@ void GTable::setRowBackground(int row, const std::string& color) {
 void GTable::setRowFont(int row, const std::string& font) {
     checkRow("setRowFont", row);
 
-    // 将此字体保存到行样式中（供 resize() 等操作后的单元格使用）
+    // save this font in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, font]() {
         ensureRowStyle(row);
         _rowStyles[row].font = font;
 
-        // 设置该行中每个单元格的字体
+        // set each cell's font in that row
         for (int col = 0, nc = numCols(); col < nc; col++) {
             setCellFontInternal(row, col, font);
         }
@@ -705,12 +705,12 @@ void GTable::setRowFont(int row, const std::string& font) {
 void GTable::setRowForeground(int row, int rgb) {
     checkRow("setRowForeground", row);
 
-    // 将此前景色保存到行样式中（供 resize() 等操作后的单元格使用）
+    // save this foreground color in the row style (for later cells on resize() etc)
     GThread::runOnQtGuiThread([this, row, rgb]() {
         ensureRowStyle(row);
         _rowStyles[row].foreground = rgb;
 
-        // 设置该行中每个单元格的前景色
+        // set each cell's foreground color in that row
         for (int col = 0, nc = numCols(); col < nc; col++) {
             setCellForegroundInternal(row, col, rgb);
         }
@@ -769,10 +769,10 @@ void GTable::setTableListener(GEventListenerVoid func) {
 }
 
 std::string GTable::toExcelColumnName(int col) {
-    // 将列转换为近似的 Excel 26 进制列名，
-    // 例如 0 -> “A”，1 -> “B”，26 -> “AA”，...
+    // convert column into a roughly base-26 Excel column name,
+    // e.g. 0 -> "A", 1 -> "B", 26 -> "AA", ...
     std::string colStr;
-    col = col + 1;   // 从 1 开始
+    col = col + 1;   // 1-based
     while (col-- > 0) {
         colStr = charToString((char) ('A' + (col % 26))) + colStr;
         col /= 26;
@@ -786,8 +786,8 @@ void GTable::updateColumnHeaders() {
             return;
         }
 
-        // Qt 要求将表头放入字符串列表，显然
-        // 你可以像使用 ostream 一样用 << 向列表添加内容（唉）
+        // Qt wants me to put the headers into a string list, and apparently
+        // you add things to the list using << like it was a ostream (bleh)
         QStringList columnHeaders;
         for (int col = 0, nc = numCols(); col < nc; col++) {
             if (_columnHeaderStyle == GTable::COLUMN_HEADER_EXCEL) {
@@ -809,7 +809,7 @@ int GTable::width() const {
 _Internal_QItemDelegate::_Internal_QItemDelegate(QObject* parent)
         : QStyledItemDelegate(parent),
           _editor(nullptr) {
-    // 空
+    // empty
 }
 
 QWidget* _Internal_QItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
@@ -849,7 +849,7 @@ void _Internal_QTableWidget::detach() {
 }
 
 bool _Internal_QTableWidget::edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) {
-    bool result = QAbstractItemView::edit(index, trigger, event);   // 调用父类实现
+    bool result = QAbstractItemView::edit(index, trigger, event);   // call super
     if (!_gtable) {
         return result;
     }
@@ -870,10 +870,10 @@ void _Internal_QTableWidget::fireTableEvent(EventType eventType, const std::stri
         return;
     }
     GEvent tableEvent(
-                /* 类  */ TABLE_EVENT,
-                /* 类型   */ eventType,
-                /* 名称   */ eventName,
-                /* 来源 */ _gtable);
+                /* class  */ TABLE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _gtable);
     if (row < 0 && col < 0) {
         tableEvent.setRowAndColumn(_gtable->getSelectedRow(), _gtable->getSelectedColumn());
     } else {
@@ -900,7 +900,7 @@ void _Internal_QTableWidget::closeEditor(QWidget* editor, QAbstractItemDelegate:
     if (!_gtable) {
         return;
     }
-    // TODO：即使编辑已提交，这也会触发吗？
+    // TODO: doesn't this fire even if the edit is committed?
     fireTableEvent(TABLE_EDIT_CANCEL, "tableeditcancel");
 }
 
@@ -911,16 +911,16 @@ void _Internal_QTableWidget::handleCellChange(int row, int column) {
     fireTableEvent(TABLE_UPDATED, "tableupdate", row, column);
 }
 
-void _Internal_QTableWidget::handleCellDoubleClick(int /*行*/, int /*列*/) {
+void _Internal_QTableWidget::handleCellDoubleClick(int /*row*/, int /*column*/) {
     if (!_gtable) {
         return;
     }
-    _lastKeyPressed = Qt::Key_F2;   // 模拟按下 F2
-    // edit() 将触发编辑/替换开始事件
+    _lastKeyPressed = Qt::Key_F2;   // pretend we pressed F2
+    // edit/replace begin event will be fired by edit()
     // fireTableEvent(GEvent::TABLE_EDIT_BEGIN, "tableeditbegin", row, column);
 }
 
-void _Internal_QTableWidget::handleSelectionChange(const QItemSelection& selected, const QItemSelection& /*未选中*/) {
+void _Internal_QTableWidget::handleSelectionChange(const QItemSelection& selected, const QItemSelection& /*deselected*/) {
     if (!_gtable) {
         return;
     }
@@ -935,13 +935,13 @@ void _Internal_QTableWidget::handleSelectionChange(const QItemSelection& selecte
 void _Internal_QTableWidget::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QTableWidget::keyPressEvent", "event");
     if (!_gtable) {
-        QTableWidget::keyPressEvent(event);   // 调用父类实现
+        QTableWidget::keyPressEvent(event);   // call super
         return;
     }
     _lastKeyPressed = event->key();
     bool wasEditing = isEditing();
     if (!wasEditing && event->key() == Qt::Key_Delete) {
-        // 清除所选单元格中的数据
+        // clear data from selected cell
         if (_gtable->hasSelectedCell()) {
             GridLocation loc = _gtable->getSelectedCell();
             _gtable->clearCell(loc.row, loc.col);
@@ -949,58 +949,58 @@ void _Internal_QTableWidget::keyPressEvent(QKeyEvent* event) {
         }
     }
 
-    // 任何其他按键
+    // any other key
     if (wasEditing || !_gtable->hasSelectedCell()) {
-        QTableWidget::keyPressEvent(event);   // 调用父类实现
+        QTableWidget::keyPressEvent(event);   // call super
         return;
     }
 
     bool nowEditing = isEditing();
 
     if (GClipboard::isCut(event)) {
-        // 键盘“剪切”命令；从单元格移除数据并放入剪贴板
+        // keyboard "cut" command; remove data from cell into clipboard
         GridLocation loc = _gtable->getSelectedCell();
         std::string cellValue = _gtable->get(loc.row, loc.col);
         GClipboard::set(cellValue);
         _gtable->clearCell(loc.row, loc.col);
-        QTableWidget::keyPressEvent(event);   // 调用父类实现
+        QTableWidget::keyPressEvent(event);   // call super
         fireTableEvent(TABLE_CUT, "tablecut");
         return;
     }
 
     if (GClipboard::isCopy(event)) {
-        // 键盘“复制”命令；将单元格数据复制到剪贴板
+        // keyboard "copy" command; copy data from cell into clipboard
         std::string cellValue = _gtable->getSelectedCellValue();
         GClipboard::set(cellValue);
-        QTableWidget::keyPressEvent(event);   // 调用父类实现
+        QTableWidget::keyPressEvent(event);   // call super
         fireTableEvent(TABLE_COPY, "tablecopy");
         return;
     }
 
     if (GClipboard::isPaste(event)) {
-        // 键盘“粘贴”命令；将剪贴板数据复制到单元格
+        // keyboard "paste" command; copy data from clipboard into cell
         std::string cellValue = GClipboard::get();
         _gtable->setSelectedCellValue(cellValue);
-        QTableWidget::keyPressEvent(event);   // 调用父类实现
+        QTableWidget::keyPressEvent(event);   // call super
         fireTableEvent(TABLE_PASTE, "tablepaste");
         return;
     }
 
-    // 如果单元格从非编辑状态变为编辑状态，则编辑已开始
+    // if cell went from non-editing state to editing state, edit has begun
     if (nowEditing) {
         if (event->key() == Qt::Key_F2) {
-            // F2 键开始编辑单元格的现有值
-            // edit() 方法将触发 edit_begin
+            // F2 key begins editing existing value for a cell
+            // edit_begin will be fired by edit() method
             // fireTableEvent(GEvent::TABLE_EDIT_BEGIN, "tableeditbegin");
         } else if (event->key() == Qt::Key_Tab) {
-            // Tab 键跳转到编辑相邻单元格
+            // Tab key jumps to edit the neighboring cell
         } else {
-            // 任何其他文本会开始用新值替换该值
-            // replace_begin 将由 edit() 方法触发
+            // any other text starts replacing the value with a new value
+            // replace_begin will be fired by edit() method
             // fireTableEvent(GEvent::TABLE_REPLACE_BEGIN, "tablereplacebegin");
         }
     }
-    QTableWidget::keyPressEvent(event);   // 调用父类实现
+    QTableWidget::keyPressEvent(event);   // call super
 }
 
 QSize _Internal_QTableWidget::sizeHint() const {

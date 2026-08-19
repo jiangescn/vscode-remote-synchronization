@@ -4,7 +4,7 @@
 using namespace std;
 
 Set<Pair> fastMaxWeightMatching(const Map<string, Map<string, int>>& links) {
-    /* 将链接线性化为可预测顺序。 */
+    /* Linearize links into a predictable order. */
     Map<int, string> order;
     Map<string, int> toIndex;
     for (string name: links) {
@@ -13,7 +13,7 @@ Set<Pair> fastMaxWeightMatching(const Map<string, Map<string, int>>& links) {
         toIndex[name] = index;
     }
 
-    /* 构建图。 */
+    /* Build the graph. */
     auto graph = EdRothberg::NewGraph(links.size());
     for (const auto& src: links) {
         for (const auto& dst: links[src]) {
@@ -23,11 +23,11 @@ Set<Pair> fastMaxWeightMatching(const Map<string, Map<string, int>>& links) {
         }
     }
 
-    /* 运行匹配。 */
+    /* Run the matching. */
     auto matching = EdRothberg::WeightedMatch(graph);
     EdRothberg::FreeGraph(graph);
 
-    /* 转换为键值对。 */
+    /* Convert to pairs. */
     Set<Pair> result;
     for (const auto& entry: matching) {
         result.add({ order[entry.first], order[entry.second] });
@@ -38,7 +38,7 @@ Set<Pair> fastMaxWeightMatching(const Map<string, Map<string, int>>& links) {
 
 namespace {
     Set<Pair> fastMaxCardinalityMatching(const Map<string, Set<string>>& links) {
-        /* 转换为每条边成本均为 1 的图。 */
+        /* Transform to a graph where each edge has cost 1. */
         Map<string, Map<string, int>> newLinks;
         for (const auto& src: links) {
             for (const auto& dst: links[src]) {
@@ -46,7 +46,7 @@ namespace {
             }
         }
 
-        /* 现在，在这个新图中寻找最大权重匹配。 */
+        /* Now find a maximum-weight matching in this new graph. */
         return fastMaxWeightMatching(newLinks);
     }
 }
@@ -57,8 +57,8 @@ bool hasPerfectMatching(const Map<string, Set<string>>& possibleLinks, Set<Pair>
 }
 
 Set<Pair> fastMWMCMatching(const Map<string, Map<string, int>>& possibleLinks) {
-    /* 人为将所有边成本增加一定数值，使选择以下方案始终更好：
-     * 边越多，而不是越少。
+    /* Artificially boost all the edge costs by an amount such that it is always better to
+     * have more edges than fewer edges.
      */
     int maxEdge = 0;
     for (const string& src: possibleLinks) {
@@ -70,8 +70,8 @@ Set<Pair> fastMWMCMatching(const Map<string, Map<string, int>>& possibleLinks) {
     Map<string, Map<string, int>> newLinks;
     for (const string& src: possibleLinks) {
         for (const string& dst: possibleLinks[src]) {
-            /* 每条边的增量等于所有项目按以下方式配对时得到的分数：
-             * 最大值。现在，任何匹配都必须包含最多数量的边。
+            /* Each edge is boosted by the score you'd get if everything was paired at the
+             * maximum value. Now, any matching has to include the maximum number of edges.
              */
             newLinks[src][dst] = possibleLinks[src][dst] + (maxEdge + 1) * possibleLinks.size();
         }

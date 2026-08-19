@@ -4,12 +4,12 @@ using namespace std;
 
 /******************************************************************************
  ******************************************************************************
- *********                 第一部分：打印芯片                    *********
+ *********                 Part One: Printing Chip                    *********
  ******************************************************************************
  ******************************************************************************/
 
-/* 打印一个宽为 n 个字符、高为 n 个字符的字母 H
- * 高。例如，调用 printH(5) 会打印
+/* Prints a letter H that's n characters wide and n characters
+ * tall. For example, calling printH(5) prints
  *
  *       *   *
  *       *   *
@@ -17,7 +17,7 @@ using namespace std;
  *       *   *
  *       *   *
  *
- * 调用 printH(7) 会打印
+ * and calling printH(7) prints
  *
  *       *     *
  *       *     *
@@ -26,17 +26,18 @@ using namespace std;
  *       *     *
  *       *     *
  *       *     *
+ * n^2
  */
 void printH(int n) {
     for (int row = 0; row < n; row++) {
         for (int col = 0; col < n; col++) {
-            /* 如果字符位于最开始或最后，则它是星号
-             * 列，或者它位于中间行。
+            /* The character is a star if it's in the very first or very last
+             * column, or if it's in the middle row.
              */
             if (row == n / 2 || col == 0 || col == n - 1) {
                 cout << '*';
             }
-            /* 否则，它为空白。 */
+            /* Otherwise, it's blank. */
             else {
                 cout << ' ';
             }
@@ -45,16 +46,16 @@ void printH(int n) {
     }
 }
 
-/* 打印一个宽和高均为 n 个字符的字母 C。
+/* Prints a letter C that is n characters wide and n characters tall.
  *
- * 例如，printC(4) 打印
+ * For example, printC(4) prints
  *
  *       ****
  *       *
  *       *
  *       ****
  *
- * 调用 printC(10) 会打印
+ * and printC(10) prints
  *
  *       **********
  *       *
@@ -66,25 +67,26 @@ void printH(int n) {
  *       *
  *       *
  *       **********
+ * n
  */
 void printC(int n) {
     for (int row = 0; row < n; row++) {
-        /* 第一行/最后一行打印一整行星号。 */
+        /* First/last row print a row of stars. */
         if (row == 0 || row == n - 1) {
             for (int col = 0; col < n; col++) {
                 cout << '*';
             }
             cout << endl;
         }
-        /* 其他每一行只打印一个星号。 */
+        /* Every othe row prints just a single star. */
         else {
             cout << '*' << endl;
         }
     }
 }
 
-/* 打印一个宽为 n 个字符、高为 n 个字符的字母 I
- * 高。例如，调用 printI(5) 会打印
+/* Prints a letter I that's n characters wide and n characters
+ * tall. For example, calling printI(5) prints
  *
  *       *****
  *         *
@@ -92,7 +94,7 @@ void printC(int n) {
  *         *
  *       *****
  *
- * 调用 printI(7) 会打印
+ * and calling printI(7) prints
  *
  *       *******
  *          *
@@ -101,16 +103,17 @@ void printC(int n) {
  *          *
  *          *
  *       *******
+ * n^2
  */
 void printI(int n) {
     for (int row = 0; row < n; row++) {
-        /* 顶部和底部两行全部是星号。 */
+        /* Top and bottom rows are full of stars. */
         if (row == 0 || row == n - 1) {
             for (int col = 0; col < n; col++) {
                 cout << '*';
             }
         }
-        /* 其他每一行都需要在中点处有一个星号。 */
+        /* Every other row needs a star at the halfway point. */
         else {
             for (int col = 0; col < (n / 2); col++) {
                 cout << ' ';
@@ -121,8 +124,8 @@ void printI(int n) {
     }
 }
 
-/* 打印一个宽为 n 个字符、高为 n 个字符的字母 P
- * 高。例如，调用 printP(5) 会打印
+/* Prints a letter P that's n characters wide and n characters
+ * tall. For example, calling printP(5) prints
  *
  *       *****
  *       *   *
@@ -130,7 +133,7 @@ void printI(int n) {
  *       *
  *       *
  *
- * 调用 printP(7) 会打印
+ * and calling printP(7) prints
  *
  *       *******
  *       *     *
@@ -139,16 +142,17 @@ void printI(int n) {
  *       *
  *       *
  *       *
+ * n^2
  */
 void printP(int n) {
     for (int row = 0; row < n; row++) {
-        /* 顶部和中间两行全部是星号。 */
+        /* Top and middle rows are full of stars. */
         if (row == 0 || row == n / 2) {
             for (int col = 0; col < n; col++) {
                 cout << '*';
             }
         }
-        /* 上半部分其他每一行在开头和末尾各有一个星号。 */
+        /* Every other row in the top half has a star at the front and back. */
         else if (row < n / 2) {
             for (int col = 0; col < n; col++) {
                 if (col == 0 || col == n - 1) {
@@ -158,7 +162,7 @@ void printP(int n) {
                 }
             }
         }
-        /* 其余所有行只在开头有一个星号。 */
+        /* All remaining rows just have a star at the front. */
         else {
             cout << '*';
         }
@@ -166,7 +170,8 @@ void printP(int n) {
     }
 }
 
-/* 使用给定大小的字母打印单词 "CHIP"。 */
+/* Prints the word "CHIP" using letters of the given size. */
+// n^2
 void printChip(int n) {
     printC(n);
     cout << endl;
@@ -179,14 +184,15 @@ void printChip(int n) {
 
 /******************************************************************************
  ******************************************************************************
- *********                 第二部分：计算三元组                  *********
+ *********                 Part Two: Counting Triples                 *********
  ******************************************************************************
  ******************************************************************************/
 
-/* 给定整数向量，统计其中元素三元组的数量
- * Vector 中元素之和恰好等于目标值的组合。例如，给定
- * 对于输入 {0, 1, 2, 3, 4} 和目标值 5，函数将返回 2，
- * 因为有两组三元组（{0, 1, 4} 和 {0, 2, 3}）
+/* Given a vector of integers, counts the number of triples of elements in
+ * the vector that sum up to exactly the target. For example, given the
+ * input {0, 1, 2, 3, 4} and a target of 5, the function would return 2,
+ * since there are two triples of numbers ({0, 1, 4} and {0, 2, 3})
+ * n^3
  */
 int countTriples(const Vector<int>& values, int target) {
     int result = 0;
@@ -204,45 +210,48 @@ int countTriples(const Vector<int>& values, int target) {
 
 /******************************************************************************
  ******************************************************************************
- *********                 第三部分：打印周期                    *********
+ *********                Part Three: Printing Cycles                 *********
  ******************************************************************************
  ******************************************************************************/
 
-/* 给定整数向量，通过反复执行以下操作循环遍历向量：
- * 先输出第一个元素，然后将其移除并移动到
- * 向量的末尾。这与以下示例中的 Looper 类似：
- * 类，但只执行一次循环。
+/* Given a vector of integers, cycles through the vector by repeatedly
+ * printing out the first element, then removing it and moving it to
+ * the back of the vector. This is similar to the Looper example from
+ * class, except that it only does one loop.
  *
- * 第一个版本使用 .remove(0) 和 += 实现循环移动。
+ * This first version uses .remove(0) and += to do the cycling.
+ * n^2
  */
 void printCycle_v1(Vector<int>& values) {
     for (int i = 0; i < values.size(); i++) {
         int first = values[0];
-        values.remove(0); // 删除第一个元素
-        values += first;  // 将该元素追加到末尾。
+        values.remove(0); // Remove first element  -> O(n)
+        values += first;  // Append that element to the back.
 
         cout << first << endl;
     }
 }
 
-/* 给定整数向量，通过反复执行以下操作循环遍历向量：
- * 先输出第一个元素，然后将其移除并移动到
- * 向量的末尾。这与以下示例中的 Looper 类似：
- * 类，但只执行一次循环。
+/* Given a vector of integers, cycles through the vector by repeatedly
+ * printing out the first element, then removing it and moving it to
+ * the back of the vector. This is similar to the Looper example from
+ * class, except that it only does one loop.
  *
- * 第一个版本使用 .subList 和 + 实现循环移动。
+ * This first version uses .subList and + to do the cycling.
+ * n^2
  */
 void printCycle_v2(Vector<int>& values) {
     for (int i = 0; i < values.size(); i++) {
         int first = values[0];
-        values = values.subList(1) + first; // 循环移动元素
+        values = values.subList(1) + first; // Cycle the elements
 
         cout << first << endl;
     }
 }
 
-/* 给定整数队列，使用以下方式循环遍历队列
- * 一种类似于我们在 looper 中使用的方法。
+/* Given a queue of integers, cycles through the queue using
+ * an approach similar to the one we used for the looper.
+ * n
  */
 void printCycle_v3(Queue<int>& values) {
     for (int i = 0; i < values.size(); i++) {
@@ -255,13 +264,14 @@ void printCycle_v3(Queue<int>& values) {
 
 /******************************************************************************
  ******************************************************************************
- *********                 第四部分：递归谜题                    *********
+ *********                Part Four: Recursive Puzzles                *********
  ******************************************************************************
  ******************************************************************************/
 
-/* 用于练习分析效率的递归函数。
- * 跟踪递归的工作过程，并据此形成关于以下内容的假设：
- * 运行时。
+/* A recursive function designed to give you practice assessing efficiency.
+ * Trace out how the recursion works and use that to form a hypothesis about
+ * the runtime.
+ * n
  */
 int recursivePuzzle(int n) {
     if (n == 0) {
@@ -270,9 +280,10 @@ int recursivePuzzle(int n) {
     return 1 + recursivePuzzle(n - 1);
 }
 
-/* 用于练习分析效率的递归函数。
- * 跟踪递归的工作过程，并据此形成关于以下内容的假设：
- * 运行时。
+/* A recursive function designed to give you practice assessing efficiency.
+ * Trace out how the recursion works and use that to form a hypothesis about
+ * the runtime.
+ * log(n)
  */
 int recursiveEnigma(int n) {
     if (n == 0) {
@@ -283,34 +294,35 @@ int recursiveEnigma(int n) {
 
 /******************************************************************************
  ******************************************************************************
- *********                 第五部分：最大单次卖出利润            *********
+ *********            Part Five: Maximum Single-Sell Profit           *********
  ******************************************************************************
  ******************************************************************************/
 
-/* “Maximum Single-Sell Profit”问题。在此问题中，给定一个
- * 某只股票的历史价格。你可以购买该股票一次，并在之后卖出一次
- * 一次。目标是获得尽可能高的利润。例如，假设
- * 给定以下价格列表：
+/* The "Maximum Single-Sell Profit" problem. In this problem, you're given a list of
+ * the historical values of a stock. You're allowed to buy the stock once and sell it
+ * once. The goal is to make the maximum amount of profit possible. For example, suppose
+ * you're given this price list:
  *
  *         5 6 7 1 2 3 4
  *
- * 这里，最佳选择是在股票零售价为 1 美元时买入，然后
- * 在价值为 4 美元时卖出。不能在 1 美元时买入并在 7 美元时卖出，因为
- * prices 按顺序反映股票的历史价值；该股票当时的价格为
- * $7，但随后立即降至 $1。
+ * Here, the best option would be to buy the stock when it's retailing for $1, then
+ * sell it when it's valued at $4. We can't buy it at $1 and sell it for $7 because
+ * the prices reflect the historical value of the stock in order; the stock was at
+ * $7 but then dropped to $1 immediately afterwards.
  *
- * 或者假设你有这个数字列表：
+ * Or suppose you have this list of numbers:
  *
  *        10 9 8 7 6 5 4 3 2 1
  *
- * 在这种情况下，最大利润为 0 美元：买入股票后立即卖出
- * 立即。
+ * In this case, your maximum profit would be $0: buy the stock and then sell it
+ * immediately.
  *
- * 解决此问题的方法很多。函数的第一个版本采用
- * 通过检查所有买入/卖出组合并选取最佳方案。
+ * There are many ways to solve this problem. This first version of the function works
+ * by looking at all buy/sell pairs and taking the best.
+ * n^2
  */
 int maximumSingleSellProfit_v1(const Vector<int>& values) {
-    int best = 0; // 可以在同一天买入和卖出，利润为 $0。
+    int best = 0; // Could buy and sell on the same day for $0 profit.
     for (int i = 0; i < values.size(); i++) {
         for (int j = i + 1; j < values.size(); j++) {
             best = max(best, values[j] - values[i]);
@@ -319,22 +331,23 @@ int maximumSingleSellProfit_v1(const Vector<int>& values) {
     return best;
 }
 
-/* 有一种非常巧妙的递归算法可以解决此问题。其中有一些
- * 我们购买股票的时间和出售股票的某个时间。这些时间要么
+/* There's a very clever recursive algorithm for solving this problem. There's some
+ * time we buy the stock and some time we sell the stock. Those times are either
  *
- *   1. 完全位于数组的前半部分，
- *   2. 完全位于数组的后半部分，或
- *   3. 购买时间在前半部分，出售时间在后半部分。
+ *   1. purely in the first half of the array,
+ *   2. purely in the second half of the array, or
+ *   3. the purchase time is in the first half and the sell time is in the second.
  *
- * 可以使用递归找出 (1) 或 (2) 的最佳解——寻找最佳
- * 在较小子数组上可获得的利润。对于（3），取最小价格
- * 第一半中的最小价格和第二半中的最大价格。最佳选择
- * 必须是这三者之一。
+ * We can find the best solution to (1) or (2) using recursion - finding the best
+ * profit we can make on a smaller subarray. For (3), we take the minimum price
+ * in the first half and the maximum price in the second half. The best option
+ * must be one of those three.
+ * n*log(n)
  */
 int maximumSingleSellProfit_v2(const Vector<int>& values) {
-    /* 基本情况：如果列表少于两个元素，则你要么无法
-     * 不买卖任何东西，或者必须按买入价卖出。无论哪种情况，你
-     * 不产生利润。
+    /* Base case: If the list has fewer than two elements, then you either can't
+     * buy or sell anything or you have to sell at the buy price. Either way you
+     * make no profit.
      */
     if (values.size() < 2) {
         return 0;
@@ -342,14 +355,14 @@ int maximumSingleSellProfit_v2(const Vector<int>& values) {
 
     int half = values.size() / 2;
 
-    /* 找到完全在前半部分或完全在后半部分买入并卖出的最大利润
-     * 列表的后半部分。
+    /* Find the max profit buying and selling purely in the first or
+     * second half of the list.
      */
     int firstHalfProfit  = maximumSingleSellProfit_v2(values.subList(0, half));
     int secondHalfProfit = maximumSingleSellProfit_v2(values.subList(half));
 
-    /* 在前半部分找到最佳买入价，在后半部分找到最佳买入价
-     * 后半部分。
+    /* Find the best buy price in the first half and theb est buy price in the
+     * second half.
      */
     int firstMin = values[0];
     for (int i = 1; i < half; i++) {
@@ -360,9 +373,9 @@ int maximumSingleSellProfit_v2(const Vector<int>& values) {
         secondMax = max(secondMax, values[i]);
     }
 
-    /* 最佳选择要么是在以下范围内纯粹买入和卖出的最大利润
-     * 前半部分，或者完全在后半部分买入和卖出的最大利润，
-     * 或在前半段买入、后半段卖出。
+    /* The best option is either the max profit purely buying and selling in the
+     * first half, or the max profit buying and selling purely in the second half,
+     * or by buying in the first half and selling in the second.
      */
     return max({ firstHalfProfit, secondHalfProfit, secondMax - firstMin });
 }

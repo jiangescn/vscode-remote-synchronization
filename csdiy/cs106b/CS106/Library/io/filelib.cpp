@@ -1,27 +1,27 @@
 /*
- * 文件：filelib.cpp
+ * File: filelib.cpp
  * -----------------
- * 此文件实现 filelib.h 接口。
- * 平台相关函数通过 filelib_* 函数处理
- * 定义于 filelibunix.cpp 和 filelibwindows.cpp。
+ * This file implements the filelib.h interface.
+ * Platform-dependent functions are handled through filelib_* functions
+ * defined in filelibunix.cpp and filelibwindows.cpp.
  * 
  * @version 2016/11/20
- * - 修复 readEntireStream 方法中的小错误（对非文本文件失败）
+ * - small bug fix in readEntireStream method (failed for non-text files)
  * @version 2016/11/12
- * - 添加 fileSize、readEntireStream
+ * - added fileSize, readEntireStream
  * @version 2016/08/12
- * - 添加接受 path 参数的第二个 openFileDialog 重载
+ * - added second overload of openFileDialog that accepts path parameter
  * @version 2015/07/05
- * - 移除全局静态 Platform 变量，改为在需要时调用 getPlatform
- * - 将 appendSpace 函数移至 simpio
+ * - removed static global Platform variable, replaced by getPlatform as needed
+ * - moved appendSpace function to simpio
  * @version 2015/04/12
- * - 添加不带流参数的 promptUserForFile 重载
+ * - added promptUserForFile overload without stream parameter
  * @version 2014/10/19
- * - 按字母顺序排列函数声明
- * - 为提高效率，将许多函数的参数由 string 改为 const string&
- * - 添加返回 Vector 的 listDirectory 重载
+ * - alphabetized function declarations
+ * - converted many funcs to take const string& rather than string for efficiency
+ * - added listDirectory overload that returns a Vector
  * @version 2014/10/08
- * - 移除“using namespace”语句
+ * - removed 'using namespace' statement
  */
 
 #include "filelib.h"
@@ -33,12 +33,12 @@
 #include "private/filelibunix.cpp"
 #include "private/filelibwindows.cpp"
 
-/* 函数原型 */
+/* Prototypes */
 
 static void splitPath(const std::string& path, Vector<std::string> list);
 static bool recursiveMatch(const std::string& str, int sx, const std::string& pattern, int px);
 
-/* 实现 */
+/* Implementations */
 
 void createDirectory(const std::string& path) {
     return platform::filelib_createDirectory(expandPathname(path));
@@ -49,7 +49,7 @@ void createDirectoryPath(const std::string& path) {
     if (path == "") return;
     std::string expandedPath = expandPathname(path);
     char sep = getDirectoryPathSeparator()[0];
-    if (expandedPath.substr(1, 2) == ":\\") { // Windows 驱动器号后跟 ':\\'
+    if (expandedPath.substr(1, 2) == ":\\") { // Windows drive letter followed by ':\'
         cp = 2;
     }
     while ((cp = expandedPath.find(sep, cp + 1)) != std::string::npos) {
@@ -423,8 +423,8 @@ void renameFile(const std::string& oldname, const std::string& newname) {
 }
 
 void rewindStream(std::istream& input) {
-    input.clear();                  // 移除当前所有 EOF/失败标志
-    input.seekg(0, std::ios::beg);  // 指示流定位回开头
+    input.clear();                  // removes any current eof/failure flags
+    input.seekg(0, std::ios::beg);  // tells the stream to seek back to the beginning
 }
 
 void setCurrentDirectory(const std::string& path) {
@@ -448,7 +448,7 @@ bool writeEntireFile(const std::string& filename,
     return !output.fail();
 }
 
-/* 私有函数 */
+/* Private functions */
 
 static void splitPath(const std::string& path, Vector<std::string> list) {
     char sep = (path.find(';') == std::string::npos) ? ':' : ';';

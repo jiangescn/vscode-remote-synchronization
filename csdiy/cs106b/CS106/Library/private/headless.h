@@ -1,10 +1,10 @@
 /*
- * 文件：headless.h
+ * File: headless.h
  * ----------------
- * 此文件包含一些用于在无 GUI 的“无头”模式下运行的代码。
+ * This file contains some code for running in "headless" mode with no GUI.
  *
  * @version 2018/11/22
- * - 初始版本
+ * - initial version
  */
 
 
@@ -13,10 +13,10 @@
 
 #ifdef SPL_HEADLESS_MODE
 
-// 构造一个 Qt 版本号
+// make up a Qt version
 #define QT_VERSION 5110
 
-// 让 Qt 版本宏生成低于此值的版本
+// make Qt version macro produce a version less than this
 #define QT_VERSION_CHECK(a, b, c) 5090
 
 #endif // SPL_HEADLESS_MODE

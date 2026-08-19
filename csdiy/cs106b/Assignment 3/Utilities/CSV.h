@@ -7,24 +7,24 @@
 #include <istream>
 #include <stdexcept>
 
-/* 表示从带标题行的 CSV 文件中读取的数据类型。访问方式为
- * 以 csv[row][column] 形式提供，其中 column 可由整数或以下方式指定：
- * 或作为某个列标题。
+/* Type representing data read from a CSV file containing a header row. Access is
+ * provided as csv[row][column], where column can be specified either by an integer
+ * or as one of the column headers.
  */
 class CSV {
 public:
-    /* 解析例程。 */
+    /* Parsing routines. */
     inline static CSV parse(std::istream& source);
     inline static CSV parseFile(const std::string& filename);
 
-    /* 基本访问器。 */
-    inline std::size_t numRows() const;   // 不包含标题
+    /* Basic accessors. */
+    inline std::size_t numRows() const;   // Doesn't include header
     inline std::size_t numCols() const;
     
-    /* 头部信息。 */
+    /* Header information. */
     inline std::vector<std::string> headers() const;
 
-    /* 访问器代理类。 */
+    /* Accessor proxy class. */
     class RowRef {
     public:
         inline std::string operator[] (std::size_t col) const;
@@ -41,22 +41,22 @@ public:
     inline RowRef operator[] (std::size_t col) const;
 
 private:
-    /* 数据。内部表示为字符串二维网格，并附带
-     * 辅助列标题数据。
+    /* The data. It's internally represented as a 2D grid of strings, along with
+     * auxiliary column header data.
      *
-     * 网格本身按行优先顺序表示，不包含
-     * 列标题。
+     * The grid itself is represented in row-major order, and does not include the
+     * column headers.
      */
     std::vector<std::string> mData;
     std::size_t              mRows;
 
-    /* 列标题编码为从标题到索引的映射，因为
-     * 主要支持的操作是从名称映射到列。
+    /* Column headers are encoded as a map from headers to indices, since the
+     * primary operation we'll be supporting is mapping from a name to a column.
      */
     std::unordered_map<std::string, std::size_t> mColumnHeaders;
 };
 
-/* 表示由 CSV 问题引起的错误类型。 */
+/* Type representing an error caused by a CSV issue. */
 class CSVException: public std::logic_error {
 public:
     inline CSVException(const std::string& message);
@@ -68,31 +68,31 @@ public:
 
 
 
-/* * * * * 此处以下为实现部分 * * * * */
+/* * * * * Implementation Below This Point * * * * */
 
 #include <sstream>
 #include <fstream>
 #include <tuple>
 
 namespace MiniData_CSVImpl {
-    /* 报告错误。 */
+    /* Reports an error. */
     [[ noreturn ]] inline void csvError(const std::string& message) {
         throw CSVException(message);
     }
 
-    /* 从源中读取一个 CSV 词元。每个词元要么
+    /* Reads a single CSV token from a source. Each token either
      *
-     *  1. 不以引号开头，此时读取到第一个逗号为止；或者
-     *  2. 以引号开头，此时读取到接下来的右引号，并注意
-     *     并在途中处理转义引号。
+     *  1. does not start with a quote, in which case we read up until the first comma, or
+     *  2. starts with a quote, in which case we read to the upcoming close quote, watching for
+     *     escaped quotes along the way.
      *
-     * 允许空条目。
+     * Empty entries are acceptable.
      */
     inline std::string readOneTokenFrom(std::istream& input) {
-        /* 边界情况：允许空条目。 */
+        /* Edge case: empty entries are fine. */
         if (input.peek() == ',') return "";
         
-        /* 若开头不是引号，则读取到引号为止。 */
+        /* If we don't start with a quote, read up until we do. */
         if (input.peek() != '"') {
             std::string result;           
             while (true) {
@@ -103,10 +103,10 @@ namespace MiniData_CSVImpl {
             }
         }
         
-        /* 当前正在读取带引号的字符串。继续读取字符，同时注意右引号
-         * 引号可能并不是真正的字符串结束标记。
+        /* We are looking a quoted string. Keep reading characters, keeping in mind that a close
+         * quote might not actually be the end-of-string marker.
          */
-        input.get(); // 跳过引号
+        input.get(); // Skip quotation mark
         
         std::string result;
         while (true) {
@@ -116,9 +116,9 @@ namespace MiniData_CSVImpl {
             else if (ch != '"') result += char(ch);
             else {
                 int next = input.peek();
-                if (next == EOF || next == ',') return result; // 词元结束
+                if (next == EOF || next == ',') return result; // End of token
                 else if (next == '"') {
-                    /* 读取并跳过此字符，以免重复处理。 */
+                    /* Consume this character so we don't process it twice. */
                     input.get();
                     result += '"';
                 } else csvError("Unexpected character found after quote.");
@@ -126,27 +126,27 @@ namespace MiniData_CSVImpl {
         }
     }
 
-    /* 将 CSV 文件的一行词元化，返回该行中的词元列表。 */
+    /* Tokenizes a line from a CSV file, returning a list of tokens within that line. */
     inline std::vector<std::string> tokenize(const std::string& line) {
-        /* 边界情况：假定不存在空行，尽管理论上可以
-         * 设想一个 0 × n 的数据数组。这通常表示出了问题。
+        /* Edge case: we assume there are no empty lines even though in principle we could
+         * envision a 0 x n data array. That likely just means something went wrong.
          */
         if (line.empty()) csvError("Empty line in CSV data.");
     
-        /* 转换为流，以便像处理流一样处理这些字符。 */
+        /* Convert to a stream to make it easier to treat the characters as though they're a stream. */
         std::istringstream input(line);
         
         std::vector<std::string> result;
         while (true) {
             result.push_back(readOneTokenFrom(input));
             
-            /* 此时应当看到逗号或 EOF。 */
+            /* We should either see a comma or an EOF at this point. */
             if (input.peek() == EOF) return result;
             if (input.get()  != ',') csvError("Entries in CSV file aren't comma-separated?");
         }
     }
 
-    /* 读取 CSV 文件第一行，并将其拆分为标题。 */
+    /* Reads the first line of a CSV file, breaking it apart into headers. */
     inline std::unordered_map<std::string, std::size_t> readHeaders(std::istream& input) {
         std::string line;
         if (!std::getline(input, line)) csvError("Could not read header row from CSV source.");
@@ -162,14 +162,14 @@ namespace MiniData_CSVImpl {
         return result;
     }
     
-    /* 读取 CSV 文件正文，并假定其具有一定数量的
-     * 列。
+    /* Reads the body of a CSV file under the assumption that it has a certain number of
+     * columns.
      *
-     * 结果由数据的行优先序列和以下内容配对组成：
-     * 数据中的行数。
+     * The result is a pairing of the row-major-ordering of the data, along with the
+     * number of rows in the data.
      */
     inline std::tuple<std::vector<std::string>, std::size_t> readBody(std::istream& input, std::size_t numCols) {
-        /* 先将网格构建为 vector<vector<string>>，最后再折叠。 */
+        /* We'll build the grid as a vector<vector<string>> and collapse it at the end. */
         std::vector<std::vector<std::string>> lines;
         for (std::string line; std::getline(input, line); ) {
             auto tokens = tokenize(line);
@@ -178,7 +178,7 @@ namespace MiniData_CSVImpl {
             lines.push_back(tokens);
         }
         
-        /* 展平该列表。 */
+        /* Flatten the list. */
         std::vector<std::string> result;
         for (std::size_t row = 0; row < lines.size(); row++) {
             for (std::size_t col = 0; col < numCols; col++) {
@@ -244,7 +244,7 @@ inline std::string CSV::RowRef::operator[] (const std::string& colHeader) const 
 }
 
 inline CSVException::CSVException(const std::string& message) : std::logic_error(message) {
-    // 已在初始化列表中处理
+    // Handled in initialization list
 }
 
 #endif

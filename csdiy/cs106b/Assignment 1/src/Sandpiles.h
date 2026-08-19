@@ -1,9 +1,9 @@
 /******************************************************************************
- * 文件：Sandpiles.h
- * 作者：Keith Schwarz（htiek@cs.stanford.edu）
+ * File: Sandpiles.h
+ * Author: Keith Schwarz (htiek@cs.stanford.edu)
  *
- * 作业中 Sandpiles 部分的头文件。你不应
- * 修改此文件。
+ * Header file for the Sandpiles portion of the assignment. You should not
+ * modify this file.
  */
 
 #ifndef Sandpile_Included
@@ -12,18 +12,18 @@
 #include "grid.h"
 
 /**
- * 在指定位置向特定世界中落下一粒沙子。
+ * Drops a grain of sand into the specific world at the specified position.
  *
- * 如果位置越界，此函数不产生任何效果，网格
- * 保持不变。
+ * If the position is out of bounds, then this function has no effect and the grid
+ * is left unmodified.
  *
- * 这可能触发倒塌，并传播到网格中的其他位置。
- * 当单元格达到四粒沙子时会倒塌；倒塌时会被清空
- * 并在四个相邻单元格中的每个位置落下一粒沙子。
+ * This may trigger a topple, which may propagate to other locations in the grid. A
+ * cell topples when it reaches four grains, and when it topples, it's emptied out
+ * and a grain of sand is dropped on each of the four neighbors.
  *
- * @param world 沙子要落入的网格。
- * @param row 沙子落入的行。
- * @param col 沙子落入的列。
+ * @param world The grid into which to drop the sand.
+ * @param row The row into which the sand is dropped.
+ * @param col The column into which the sand is dropped.
  */
 void dropSandOn(Grid<int>& world, int row, int col);
 

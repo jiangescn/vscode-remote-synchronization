@@ -1,28 +1,28 @@
 #include <vector>
 
-/* Edward Rothberg 于 1985 年 7 月编写 */
+/* Written by Edward Rothberg  7/85 */
 
 namespace EdRothberg {
     namespace {
         #define	MAXWT  1000000
 
-        /* 边 e 进入的花节点编号 */
+        /* the number of the blossom entered by edge e */
         #define BEND(e) (BASE[END[e]])
 
-        /* 与 v 所在花匹配的花 */
+        /* the blossom matched with v's blossom */
         #define BMATE(v) (BASE[END[MATE[v]]])
 
-        /* 通过连接 v 所在花的边进入的花 */
+        /* the blossom entered by the edge that links v's blossom */
         #define BLINK(v) (BASE[END[LINK[v]]])
 
-        /* 方向反转后的边 e */
+        /* the edge e with it's direction reversed */
         #define OPPEDGE(e) (((e - U) % 2 == 0) ? (e - 1) : (e + 1))
 
-        /* 边 e 的松弛量 */
+        /* the slack of edge e */
         #define SLACK(e) (Y[END[e]] + Y[END[OPPEDGE(e)]] - WEIGHT[e])
 
 
-        /* 全局变量 */
+        /* Global variables */
         static int *A,*END,*WEIGHT,*NEXTPAIR;
         static int *MATE,*LINK,*BASE,*NEXTVTX,*LASTVTX,*Y,*NEXT_D,*NEXTEDGE;
 
@@ -51,7 +51,7 @@ using namespace std;
 namespace EdRothberg {
 
     /*****************************************************************/
-    /* 新增：原型                                             */
+    /* Added: prototypes                                             */
     /*****************************************************************/
     static void LINK_PATH (int e);
     static void MERGE_PAIRS (int v);
@@ -66,11 +66,11 @@ namespace EdRothberg {
     static void FreeUp();
 
     /*****************************************************************/
-    /*********************** pairs.cpp 开始 *************************/
+    /*********************** BEGIN pairs.cpp *************************/
     /*****************************************************************/
 
-    /* 处理连接两个已链接顶点的边 */
-    /* 注意：全局变量 v 被设置为连接边一端的基点 */
+    /* Process an edge linking two linked vertices */
+    /* Note: global variable v set to the base of one end of the linking edge */
 
     static void PAIR (int* outcome)
     {   int u, w, temp;
@@ -120,11 +120,11 @@ namespace EdRothberg {
     }
 
 
-    /* 将子花的配对列表合并到新花的配对列表中 */
-    /* v 是此前解除链接的子花节点的基点 */
-    /* 注意：全局变量 newbase 被设置为新花的基点 */
-    /* 	调用时 NEXTPAIR[DUMMYEDGE] 指向第一条边 */
-    /*		在 newbase 的配对列表上 */
+    /* merges a subblossom's pair list into a new blossom's pair list */
+    /* v is the base of the previously unlinked subblossom */
+    /* Note: global variable newbase set to the base of the new blossom */
+    /* 	called with NEXTPAIR[DUMMYEDGE] pointing to the first edge */
+    /*		on newbase's pair list */
 
     static void MERGE_PAIRS (int v)
     {
@@ -145,9 +145,9 @@ namespace EdRothberg {
     }
 
 
-    /* 链接路径 P(END[e],newbase) 中未链接的顶点 */
-    /* 注意：全局变量 newbase 被设置为新花的基顶点 */
-    /*		newlast 被设置为 newbase 当前花中的最后一个顶点*/
+    /* links the unlinked vertices in the path P(END[e],newbase) */
+    /* Note: global variable newbase is set to the base vertex of the new blossom */
+    /*		newlast is set to the last vertex in newbase's current blossom*/
 
     static void LINK_PATH (int e)
     {   int u;
@@ -176,10 +176,10 @@ namespace EdRothberg {
     }
 
 
-    /* 更新花节点的配对列表。 */
-    /* 注意：调用时全局变量 e 被设置为要插入的边。 */
-    /*			将邻居设置为 e 末端的顶点 */
-    /*			将 pairpoint 设置为配对列表中的下一个配对 */
+    /* Update a blossom's pair list. */
+    /* Note: called with global variable e set to the edge to be inserted. */
+    /*			neighbor set to the vertex at the end of e */
+    /*			pairpoint set to the next pair on the pair list */
 
     static void INSERT_PAIR ()
     {   int del_e;
@@ -208,14 +208,14 @@ namespace EdRothberg {
     }
 
     /*****************************************************************/
-    /***********************  pairs.cpp 结束 *************************/
+    /***********************  END  pairs.cpp *************************/
     /*****************************************************************/
 
     /*****************************************************************/
-    /*********************** pointer.cpp 开始 ***********************/
+    /*********************** BEGIN pointer.cpp ***********************/
     /*****************************************************************/
-    /* 将指针链接分配给顶点。边 e 连接花中的一个顶点 */
-    /* u 到一个相连顶点。 */
+    /* Assign a pointer link to a vertex.  Edge e joins a vertex in blossom */
+    /* u to a linked vertex. */
 
     static void POINTER (int u, int v, int e)
     {   int i, del;
@@ -253,7 +253,7 @@ namespace EdRothberg {
     }
 
 
-    /* 扫描基点为 x 的花中的每个顶点 */
+    /* Scan each vertex in the blossom whose base is x */
 
     static void SCAN (int x, int del)
     {   int u, del_e;
@@ -293,15 +293,15 @@ namespace EdRothberg {
 
 
     /*****************************************************************/
-    /***********************  pointer.cpp 结束 ***********************/
+    /***********************  END  pointer.cpp ***********************/
     /*****************************************************************/
 
     /*****************************************************************/
-    /*********************** readgraph.cpp 开始 *********************/
+    /*********************** BEGIN readgraph.cpp *********************/
     /*****************************************************************/
-    /* 设置加权匹配所需的数据结构 */
+    /* set up data structures for weighted match */
 
-    /* 若要添加新类型，请在 SetUp() 中添加新 case 和一个 Set_X() 例程 */
+    /* to add a new type, add new case in SetUp() and a Set_X() routine */
 
     static void SetUp (Graph gptr)
     {   int i,allocsize;
@@ -322,7 +322,7 @@ namespace EdRothberg {
     }
 
 
-    /* 根据 Type 1 图进行设置。 */
+    /* set up from Type 1 graph. */
 
     void SetStandard(Graph graph)
     {   int elabel, adj_node, i, j;
@@ -368,14 +368,14 @@ namespace EdRothberg {
     }
 
     /*****************************************************************/
-    /***********************  readgraph.cpp 结束 *********************/
+    /***********************  END  readgraph.cpp *********************/
     /*****************************************************************/
 
     /*****************************************************************/
-    /*********************** term.c 开始        *********************/
+    /*********************** BEGIN term.c        *********************/
     /*****************************************************************/
-    /* 更新连接路径的数值边界。 */
-    /* 调用时 LAST_D 被设置为下一次搜索的 DELTA 上界 */
+    /* updates numerical bounds for linking paths. */
+    /* called with LAST_D set to the bound on DELTA for the next search */
 
     static void SET_BOUNDS ()
 
@@ -406,7 +406,7 @@ namespace EdRothberg {
     }
 
 
-    /* 展开所有花节点以获得最终匹配 */
+    /* undoes all blossoms to get the final matching */
 
     static void UNPAIR_ALL ()
 
@@ -440,14 +440,14 @@ namespace EdRothberg {
 
 
     /*****************************************************************/
-    /***********************  term.c 结束          *******************/
+    /***********************  END  term.c          *******************/
     /*****************************************************************/
 
 
     /*****************************************************************/
-    /*********************** unpairs.c 开始          ****************/
+    /*********************** BEGIN unpairs.c          ****************/
     /*****************************************************************/
-    /* 展开花。修复 LINK 和 MATE。 */
+    /* Expands a blossom.  Fixes up LINK and MATE. */
 
     static void UNPAIR (int oldbase, int oldmate)
     {   int e, newbase, u;
@@ -483,9 +483,9 @@ namespace EdRothberg {
     }
 
 
-    /* 沿交替路径更改匹配 */
-    /* firstmate 是路径上的第一个基础顶点 */
-    /* 边 e 是 firstmate 的新匹配边   */
+    /* changes the matching along an alternating path */
+    /* firstmate is the first base vertex on the path */
+    /* edge e is the new matched edge for firstmate   */
 
     static void REMATCH (int firstmate, int e)
     {
@@ -509,8 +509,8 @@ namespace EdRothberg {
     }
 
 
-    /* 解除花节点中各子花节点的链接。oldbase 是要 */
-    /* 解除链接。 */
+    /* unlinks subblossoms in a blossom.  oldbase is the base of the blossom to */
+    /* be unlinked. */
 
     static void UNLINK (int oldbase)
     {   int k, j=1;
@@ -558,13 +558,13 @@ UL2:
 
 
     /*****************************************************************/
-    /***********************  unpairs.c 结束          ****************/
+    /***********************  END  unpairs.c          ****************/
     /*****************************************************************/
 
     std::vector<std::pair<int, int>> WeightedMatch (Graph gptr)
     {   int g, j, w, outcome;
 
-        /* 设置内部数据结构 */
+        /* set up internal data structure */
         SetUp(gptr);
         Initialize();
 
@@ -613,11 +613,11 @@ done:
                 MATE[i]=0;
         }
 
-        /*** 新增：将结果转换为键值对列表。***/
+        /*** NEW: Convert the result to a list of pairs. ***/
         std::vector<std::pair<int, int>> result;
         for (int i = 1; i <= U; i++) {
-            /* 每个匹配只包含一次，并跳过未匹配的顶点。未匹配的
-                 * 顶点与 0 配对，因此此检查可同时处理两种情况。
+            /* Include each match once, and skip unmatched vertices. Unmatched
+                 * vertices are mated with 0, so this check handles both.
                  */
             if (i < MATE[i]) {
                 result.push_back(make_pair(i, MATE[i]));
@@ -681,7 +681,7 @@ done:
         free(END);
         free(WEIGHT);
         
-        /* 新增：不再向客户端返回此值。 */
+        /* NEW: This is no longer returned to the client. */
         free(MATE);
     }
 }

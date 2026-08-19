@@ -6,7 +6,7 @@ using namespace std;
 using namespace MiniGUI;
 
 namespace {
-    /* 图形常量。 */
+    /* Graphics Constants. */
     const Font kFont(FontFamily::SERIF, FontStyle::BOLD_ITALIC, 36, "#800080");
     const string kBackgroundColor = "#400040";
 
@@ -14,10 +14,10 @@ namespace {
 }
 
 void EmptyProblemHandler::repaint() {
-    /* 清空窗口。 */
+    /* Clear the window. */
     clearDisplay(window(), kBackgroundColor);
 
-    /* 绘制一些文本！ */
+    /* Draw some text! */
     auto text = TextRender::construct(kToDisplay, {
                                           0, 0, window().getCanvasWidth(), window().getCanvasHeight()
                                       }, kFont);

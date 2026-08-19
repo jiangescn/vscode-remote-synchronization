@@ -1,18 +1,18 @@
 /*
- * 文件：gchooser.h
+ * File: gchooser.h
  * ----------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 添加按键事件支持
+ * - added key event support
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/09/04
- * - 添加 GComboBox 别名
+ * - added GComboBox alias
  * @version 2018/08/23
- * - 重命名为 gchooser.h，以替代 Java 版本
+ * - renamed to gchooser.h to replace Java version
  * @version 2018/06/28
- * - 初始版本
+ * - initial version
  */
 
 
@@ -29,49 +29,49 @@
 class _Internal_QComboBox;
 
 /**
- * 此交互控件子类表示可选择的下拉列表。
- * GChooser 构造函数创建一个空选择器。
- * 创建选择器后，客户端可以使用 addItem 添加选项。
+ * This interactor subclass represents a selectable drop-down list.
+ * The GChooser constructor creates an empty chooser.
+ * Once the chooser has been created, clients can use addItem to add the options.
  */
 class GChooser : public GInteractor {
 public:
     /**
-     * 创建初始不包含任何项目的选择器。
+     * Creates a chooser that initially contains no items.
      */
     GChooser(QWidget* parent = nullptr);
 
     /**
-     * 创建初始包含给定项目的选择器。
+     * Creates a chooser that initially contains the given items.
      */
     GChooser(const std::initializer_list<std::string>& items, QWidget* parent = nullptr);
 
     /**
-     * 创建初始包含给定项目的选择器。
+     * Creates a chooser that initially contains the given items.
      */
     GChooser(const Vector<std::string>& items, QWidget* parent = nullptr);
 
     /**
-     * 释放选择器内部分配的内存。
+     * Frees memory allocated internally by the chooser.
      */
     ~GChooser() override;
 
     /**
-     * 将由指定字符串组成的新项目添加到列表末尾。
+     * Adds a new item consisting of the specified string to the end of the list.
      */
     virtual void addItem(const std::string& item);
 
     /**
-     * 将给定列表中的每个项目添加到选择器列表末尾。
+     * Adds each item from the given list to the end of the chooser's list.
      */
     virtual void addItems(const std::initializer_list<std::string>& items);
 
     /**
-     * 将给定向量中的每个项目添加到选择器列表末尾。
+     * Adds each item from the given vector to the end of the chooser's list.
      */
     virtual void addItems(const Vector<std::string>& items);
 
     /**
-     * 从选择器中删除所有项目。
+     * Removes all items from the chooser.
      */
     virtual void clearItems();
 
@@ -82,26 +82,26 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回选择器中给定从 0 开始索引处的项目。
-     * @throw 如果索引超出范围，则抛出 ErrorException
+     * Returns the item in the chooser at the given 0-based index.
+     * @throw ErrorException if the index is out of range
      */
     virtual std::string getItem(int index) const;
 
     /**
-     * 返回选择器中的项目数。
+     * Returns the number of items in the chooser.
      */
     virtual int getItemCount() const;
 
     /**
-     * 返回选择器中选中项目的索引。
-     * 如果未选择任何项，则返回 -1。
-     * @return 选中的索引；如果没有选中项目，则为 -1
+     * Returns which index is selected in the chooser.
+     * If no item is selected, returns -1.
+     * @return selected index, or -1 if no item is selected
      */
     virtual int getSelectedIndex() const;
 
     /**
-     * 返回选择器中当前选中的项目，
-     * 如果当前未选择任何项，则返回空字符串。
+     * Returns the currently selected item in the chooser,
+     * or an empty string if no item is currently selected.
      */
     virtual std::string getSelectedItem() const;
 
@@ -112,42 +112,42 @@ public:
     QWidget* getWidget() const override;
 
     /**
-     * 如果选择器具有用于输入新项目的可编辑区域，则返回 true。
-     * 默认值为 false，除非调用 setEditable(true)。
+     * Returns true if the chooser has an editable area for typing new items.
+     * By default this is false unless setEditable(true) is called.
      */
     virtual bool isEditable() const;
 
     /**
-     * 如果选择器没有项目，则返回 true。
+     * Returns true if the chooser has no items.
      */
     virtual bool isEmpty() const;
 
     /**
-     * 设置选择器是否具有用于输入新项目的可编辑区域。
-     * 初始为 false。
+     * Sets whether the chooser has an editable area for typing new items.
+     * Initially false.
      */
     virtual void setEditable(bool editable);
 
     /**
-     * 将选择器中给定索引处的项目设为给定值。
-     * @throw 如果索引超出范围，则抛出 ErrorException
+     * Sets the item at the given index in the chooser to the given value.
+     * @throw ErrorException if the index is out of range
      */
     virtual void setItem(int index, const std::string& item);
 
     /**
-     * 将选择器中给定索引处的项目设为选中。
-     * @throw 如果索引超出范围，则抛出 ErrorException
+     * Sets the item at the given index in the chooser to be selected.
+     * @throw ErrorException if the index is out of range
      */
     virtual void setSelectedIndex(int index);
 
     /**
-     * 将选择器中的给定项目设为选中。
-     * @throw 如果索引超出范围，则抛出 ErrorException
+     * Sets the given item in the chooser to be selected.
+     * @throw ErrorException if the index is out of range
      */
     virtual void setSelectedItem(const std::string& item);
 
     /**
-     * 返回选择器中的项目数。
+     * Returns the number of items in the chooser.
      */
     virtual int size() const;
 
@@ -168,7 +168,7 @@ private:
 };
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QComboBox : public QComboBox, public _Internal_QWidget {
@@ -190,7 +190,7 @@ private:
     friend class GChooser;
 };
 
-// 为实现与 Java 和 Qt 的名称兼容，将 GComboBox 作为 GChooser 的别名
+// alias GComboBox for GChooser for name compatibility with Java and Qt
 typedef GChooser GComboBox;
 
 #endif // _gchooser_h

@@ -1,16 +1,16 @@
 /*
- * 文件：gtextarea.h
+ * File: gtextarea.h
  * -----------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 将部分事件监听代码移到 GInteractor 父类
+ * - moved some event listener code to GInteractor superclass
  * @version 2018/09/10
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gtextarea.h，以替代 Java 版本
+ * - renamed to gtextarea.h to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 
@@ -25,70 +25,70 @@
 class _Internal_QTextEdit;
 
 /**
- * GTextArea 是多行可编辑文本框。
- * 该框允许用户输入任意长度的文档。
- * 如果文本过长而无法放入可见区域，将出现滚动条
- * 方框面积。
+ * A GTextArea is a multi-line editable text box.
+ * The box allows the user to type arbitrarily long documents.
+ * Scroll bars will appear if the text becomes too long to fit in the visible
+ * area of the box.
  */
 class GTextArea : public GInteractor {
 public:
     /**
-     * 创建足够大、可显示给定行数的新文本区域
-     * 以及文本的列。
-     * @throw 如果 rows 或 columns 为负，则抛出 ErrorException
+     * Creates a new text area large enough to display the given number of rows
+     * and columns of text.
+     * @throw ErrorException if rows or columns value is negative
      */
     GTextArea(int rows, int columns, QWidget* parent = nullptr);
 
     /**
-     * 创建具有给定初始文本的新文本区域。
+     * Creates a new text area with the given initial text.
      */
     GTextArea(const std::string& text = "", QWidget* parent = nullptr);
 
     /**
-     * 释放文本区域内部分配的内存。
+     * Frees memory allocated internally by the text area.
      */
     ~GTextArea() override;
 
     /**
-     * 将格式化文本添加到文本区域末尾。
-     * 文本将使用给定颜色和字体格式化。
+     * Adds formatted text to the end of the text area.
+     * The text will be formatted with the given color and font.
      */
     virtual void appendFormattedText(const std::string& text, const std::string& color = "", const std::string& font = "");
 
     /**
-     * 将 HTML 格式文本添加到文本区域末尾。
+     * Adds HTML-formatted text to the end of the text area.
      */
     virtual void appendHtml(const std::string& html);
 
     /**
-     * 将给定纯文本添加到文本区域末尾。
+     * Adds the given plain text to the end of the text area.
      */
     virtual void appendText(const std::string& text);
 
     /**
-     * 取消选择文本区域中当前选中的任何文本。
+     * Deselects any text that is currently selected in the text area.
      */
     virtual void clearSelection();
 
     /**
-     * 将文本区域中的文本设为空。
+     * Sets the text in the text area to be empty.
      */
     virtual void clearText();
 
     /**
-     * 返回文本区域的可见列数（字符宽度）。
+     * Returns the number of visible columns (characters wide) in the text area.
      */
     virtual int getColumns() const;
 
     /**
-     * 以以下形式返回文本区域中键盘光标的当前位置
-     * 整个文本字符串中的从 0 开始字符索引。
+     * Returns the keyboard cursor's current position in the text area as a
+     * 0-based character index within the overall text string.
      */
     virtual int getCursorPosition() const;
 
     /**
-     * 以 HTML 返回文本区域的当前文本。
-     * 它与 getText 的区别是不会移除标签和格式。
+     * Returns the text area's current text as HTML.
+     * This differs from getText in that tags and formatting are not stripped.
      */
     virtual std::string getHtml() const;
 
@@ -96,48 +96,48 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回文本区域的占位文本，通常显示在
-     * 当文本区域为空时，以浅灰色文字显示。
-     * 这通常是向用户提示应输入什么值。
-     * 默认初始占位符为空。
+     * Returns the text area's placeholder text, which is usually displayed
+     * as a light gray text in the text area when the area is empty.
+     * This usually indicates a hint to the user about what value to type.
+     * The default initial placeholder is empty.
      */
     virtual std::string getPlaceholder() const;
 
     /**
-     * 返回文本区域的可见行数（行高度）。
-     * 这是近似值；如果
-     * 文本区域的大小并非行/文本行大小的整数倍。
+     * Returns the number of visible rows (lines tall) in the text area.
+     * This is approximate and will be rounded down to the nearest integer if
+     * the text area's size is not exactly a multiple of the row/line size.
      */
     virtual int getRows() const;
 
     /**
-     * 返回文本区域中当前选中的文本。
-     * 若当前未选择文本，则返回空字符串。
+     * Returns the text that is currently selected in the text area.
+     * If no text is currently selected, returns an empty string.
      */
     virtual std::string getSelectedText() const;
 
     /**
-     * 以索引形式返回当前文本选区末尾之后的位置
-     * 整个文本字符串中的从 0 开始字符索引。
-     * 若当前未选择任何文本，则返回 -1。
+     * Returns the index just past the end of the current selection of text as a
+     * 0-based character index within the overall text string.
+     * If no text is currently selected, returns -1.
      */
     virtual int getSelectionEnd() const;
 
     /**
-     * 返回当前选中的字符数。
-     * 若当前未选择文本，则返回 0。
+     * Returns the number of characters that are currently selected.
+     * If no text is currently selected, returns 0.
      */
     virtual int getSelectionLength() const;
 
     /**
-     * 以索引形式返回当前文本选区的起始位置
-     * 整个文本字符串中的从 0 开始字符索引。
-     * 若当前未选择任何文本，则返回 -1。
+     * Returns the index of the start of the current selection of text as a
+     * 0-based character index within the overall text string.
+     * If no text is currently selected, returns -1.
      */
     virtual int getSelectionStart() const;
 
     /**
-     * 返回文本区域的当前文本。
+     * Returns the text area's current text.
      */
     virtual std::string getText() const;
 
@@ -148,179 +148,179 @@ public:
     QWidget* getWidget() const override;
 
     /**
-     * 如果用户右键单击以下对象时会弹出上下文菜单，则返回 true
-     * 文本区域。
-     * 默认值为 true，但可以通过调用以下方法关闭：
-     * setContextMenuEnabled(false)。
+     * Returns true if a context menu will pop up when the user right-clicks the
+     * text area.
+     * By default this is true, but it can be turned off by calling
+     * setContextMenuEnabled(false).
      */
     virtual bool isContextMenuEnabled() const;
 
     /**
-     * 返回文本区域是否允许用户修改其文本。
-     * 默认为 true。
+     * Returns whether the text area allows the user to modify its text.
+     * Default true.
      */
     virtual bool isEditable() const;
 
     /**
-     * 返回文本区域中一行过长时是否自动换行。
-     * 默认为 true。
+     * Returns whether the text area wraps its text when a line becomes too long.
+     * Default true.
      */
     virtual bool isLineWrap() const;
 
     /**
-     * 将文本区域的键盘光标位置设置到以下内容末尾
-     * 当前文本。
+     * Sets the text area's keyboard cursor position to the end of the
+     * current text.
      */
     virtual void moveCursorToEnd();
 
     /**
-     * 将文本区域的键盘光标位置设置到以下内容开头
-     * 当前文本。
+     * Sets the text area's keyboard cursor position to the start of the
+     * current text.
      */
     virtual void moveCursorToStart();
 
     /**
-     * 从此文本区域删除文本变化监听器，使其不再
-     * 用户修改文本时调用它。
+     * Removes the text change listener from this text area so that it will no longer
+     * call it when the user modifies the text.
      */
     virtual void removeTextChangeListener();
 
     /**
-     * 移动文本区域的可见滚动区域，使底部部分
-     * 文本中可见的部分。
+     * Moves the visible scroll region of the text area so that the bottom part
+     * of the text is visible.
      */
     virtual void scrollToBottom();
 
     /**
-     * 移动文本区域的可见滚动区域，使顶部部分
-     * 文本中可见的部分。
+     * Moves the visible scroll region of the text area so that the top part
+     * of the text is visible.
      */
     virtual void scrollToTop();
 
     /**
-     * 将给定文本范围设为选中，从给定起始位置开始
-     * index 是整个文本字符串中从 0 开始的字符索引，并且
-     * 从该位置开始延伸给定字符长度。
-     * @throw 如果起始索引或长度为负，则抛出 ErrorException
+     * Sets the given range of text to be selected, beginning with the given start
+     * index as a 0-based character index within the overall text string, and
+     * extending for the given length of characters.
+     * @throw ErrorException if start index or length is negative
      */
     virtual void select(int startIndex, int length);
 
     /**
-     * 选择文本区域的全部文本。
+     * Selects the entire text of the text area.
      */
     virtual void selectAll();
 
     /**
-     * 设置文本区域宽度，使其足以容纳给定数量的
-     * 文本字符数（列数）。
-     * @throw 如果 columns 值为负数，则抛出 ErrorException
+     * Sets the width of the text area to be wide enough to fit the given number
+     * of characters (columns) of text.
+     * @throw ErrorException if columns value is negative
      */
     virtual void setColumns(int columns);
 
     /**
-     * 设置用户右键单击以下对象时是否弹出上下文菜单
-     * 文本区域。
-     * 初始为 true。
+     * Sets whether a context menu will pop up when the user right-clicks the
+     * text area.
+     * Initially true.
      */
     virtual void setContextMenuEnabled(bool enabled);
 
     /**
-     * 将键盘光标移动到其中给定的从 0 开始的字符索引处
-     * 该文本。
-     * @throw 如果 index 为负，则抛出 ErrorException
+     * Moves the keyboard cursor to the given 0-based character index within
+     * the text.
+     * @throw ErrorException if index is negative
      */
     virtual void setCursorPosition(int index, bool keepAnchor = false);
 
     /**
-     * 设置文本区域是否允许用户修改其文本。
-     * 默认为 true。
+     * Sets whether the text area allows the user to modify its text.
+     * Default true.
      */
     virtual void setEditable(bool value);
 
     /**
-     * 将文本区域的当前文本设为给定 HTML 字符串。
-     * 它与 setText 的区别是会应用 HTML 标签和格式
-     * 视为文本的一部分，而不是普通字符。
+     * Sets the text area's current text to the given HTML string.
+     * This differs from setText in that HTML tags and formatting are applied
+     * to the text rather than considered to be regular characters.
      */
     virtual void setHtml(const std::string& html);
 
     /**
-     * 设置文本区域中一行过长时是否自动换行。
-     * 默认为 true。
+     * Sets whether the text area wraps its text when a line becomes too long.
+     * Default true.
      */
     virtual void setLineWrap(bool wrap);
 
     /**
-     * 在此文本区域上设置鼠标监听器，以便在以下情况发生时调用它
-     * 当用户移动或单击鼠标时。
-     * 任何现有的鼠标监听器都会被替换。
+     * Sets a mouse listener on this text area so that it will be called
+     * when the user moves or clicks the mouse.
+     * Any existing mouse listener will be replaced.
      */
     void setMouseListener(GEventListener func) override;
 
     /**
-     * 在此文本区域上设置鼠标监听器，以便在以下情况发生时调用它
-     * 当用户移动或单击鼠标时。
-     * 任何现有的鼠标监听器都会被替换。
+     * Sets a mouse listener on this text area so that it will be called
+     * when the user moves or clicks the mouse.
+     * Any existing mouse listener will be replaced.
      */
     void setMouseListener(GEventListenerVoid func) override;
 
     /**
-     * 设置文本区域的占位文本，通常显示在
-     * 当文本区域为空时，以浅灰色文字显示。
-     * 这通常是向用户提示应输入什么值。
-     * 默认初始占位符为空。
+     * Sets the text area's placeholder text, which is usually displayed
+     * as a light gray text in the text area when the area is empty.
+     * This usually indicates a hint to the user about what value to type.
+     * The default initial placeholder is empty.
      */
     virtual void setPlaceholder(const std::string& text);
 
     /**
-     * 设置文本区域高度，使其足以容纳给定数量的
-     * 文本行数（行）。
-     * @throw 如果 rows 值为负数，则抛出 ErrorException
+     * Sets the height of the text area to be wide enough to fit the given number
+     * of lines (rows) of text.
+     * @throw ErrorException if rows value is negative
      */
     virtual void setRows(int rows);
 
     /**
-     * 设置文本区域大小，使其宽度足以容纳给定数量的
-     * 文本行数（行）和字符数（列）。
-     * @throw 如果 rows 或 columns 为负，则抛出 ErrorException
+     * Sets the size of the text area to be wide enough to fit the given number
+     * of lines (rows) and characters (columns) of text.
+     * @throw ErrorException if rows or columns value is negative
      */
     virtual void setRowsColumns(int rows, int columns);
 
     /**
-     * 将文本区域的当前文本设为给定字符串，
-     * 替换任何现有文本。
+     * Sets the text area's current text to the given string,
+     * replacing any existing text.
      */
     virtual void setText(const std::string& text);
 
     /**
-     * 在此文本区域上设置文本更改监听器，以便在以下情况发生时调用它
-     * 当用户修改当前文本时。
-     * 任何现有的文本更改监听器都会被替换。
+     * Sets a text change listener on this text area so that it will be called
+     * when the user modifies the current text.
+     * Any existing text change listener will be replaced.
      *
-     * 文本更改监听器与按键监听器类似，二者都会
-     * 当用户在文本区输入字符时触发事件。
-     * 但按键监听器会在按下任意键时触发，即使该键
-     * 但并不修改文本本身，例如用户按下方向键时
-     * 或 Ctrl 键、Esc 键及任何其他特殊字符。
+     * A text change listener is similar to a key listener in that each will
+     * fire an event when the user types a character in the text area.
+     * But a key listener will fire when any key is pressed, even one that does
+     * not modify the text itself, such as when the user presses an arrow key
+     * or the Ctrl key or Esc or any other special character.
      *
-     * 文本更改监听器仅在实际文本发生变化时触发，例如
-     * 例如用户在文本区中输入新字符时。
+     * A text change listener will fire only when the actual text changes, such
+     * as when the user types a new character into the area.
      */
     virtual void setTextChangeListener(GEventListener func);
 
     /**
-     * 在此文本区域上设置文本更改监听器，以便在以下情况发生时调用它
-     * 当用户修改当前文本时。
-     * 任何现有的文本更改监听器都会被替换。
+     * Sets a text change listener on this text area so that it will be called
+     * when the user modifies the current text.
+     * Any existing text change listener will be replaced.
      *
-     * 文本更改监听器与按键监听器类似，二者都会
-     * 当用户在文本区输入字符时触发事件。
-     * 但按键监听器会在按下任意键时触发，即使该键
-     * 但并不修改文本本身，例如用户按下方向键时
-     * 或 Ctrl 键、Esc 键及任何其他特殊字符。
+     * A text change listener is similar to a key listener in that each will
+     * fire an event when the user types a character in the text area.
+     * But a key listener will fire when any key is pressed, even one that does
+     * not modify the text itself, such as when the user presses an arrow key
+     * or the Ctrl key or Esc or any other special character.
      *
-     * 文本更改监听器仅在实际文本发生变化时触发，例如
-     * 例如用户在文本区中输入新字符时。
+     * A text change listener will fire only when the actual text changes, such
+     * as when the user types a new character into the area.
      */
     virtual void setTextChangeListener(GEventListenerVoid func);
 
@@ -330,14 +330,14 @@ private:
     _Internal_QTextEdit* _iqtextedit;
     bool _contextMenuEnabled;
 
-    // 供 getRows、getColumns 等使用的辅助函数。
+    // helper used by getRows, getColumns, etc.
     GDimension getRowColumnSize() const;
 
     friend class _Internal_QTextEdit;
 };
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {

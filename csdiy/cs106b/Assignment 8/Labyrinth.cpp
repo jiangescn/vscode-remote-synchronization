@@ -2,20 +2,58 @@
 using namespace std;
 
 bool isPathToFreedom(MazeCell* start, const string& moves) {
-    /* TODO：删除此注释和下面几行，然后实现
-     * 此函数。
+    /* TODO: Delete this comment and the next few lines, then implement
+     * this function.
      */
-    (void) start;
-    (void) moves;
-    return false;
+    // (void) start;
+    // (void) moves;
+    // return false;
+    bool SpellBook = false;
+    bool Potion = false;
+    bool Wand = false;
+
+    MazeCell* curr = start;
+
+    switch(curr->whatsHere)
+    {
+        case Item::POTION: Potion = true; break;
+        case Item::SPELLBOOK: SpellBook = true; break;
+        case Item::WAND: Wand = true; break;
+        default : break;
+    }
+
+    for (char direction : moves)
+    {
+        MazeCell* next = nullptr;
+        switch(direction)
+        {
+            case 'N': next = curr->north; break;
+            case 'S': next = curr->south; break;
+            case 'E': next = curr->east; break;
+            case 'W': next = curr->west; break;
+        }
+
+        if (next == nullptr) return false;
+        curr = next;
+
+        switch(curr->whatsHere)
+        {
+            case Item::POTION: Potion = true; break;
+            case Item::SPELLBOOK: SpellBook = true; break;
+            case Item::WAND: Wand = true; break;
+            default : break;
+        }
+    }
+
+    return SpellBook && Potion && Wand;
 }
 
 
-/* * * * * * 此处以下为测试用例 * * * * * */
+/* * * * * * Test Cases Below This Point * * * * * */
 #include "GUI/SimpleTest.h"
 #include "Demos/MazeGenerator.h"
 
-/* 可选：在此添加你自己的自定义测试！ */
+/* Optional: Add your own custom tests here! */
 
 
 
@@ -30,15 +68,15 @@ bool isPathToFreedom(MazeCell* start, const string& moves) {
 
 
 
-/* * * * * 此处以下为提供的测试 * * * * */
+/* * * * * Provided Tests Below This Point * * * * */
 
-/* 释放为迷宫分配的所有内存的实用函数。 */
+/* Utility function to free all memory allocated for a maze. */
 void deleteMaze(const Grid<MazeCell*>& maze) {
     for (auto* elem: maze) {
         delete elem;
     }
-    /* 值得思考的问题：为什么不写“delete maze;”
-     * 而不是上面显示的内容？
+    /* Good question to ponder: why don't we write 'delete maze;'
+     * rather than what's shown above?
      */
 }
 
@@ -51,17 +89,17 @@ PROVIDED_TEST("Checks paths in the sample maze.") {
                         "|   | |",
                         "*-*-* P"});
 
-    /* 这些路径与讲义中的路径相同，全部有效。 */
+    /* These paths are the ones in the handout. They all work. */
     EXPECT(isPathToFreedom(maze[2][2], "ESNWWNNEWSSESWWN"));
     EXPECT(isPathToFreedom(maze[2][2], "SWWNSEENWNNEWSSEES"));
     EXPECT(isPathToFreedom(maze[2][2], "WNNEWSSESWWNSEENES"));
 
-    /* 这些路径无效，因为它们没有拾取所有物品。 */
+    /* These paths don't work, since they don't pick up all items. */
     EXPECT(!isPathToFreedom(maze[2][2], "ESNW"));
     EXPECT(!isPathToFreedom(maze[2][2], "SWWN"));
     EXPECT(!isPathToFreedom(maze[2][2], "WNNE"));
 
-    /* 这些路径无效，因为它们不是合法路径。 */
+    /* These paths don't work, since they aren't legal paths. */
     EXPECT(!isPathToFreedom(maze[2][2], "WW"));
     EXPECT(!isPathToFreedom(maze[2][2], "NN"));
     EXPECT(!isPathToFreedom(maze[2][2], "EE"));

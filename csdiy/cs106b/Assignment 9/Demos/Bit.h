@@ -3,7 +3,7 @@
 #include <ostream>
 
 /**
- * 表示单个位的类型。你可以通过多种方式创建一个位：
+ * Type representing a single bit. You can create a bit in one of many ways:
  *
  *     Bit zero = 0;
  *     Bit zero(0);

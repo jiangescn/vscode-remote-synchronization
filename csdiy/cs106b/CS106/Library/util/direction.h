@@ -1,12 +1,12 @@
 /*
- * 文件：direction.h
+ * File: direction.h
  * -----------------
- * 此文件导出名为 <code>Direction</code> 的枚举类型
- * 其元素为四个罗盘方向：<code>NORTH</code>、
- * <code>EAST</code>、<code>SOUTH</code> 和 <code>WEST</code>。
+ * This file exports an enumerated type called <code>Direction</code>
+ * whose elements are the four compass points: <code>NORTH</code>,
+ * <code>EAST</code>, <code>SOUTH</code>, and <code>WEST</code>.
  *
  * @version 2018/09/25
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  */
 
 
@@ -17,46 +17,46 @@
 #include <string>
 
 /**
- * 此枚举类型用于表示四个罗盘方向。
+ * This enumerated type is used to represent the four compass directions.
  */
 enum Direction { NORTH, EAST, SOUTH, WEST };
 
 /**
- * 返回参数左侧的方向。
+ * Returns the direction that is to the left of the argument.
  */
 Direction leftFrom(Direction dir);
 
 /**
- * 返回参数右侧的方向。
+ * Returns the direction that is to the right of the argument.
  */
 Direction rightFrom(Direction dir);
 
 /**
- * 返回与参数相反的方向。
+ * Returns the direction that is opposite to the argument.
  */
 Direction opposite(Direction dir);
 
 /**
- * 以字符串返回方向名称。
+ * Returns the name of the direction as a string.
  */
 std::string directionToString(Direction dir);
 
 /**
- * 重载 <code>&lt;&lt;</code> 运算符，使其能够
- * 显示 <code>Direction</code> 值。
+ * Overloads the <code>&lt;&lt;</code> operator so that it is able
+ * to display <code>Direction</code> values.
  */
 std::ostream& operator <<(std::ostream& os, const Direction& dir);
 
 /**
- * 重载 <code>&gt;&gt;</code> 运算符，使其能够
- * 读取 <code>Direction</code> 值。
+ * Overloads the <code>&gt;&gt;</code> operator so that it is able
+ * to read <code>Direction</code> values.
  */
 std::istream& operator >>(std::istream& os, Direction& dir);
 
 /**
- * 重载 <code>++</code> 运算符的后缀版本，以
- * 处理 <code>Direction</code> 值。此项的唯一目的
- * 该定义用于支持以下惯用写法：
+ * Overloads the suffix version of the <code>++</code> operator to
+ * work with <code>Direction</code> values.  The sole purpose of this
+ * definition is to support the idiom
  *
  *<pre>
  *    for (Direction dir = NORTH; dir &lt;= WEST; dir++) ...

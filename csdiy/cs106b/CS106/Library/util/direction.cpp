@@ -1,12 +1,12 @@
 /*
- * 文件：direction.cpp
+ * File: direction.cpp
  * -------------------
- * 此文件实现 direction.h 接口。
+ * This file implements the direction.h interface.
  *
  * @version 2016/08/04
- * - 修复 operator >>，使其不抛出错误
+ * - fixed operator >> to not throw errors
  * @version 2014/10/08
- * - 移除“using namespace”语句
+ * - removed 'using namespace' statement
  */
 
 #include "direction.h"
@@ -15,13 +15,13 @@
 #include "tokenscanner.h"
 
 /*
- * 实现说明：leftFrom、rightFrom、opposite
+ * Implementation notes: leftFrom, rightFrom, opposite
  * ---------------------------------------------------
- * 这些函数使用取余运算符循环遍历
- * 枚举类型的内部值。请注意 leftFrom
- * 函数不能从方向减 1，因为结果
- * 之后可能为负数；加 3 能达到相同效果，但
- * 确保值保持为正数。
+ * These functions use the remainder operator to cycle through the
+ * internal values of the enumeration type.  Note that the leftFrom
+ * function cannot subtract 1 from the direction because the result
+ * might then be negative; adding 3 achieves the same effect but
+ * ensures that the values remain positive.
  */
 
 Direction leftFrom(Direction dir) {
@@ -37,11 +37,11 @@ Direction opposite(Direction dir) {
 }
 
 /*
- * 实现说明：directionToString
+ * Implementation notes: directionToString
  * ---------------------------------------
- * C++ 编译器要求 default 子句，以确保
- * 函数始终返回字符串，即使方向不是
- * 合法值。
+ * The C++ compiler requires the default clause to ensure that this
+ * function always returns a string, even if the direction is not one
+ * of the legal values.
  */
 
 std::string directionToString(Direction dir) {
@@ -54,16 +54,16 @@ std::string directionToString(Direction dir) {
         return "SOUTH";
     default:
     // case WEST:
-        return "WEST";   // BUG 修复 2014/07/09：移除不可达的“default”分支
+        return "WEST";   // BUGFIX 2014/07/09: removed unreachable 'default' case
     }
 }
 
 /*
- * 实现说明：<<
+ * Implementation notes: <<
  * ------------------------
- * 此运算符在输出后必须按引用返回该流
- * 该值。operator << 返回此流，因此该函数
- * 可以实现为单行代码。
+ * This operator must return the stream by reference after printing
+ * the value.  The operator << returns this stream, so the function
+ * can be implemented as a single line.
  */
 
 std::ostream& operator <<(std::ostream& os, const Direction& dir) {
@@ -71,10 +71,10 @@ std::ostream& operator <<(std::ostream& os, const Direction& dir) {
 }
 
 /*
- * 实现说明：>>
+ * Implementation notes: >>
  * ------------------------
- * 此实现使用 TokenScanner 从
- * 流。
+ * This implementation uses the TokenScanner to read tokens from the
+ * stream.
  */
 
 std::istream& operator >>(std::istream& is, Direction& dir) {
@@ -99,13 +99,13 @@ std::istream& operator >>(std::istream& is, Direction& dir) {
 }
 
 /*
- * 实现说明：++
+ * Implementation notes: ++
  * ------------------------
- * 该运算符签名中的 int 参数是一个标记，用于
- * 由 C++ 编译器用于识别运算符的后缀形式。请注意
- * 使包含 WEST 的变量递增后的值将是
- * 超出 Direction 范围。如果
- * 此运算符只用于其所定义的 for 循环惯用写法。
+ * The int parameter in the signature for this operator is a marker used
+ * by the C++ compiler to identify the suffix form of the operator.  Note
+ * that the value after incrementing a variable containing WEST will be
+ * out of the Direction range.  That fact will not cause a problem if
+ * this operator is used only in the for loop idiom for which it is defined.
  */
 
 Direction operator ++(Direction& dir, int) {

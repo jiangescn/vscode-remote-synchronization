@@ -1,104 +1,186 @@
 #include "SplicingAndDicing.h"
+#include <memory>
+
 using namespace std;
 
 /**
- * 释放 dna 指向的核苷酸链中的所有内存。如果
- * 如果输入为空指针，此函数不产生任何效果。
+ * Frees all memory in the chain of nucleotides pointed at by dna. If the
+ * input is a null pointer, this function has no effect.
  *
- * 此函数应在 O(n) 时间内运行，并且不应使用任何容器
- * （例如 Vector、HashSet 等）。
+ * This function should run in time O(n) and should not use any containers
+ * (e.g. Vector, HashSet, etc.).
  */
-void deleteNucleotides(Nucleotide* dna) {
-    /* TODO：删除此注释和下一行，并实现此函数。 */
-    (void) dna;
+void deleteNucleotides(Nucleotide *dna)
+{
+    /* TODO: Delete this comment and the next line and implement this function. */
+    // (void) dna;
+    while (dna != nullptr)
+    {
+        Nucleotide *next = dna->next;
+        delete dna;
+        dna = next;
+    }
 }
 
 /**
- * 返回拼写传入核苷酸序列内容的字符串
- * 作为参数。
+ * Returns a string spelling out the contents of the nucleotide sequence passed
+ * as a parameter.
  *
- * 此函数应在 O(n) 时间内运行，并且不应使用任何容器
- * （例如 Vector、HashSet 等）。
+ * This function should run in time O(n) and should not use any containers
+ * (e.g. Vector, HashSet, etc.).
  */
-string fromDNA(Nucleotide* dna) {
-    /* TODO：删除此注释及接下来的几行，然后实现此函数。 */
-    (void) dna;
-    return "";
+string fromDNA(Nucleotide *dna)
+{
+    /* TODO: Delete this comment and the next lines and implement this function. */
+    // (void)dna;
+    // return "";
+    string result = "";
+    while(dna != nullptr)
+    {
+        result += dna->value;
+        dna = dna->next;
+    }
+    return result;
 }
 
 /**
- * 生成一条新的核苷酸链，拼出以下参数给定的序列
- * str。
+ * Produces a new strand of nucleotides spelling out the sequence given in
+ * str.
  *
- * 此函数应在 O(n) 时间内运行，并且不应使用任何容器
- * （例如 Vector、HashSet 等）。
+ * This function should run in time O(n) and should not use any containers
+ * (e.g. Vector, HashSet, etc.).
  */
-Nucleotide* toStrand(const string& str) {
-    /* TODO：删除此注释及接下来的几行，然后实现此函数。 */
-    (void) str;
+Nucleotide *toStrand(const string &str)
+{
+    /* TODO: Delete this comment and the next lines and implement this function. */
+    // (void)str;
+    // return nullptr;
+    if(str.empty())
+    {
+        return nullptr;
+    }
+    Nucleotide* first = new Nucleotide;
+
+    first->value = str[0];
+    first->prev = nullptr;
+    first->next = nullptr;
+
+    Nucleotide* last = first;
+
+    for (int i = 1; i < str.size(); i++)
+    {
+        Nucleotide* cur = new Nucleotide;
+        cur->value = str[i];
+        cur->prev = last;
+        last->next = cur;
+
+        last = cur;
+    }
+    last->next = nullptr;
+    return first;
+}
+
+/**
+ * Searches dna for the first copy of the sequence target, returning a pointer
+ * to that occurrence or nullptr if the target sequence isn't present.
+ *
+ * This function doesn't have any set big-O runtime target, but should be
+ * fast enough to pass the stress tests in a few seconds each.
+ *
+ * This function should not use any containers (e.g. Vector, HashSet, etc.)
+ */
+Nucleotide *findFirst(Nucleotide *dna, Nucleotide *target)
+{
+    /* TODO: Delete this comment and the next lines and implement this function. */
+    // (void)dna;
+    // (void)target;
+    // return nullptr;
+    if (target == nullptr)
+    {
+        return dna;
+    }
+
+    while(dna != nullptr)
+    {
+        Nucleotide *DNA = dna, *TAR = target;
+        while(TAR != nullptr && DNA != nullptr)
+        {
+            if(TAR->value == DNA->value)
+            {
+                TAR = TAR->next;
+                DNA = DNA->next;
+                if(TAR == nullptr) return dna;
+            }
+            else
+            {
+                break;
+            }
+        }
+        dna = dna->next;
+    }
     return nullptr;
 }
 
 /**
- * 在 dna 中搜索目标序列的第一次出现，并返回指针
- * 指向该次出现的位置；如果目标序列不存在，则为 nullptr。
+ * Removes the first copy of the sequence target that appears in the sequence
+ * of nucleotides given as the dna parameter. If the nucleotide pointed at
+ * by dna was removed, dna is updated to point to the first nucleotide after
+ * the removed sequence, or nullptr if the whole sequence was removed.
  *
- * 此函数没有指定的大 O 运行时间目标，但应当
- * 足够快，使每个压力测试在几秒内通过。
+ * This function doesn't have any set big-O runtime target, but should be
+ * fast enough to pass the stress tests in a few seconds each.
  *
- * 此函数不应使用任何容器（例如 Vector、HashSet 等）。
+ * This function should not use any containers (e.g. Vector, HashSet, etc.)
  */
-Nucleotide* findFirst(Nucleotide* dna, Nucleotide* target) {
-    /* TODO：删除此注释及接下来的几行，然后实现此函数。 */
-    (void) dna;
-    (void) target;
-    return nullptr;
+bool spliceFirst(Nucleotide *&dna, Nucleotide *target)
+{
+    /* TODO: Delete this comment and the next lines and implement this function. */
+    // (void)dna;
+    // (void)target;
+    // return false;
+    if(target == nullptr) return true;
+    Nucleotide *pos = findFirst(dna, target);
+    if(pos == nullptr) return false;
+
+    Nucleotide* before = pos->prev;
+
+    while(target != nullptr)
+    {
+        Nucleotide *next = pos -> next;
+        delete pos;
+        pos = next;
+        target = target->next;
+    }
+
+    if(before == nullptr)
+    {
+        dna = pos;
+    }
+    else
+    {
+        before->next = pos;
+    }
+
+    if(pos != nullptr)
+    {
+        pos->prev = before;
+    }
+    return true;
 }
 
-/**
- * 删除序列中第一次出现的目标子序列
- * 由 dna 参数给出的核苷酸。如果所指向的核苷酸
- * 由于 dna 指向的内容被移除，dna 会更新为指向移除部分后的第一个核苷酸
- * 被移除的序列；如果整个序列都被移除，则为 nullptr。
- *
- * 此函数没有指定的大 O 运行时间目标，但应当
- * 足够快，使每个压力测试在几秒内通过。
- *
- * 此函数不应使用任何容器（例如 Vector、HashSet 等）。
- */
-bool spliceFirst(Nucleotide*& dna, Nucleotide* target) {
-    /* TODO：删除此注释及接下来的几行，然后实现此函数。 */
-    (void) dna;
-    (void) target;
-    return false;
-}
-
-
-
-/* * * * * * 此处以下为测试用例 * * * * * */
+/* * * * * * Test Cases Below This Point * * * * * */
 #include "GUI/SimpleTest.h"
 
-/* TODO：在此添加你自己的自定义测试！ */
+/* TODO: Add your own custom tests here! */
 
-
-
-
-
-
-
-
-
-
-
-
-
-/* * * * * 此处以下为提供的测试 * * * * */
+/* * * * * Provided Tests Below This Point * * * * */
 #include "vector.h"
 #include "strlib.h"
 #include <fstream>
 
-PROVIDED_TEST("deleteNucleotides cleans up a simple sequence.") {
-    Nucleotide* dna = new Nucleotide;
+PROVIDED_TEST("deleteNucleotides cleans up a simple sequence.")
+{
+    Nucleotide *dna = new Nucleotide;
     dna->value = 'A';
     dna->prev = nullptr;
 
@@ -107,71 +189,82 @@ PROVIDED_TEST("deleteNucleotides cleans up a simple sequence.") {
     dna->next->prev = dna;
     dna->next->next = nullptr;
 
-    /* 确认清理过程确实完成了清理。 */
+    /* Confirm that the cleanup procedure actually cleans things up. */
     deleteNucleotides(dna);
 }
 
-PROVIDED_TEST("deleteNucleotides handles empty sequences.") {
+PROVIDED_TEST("deleteNucleotides handles empty sequences.")
+{
     deleteNucleotides(nullptr);
 }
 
 const int kLargeNumber = 300000;
 
-/* 返回文件内容的实用函数。如果最后一个参数
- * 不为 -1 时，只返回这么多个字符。
+/* Utility function that returns the contents of a file. If the last argument
+ * is not -1, only that many characters will be returned.
  */
-string contentsOf(const string& filename, int numChars = -1) {
+string contentsOf(const string &filename, int numChars = -1)
+{
     ifstream input(filename);
-    if (!input) error("Cannot open file " + filename);
+    if (!input)
+        error("Cannot open file " + filename);
 
     ostringstream buffer;
     buffer << input.rdbuf();
     string result = trim(buffer.str());
 
-    return numChars == -1? result : result.substr(0, numChars);
+    return numChars == -1 ? result : result.substr(0, numChars);
 }
 
-/* 手动构造一个保存
- * 给定的字符串。此函数使用 Vector 类型，因此不能使用
- * 此处展示的实现策略用于你的 toStrand 实现。
+/* Utility function that manually constructs a chain of nucleotides holding
+ * the given string. This function uses the Vector type, so you cannot use
+ * the implementation strategy shown here in your implementation of toStrand.
  */
-Nucleotide* vectorToStrand(const string& text) {
-    Vector<Nucleotide*> cells;
+Nucleotide *vectorToStrand(const string &text)
+{
+    Vector<Nucleotide *> cells;
 
-    for (size_t i = 0; i < text.size(); i++) {
+    for (size_t i = 0; i < text.size(); i++)
+    {
         cells += new Nucleotide;
     }
-    for (size_t i = 0; i < text.size(); i++) {
+    for (size_t i = 0; i < text.size(); i++)
+    {
         cells[i]->value = text[i];
-        cells[i]->prev = (i == 0? nullptr : cells[i - 1]);
-        cells[i]->next = (i == text.size() - 1? nullptr : cells[i + 1]);
+        cells[i]->prev = (i == 0 ? nullptr : cells[i - 1]);
+        cells[i]->next = (i == text.size() - 1 ? nullptr : cells[i + 1]);
     }
 
     return cells[0];
 }
 
-/* 返回大肠杆菌基因组内容的实用函数。 */
-const string& eColiGenome() {
+/* Utility function that returns the contents of the E. Coli genome. */
+const string &eColiGenome()
+{
     static unique_ptr<string> theResult;
-    if (!theResult) {
+    if (!theResult)
+    {
         theResult.reset(new string(contentsOf("res/EColi.dna", kLargeNumber)));
     }
     return *theResult;
 }
 
-PROVIDED_TEST("Stress Test: Can deallocate lengthy sequences.") {
-    Nucleotide* ecoli = vectorToStrand(eColiGenome());
+PROVIDED_TEST("Stress Test: Can deallocate lengthy sequences.")
+{
+    Nucleotide *ecoli = vectorToStrand(eColiGenome());
 
-    /* 释放所有已分配内存。 */
+    /* Free all memory allocated. */
     deleteNucleotides(ecoli);
 }
 
-PROVIDED_TEST("fromDNA handles empty strings.") {
+PROVIDED_TEST("fromDNA handles empty strings.")
+{
     EXPECT_EQUAL(fromDNA(nullptr), "");
 }
 
-PROVIDED_TEST("fromDNA handles single-character strings.") {
-    Nucleotide* singleton = new Nucleotide;
+PROVIDED_TEST("fromDNA handles single-character strings.")
+{
+    Nucleotide *singleton = new Nucleotide;
     singleton->value = 'A';
     singleton->next = singleton->prev = nullptr;
 
@@ -180,55 +273,57 @@ PROVIDED_TEST("fromDNA handles single-character strings.") {
     deleteNucleotides(singleton);
 }
 
-PROVIDED_TEST("fromDNA handles multicharacter strings.") {
-    Nucleotide* one   = new Nucleotide;
-    Nucleotide* two   = new Nucleotide;
-    Nucleotide* three = new Nucleotide;
-    Nucleotide* four  = new Nucleotide;
+PROVIDED_TEST("fromDNA handles multicharacter strings.")
+{
+    Nucleotide *one = new Nucleotide;
+    Nucleotide *two = new Nucleotide;
+    Nucleotide *three = new Nucleotide;
+    Nucleotide *four = new Nucleotide;
 
-    one->prev    = nullptr;
-    one->next    = two;
+    one->prev = nullptr;
+    one->next = two;
 
-    two->prev    = one;
-    two->next    = three;
+    two->prev = one;
+    two->next = three;
 
-    three->prev  = two;
-    three->next  = four;
+    three->prev = two;
+    three->next = four;
 
-    four->prev   = three;
-    four->next   = nullptr;
+    four->prev = three;
+    four->next = nullptr;
 
-    one->value   = 'A';
-    two->value   = 'C';
+    one->value = 'A';
+    two->value = 'C';
     three->value = 'T';
-    four->value  = 'G';
+    four->value = 'G';
 
     EXPECT_EQUAL(fromDNA(one), "ACTG");
     deleteNucleotides(one);
 }
 
-PROVIDED_TEST("fromDNA doesn't allocate memory.") {
-    Nucleotide* one   = new Nucleotide;
-    Nucleotide* two   = new Nucleotide;
-    Nucleotide* three = new Nucleotide;
-    Nucleotide* four  = new Nucleotide;
+PROVIDED_TEST("fromDNA doesn't allocate memory.")
+{
+    Nucleotide *one = new Nucleotide;
+    Nucleotide *two = new Nucleotide;
+    Nucleotide *three = new Nucleotide;
+    Nucleotide *four = new Nucleotide;
 
-    one->prev    = nullptr;
-    one->next    = two;
+    one->prev = nullptr;
+    one->next = two;
 
-    two->prev    = one;
-    two->next    = three;
+    two->prev = one;
+    two->next = three;
 
-    three->prev  = two;
-    three->next  = four;
+    three->prev = two;
+    three->next = four;
 
-    four->prev   = three;
-    four->next   = nullptr;
+    four->prev = three;
+    four->next = nullptr;
 
-    one->value   = 'A';
-    two->value   = 'C';
+    one->value = 'A';
+    two->value = 'C';
     three->value = 'T';
-    four->value  = 'G';
+    four->value = 'G';
 
     int allocs = NucleotideAlloc::instances();
     string result = fromDNA(one);
@@ -237,27 +332,30 @@ PROVIDED_TEST("fromDNA doesn't allocate memory.") {
     deleteNucleotides(one);
 }
 
-PROVIDED_TEST("Stress Test: fromDNA works on lengthy sequences.") {
-    Nucleotide* dna = vectorToStrand(eColiGenome());
+PROVIDED_TEST("Stress Test: fromDNA works on lengthy sequences.")
+{
+    Nucleotide *dna = vectorToStrand(eColiGenome());
 
     string result = fromDNA(dna);
     EXPECT_EQUAL(result.length(), kLargeNumber);
 
-    /* 不要使用 EXPECT_EQUAL；它会破坏控制台。 */
+    /* Don't use EXPECT_EQUAL; that will clobber the console. */
     EXPECT(result == eColiGenome());
 
-    /* 释放所有已分配内存。 */
+    /* Free all memory allocated. */
     deleteNucleotides(dna);
 }
 
-PROVIDED_TEST("toStrand converts empty strings.") {
-    Nucleotide* dna = toStrand("");
+PROVIDED_TEST("toStrand converts empty strings.")
+{
+    Nucleotide *dna = toStrand("");
 
     EXPECT_EQUAL(dna, nullptr);
 }
 
-PROVIDED_TEST("toStrand converts single-character strings.") {
-    Nucleotide* dna = toStrand("A");
+PROVIDED_TEST("toStrand converts single-character strings.")
+{
+    Nucleotide *dna = toStrand("A");
     EXPECT(dna != nullptr);
     EXPECT_EQUAL(dna->value, 'A');
     EXPECT_EQUAL(dna->next, nullptr);
@@ -266,52 +364,60 @@ PROVIDED_TEST("toStrand converts single-character strings.") {
     deleteNucleotides(dna);
 }
 
-/* 检查链是否正确链接。 */
-bool isLinkedInStrand(Nucleotide* start) {
-    /* 如果位于链的起始处，则不应有 previous 指针。 */
-    if (start != nullptr && start->prev != nullptr) {
+/* Checks if a strand is linked correctly. */
+bool isLinkedInStrand(Nucleotide *start)
+{
+    /* If we're at the start of a strand, we should not have a previous pointer. */
+    if (start != nullptr && start->prev != nullptr)
+    {
         return false;
     }
 
-    /* 遍历列表，确保每个位置的 next/prev 指针都
-     * 彼此一致。
+    /* Walk the list, ensuring at each point that the next/prev pointers are
+     * consistent with one another.
      */
-    for (Nucleotide* curr = start; curr != nullptr; curr = curr->next) {
-        if (curr->next != nullptr && curr->next->prev != curr) return false;
-        if (curr->prev != nullptr && curr->prev->next != curr) return false;
+    for (Nucleotide *curr = start; curr != nullptr; curr = curr->next)
+    {
+        if (curr->next != nullptr && curr->next->prev != curr)
+            return false;
+        if (curr->prev != nullptr && curr->prev->next != curr)
+            return false;
     }
 
     return true;
 }
 
-PROVIDED_TEST("toStrand converts a multicharacter sequence.") {
+PROVIDED_TEST("toStrand converts a multicharacter sequence.")
+{
     string original = "ACGT";
-    Nucleotide* dna = toStrand(original);
+    Nucleotide *dna = toStrand(original);
 
     EXPECT(isLinkedInStrand(dna));
 
-    /* 遍历序列并确认看到所需字母。 */
-    Nucleotide* curr = dna;
-    for (char ch: original) {
-        /* 确认此处数据正确。 */
+    /* Walk the sequence and confirm we see the letters we want. */
+    Nucleotide *curr = dna;
+    for (char ch : original)
+    {
+        /* Confirm the data here is correct. */
         EXPECT(curr != nullptr);
         EXPECT_EQUAL(curr->value, ch);
 
         curr = curr->next;
     }
 
-    /* 确认刚刚越过末尾。 */
+    /* Confirm we just walked off the end. */
     EXPECT_EQUAL(curr, nullptr);
 
     deleteNucleotides(dna);
 }
 
-PROVIDED_TEST("Stress Test: Can load/convert E.Coli DNA (should take at most a few seconds).") {
-    Nucleotide* dna = toStrand(eColiGenome());
+PROVIDED_TEST("Stress Test: Can load/convert E.Coli DNA (should take at most a few seconds).")
+{
+    Nucleotide *dna = toStrand(eColiGenome());
     EXPECT(isLinkedInStrand(dna));
 
-    /* 这里刻意不使用 EXPECT_EQUAL，因为如果此测试失败，我们不
-     * 希望向控制台输出巨大的字符串。
+    /* We deliberately don't use EXPECT_EQUAL here because if this test fails, we don't
+     * want to dump gigantic strings to the console.
      */
     EXPECT(fromDNA(dna) == eColiGenome());
     EXPECT(isLinkedInStrand(dna));
@@ -319,20 +425,24 @@ PROVIDED_TEST("Stress Test: Can load/convert E.Coli DNA (should take at most a f
     deleteNucleotides(dna);
 }
 
-/* 返回指向核苷酸链中第 n 个单元格的指针。 */
-Nucleotide* nth(Nucleotide* dna, int n) {
-    for (int i = 0; i < n; i++) {
-        if (dna == nullptr) error("Unexpected end of list.");
+/* Returns a pointer to the nth cell in the nucleotide chain. */
+Nucleotide *nth(Nucleotide *dna, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        if (dna == nullptr)
+            error("Unexpected end of list.");
         dna = dna->next;
     }
     return dna;
 }
 
-PROVIDED_TEST("findFirst works for single nucleotide searching.") {
-    Nucleotide* dna    = toStrand("ATATA");
-    Nucleotide* target = toStrand("A");
+PROVIDED_TEST("findFirst works for single nucleotide searching.")
+{
+    Nucleotide *dna = toStrand("ATATA");
+    Nucleotide *target = toStrand("A");
 
-    /* 从每个位置开始搜索，以确保找到预期内容。 */
+    /* Search from each position to make sure we find what we expect. */
     EXPECT_EQUAL(findFirst(nth(dna, 0), target), nth(dna, 0));
     EXPECT_EQUAL(findFirst(nth(dna, 1), target), nth(dna, 2));
     EXPECT_EQUAL(findFirst(nth(dna, 2), target), nth(dna, 2));
@@ -344,9 +454,10 @@ PROVIDED_TEST("findFirst works for single nucleotide searching.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("findFirst works when target not present.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("AAAA");
+PROVIDED_TEST("findFirst works when target not present.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("AAAA");
 
     EXPECT_EQUAL(findFirst(dna, target), nullptr);
 
@@ -354,9 +465,10 @@ PROVIDED_TEST("findFirst works when target not present.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("findFirst works when target is at front.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("AAA");
+PROVIDED_TEST("findFirst works when target is at front.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("AAA");
 
     EXPECT_EQUAL(findFirst(dna, target), dna);
 
@@ -364,9 +476,10 @@ PROVIDED_TEST("findFirst works when target is at front.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("findFirst works when target is at the back.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("CGGG");
+PROVIDED_TEST("findFirst works when target is at the back.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("CGGG");
 
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 8));
 
@@ -374,9 +487,10 @@ PROVIDED_TEST("findFirst works when target is at the back.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("findFirst works when target is in the middle.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("ATT");
+PROVIDED_TEST("findFirst works when target is in the middle.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("ATT");
 
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 2));
 
@@ -384,24 +498,27 @@ PROVIDED_TEST("findFirst works when target is in the middle.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("findFirst works when target is empty.") {
-    Nucleotide* dna = toStrand("AAATTTCCCGGG");
+PROVIDED_TEST("findFirst works when target is empty.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
 
     EXPECT_EQUAL(findFirst(dna, nullptr), dna);
     deleteNucleotides(dna);
 }
 
-PROVIDED_TEST("findFirst works when DNA is empty.") {
-    Nucleotide* target = toStrand("AAATTTCCCGGG");
+PROVIDED_TEST("findFirst works when DNA is empty.")
+{
+    Nucleotide *target = toStrand("AAATTTCCCGGG");
     EXPECT_EQUAL(findFirst(nullptr, target), nullptr);
     EXPECT_EQUAL(findFirst(nullptr, nullptr), nullptr);
 
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("findFirst works when target is the original sequence.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("AAATTTCCCGGG");
+PROVIDED_TEST("findFirst works when target is the original sequence.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("AAATTTCCCGGG");
 
     EXPECT_EQUAL(findFirst(dna, target), dna);
 
@@ -409,73 +526,77 @@ PROVIDED_TEST("findFirst works when target is the original sequence.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("findFirst doesn't find string longer than original strand.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("AAATTTCCCGGGG");
+PROVIDED_TEST("findFirst doesn't find string longer than original strand.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("AAATTTCCCGGGG");
 
-    Nucleotide* result = findFirst(dna, target);
+    Nucleotide *result = findFirst(dna, target);
     EXPECT_EQUAL(result, nullptr);
 
     deleteNucleotides(dna);
     deleteNucleotides(target);
 }
 
-/* 释放旧链并用新链替换。 */
-void reset(Nucleotide*& dna, const string& strand) {
+/* Frees the old strand and replaces it with a new one. */
+void reset(Nucleotide *&dna, const string &strand)
+{
     deleteNucleotides(dna);
     dna = toStrand(strand);
 }
 
-PROVIDED_TEST("findFirst works when partial matches exist.") {
-    /* 当目标字符串的前几个字符满足以下条件时，会出现部分匹配：
-     * 匹配 DNA 链的前几个字符。例如，链
-     * AAAAC 与目标 AAC 匹配，但 AAC 有许多“几乎”匹配的位置
-     * 匹配。
+PROVIDED_TEST("findFirst works when partial matches exist.")
+{
+    /* A partial match occurs when the first characters of the target string
+     * match the first characters of the DNA strand. For example, the strand
+     * AAAAC matches the target AAC, but has many places where AAC "almost"
+     * matches.
      *
-     * 此测试抽样探索这些选项。
+     * This test explores a sampler of those options.
      */
-    Nucleotide* dna    = toStrand("AAC");
-    Nucleotide* target = toStrand("AC");
+    Nucleotide *dna = toStrand("AAC");
+    Nucleotide *target = toStrand("AC");
 
-    /* 应在位置 1 匹配。 */
+    /* Should match at position 1. */
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 1));
 
-    /* 扩展链并重试。 */
+    /* Expand the strand and try again. */
     reset(dna, "AAAC");
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 2));
 
-    /* 尝试比较 AAAC 与 AAC。 */
+    /* Try AAAC versus AAC. */
     reset(dna, "AAAC");
     reset(target, "AAC");
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 1));
 
-    /* AAAAC 与 AAC。 */
+    /* AAAAC versus AAC. */
     reset(dna, "AAAAC");
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 2));
 
-    /* 现在尝试一个更棘手的模式：ATATATC
+    /* Now, a trickier pattern: Try ATATATC
      *                                ATATC
      */
-    reset(dna,    "ATATATC");
-    reset(target,   "ATATC");
+    reset(dna, "ATATATC");
+    reset(target, "ATATC");
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 2));
 
     /* ATATATATC
      *     ATATC
      */
-    reset(dna,    "ATATATATC");
-    reset(target,     "ATATC");
+    reset(dna, "ATATATATC");
+    reset(target, "ATATC");
     EXPECT_EQUAL(findFirst(dna, target), nth(dna, 4));
 
     deleteNucleotides(dna);
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("Stress Test: Can find at end of E.Coli (should take at most a few seconds).") {
-    Nucleotide* dna = toStrand(eColiGenome());
+PROVIDED_TEST("Stress Test: Can find at end of E.Coli (should take at most a few seconds).")
+{
+    Nucleotide *dna = toStrand(eColiGenome());
 
     string tail = eColiGenome().substr(eColiGenome().size() - 80);
-    Nucleotide* target = toStrand(tail);
+    Nucleotide *target = toStrand(tail);
 
     EXPECT(findFirst(dna, target) != nullptr);
 
@@ -483,9 +604,10 @@ PROVIDED_TEST("Stress Test: Can find at end of E.Coli (should take at most a few
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("Stress Test: Can find E.Coli in itself (should take at most a few seconds).") {
-    Nucleotide* dna    = toStrand(eColiGenome());
-    Nucleotide* target = toStrand(eColiGenome());
+PROVIDED_TEST("Stress Test: Can find E.Coli in itself (should take at most a few seconds).")
+{
+    Nucleotide *dna = toStrand(eColiGenome());
+    Nucleotide *target = toStrand(eColiGenome());
 
     EXPECT_EQUAL(findFirst(dna, target), dna);
 
@@ -493,26 +615,27 @@ PROVIDED_TEST("Stress Test: Can find E.Coli in itself (should take at most a few
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst on a missing sequence has no effect.") {
-    Nucleotide* dna    = toStrand("TAGCATGATTACA");
-    Nucleotide* target = toStrand("ATCG");
+PROVIDED_TEST("spliceFirst on a missing sequence has no effect.")
+{
+    Nucleotide *dna = toStrand("TAGCATGATTACA");
+    Nucleotide *target = toStrand("ATCG");
 
-    /* 统计此时的分配次数。 */
+    /* Count number of allocations at this point. */
     int allocs = NucleotideAlloc::instances();
 
-    /* 确保移除失败，并确认此过程中没有
-     * 更改 dna 指向的位置。
+    /* Ensure the remove fails. Make sure that, in the course of doing so, we didn't
+     * change where DNA was pointing.
      */
-    Nucleotide* originalDNA = dna;
+    Nucleotide *originalDNA = dna;
     EXPECT(!spliceFirst(dna, target));
     EXPECT_EQUAL(dna, originalDNA);
 
-    /* 确认链接结构有效。 */
+    /* Confirm the link structure is valid. */
     EXPECT(isLinkedInStrand(dna));
 
-    /* 确认没有内存泄漏。如果有，则意味着 spliceFirst
-     * 进行了分配或释放操作，而它不应这样做
-     * 在这种情况下。
+    /* Confirm we didn't leak any memory. If we did, it means that spliceFirst
+     * either allocated or deallocated something, which it shouldn't have done
+     * in this case.
      */
     EXPECT_EQUAL(allocs, NucleotideAlloc::instances());
     EXPECT_EQUAL(fromDNA(dna), "TAGCATGATTACA");
@@ -521,17 +644,18 @@ PROVIDED_TEST("spliceFirst on a missing sequence has no effect.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst works in the middle of a strand.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("TTTCCC");
+PROVIDED_TEST("spliceFirst works in the middle of a strand.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("TTTCCC");
 
-    /* 移除该序列。确保没有改变 DNA 所在的位置
-     * 指向。
+    /* Remove the sequence. Make sure that we didn't change where DNA was
+     * pointing.
      */
-    Nucleotide* originalDNA = dna;
+    Nucleotide *originalDNA = dna;
     EXPECT(spliceFirst(dna, target));
 
-    /* 确认链接结构仍然良好。 */
+    /* Confirm the link structure is still good. */
     EXPECT(isLinkedInStrand(dna));
 
     EXPECT_EQUAL(fromDNA(dna), "AAAGGG");
@@ -541,17 +665,18 @@ PROVIDED_TEST("spliceFirst works in the middle of a strand.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst works at the end of a strand.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("CCCGGG");
+PROVIDED_TEST("spliceFirst works at the end of a strand.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("CCCGGG");
 
-    /* 移除该序列。确保没有改变 DNA 所在的位置
-     * 指向。
+    /* Remove the sequence. Make sure that we didn't change where DNA was
+     * pointing.
      */
-    Nucleotide* originalDNA = dna;
+    Nucleotide *originalDNA = dna;
     EXPECT(spliceFirst(dna, target));
 
-    /* 确认链的连接方式仍然正确。 */
+    /* Confirm the strand wiring is still correct. */
     EXPECT(isLinkedInStrand(dna));
 
     EXPECT_EQUAL(fromDNA(dna), "AAATTT");
@@ -561,12 +686,13 @@ PROVIDED_TEST("spliceFirst works at the end of a strand.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst works at the beginning of a strand.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("AAATTT");
+PROVIDED_TEST("spliceFirst works at the beginning of a strand.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("AAATTT");
 
-    /* 在这种情况下，应更改 DNA 指向的位置。 */
-    Nucleotide* originalDNA = dna;
+    /* In this case, we should change where DNA is pointing. */
+    Nucleotide *originalDNA = dna;
     EXPECT(spliceFirst(dna, target));
     EXPECT(isLinkedInStrand(dna));
 
@@ -577,9 +703,10 @@ PROVIDED_TEST("spliceFirst works at the beginning of a strand.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst works when removing the whole strand.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("AAATTTCCCGGG");
+PROVIDED_TEST("spliceFirst works when removing the whole strand.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("AAATTTCCCGGG");
 
     EXPECT(spliceFirst(dna, target));
     EXPECT_EQUAL(dna, nullptr);
@@ -587,44 +714,48 @@ PROVIDED_TEST("spliceFirst works when removing the whole strand.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst handles the empty string.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("");
+PROVIDED_TEST("spliceFirst handles the empty string.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("");
 
-    /* 确认执行此操作时没有改变 dna 指向的位置。 */
-    Nucleotide* originalDNA = dna;
+    /* Confirm that, in doing this, we didn't change where DNA was pointing. */
+    Nucleotide *originalDNA = dna;
     EXPECT(spliceFirst(dna, target));
     EXPECT(isLinkedInStrand(dna));
 
     EXPECT_EQUAL(fromDNA(dna), "AAATTTCCCGGG");
     EXPECT_EQUAL(dna, originalDNA);
 
-    /* 还要尝试从空序列中移除，这应当成功，因为
-     * 空序列出现在空序列的开头。
+    /* Also try removing from an empty sequence, which should succeed because
+     * the empty sequence appears at the front of the empty sequence.
      */
-    Nucleotide* empty = nullptr;
+    Nucleotide *empty = nullptr;
     EXPECT(spliceFirst(empty, target));
     EXPECT_EQUAL(empty, nullptr);
 
     deleteNucleotides(dna);
 }
 
-PROVIDED_TEST("spliceFirst leaves DNA unmodified except at remove site.") {
-    /* 将 DNA 中所有链表单元写入一个 Vector，只为确保
-     * 返回的单元格是否与预期单元格一致。
+PROVIDED_TEST("spliceFirst leaves DNA unmodified except at remove site.")
+{
+    /* Write out all the linked list cells in DNA in a Vector, just to make sure the
+     * cells we're getting back match the cells we expected to see.
      */
-    Nucleotide* dna = toStrand("AAACCCTTTGGG");
-    Vector<Nucleotide*> nucleotides;
-    for (Nucleotide* curr = dna; curr != nullptr; curr = curr->next) {
+    Nucleotide *dna = toStrand("AAACCCTTTGGG");
+    Vector<Nucleotide *> nucleotides;
+    for (Nucleotide *curr = dna; curr != nullptr; curr = curr->next)
+    {
         nucleotides += curr;
     }
 
-    /* 尝试不从 DNA 中移除任何内容，并确认与旧链匹配。 */
-    Nucleotide* target = toStrand("GGGG");
+    /* Try removing nothing from DNA and confirm that we match the old strand. */
+    Nucleotide *target = toStrand("GGGG");
     EXPECT(!spliceFirst(dna, target));
 
     int i = 0;
-    for (Nucleotide* curr = dna; curr != nullptr; curr = curr->next) {
+    for (Nucleotide *curr = dna; curr != nullptr; curr = curr->next)
+    {
         EXPECT(i < nucleotides.size());
         EXPECT_EQUAL(curr, nucleotides[i]);
         i++;
@@ -634,7 +765,7 @@ PROVIDED_TEST("spliceFirst leaves DNA unmodified except at remove site.") {
     deleteNucleotides(target);
     target = toStrand("CCC");
 
-    /* 删除 C 核苷酸。 */
+    /* Remove the C nucleotides. */
     EXPECT(nucleotides.size() >= 6);
     nucleotides.remove(3);
     nucleotides.remove(3);
@@ -642,7 +773,8 @@ PROVIDED_TEST("spliceFirst leaves DNA unmodified except at remove site.") {
     EXPECT(spliceFirst(dna, target));
 
     i = 0;
-    for (Nucleotide* curr = dna; curr != nullptr; curr = curr->next) {
+    for (Nucleotide *curr = dna; curr != nullptr; curr = curr->next)
+    {
         EXPECT(i < nucleotides.size());
         EXPECT_EQUAL(curr, nucleotides[i]);
         i++;
@@ -651,10 +783,10 @@ PROVIDED_TEST("spliceFirst leaves DNA unmodified except at remove site.") {
 
     deleteNucleotides(target);
 
-    /* 再来一次，不过这次从前端移除。 */
+    /* Once more, except this time we'll remove from the front. */
     target = toStrand("AAA");
 
-    /* 删除 A 核苷酸。 */
+    /* Remove the A nucleotides. */
     EXPECT(nucleotides.size() >= 3);
     nucleotides.remove(0);
     nucleotides.remove(0);
@@ -662,7 +794,8 @@ PROVIDED_TEST("spliceFirst leaves DNA unmodified except at remove site.") {
 
     EXPECT(spliceFirst(dna, target));
     i = 0;
-    for (Nucleotide* curr = dna; curr != nullptr; curr = curr->next) {
+    for (Nucleotide *curr = dna; curr != nullptr; curr = curr->next)
+    {
         EXPECT(i < nucleotides.size());
         EXPECT_EQUAL(curr, nucleotides[i]);
         i++;
@@ -673,36 +806,40 @@ PROVIDED_TEST("spliceFirst leaves DNA unmodified except at remove site.") {
     deleteNucleotides(dna);
 }
 
-PROVIDED_TEST("Repeated calls to spliceFirst work on strands.") {
+PROVIDED_TEST("Repeated calls to spliceFirst work on strands.")
+{
     string dnaStrand = "ATGATAGCCATTAGCATATAAT";
-    Nucleotide* dna    = toStrand(dnaStrand);
-    Nucleotide* target = toStrand("AT");
+    Nucleotide *dna = toStrand(dnaStrand);
+    Nucleotide *target = toStrand("AT");
 
-    /* 不断删除 AT，直到一个也不剩。 */
-    while (true) {
+    /* Keep removing ATs until none exist. */
+    while (true)
+    {
         bool exists = (dnaStrand.find("AT") != string::npos);
         EXPECT_EQUAL(spliceFirst(dna, target), exists);
         EXPECT(isLinkedInStrand(dna));
 
-        /* 没有匹配？那么处理结束。 */
-        if (!exists) break;
+        /* No match? Then we're done. */
+        if (!exists)
+            break;
 
         auto position = dnaStrand.find("AT");
         dnaStrand.erase(position, 2);
     }
 
-    /* 确认之后无法再取出一个元素。 */
+    /* Confirm that we can't then pull out one more. */
     EXPECT(!spliceFirst(dna, target));
 
     deleteNucleotides(dna);
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst works when target is longer than the original strand.") {
-    Nucleotide* dna    = toStrand("AAATTTCCCGGG");
-    Nucleotide* target = toStrand("AAATTTCCCGGGG");
+PROVIDED_TEST("spliceFirst works when target is longer than the original strand.")
+{
+    Nucleotide *dna = toStrand("AAATTTCCCGGG");
+    Nucleotide *target = toStrand("AAATTTCCCGGGG");
 
-    Nucleotide* oldDNA = dna;
+    Nucleotide *oldDNA = dna;
     EXPECT(!spliceFirst(dna, target));
     EXPECT_EQUAL(dna, oldDNA);
     EXPECT(isLinkedInStrand(dna));
@@ -711,19 +848,20 @@ PROVIDED_TEST("spliceFirst works when target is longer than the original strand.
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("spliceFirst can remove all but the first/list nucleotide.") {
-    Nucleotide* dna    = toStrand("AAAAC");
-    Nucleotide* target = toStrand("AAAC");
+PROVIDED_TEST("spliceFirst can remove all but the first/list nucleotide.")
+{
+    Nucleotide *dna = toStrand("AAAAC");
+    Nucleotide *target = toStrand("AAAC");
 
     EXPECT(spliceFirst(dna, target));
     EXPECT(isLinkedInStrand(dna));
     EXPECT_EQUAL(dna->value, 'A');
-    EXPECT_EQUAL(dna->next,  nullptr);
+    EXPECT_EQUAL(dna->next, nullptr);
 
-    reset(dna,   "CAAAA");
-    reset(target,"CAAA" );
+    reset(dna, "CAAAA");
+    reset(target, "CAAA");
 
-    Nucleotide* expected = nth(dna, 4);
+    Nucleotide *expected = nth(dna, 4);
     EXPECT(spliceFirst(dna, target));
     EXPECT(isLinkedInStrand(dna));
     EXPECT_EQUAL(dna, expected);
@@ -734,18 +872,19 @@ PROVIDED_TEST("spliceFirst can remove all but the first/list nucleotide.") {
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("Stress Test: Can spliceFirst tail of E.Coli (should take at most a few seconds).") {
-    Nucleotide* dna = toStrand(eColiGenome());
+PROVIDED_TEST("Stress Test: Can spliceFirst tail of E.Coli (should take at most a few seconds).")
+{
+    Nucleotide *dna = toStrand(eColiGenome());
 
     string tail = eColiGenome().substr(eColiGenome().size() - 80);
-    Nucleotide* target = toStrand(tail);
+    Nucleotide *target = toStrand(tail);
 
-    Nucleotide* originalDNA = dna;
+    Nucleotide *originalDNA = dna;
     EXPECT(spliceFirst(dna, target));
     EXPECT(isLinkedInStrand(dna));
 
-    /* 这里有意不使用 EXPECT_EQUAL，因为否则如果此测试
-     * 否则失败时我们会向控制台输出一个巨大的字符串。
+    /* We intentionally don't use EXPECT_EQUAL here, since otherwise if this test were
+     * to fail we'd dump a huge string to the console.
      */
     EXPECT(fromDNA(dna) == eColiGenome().substr(0, eColiGenome().size() - tail.size()));
 
@@ -755,9 +894,10 @@ PROVIDED_TEST("Stress Test: Can spliceFirst tail of E.Coli (should take at most 
     deleteNucleotides(target);
 }
 
-PROVIDED_TEST("Stress Test: Can spliceFirst E.Coli from itself (should take at most a few seconds).") {
-    Nucleotide* dna    = toStrand(eColiGenome());
-    Nucleotide* target = toStrand(eColiGenome());
+PROVIDED_TEST("Stress Test: Can spliceFirst E.Coli from itself (should take at most a few seconds).")
+{
+    Nucleotide *dna = toStrand(eColiGenome());
+    Nucleotide *target = toStrand(eColiGenome());
 
     EXPECT(spliceFirst(dna, target));
     EXPECT(isLinkedInStrand(dna));

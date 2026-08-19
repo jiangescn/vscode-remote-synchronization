@@ -1,9 +1,9 @@
 # @author Julie Zelenski
-# 这会设置 Makefile 的默认目标，使
-# 不带参数的 make 会触发 make install。
-# 用于复制 staticlib 和头文件
-# 安装位置信息，而无需学生
-# 选择 install 目标。
+# This sets the default goal of Makefile so that
+# make with no argument will trigger make install.
+# This is to get the staticlib + headers copied
+# to install location without requiring student to
+# select install target.
 
 .DEFAULT_GOAL = assume_install
 

@@ -5,26 +5,26 @@
 #include "vector.h"
 
 /**
- * 给定地形和海拔，返回 Grid<bool>，表示每个单元格是否
- * 位于水下。水下单元格标记为 true，水上单元格标记为 false。
- * 如果水能从某个水源沿一条路径到达某单元格，该单元格最终会被淹没，该路径
- * 绝不会流到水位以上。特别是，与水位高度相同的点
- * 与水源之间没有更高海拔单元格阻隔的单元格将位于水下。
+ * Given a terrain and an altitude, returns a Grid<bool> indicating whether each cell
+ * is under water. Cells under water are marked true; cells above water are marked false.
+ * A cell ends up under water if the water can reach it from a source via a path that
+ * never flows above the water level. In particular, a point that's at the same height
+ * as the water source with no intervening higher-altitude cells will be underwater.
  *
- * 请记住，水只能沿基数方向流动（上、下、左、右），
- * 不能沿对角线。
+ * Remember that water can only flow in cardinal directions (up, down, left, and right),
+ * not diagonally.
  *
- * 可以假定地形中的所有水源都位于边界内
- * 地形。水源数量可以任意，包括零个。
+ * You can assume that all the water sources in the terrain are found within the bounds
+ * of the terrain. There may be any number of water sources, including zero.
  *
- * 你的解法需要适用于任意大小的地形，包括
- * 包含数百万个单元格。
+ * Your solution needs to work on terrains of arbitrary sizes, including terrains that
+ * contain millions of cells.
  *
- * @param terrain 地形高度图。
- * @param sources 所有水源的位置，可以假定它们都在边界内。
- * @param height 水面高度，单位为米。
- * @return 表示哪些单元格被淹没的 Grid，其中 true 表示“已淹没”，并且
- *         false 表示“水面之上”。
+ * @param terrain The terrain height map.
+ * @param sources Locations of all the water sources, which you can assume are all in bounds.
+ * @param height The water height, in meters.
+ * @return A Grid indicating which cells are flooded, with true meaning "flooded" and
+ *         false meaning "above water."
  */
 Grid<bool> floodedRegionsIn(const Grid<double>& terrain,
                             const Vector<GridLocation>& sources,

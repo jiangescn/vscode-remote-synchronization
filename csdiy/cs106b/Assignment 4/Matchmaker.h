@@ -4,13 +4,13 @@
 #include "map.h"
 #include "set.h"
 
-/* 无序字符串对。 */
+/* Unordered pair of strings. */
 class Pair {
 public:
-    /* 创建由两个空字符串组成的字符串对。 */
+    /* Creates a pair of two empty strings. */
     Pair() = default;
 
-    /* 对字符串进行排序。 */
+    /* Sort the strings. */
     Pair(const std::string& one, const std::string& two) {
         if (one < two) {
             one_ = one;
@@ -29,7 +29,7 @@ public:
     }
 
     bool operator< (const Pair& rhs) const {
-        /* 比较第一分量。 */
+        /* Compare first components. */
         auto comp = first().compare(rhs.first());
         if (comp != 0) return comp < 0;
 

@@ -1,4 +1,4 @@
-/* 用于缓存从 Web 下载的文件版本的实用工具。 */
+/* Utilities to cache downloaded versions of files from the web. */
 #ifndef DownloadCache_Included
 #define DownloadCache_Included
 
@@ -8,27 +8,27 @@
 #include <memory>
 #include <functional>
 
-/* 表示下载状态的类型。 */
+/* Type representing download status. */
 enum class DownloadStatus {
     DOWNLOADING,
     FINISHED
 };
 
-/* 用于报告进度的回调函数。 */
+/* Callback function used to report progress. */
 using DownloadCallback = std::function<void (DownloadStatus)>;
 
-/* 给定 URL，返回包含该 URL 内容的流。此系统
- * 会尝试缓存内容，以免重复下载。
+/* Given a URL, returns a stream containing the contents of that URL. This system
+ * will attempt to cache things so that they aren't downloaded multiple times.
  *
- * 如果发生错误，将抛出 DownloadError 异常。
+ * If an error occurs, a DownloadError exception is thrown.
  *
- * 可以选择提供回调函数以接收状态更新。
+ * You can optionally provide a callback function to receive status updates.
  */
 std::shared_ptr<std::istream>
 webContentsOf(const std::string& url, const std::string& fileExtension,
               DownloadCallback callback = nullptr);
 
-/* 表示下载错误的类型。它只是将下载错误向前传递。 */
+/* Type representing a downloading error. It just forwards the downloading error along. */
 class DownloadError {
 public:
     DownloadError(int errorCode) : theErrorCode(errorCode) {

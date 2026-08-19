@@ -4,17 +4,17 @@
 #include <sstream>
 #include <unordered_map>
 #include <typeindex>
-#include <cxxabi.h> // 非标准功能，但 g++ 和 clang 支持。
+#include <cxxabi.h> // Nonstandard, but supported on g++ and clang.
 using namespace std;
 
 namespace {
-    /* 类型 --> 频率 */
+    /* Type --> Frequency */
     unordered_map<type_index, int>& allocationTable() {
         static unordered_map<type_index, int> instance;
         return instance;
     }
 
-    /* 名称 --> 类型 */
+    /* Name --> Type */
     unordered_map<string, type_index>& lookupTable() {
         static unordered_map<string, type_index> instance;
         return instance;
@@ -22,23 +22,23 @@ namespace {
 }
 
 namespace MemoryDiagnostics {
-    /* 将类型注入相应的表中。 */
+    /* Injects the type into the appropriate table. */
     int registerSentinel(const std::type_info& type) {
-        /* std::type_info 不保证 .name() 的结果具有可读性。
-         * 使用 g++/clang 专用逻辑，将名称“反修饰”为人类可读形式
-         * 格式。
+        /* std::type_info does not guarantee that .name() will be at all human-readable.
+         * Use this g++/clang-specific logic to "demangle" the name back into a human-readable
+         * format.
          */
         int statusCode;
         auto* realName = abi::__cxa_demangle(type.name(), nullptr, nullptr, &statusCode);
         if (statusCode != 0) error("Internal error: Couldn't demangle name?");
 
-        /* C++ 的 type_info 对象不适合作为映射的键，但 std::type_index
-         * 使我们能够修复该问题。
+        /* C++ type_info objects don't work well as keys in maps, but std::type_index
+         * allows us to fix that.
          */
         lookupTable().insert(make_pair(string(realName), type_index(type)));
 
         free(realName);
-        return 137; // 就是想这么做，何乐而不为？
+        return 137; // You know, cause, why not?
     }
 
     void recordNew(const type_info& type) {
@@ -49,16 +49,16 @@ namespace MemoryDiagnostics {
         allocationTable()[type_index(type)]--;
     }
 
-    /* 清空分配表。 */
+    /* Clears the allocation table. */
     void clear() {
         allocationTable().clear();
     }
 
-    /* 返回所有不平衡类型的列表。 */
+    /* Returns a list of all imbalanced types. */
     map<string, int> typesWithErrors() {
         map<string, int> result;
 
-        /* 遍历各类型，查找不匹配项。 */
+        /* Loop over types, looking for mismatches. */
         for (const auto& entry: lookupTable()) {
             int record = allocationTable()[entry.second];
             if (record != 0) {

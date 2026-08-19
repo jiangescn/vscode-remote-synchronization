@@ -1,20 +1,20 @@
 /*
- * 文件：gbutton.h
+ * File: gbutton.h
  * ---------------
  *
  * @author Marty Stepp
  * @version 2019/04/23
- * - 将部分事件处理代码移到 GInteractor 父类
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
- * - 添加接受 QIcon 和 QPixmap 的 setIcon
+ * - added setIcon with QIcon and QPixmap
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/09/04
- * - 添加双击事件支持
+ * - added double-click event support
  * @version 2018/08/23
- * - 重命名为 gbutton.h，以替代 Java 版本
+ * - renamed to gbutton.h to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 
@@ -29,29 +29,29 @@
 class _Internal_QPushButton;
 
 /**
- * 此交互控件子类表示屏幕上的按钮。
- * 可以使用 setActionListener 方法监听按钮点击，
- * 传入希望每次单击时调用的函数。
+ * This interactor subclass represents an onscreen button.
+ * You can listen for clicks on a button using the setActionListener method,
+ * passing the function you want to call on each click.
  */
 class GButton : public GInteractor {
 public:
     /**
-     * 创建具有指定文本标签和可选图标的按钮。
+     * Creates a button with the specified text label and optional icon.
      */
     GButton(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
 
     /**
-     * 创建具有指定文本标签和图标的按钮。
+     * Creates a button with the specified text label and icon.
      */
     GButton(const std::string& text, const QIcon& icon, QWidget* parent = nullptr);
 
     /**
-     * 创建具有指定文本标签和图标的按钮。
+     * Creates a button with the specified text label and icon.
      */
     GButton(const std::string& text, const QPixmap& icon, QWidget* parent = nullptr);
 
     /**
-     * 释放按钮内部分配的内存。
+     * Frees memory allocated internally by the button.
      */
     ~GButton() override;
 
@@ -65,15 +65,15 @@ public:
     _Internal_QWidget* getInternalWidget() const override;
 
     /**
-     * 返回按钮文本。
-     * @return 文本
+     * Returns the button's text.
+     * @return the text
      */
     virtual std::string getText() const;
 
     /**
-     * 返回按钮文本相对于图标的位置。
-     * 默认值为 TEXT_BESIDE_ICON，但可以改为 TEXT_UNDER_ICON
-     * 通过调用 setTextPosition 方法。
+     * Returns the button's text position relative to its icon.
+     * The default is TEXT_BESIDE_ICON, but it can be changed to TEXT_UNDER_ICON
+     * by calling the setTextPosition method.
      */
     virtual GInteractor::TextPosition getTextPosition() const;
 
@@ -96,13 +96,13 @@ public:
     void setIcon(const std::string& filename, bool retainIconSize = true) override;
 
     /**
-     * 将按钮文本设为给定文本。
+     * Sets the text on the button to be the given text.
      */
     virtual void setText(const std::string& text);
 
     /**
-     * 设置按钮文本相对于图标的位置。
-     * 默认值为 TEXT_BESIDE_ICON，但可以改为 TEXT_UNDER_ICON。
+     * Sets the button's text position relative to its icon.
+     * The default is TEXT_BESIDE_ICON, but it can be changed to TEXT_UNDER_ICON.
      */
     virtual void setTextPosition(GInteractor::TextPosition position);
 
@@ -114,7 +114,7 @@ private:
 };
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QPushButton : public QToolButton, public _Internal_QWidget {

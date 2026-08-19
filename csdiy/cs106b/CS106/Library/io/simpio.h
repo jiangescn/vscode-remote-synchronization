@@ -1,19 +1,19 @@
 /*
- * 文件：simpio.h
+ * File: simpio.h
  * --------------
- * 此文件导出一组简化输入/输出的函数
- * C++ 中的操作，并对控制台输入提供一些错误检查。
+ * This file exports a set of functions that simplify input/output
+ * operations in C++ and provide some error-checking on console input.
  *
  * @version 2018/09/25
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2016/09/29
- * - 添加 getDouble 方法
+ * - added getDouble method
  * @version 2015/07/05
- * - 提高各类 I/O 使用的 appendSpace 函数的可见性
- *   提示函数（不再是静态函数）
+ * - increased visibility of appendSpace function used by various IO
+ *   prompting functions (no longer static)
  * @version 2014/10/19
- * - 按字母顺序排列函数
- * - 为提高效率，将许多函数的参数由 string 改为 const string&
+ * - alphabetized functions
+ * - converted many funcs to take const string& rather than string for efficiency
  */
 
 
@@ -24,167 +24,167 @@
 #include <string>
 
 /**
- * 如果给定字符串末尾没有空格，则通过引用在末尾添加一个空格。
+ * Adds a space at the end of the given string by reference if none is present.
  * @private
  */
 void appendSpace(std::string& prompt);
 
 /**
- * 从 <code>cin</code> 读取完整一行，期望用户输入一个
- * 单个字符。如果是这种情况，则返回该字符值。
- * 如果用户输入的不是仅含一个字符的一行，
- * 让用户有机会重新输入该值。
+ * Reads a complete line from <code>cin</code>, expecting the user to type a
+ * single character. If this is the case, that character value is returned.
+ * If the user types anything other than a one-character line of input,
+ * the user is given a chance to reenter the value.
  *
- * 若提供，可选的 <code>prompt</code> 字符串会在以下内容之前输出：
- * 读取该值。
- * 如果未传入提示文本，默认为“必须输入单个字符。请重试。”。
+ * If supplied, the optional <code>prompt</code> string is printed before
+ * reading the value.
+ * If no prompt is passed, defaults to, "You must type a single character. Try again.".
  *
- * 可选的 <code>reprompt</code> 参数用于提供输出消息
- * 用户输入无效时显示。如果没有重新提示文本
- * 如果传入，默认值为 prompt。
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed when the user enters an invalid input. If no reprompt
+ * is passed, defaults to prompt.
  */
 char getChar(const std::string& prompt = "",
              const std::string& reprompt = "");
 
 /**
- * 从 <code>cin</code> 读取完整一行，并将其扫描为
- * 浮点数。若扫描成功，则该浮点
- * 会返回该值。若输入不是合法数字，或
- * 字符串中出现多余字符（空白除外），
- * 让用户有机会重新输入该值。
+ * Reads a complete line from <code>cin</code> and scans it as a
+ * floating-point number. If the scan succeeds, the floating-point
+ * value is returned.  If the input is not a legal number or if
+ * extraneous characters (other than whitespace) appear in the string,
+ * the user is given a chance to reenter the value.
  *
- * 若提供，可选的 <code>prompt</code> 字符串会在以下内容之前输出：
- * 读取该值。
+ * If supplied, the optional <code>prompt</code> string is printed before
+ * reading the value.
  *
- * 可选的 <code>reprompt</code> 参数用于提供输出消息
- * 在用户输入无效内容时显示。
- * 如果未传入提示文本，默认为“数字格式非法。请重试。”。
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed when the user enters an invalid input.
+ * If no prompt is passed, defaults to, "Illegal numeric format. Try again.".
  *
- * 等价于 getReal。
+ * Equivalent to getReal.
  */
 double getDouble(const std::string& prompt = "",
                  const std::string& reprompt = "");
 
 /**
- * 从 <code>cin</code> 读取完整一行，并将其扫描为
- * 浮点数。若扫描成功，则该浮点
- * 会返回该值。若输入不是合法数字，或
- * 它不在 min 和 max 之间，或出现多余字符
- * 字符串中出现除空白以外的内容，
- * 让用户有机会重新输入该值。
+ * Reads a complete line from <code>cin</code> and scans it as a
+ * floating-point number. If the scan succeeds, the floating-point
+ * value is returned.  If the input is not a legal number or if
+ * it is not between min and max, or if extraneous characters
+ * (other than whitespace) appear in the string,
+ * the user is given a chance to reenter the value.
  *
- * 读取值前会输出必需的 <code>prompt</code> 字符串。
+ * The required <code>prompt</code> string is printed before reading the value.
  *
- * 等价于 getRealBetween。
+ * Equivalent to getRealBetween.
  */
 double getDoubleBetween(const std::string& prompt, double min, double max);
 
 
 /**
- * 从 <code>cin</code> 读取完整的一行，并将其解析为
- * 整数。若扫描成功，则返回整数值。若
- * 参数不是合法整数，或包含多余字符
- * 如果字符串中出现（空白以外的）其他内容，则会要求用户
- * 重新输入该值的机会。
+ * Reads a complete line from <code>cin</code> and scans it as an
+ * integer. If the scan succeeds, the integer value is returned. If
+ * the argument is not a legal integer or if extraneous characters
+ * (other than whitespace) appear in the string, the user is given
+ * a chance to reenter the value.
  *
- * 若提供，可选的 <code>prompt</code> 字符串会在以下内容之前输出：
- * 读取该值。
+ * If supplied, the optional <code>prompt</code> string is printed before
+ * reading the value.
  *
- * 可选的 <code>reprompt</code> 参数用于提供输出消息
- * 在用户输入无效内容时显示。
- * 如果未传入值，默认为“整数格式非法。请重试。”。
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed when the user enters an invalid input.
+ * If no value is passed, defaults to, "Illegal integer format. Try again.".
  */
 int getInteger(const std::string& prompt = "",
                const std::string& reprompt = "");
 
 /**
- * 从 <code>cin</code> 读取完整的一行，并将其解析为
- * 整数。若扫描成功，则返回整数值。若
- * 参数不是合法整数、不在 min 和 max 之间，
- * 或字符串中出现空白以外的多余字符时，
- * 让用户有机会重新输入该值。
+ * Reads a complete line from <code>cin</code> and scans it as an
+ * integer. If the scan succeeds, the integer value is returned. If
+ * the argument is not a legal integer, if it is not between min and max,
+ * or if extraneous characters (other than whitespace) appear in the string,
+ * the user is given a chance to reenter the value.
  *
- * 读取值前会输出必需的 <code>prompt</code> 字符串。
+ * The required <code>prompt</code> string is printed before reading the value.
  */
 int getIntegerBetween(const std::string& prompt, int min, int max);
 
 /**
- * 从 <code>cin</code> 读取一行文本并返回该行
- * 作为字符串。终止输入的换行符会被
- * 不作为返回值的一部分存储。如果提供，可选的
- * 在读取值之前打印 <code>prompt</code> 字符串。
+ * Reads a line of text from <code>cin</code> and returns that line
+ * as a string.  The newline character that terminates the input is
+ * not stored as part of the return value.  If supplied, the optional
+ * <code>prompt</code> string is printed before reading the value.
  */
 std::string getLine(const std::string& prompt = "");
 
 /**
- * getLine 的替代版本，接受提示并填充给定输出
- * 变量，并存入其结果。
+ * Alternate version of getLine that accepts a prompt and fills a given output
+ * variable with its result.
  */
 void getLine(const std::string& prompt,
              std::string& out);
 
 /**
- * getLine 的替代版本，接受要读取的输入流。
- * 旨在直接替代标准 C++ getline（小写 L）
- * 函数。
+ * Alternate version of getLine that accepts an input stream to read from.
+ * Meant as a drop-in replacement for the standard C++ getline (lowercase L)
+ * function.
  */
 void getLine(std::istream& input,
              std::string& out);
 
 /**
- * 从 <code>cin</code> 读取完整一行，并将其扫描为
- * 浮点数。若扫描成功，则该浮点
- * 会返回该值。若输入不是合法数字，或
- * 字符串中出现多余字符（空白除外），
- * 让用户有机会重新输入该值。
+ * Reads a complete line from <code>cin</code> and scans it as a
+ * floating-point number. If the scan succeeds, the floating-point
+ * value is returned.  If the input is not a legal number or if
+ * extraneous characters (other than whitespace) appear in the string,
+ * the user is given a chance to reenter the value.
  *
- * 若提供，可选的 <code>prompt</code> 字符串会在以下内容之前输出：
- * 读取该值。
+ * If supplied, the optional <code>prompt</code> string is printed before
+ * reading the value.
  *
- * 可选的 <code>reprompt</code> 参数用于提供输出消息
- * 在用户输入无效内容时显示。
- * 如果未传入值，默认为“数字格式非法。请重试。”。
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed when the user enters an invalid input.
+ * If no value is passed, defaults to, "Illegal numeric format. Try again.".
  *
- * 等价于 getDouble。
+ * Equivalent to getDouble.
  */
 double getReal(const std::string& prompt = "",
                const std::string& reprompt = "");
 
 /**
- * 从 <code>cin</code> 读取完整一行，并将其扫描为
- * 浮点数。若扫描成功，则该浮点
- * 会返回该值。若输入不是合法数字，或
- * 它不在 min 和 max 之间，或出现多余字符
- * 字符串中出现除空白以外的内容，
- * 让用户有机会重新输入该值。
+ * Reads a complete line from <code>cin</code> and scans it as a
+ * floating-point number. If the scan succeeds, the floating-point
+ * value is returned.  If the input is not a legal number or if
+ * it is not between min and max, or if extraneous characters
+ * (other than whitespace) appear in the string,
+ * the user is given a chance to reenter the value.
  *
- * 读取值前会输出必需的 <code>prompt</code> 字符串。
+ * The required <code>prompt</code> string is printed before reading the value.
  *
- * 等价于 getDoubleBetween。
+ * Equivalent to getDoubleBetween.
  */
 double getRealBetween(const std::string& prompt, double min, double max);
 
 /**
- * 从 <code>cin</code> 读取完整一行，并将其视为
- * 对问题的是/否回答。如果该行
- * 输入内容以 'y' 或 'Y' 开头时返回 true；如果以
- * 以 'n' 或 'N' 开头。否则，用户有机会重新输入
- * 值。
+ * Reads a complete line from <code>cin</code> and treats it as a
+ * yes-or-no answer to a question.  Returns <code>true</code> if the line
+ * typed begins with a 'y' or 'Y', and returns <code>false</code> if it begins
+ * with a 'n' or 'N'.  Otherwise the user is given a chance to reenter the
+ * value.
  *
- * 若提供，可选的 <code>prompt</code> 字符串会在以下内容之前输出：
- * 读取该值。
+ * If supplied, the optional <code>prompt</code> string is printed before
+ * reading the value.
  *
- * 可选的 <code>reprompt</code> 参数用于提供输出消息
- * 在用户输入无效内容时显示。
- * 如果未传入值，则默认为
- * “请输入以‘Y’或‘N’开头的单词。”。
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed when the user enters an invalid input.
+ * If no value is passed, defaults to,
+ * "Please type a word that starts with 'Y' or 'N'.".
  *
- * 同样可选的 <code>defaultValue</code> 参数表示
- * 如果用户直接按 Enter 而不是输入 Y 或 N，应发生的情况。
- * 默认情况下会再次提示用户；但如果此处传入 defaultValue，
- * 按 Enter 等同于输入该值。
- * 当默认 Y/N 答案为 Yes 或 No，而你希望
- * 让用户免于输入。
+ * The also also optional <code>defaultValue</code> argument indicates what
+ * should happen if the user just presses Enter rather than typing Y or N.
+ * By default, the user is re-prompted, but if a defaultValue is passed here,
+ * pressing Enter will be equivalent to having typed that value.
+ * This is useful where the default Y/N answer is Yes or No and you want to
+ * let the user avoid typing.
  */
 bool getYesOrNo(const std::string& prompt = "",
                 const std::string& reprompt = "",

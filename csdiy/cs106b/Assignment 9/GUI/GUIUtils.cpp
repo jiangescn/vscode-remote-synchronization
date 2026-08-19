@@ -7,13 +7,13 @@
 using namespace std;
 
 namespace {
-    /* 自然换行之间使用的行高倍数。 */
+    /* Multiplier of the line height to use between natural linebreaks. */
     const double kLineSpacing = 1.1;
 
-    /* 段落分隔之间使用的行高倍数。 */
+    /* Multiplier of the line height to use between paragraph breaks. */
     const double kParagraphSpacing = kLineSpacing + 0.35;
 
-    /* 将字符串词元化为可独立渲染的单元。 */
+    /* Tokenizes a string into individually-renderable units. */
     vector<string> tokenize(const string& text) {
         istringstream input(text);
 
@@ -23,19 +23,19 @@ namespace {
         while (true) {
             int next = input.get();
 
-            /* 若遇到 EOF，则刷新当前词元并停止。 */
+            /* If we hit EOF, flush the current token and stop. */
             if (next == EOF) {
                 if (!current.empty()) result.push_back(current);
                 return result;
             }
 
-            /* 若遇到空格，则刷新当前词元并开始新词元。 */
+            /* If we hit a space, flush the current token and start a new one. */
             if (isspace(char(next))) {
                 if (!current.empty()) result.push_back(current);
                 current = string(1, char(next));
             }
-            /* 否则，这是非空格字符。扩展当前词元，并在需要时刷新
-             * 如果它是空白词元。
+            /* Otherwise, we have a non-space character. Extend the current token, flushing
+             * it if it's a whitespace token.
              */
             else {
                 if (!current.empty() && isspace(current[0])) {
@@ -48,9 +48,9 @@ namespace {
         }
     }
 
-    /* 给定字体字符串，将该字体大小减小一个单位。 */
+    /* Given a font string, reduces the size of that font by one unit. */
     bool reduceFont(MiniGUI::Font& font) {
-        /* 字号不能减小到 1 以下。 */
+        /* Can't reduce the font size below one. */
         if (font.size() <= 1) {
             return false;
         }
@@ -67,23 +67,23 @@ shared_ptr<TextRender> TextRender::construct(const string& text,
                                              const GRectangle& bounds,
                                              const MiniGUI::Font& font,
                                              LineBreak breakMode) {
-    /* 将文本拆分为独立词元。 */
+    /* Split the text apart into individual tokens. */
     auto tokens = tokenize(text);
 
-    /* 不断尝试使内容适配，并逐步缩小字号，直至成功。
+    /* Keep trying to get things to fit, shrinking the font until we succeed.
      *
-     * TODO：这是一个效率不高的 O(n) 算法。是否改用二分查找？
+     * TODO: This is a silly O(n)-time algorithm. Use binary search instead?
      */
     shared_ptr<TextRender> result(new TextRender());
     result->mBounds         = bounds;
     result->mFont           = font;
     result->mComputedFont   = font;
     while (true) {
-        /* 检查此方法是否可行。 */
+        /* See if this works. */
         if (result->fitText(tokens, breakMode)) break;
 
-        /* 尝试缩小字号。若无法缩小，则没有可渲染的内容，并且
-         * 这没有问题！
+        /* Try reducing the font size. If we can't, then there's nothing to render, and
+         * that's okay!
          */
         if (!reduceFont(result->mComputedFont)) {
             result->mComputedBounds = {
@@ -96,26 +96,26 @@ shared_ptr<TextRender> TextRender::construct(const string& text,
     return result;
 }
 
-/* 尝试对文本换行，使其适合边界矩形。成功时返回 true，并
- * 将渲染信息写入输出参数。否则返回 false，并保持
- * 保持不变。
+/* Attempts to line wrap the text to fit it within the bounds rectangle. On success, returns true and
+ * fills in the outparameters with information about the render. Otherwise, returns false and leaves
+ * them unmodified.
  */
 bool TextRender::fitText(const vector<string>& tokens, LineBreak breakMode) {
-    /* 设置渲染标签。 */
+    /* Set up a rendering label. */
     GText label("");
     label.setFont(mComputedFont.stanfordCPPLibFontString());
 
-    /* 根据字体度量计算行高。 */
+    /* Compute the line height from the font metrics. */
     double lineHeight = label.getFontAscent() + label.getFontDescent();
 
-    /* 记录原始起始坐标。稍后计算时会用到
-     * 边界框。
+    /* Track the original starting coordinates. We'll need this for later when we compute
+     * the bounding box.
      */
     double renderedWidth = 0;
     double renderedHeight = 0;
 
-    /* 初始位置位于左上角，并向下偏移字体上升部的距离
-     * （因为我们沿基线绘制。）
+    /* Initial position is in the upper-left corner, shifted down by the font ascent
+     * (since we draw on the baseline.)
      */
     double x = mBounds.x;
     double y = mBounds.y + label.getFontAscent();
@@ -125,14 +125,14 @@ bool TextRender::fitText(const vector<string>& tokens, LineBreak breakMode) {
     currLine.baseline = { x, y };
     currLine.width    = 0;
 
-    /* 开始布局词元。 */
+    /* Begin laying out tokens. */
     for (const auto& token: tokens) {
-        /* 若这是换行符，则插入硬换行。 */
+        /* If this is newline, insert a hard line break. */
         if (breakMode == LineBreak::BREAK_SPACES && token == "\n") {
-            /* 缓存目前生成的行。 */
+            /* Cache the line generated so far. */
             computedLines.push_back(currLine);
 
-            /* 下移到下一行。 */
+            /* Shift down to the next line. */
             x = mBounds.x;
             y += lineHeight * kParagraphSpacing;
 
@@ -140,11 +140,11 @@ bool TextRender::fitText(const vector<string>& tokens, LineBreak breakMode) {
             currLine.width = 0;
             currLine.baseline = { x, y };
         }
-        /* 否则，若这是另一种空白词元，则按需向前移动，
-         * 但不要调整边界矩形。
+        /* Otherwise, if this is another sort of whitespace token, scoot over as appropriate,
+         * but don't adjust the bounding rectangle.
          */
         else if (breakMode == LineBreak::BREAK_SPACES && isspace(token[0])) {
-            /* 若位于行首，则不执行任何操作。 */
+            /* Don't do anything if we're at the front of a line. */
             if (int(x - mBounds.x) != 0) {
                 label.setText(token);
                 currLine.text += token;
@@ -152,13 +152,13 @@ bool TextRender::fitText(const vector<string>& tokens, LineBreak breakMode) {
                 x += label.getWidth();
             }
         }
-        /* 否则，绘制此词元并更新全局边界矩形。 */
+        /* Otherwise, draw this token and update the global bounding rectangle. */
         else {
             label.setText(token);
 
-            /* 若放不下，则前进到下一行。 */
+            /* If we don't fit, advance to the next line. */
             if (breakMode == LineBreak::BREAK_SPACES && x + label.getWidth() > mBounds.x + mBounds.width) {
-                /* 写出目前为止的这一行。 */
+                /* Write out the line we have so far. */
                 computedLines.push_back(currLine);
 
                 x = mBounds.x;
@@ -171,20 +171,20 @@ bool TextRender::fitText(const vector<string>& tokens, LineBreak breakMode) {
 
             currLine.text += token;
 
-            /* 向右移动刚添加内容的宽度。 */
+            /* Shift over by the width of what we just added. */
             x += label.getWidth();
             currLine.width += label.getWidth();
 
-            /* 更新边界矩形。 */
+            /* Update our bounding rectangle. */
             renderedWidth  = max(renderedWidth, x - mBounds.x);
             renderedHeight = max(y + label.getFontDescent() - mBounds.y, renderedHeight);
 
-            /* 若越界，则报告错误。 */
+            /* If we're out of bounds, report an error. */
             if (renderedWidth > mBounds.width || renderedHeight > mBounds.height) return false;
         }
     }
 
-    /* 处理所有剩余词元。 */
+    /* Process any remaining tokens. */
     if (!currLine.text.empty()) {
         computedLines.push_back(currLine);
     }
@@ -227,7 +227,7 @@ MiniGUI::Font TextRender::computedFont() const {
 }
 
 void TextRender::alignLeft() {
-    /* 对每一行进行平移，使其贴到初始边界。 */
+    /* For each line, shift that line to the border of the initial boundary. */
     for (auto& line: mLines) {
         line.baseline = {
             mBounds.x,
@@ -237,7 +237,7 @@ void TextRender::alignLeft() {
 }
 
 void TextRender::alignCenterHorizontally() {
-    /* 对每一行进行平移，使其在初始边界内居中。 */
+    /* For each line, shift that line to be centered in the initial boundary. */
     for (auto& line: mLines) {
         line.baseline = {
             mBounds.x + (mBounds.width - line.width) / 2.0,
@@ -247,8 +247,8 @@ void TextRender::alignCenterHorizontally() {
 }
 
 void TextRender::alignTop() {
-    /* 调整每一行，使其到完整边界顶部的相对距离
-     * 与它到计算边界顶部的距离一致。
+    /* Adjust each line so that its relative distance to the top of the full bounds
+     * matches its distance to the top of the computed bounds.
      */
     for (auto& line: mLines) {
         line.baseline = {
@@ -257,7 +257,7 @@ void TextRender::alignTop() {
         };
     }
 
-    /* 同时调整计算得到的边界。 */
+    /* Adjust the computed bounds as well. */
     mComputedBounds = {
         mComputedBounds.x,
         mBounds.y,
@@ -267,11 +267,11 @@ void TextRender::alignTop() {
 }
 
 void TextRender::alignCenterVertically() {
-    /* 确定新计算边界的起始位置。 */
+    /* Figure out where the new computed bounds should start. */
     double newY = mBounds.y + (mBounds.height - mComputedBounds.height) / 2.0;
 
-    /* 调整每一行的 Y 坐标，使它到新 Y 坐标的距离与
-     * 它到计算边界的距离。
+    /* Adjust each line's Y coordinate so that its distance from the new Y coordinate matches
+     * its distance from the computed bounds.
      */
     for (auto& line: mLines) {
         line.baseline = {
@@ -280,7 +280,7 @@ void TextRender::alignCenterVertically() {
         };
     }
 
-    /* 同时调整计算得到的边界。 */
+    /* Adjust the computed bounds as well. */
     mComputedBounds = {
         mComputedBounds.x,
         newY,
@@ -290,7 +290,7 @@ void TextRender::alignCenterVertically() {
 }
 
 /***************************/
-/****** LegendRender *****/
+/****** LegendRender *******/
 /***************************/
 
 namespace {
@@ -306,36 +306,36 @@ shared_ptr<LegendRender> LegendRender::construct(const vector<string>& strings,
                                                  const MiniGUI::Font& font,
                                                  const string& borderColor,
                                                  LineBreak breakMode) {
-    /* 验证输入。 */
+    /* Validate input. */
     if (strings.size() > colors.size()) error("Not enough colors to draw legend.");
 
-    /* 设置初始字段。 */
+    /* Set up initial fields. */
     shared_ptr<LegendRender> result(new LegendRender());
     result->mBounds = bounds;
     result->mBorderColor = borderColor;
     result->mBulletColors = colors;
 
-    /* 尝试使用当前字体大小让所有内容正常显示。若可行则完成；否则减小字号
-     * 调整字号并重试。
+    /* Attempt to use the current font size to make everything work. If it does work, great! If not, back off
+     * the font size and try again.
      *
-     * TODO：这里使用了效率不高的 O(n) 算法。是否切换为二分查找？
+     * TODO: This uses a silly O(n)-time algorithm. Switch to binary search?
      */
     MiniGUI::Font currFont = font;
     while (true) {
-        /* 当前 x、y 坐标，用于布局文本。 */
+        /* Current x and y coordinates, for the purposes of laying out text. */
         double x = bounds.x;
         double y = bounds.y + kItemPadding;
 
         vector<shared_ptr<TextRender>> entries;
 
-        /* TODO：若提前失败，是否应短路？ */
+        /* TODO: Short-circuit if we fail early? */
         const double bulletSpacing = kBulletSize + 2 * kBulletPadding;
         double width = 0;
         for (size_t i = 0; i < strings.size(); i++) {
-            /* 为此项目构造文本渲染对象，并记录它最终所在的位置。 */
+            /* Construct a text render for this item, tracking where it ended up. */
 
 
-            /* 提供不受限的垂直空间。稍后再调整高度。 */
+            /* Give unbounded vertical space. We'll do adjustments for height later on. */
             auto render = TextRender::construct(strings[i], {
                                                     x + bulletSpacing, y,
                                                     bounds.width - bulletSpacing - kItemPadding,
@@ -348,21 +348,21 @@ shared_ptr<LegendRender> LegendRender::construct(const vector<string>& strings,
             width = max(width, render->computedBounds().width);
         }
 
-        /* 获取净边界框。我们会强制其宽度与给定空间一致
-         * 以保持一致性。
+        /* Get the net bounding box. We'll force this to be as wide as the space that we're given
+         * for consistency's sake.
          */
         GRectangle computedBounds = {
             bounds.x, bounds.y, bounds.width, y - bounds.y
         };
 
-        /* 是否放得下？ */
+        /* Did we fit? */
         if (computedBounds.height <= bounds.height && computedBounds.width <= bounds.width) {
             result->mComputedBounds = computedBounds;
             result->mLines = entries;
             return result;
         }
 
-        /* 糟糕，放不下。缩小字号后重试。 */
+        /* Oops, didn't fit. Shrink the font and try again. */
         if (!reduceFont(currFont)) {
             result->mComputedBounds = {
                 result->mBounds.x, result->mBounds.y, 0, 0
@@ -382,11 +382,11 @@ shared_ptr<LegendRender> LegendRender::construct(const vector<string>& strings,
 }
 
 void LegendRender::draw(GWindow& window) {
-    /* 先绘制所有文本项及其对应的项目符号。 */
+    /* First, draw all the text items and their corresponding bullets. */
     for (size_t i = 0; i < mLines.size(); i++) {
         mLines[i]->draw(window);
 
-        /* 绘制项目符号，并在垂直方向居中。 */
+        /* Draw the bullet, vertically-centered. */
         window.setColor(mBulletColors[i]);
         GRectangle bullet = {
             mComputedBounds.x + kBulletPadding,
@@ -397,7 +397,7 @@ void LegendRender::draw(GWindow& window) {
         window.fillRect(bullet);
     }
 
-    /* 绘制整体边界框。 */
+    /* Draw the overall bounding box. */
     window.setColor(mBorderColor);
     window.drawRect(mComputedBounds);
 }
@@ -415,33 +415,33 @@ GRectangle LegendRender::computedBounds() const {
 /***************************/
 
 namespace {
-    /* 坐标轴线常量。 */
+    /* Axis line constants. */
     const double kAxisLineWidth = 2;
     const double kSmallTickSize = 8;
     const double kLargeTickSize = 16;
 
-    /* 刻度线与标签之间的内边距。 */
+    /* Padding between tick marks and labels. */
     const double kTickPadding = 2;
 
-    /* 绘制线条所用常量。 */
+    /* Plotted line constants. */
     const double kPlottedLineWidth = 5;
 
-    /* 给定标签列表和标签字体，返回一个足够大的边界矩形
-     * 足以容纳任意这些标签。
+    /* Given a list of labels and a label font, returns a bounding rectangle big
+     * enough to hold any of those labels.
      */
     GDimension labelDimensionsFor(const vector<string>& labels,
                                   const MiniGUI::Font& font) {
         GText measurer;
         measurer.setFont(font.stanfordCPPLibFontString());
 
-        /* 找出所有标签的最大范围。 */
+        /* Find the maximum extents across all labels. */
         double maxWidth = 0;
         double maxHeight = 0;
 
         for (const auto& label: labels) {
             measurer.setLabel(label);
 
-            /* 计算高度时必须考虑上升部和下降部。 */
+            /* For height, have to factor in ascent and descent. */
             maxHeight = max(maxHeight, measurer.getFontAscent() + measurer.getFontDescent());
             maxWidth = max(maxWidth, measurer.getWidth());
         }
@@ -449,8 +449,8 @@ namespace {
         return { maxWidth, maxHeight };
     }
 
-    /* 给定所有 X、Y 轴标签及其字体，返回三个控制点
-     * （原点、x 轴终点、y 轴终点），用于定义坐标轴
+    /* Given all the X and Y axis labels and their fonts, returns the three control points
+     * (origin, x end, y end) that define the axes
      */
     tuple<GPoint, GPoint, GPoint>
     axesFor(const GRectangle& bounds,
@@ -465,32 +465,32 @@ namespace {
         double xEnd    = bounds.x + bounds.width;
         double yEnd    = bounds.y;
 
-        /* 标签在所有水平和垂直刻度线上居中绘制。
-         * 这意味着标签的一半会分别沿 X、Y 方向伸出
-         * 坐标轴的每个端点，这意味着需要预留完整宽度的
-         * x 轴上一个完整的 x 轴标签，以及 y 轴上一个完整的 y 轴标签。
+        /* The labels are drawn centered on all the vertical and horizontal tick marks.
+         * That means that half of a label will hang off in each of the X and Y directions on
+         * each endpoint of the axis, which means that we need to buffer the full width of
+         * one x-axis label on the x-axis and one full y-axis label on the y-axis.
          */
         auto xSize = labelDimensionsFor(xLabels, xLabelFont);
         auto ySize = labelDimensionsFor(yLabels, yLabelFont);
         xEnd    -= xSize.width  / 2;
         yEnd    += ySize.height / 2;
 
-        /* 此外，还需要考虑 y 轴标签的宽度以及
-         * x 轴标签的高度，因为它们绘制在左侧和下方
-         * 分别对应 y 轴。
+        /* Additionally, we need to account for the width of the y-axis labels and the
+         * height of the x-axis labels, since they're drawn to the left of and underneath
+         * the y-axis, respectively.
          *
-         * 还需要考虑可能有很大的半个标签伸出
-         * 从 X 轴或 Y 轴原点偏移。
+         * We also need to consider the possibility that there's a large half-label hanging
+         * off from the origin point on either the X or Y axis.
          */
         originX += max(ySize.width,  xSize.width  / 2.0);
         originY -= max(xSize.height, ySize.height / 2.0);
 
-        /* 别忘了刻度线的内边距！ */
+        /* Don't forget tick mark padding! */
         originX += kTickPadding;
         originY -= kTickPadding;
 
-        /* 最后，需要在每个方向预留半个刻度线，因为这些刻度
-         * 刻度覆盖线条。
+        /* Finally, we have to buffer half of a tick mark in each direction, since those
+         * ticks overdraw the lines.
          */
         originX += kLargeTickSize / 2.0;
         originY -= kLargeTickSize / 2.0;
@@ -510,17 +510,17 @@ LineGraphRender::construct(const vector<vector<GPoint>>& lines,
                            const MiniGUI::Font& yLabelFont,
                            const vector<string>& lineColors,
                            const string& axisColor) {
-    /* 边界情况：若没有至少两个刻度，就无法绘制折线图
-     * 分别沿 X 和 Y 方向。
+    /* Boundary case: We can't draw a line graph if we don't have at least two ticks
+     * in each of the X and Y directions.
      */
     if (xLabels.size() < 2 || yLabels.size() < 2) error("Insufficiently many ticks.");
 
-    /* 边界情况：每条线都需要一种颜色。 */
+    /* Boundary case: We need one color per line. */
     if (lineColors.size() < lines.size()) error("Too few line colors (have " + to_string(lineColors.size()) + ", need " + to_string(lines.size()) + ").");
 
     shared_ptr<LineGraphRender> result(new LineGraphRender());
 
-    /* 复制基本信息。 */
+    /* Copy over basic information. */
     result->mXLabelFont  = xLabelFont;
     result->mYLabelFont  = yLabelFont;
     result->mXLabels     = xLabels;
@@ -531,15 +531,15 @@ LineGraphRender::construct(const vector<vector<GPoint>>& lines,
     result->mYMinorTicks = yMinorTicks;
     result->mBounds      = bounds;
 
-    /* 首要任务：确定标签需要多少空间
-     * 在坐标轴上。必须这样做，才能确定
-     * 坐标轴所在位置。
+    /* First order of business: figure out how much space we need for the labels
+     * on the axes. This is necessrary in order for us to figure out where the
+     * axes go.
      */
     tie(result->mOrigin, result->mXEnd, result->mYEnd) =
             axesFor(bounds, xLabels, yLabels, xLabelFont, yLabelFont);
 
-    /* 现在已有这些坐标点，可以重新映射各条线，使其使用
-     * 使用折线图坐标空间，而不是虚拟 [0, 1] 坐标空间。
+    /* Now that we have these coordinate points, we can remap the lines so that they use
+     * the line graph coordinate space instead of the virtual [0, 1] coordinate space.
      */
     double baseX  = result->mOrigin.x;
     double baseY  = result->mOrigin.y;
@@ -557,37 +557,37 @@ LineGraphRender::construct(const vector<vector<GPoint>>& lines,
 }
 
 void LineGraphRender::drawYAxis(GWindow& window) const {
-    /* 绘制坐标轴线。 */
+    /* Draw the axis line. */
     GLine axisLine(mOrigin, mYEnd);
     axisLine.setColor(mAxisColor);
     axisLine.setLineWidth(kAxisLineWidth);
     window.draw(&axisLine);
 
-    /* 绘制刻度线。 */
+    /* Draw tick marks. */
     GText tickLabel("");
     tickLabel.setColor(mAxisColor);
     tickLabel.setFont(mYLabelFont.stanfordCPPLibFontString());
 
-    /* 实用常量。 */
+    /* Useful constants. */
     const double height  = mOrigin.y - mYEnd.y;
     const double spacing = height / (mYLabels.size() - 1);
 
     for (size_t i = 0; i < mYLabels.size(); i++) {
-        /* 主刻度线。 */
+        /* Major tick mark. */
         double y = mOrigin.y - i * spacing;
         double x = mOrigin.x;
         window.setColor(mAxisColor);
         window.drawLine(x - kLargeTickSize / 2.0, y, x + kLargeTickSize / 2.0, y);
 
-        /* 刻度标签。 */
+        /* Tick mark label. */
         tickLabel.setLabel(mYLabels[i]);
         window.draw(&tickLabel, x - kLargeTickSize / 2.0 - kTickPadding - tickLabel.getWidth(), y + tickLabel.getFontDescent());
 
-        /* 次级刻度线。 */
+        /* Minor tick marks. */
         if (i + 1 != mYLabels.size()) {
             for (size_t tick = 0; tick < mYMinorTicks; tick++) {
-                /* 想知道这个结果从何而来？这里假设我们正在绘制次级
-                 * 将次级刻度线绘制在主刻度线之上，以获得正确间距。
+                /* Curious where this comes from? We're going to pretend that we're drawing minor
+                 * tick marks on top of the major tick marks to get the spacing right.
                  */
                 double minorY = y - (tick + 1) * (spacing / (mYMinorTicks + 1));
                 window.drawLine(x - kSmallTickSize / 2.0, minorY, x + kSmallTickSize / 2.0, minorY);
@@ -597,18 +597,18 @@ void LineGraphRender::drawYAxis(GWindow& window) const {
 }
 
 void LineGraphRender::drawXAxis(GWindow& window) const {
-    /* 绘制坐标轴线。 */
+    /* Draw the axis line. */
     GLine axisLine(mOrigin, mXEnd);
     axisLine.setColor(mAxisColor);
     axisLine.setLineWidth(kAxisLineWidth);
     window.draw(&axisLine);
 
-    /* 绘制刻度线。 */
+    /* Draw tick marks. */
     GText tickLabel("");
     tickLabel.setColor(mAxisColor);
     tickLabel.setFont(mXLabelFont.stanfordCPPLibFontString());
 
-    /* 实用常量。 */
+    /* Useful constants. */
     const double width  = mXEnd.x - mOrigin.x;
     const double spacing = width / (mXLabels.size() - 1);
 
@@ -619,15 +619,15 @@ void LineGraphRender::drawXAxis(GWindow& window) const {
         window.setColor(mAxisColor);
         window.drawLine(x, y - kLargeTickSize / 2.0, x, y + kLargeTickSize / 2.0);
 
-        /* 刻度标签。 */
+        /* Tick mark label. */
         tickLabel.setLabel(mXLabels[i]);
         window.draw(&tickLabel, x - tickLabel.getWidth() / 2.0, y + kLargeTickSize / 2.0 + kTickPadding + tickLabel.getFontAscent());
 
-        /* 次级刻度线。 */
+        /* Minor tick marks. */
         if (i + 1 != mXLabels.size()) {
             for (size_t tick = 0; tick < mXMinorTicks; tick++) {
-                /* 想知道这个结果从何而来？这里假设我们正在绘制次级
-                 * 将次级刻度线绘制在主刻度线之上，以获得正确间距。
+                /* Curious where this comes from? We're going to pretend that we're drawing minor
+                 * tick marks on top of the major tick marks to get the spacing right.
                  */
                 double minorX = x + (tick + 1) * (spacing / (mXMinorTicks + 1));
                 window.drawLine(minorX, y - kSmallTickSize / 2.0, minorX, y + kSmallTickSize / 2.0);
@@ -637,7 +637,7 @@ void LineGraphRender::drawXAxis(GWindow& window) const {
 }
 
 void LineGraphRender::drawLines(GWindow& window) const {
-    /* 从后向前绘制各条线。 */
+    /* Draw lines from back to front. */
     for (size_t j = mLines.size(); j > 0; --j) {
         GLine line(0, 0, 0, 0);
         line.setLineWidth(kPlottedLineWidth);
@@ -667,7 +667,7 @@ void LineGraphRender::draw(GWindow& window) {
 
 
 /***************************/
-/******* 辅助函数 ********/
+/*******  Helpers   ********/
 /***************************/
 
 void clearDisplay(GWindow& window, const std::string& backgroundColor) {
@@ -678,18 +678,18 @@ void clearDisplay(GCanvas* canvas, const std::string& backgroundColor) {
     canvas->fillRect({ 0, 0, canvas->getWidth(), canvas->getHeight() });
 }
 
-/* 此函数背后的数学公式毫不掩饰地（并怀着敬意）取自 Wikipedia：
+/* The math behind this function is shamelessly lifted (with love) from Wikipedia:
  *
  *   https://en.wikipedia.org/wiki/Mollweide_projection#Mathematical_formulation
  *
- * 逆向公式比正向公式简单得多。:-)
+ * The inverse formula is way easier than the forward formula. :-)
  *
- * 此函数输出一对实数，范围为 [-2, +2] × [-1, 1]，
- * 随后需要根据窗口大小进行缩放和平移。
+ * The output of this function is a pair of real numbers in the range [-2, +2] x [-1, 1],
+ * which then needs to be scaled and translated based on the window size.
  */
 tuple<double, double> mollweideProjectionOf(double latitude, double longitude,
                                             double longitudeOffset, double latitudeOffset) {
-    /* 调整经度以适配地图。 */
+    /* Adjust longitude to fit map. */
     longitude -= longitudeOffset;
     if (longitude < -180) longitude += 360;
     if (longitude > 180)  longitude -= 360;
@@ -698,12 +698,12 @@ tuple<double, double> mollweideProjectionOf(double latitude, double longitude,
     if (latitude < -90)   latitude += 180;
     if (latitude >  90)   latitude  -= 180;
 
-    /* 将角度（从 USGS 获得的单位）转换为弧度。 */
+    /* Convert from degrees (what we get back from USGS) to radians. */
     longitude *= M_PI / 180;
     latitude  *= M_PI / 180;
 
-    /* 没有可直接求解坐标的闭式公式，因此我们会
-     * 使用牛顿法尝试逼近解。感谢微积分！
+    /* There isn't a closed-form solution to work out the coordinates, so we'll
+     * use Newton's method to try to get close to one. Thanks, calculus!
      */
     static const size_t kNumIterations = 100;
     double theta = latitude;
@@ -711,7 +711,7 @@ tuple<double, double> mollweideProjectionOf(double latitude, double longitude,
         theta = theta - (2 * theta + sin(2 * theta) - M_PI * sin(latitude)) / (2 + 2 * cos(2 * theta));
     }
 
-    /* 有了 theta，就可以计算 x 和 y 坐标。 */
+    /* Armed with theta, we can work out the x and y coordinates. */
     double x = 2 * cos(theta) * longitude / M_PI;
     double y = sin(theta);
 
@@ -732,17 +732,17 @@ Temporary<GSlider> makeYearSlider(GWindow& window, int startYear, int endYear) {
 }
 
 namespace {
-    /* 给定文件名，返回不含后缀的文件名。 */
+    /* Given a filename, returns the filename without its suffix. */
     string trimExtensionFrom(const string& filename) {
         auto index = filename.rfind('.');
         return index == string::npos? filename : filename.substr(0, index);
     }
 }
 
-/* 用于创建文件选择组合框的实用工具。 */
+/* Utility to create a file chooser combo box. */
 GComboBox* makeFileSelector(const string& baseDir, const string& defaultOption,
                             function<bool(const string&)> predicate) {
-    /* 在此保存文件。 */
+    /* Stash files here. */
     Vector<string> files;
 
     GComboBox* result = new GComboBox();
@@ -753,14 +753,14 @@ GComboBox* makeFileSelector(const string& baseDir, const string& defaultOption,
         }
     }
 
-    /* 对文件排序。此比较器在比较时会忽略后缀，因此
-     * 稳定排序（所有内容已按名称排序）。
+    /* Sort files. This comparator drops off suffixes when doing the comparison, hence
+     * the stable sort (everything is already sorted by name).
      */
     stable_sort(files.begin(), files.end(), [](const string& lhs, const string& rhs) {
         return trimExtensionFrom(lhs) < trimExtensionFrom(rhs);
     });
 
-    /* 对所有内容排序。 */
+    /* Sort everything. */
     for (string file: files) {
         result->addItem(file);
     }
@@ -769,11 +769,11 @@ GComboBox* makeFileSelector(const string& baseDir, const string& defaultOption,
     return result;
 }
 
-/* 使边界适配宽高比。 */
+/* Fit bounds to aspect ratio. */
 GRectangle fitToBounds(const GRectangle& bounds, double aspectRatio) {
     double width, height;
 
-    /* 太窄了吗？ */
+    /* Too narrow? */
     if (bounds.width / bounds.height <= aspectRatio) {
         width = bounds.width;
         height = width / aspectRatio;

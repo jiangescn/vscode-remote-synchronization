@@ -4,19 +4,19 @@
 #include "ProblemHandler.h"
 #include <memory>
 
-/* 锁定/解锁所有演示选项按钮。只能从主 GUI 线程调用。 */
+/* Locks/unlocks all demo option buttons. Should only be called from the main GUI thread. */
 void setDemoOptionsEnabled(bool isEnabled);
 
-/* 仅供内部使用。 */
+/* For internal use only. */
 namespace MiniGUI {
     namespace Detail {
-        /* 设置当前活动演示。MiniGUI 客户端不应使用此函数。 */
+        /* Sets which demo is active. This is not meant to be used by MiniGUI clients. */
         void setActiveDemo(std::shared_ptr<ProblemHandler> handler);
 
-        /* 获取 MiniGUI 窗口。MiniGUI 客户端不应使用此函数。 */
+        /* Retrieves the MiniGUI window. This is not meant to be used by MiniGUI clients. */
         GWindow& graphicsWindow();
 
-        /* 图形主循环。 */
+        /* Graphical main loop. */
         void graphicsMain(std::function<void()> initialDemo);
     }
 }

@@ -4,7 +4,7 @@
 using namespace std;
 
 namespace {
-    /* HTML 页眉和页脚。*/
+    /* HTML header and footer.*/
     const string kHTMLHeader = R"(
          <html>
             <head></head>
@@ -18,63 +18,63 @@ namespace {
 }
 
 GColorConsole::GColorConsole() : ostream(new ConsoleStreambuf(this)) {
-    // 已在初始化列表中处理
+    // Handled in initializer list
 }
 
 GColorConsole::~GColorConsole() {
     delete rdbuf();
 }
 
-/* 清除所有内容。调用 updateDisplay 之前不会更新显示。 */
+/* Clears everything. This will not update the display until updateDisplay is called. */
 void GColorConsole::clearDisplay() {
-    /* 输出所有剩余内容，然后清空内容。 */
+    /* Kick out any remaining contents, then clear out the contents. */
     flushBuffer();
     mContents.clear();
 }
 
-/* 每当 streambuf 同步时，取出缓冲区内容并将其推送
- * 加入内容列表。
+/* Whenever the streambuf is sync'ed, take the buffer contents and push them
+ * into the list of contents.
  */
 int GColorConsole::ConsoleStreambuf::sync() {
     mOwner->updateDisplay();
     return 0;
 }
 
-/* 输出 streambuf 中保存的所有文本，并将其添加到文本项列表
- * 用于显示。
+/* Kicks out all text stashed in the streambuf and adds it to the list of text items
+ * to display.
  */
 void GColorConsole::flushBuffer() {
-    /* 获取缓冲区当前内容。若为空，则无需
-     * 任何内容。
+    /* Get the current contents of the buffer. If it's empty, we don't need to do
+     * anything.
      */
     auto* buffer = static_cast<ConsoleStreambuf *>(rdbuf());
 
     auto contents = buffer->str();
     if (contents.empty()) return;
 
-    /* 否则，清空缓冲区并追加此文本。 */
+    /* Otherwise, clear the buffer and append this text. */
     buffer->str("");
     mContents.emplace_back(mStyle, contents);
 }
 
-/* 同步到显示区域。
+/* Syncs to the display.
  *
- * TODO：构造显示字符串需要 O(n) 时间。我认为这不太可能
- * 不会成为严重问题，因为复制字符本来就需要执行 O(n) 工作
- * 到显示区域。若速度过慢，请更新此实现。
+ * TODO: This takes time O(n) to construct the string to display. I doubt that's going to
+ * be a huge problem given that we already have to do O(n) work to copy the characters
+ * over to the display. Update this if it gets too slow?
  */
 void GColorConsole::updateDisplay() {
-    /* 刷新缓冲区中的所有内容，确保 contents 数组包含
-     * 我们需要的所有内容。
+    /* Flush anything in our buffer to make sure the contents array holds
+     * everything we need.
      */
     flushBuffer();
 
-    /* 写出所有内容。 */
+    /* Write all the contents. */
     stringstream toShow;
     toShow << kHTMLHeader;
 
     for (const auto& line: mContents) {
-        /* 启用该样式。 */
+        /* Introduce the style. */
         toShow << "<span style=\"";
         toShow << "color:" << line.first.color << ";";
         if (line.first.fontStyle & BOLD)   toShow << "font-weight:bold;";
@@ -82,17 +82,17 @@ void GColorConsole::updateDisplay() {
         toShow << "font-size:" << line.first.fontSize.size() << "pt;";
         toShow << "\">";
 
-        /* 写出文本，并按需转义所有内容。 */
+        /* Write the text, escaping everything as needed. */
         toShow << htmlEncode(line.second);
 
-        /* 结束该样式。 */
+        /* Close the style. */
         toShow << "</span>";
     }
 
-    /* 完成并关闭它。 */
+    /* Close it out. */
     toShow << kHTMLFooter;
 
-    /* 更改文本内容并向下滚动。 */
+    /* Change text contents and scroll down. */
     GThread::runOnQtGuiThread([&, this] {
         readTextFromFile(toShow);
         scrollToBottom();
@@ -123,7 +123,7 @@ void GColorConsole::doWithStyle(const string& newColor, FontStyle newStyle, Font
 
     setStyle(newColor, newStyle, newSize);
 
-    /* 执行给定回调。若它抛出异常，则在返回前撤销所有更改。 */
+    /* Execute the given callback. If it throws, undo all our changes before returning. */
     try {
         fn();
     } catch (...) {
@@ -131,7 +131,7 @@ void GColorConsole::doWithStyle(const string& newColor, FontStyle newStyle, Font
         throw;
     }
 
-    /* 成功了！恢复之前的样式设置。 */
+    /* Hey, we succeeded! Roll back the styling. */
     setStyle(oldColor, oldStyle, oldSize);
 }
 
@@ -157,9 +157,9 @@ void GColorConsole::doWithStyle(FontSize size, std::function<void()> fn) {
     doWithStyle(color(), style(), size, fn);
 }
 
-/**** FontSize 实现。 ****/
+/**** FontSize implementation. ****/
 FontSize::FontSize(size_t size): mSize(size) {
-    // 已在初始化列表中处理
+    // Handled in initialization list
 }
 
 size_t FontSize::size() const {

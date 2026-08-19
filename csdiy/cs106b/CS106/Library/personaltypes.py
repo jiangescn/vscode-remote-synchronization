@@ -1,40 +1,40 @@
 # ############################################################################
 # #
-# # 版权所有 (C) 2016 The Qt Company Ltd.
-# # 联系方式：https://www.qt.io/licensing/
+# # Copyright (C) 2016 The Qt Company Ltd.
+# # Contact: https://www.qt.io/licensing/
 # #
-# # 此文件是 Qt Creator 的一部分。
+# # This file is part of Qt Creator.
 # #
-# # 商业许可证使用方式
-# # 持有有效 Qt 商业许可证的被许可方可以根据以下方式使用此文件：
-# # 请遵循随附的商业许可协议
-# # 软件，或者依据其中包含的条款
-# # 你与 Qt Company 之间的书面协议。有关许可条款，
-# # 条款和条件请参阅 https://www.qt.io/terms-conditions。更多
-# # 如需更多信息，请使用 https://www.qt.io/contact-us 上的联系表单。
+# # Commercial License Usage
+# # Licensees holding valid commercial Qt licenses may use this file in
+# # accordance with the commercial license agreement provided with the
+# # Software or, alternatively, in accordance with the terms contained in
+# # a written agreement between you and The Qt Company. For licensing terms
+# # and conditions see https://www.qt.io/terms-conditions. For further
+# # information use the contact form at https://www.qt.io/contact-us.
 # #
-# # GNU 通用公共许可证使用方式
-# # 或者，此文件也可以依据 GNU 的条款使用
-# # 自由软件基金会发布的 GNU 通用公共许可证第 3 版
-# # 基金会发布的版本，但包含 LICENSE.GPL3-EXCEPT 文件中所示的例外
-# # 包含在此文件的打包内容中。请查看以下
-# # 信息，以确保满足 GNU 通用公共许可证的要求
-# # 必须满足：https://www.gnu.org/licenses/gpl-3.0.html。
+# # GNU General Public License Usage
+# # Alternatively, this file may be used under the terms of the GNU
+# # General Public License version 3 as published by the Free Software
+# # Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+# # included in the packaging of this file. Please review the following
+# # information to ensure the GNU General Public License requirements will
+# # be met: https://www.gnu.org/licenses/gpl-3.0.html.
 # #
 # ############################################################################
 
-# # 此处可添加用于测试的自定义转储器。
-# # 此处的任何内容都会由 GDB、LLDB 和 CDB 根据
-# # 自动用于 Qt Creator 中的调试。
+# # This is a place to add your own dumpers for testing purposes.
+# # Any contents here will be picked up by GDB, LLDB, and CDB based
+# # debugging in Qt Creator automatically.
 
-# # 注意：更新 Qt Creator 时，此文件将被覆盖。
+# # NOTE: This file will get overwritten when updating Qt Creator.
 # #
-# # 若要添加不会被覆盖的转储器，请将此文件复制到此处
-# # 复制到 Qt Creator 安装目录之外的安全位置，并
-# # 使用“调试器”> 使 Qt Creator 知晓此位置
-# # “局部变量和表达式”>“额外调试帮助程序”设置。
+# # To add dumpers that don't get overwritten, copy this file here
+# # to a safe location outside the Qt Creator installation and
+# # make this location known to Qt Creator using the Debugger >
+# # Locals & Expressions > Extra Debugging Helpers setting.
 
-# # 显示简单类型的示例
+# # Example to display a simple type
 # # template<typename U, typename V> struct MapNode
 # # {
 # #     U key;
@@ -42,44 +42,44 @@
 # # }
 # #
 # # def qdump__MapNode(d, value):
-# #    d.putValue("这是值列的内容")
+# #    d.putValue("This is the value column contents")
 # #    d.putNumChild(2)
 # #    if d.isExpanded():
 # #        with Children(d):
-# #            # 紧凑的简单情况。
+# #            # Compact simple case.
 # #            d.putSubItem("key", value["key"])
-# #            # 效果相同，但提供更多自定义可能性。
+# #            # Same effect, with more customization possibilities.
 # #            with SubItem(d, "data")
 # #                d.putItem("data", value["data"])
 
-# # 请查看 http://doc.qt.io/qtcreator/creator-debugging-helpers.html
-# # 了解更多详细信息，或查看 qttypes.py、stdtypes.py、boosttypes.py
-# # 了解更复杂的示例。
+# # Check http://doc.qt.io/qtcreator/creator-debugging-helpers.html
+# # for more details or look at qttypes.py, stdtypes.py, boosttypes.py
+# # for more complex examples.
 
 import dumper
 from dumper import Children, SubItem
 
-# ######################## 在下方编写你的代码 #######################
+# ######################## Your code below #######################
 
 # @author Jeremy Barenholtz 2020
 #
-# CS106B 类（Vector、Stack、Set、Map 等）的调试帮助程序
-# 部分代码采用自 Qt Creator 分发的 stdtypes.py
-# Julie Zelenski 为 2020 年秋季学期做了部分调整
+# Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
+# Some code adopted from stdtypes.py distributed with Qt Creator
+# Tweaked some by Julie Zelenski for Fall quarter 2020
 
 from functools import partial
 
 #############################
-# 元素显示函数 #
+# Element Display Functions #
 #############################
 
-# 这些名为 `add_<type>_elem` 的函数控制每个
-# 类在调试窗口中显示。
+# These functions, named `add_<type>_elem`, control how the elements of each
+# class get displayed in the debug window.
 #
-# 只有希望更改显示效果时，才应调整这些函数
-# 格式。要理解相关代码，请启动调试器查看你的
-# 所需类，并查看此处相关的添加元素函数；你应当
-# 能够看出代码与所显示内容之间的对应关系。
+# You should only adjust these functions if you wish to change the display
+# format. To understand the relevant code, fire up the debugger to view your
+# desired class, and look at the related add element function here; you should
+# be able to see how the code corresponds to what is displayed.
 
 
 def add_map_elem(d, i, key, value):
@@ -91,12 +91,12 @@ def add_map_elem(d, i, key, value):
 def add_set_elem(d, i, key, value):
     """Adds an element of a set to the debugger display."""
 
-    # Set 使用键值对映射存储，其中值始终为 true
-    # 忽略此值且不显示
+    # Our Sets stored as map of key,val pairs where val is always true
+    # ignore this value and don't display
     d.putSubItem('-', key)
 
 
-# 当前仅由 Vector 使用
+# Currently only used by Vector
 def add_indexed_elem(d, i, size, value):
     """Adds an element of an indexed container to the debugger display."""
 
@@ -141,8 +141,8 @@ def add_queue_elem(d, i, size, value):
     d.putSubItem(name, value)
 
 
-# 此函数接收额外的 `cols` 参数。请查看 `qdump__Grid` 以了解
-# 展示如何向这些函数添加参数的示例。
+# This function takes in an extra `cols` parameter. Look at `qdump__Grid` for
+# an example of how you can add parameters to these functions.
 def add_grid_elem(d, i, size, value, cols):
     """Adds an element of a grid to the debugger display."""
 
@@ -151,22 +151,22 @@ def add_grid_elem(d, i, size, value, cols):
 
 
 #####################################
-# Stanford 库转储函数 #
+# Stanford Library Dumper Functions #
 #####################################
 
-# 这些名为 `qdump__<class>` 的函数会接收底层数据
-# 用于相应类型的变量。
+# These functions, named `qdump__<class>`, are called with the underlying data
+# for a variable of the corresponding type.
 #
-# 可以使用 `d.putBetterType('<new_type>')` 更改显示类型。请参阅
-# 可参考 `qdump__stanfordcpplib__collections__GenericSet` 的示例。
-# 元素的所有格式都应使用添加元素函数设置
-# 上方。
+# You can change the displayed type with `d.putBetterType('<new_type>')`. See
+# `qdump__stanfordcpplib__collections__GenericSet` for an example of that.
+# All formatting of the elements should be set using the add element functions
+# above.
 
 
 def qdump__Set(d, value):
     """Display Stanford Set on debugger."""
 
-    # 从 Set > MapType > std::map 中获取内部数据
+    # Grab the internal data from Set > MapType > std::map
     value = value['_map']['_elements']
     map_helper(d, value, elem_fn=add_set_elem)
 
@@ -174,8 +174,8 @@ def qdump__Set(d, value):
 def qdump__stanfordcpplib__collections__GenericSet(d, value):
     """Display Stanford Set or HashSet when dumped as GenericSet (Windows)."""
 
-    # 从 Set > MapType > std::map 中获取内部数据
-    # 或用于 HashSet 的 std::unordered_map
+    # Grab the internal data from the Set > MapType > std::map
+    # or std::unordered_map for HashSets
 
     value = value['_map']['_elements']
     if "unordered" in value.type.name:
@@ -192,7 +192,7 @@ def qdump__stanfordcpplib__collections__GenericSet(d, value):
 def qdump__Stack(d, value):
     """Display Stanford Stack on debugger."""
 
-    # 从 Stack > Vector > std::{vector, deque} 中获取内部数据
+    # Grab the internal data from Stack > Vector > std::{vector, deque}
     value = value['_elements']['_elements']
     vector_or_deque_helper(d, value, elem_fn=add_stack_elem)
 
@@ -200,7 +200,7 @@ def qdump__Stack(d, value):
 def qdump__Queue(d, value):
     """Display Stanford Queue on debugger."""
 
-    # 从 Queue > Deque > std::deque 中获取内部数据
+    # Grab the internal data from Queue > Deque > std::deque
     value = value['_elements']['_elements']
     deque_helper(d, value, elem_fn=add_queue_elem)
 
@@ -208,7 +208,7 @@ def qdump__Queue(d, value):
 def qdump__PriorityQueue(d, value):
     """Display Stanford PriorityQueue on debugger."""
 
-    # 从 PriorityQueue > Vector > std::vector 中获取内部数据
+    # Grab the internal data from PriorityQueue > Vector > std::vector
     value = value['_heap']['_elements']
     vector_helper(d, value, elem_fn=add_pq_elem)
 
@@ -216,7 +216,7 @@ def qdump__PriorityQueue(d, value):
 def qdump__Deque(d, value):
     """Display Stanford Deque on debugger."""
 
-    # 从 Deque > std::deque 获取内部数据
+    # Grab the internal data from Deque > std::deque
     value = value['_elements']
     deque_helper(d, value, elem_fn=add_queue_elem)
 
@@ -224,7 +224,7 @@ def qdump__Deque(d, value):
 def qdump__Map(d, value):
     """Display Stanford Map on debugger."""
 
-    # 从 Map > std::map 中获取内部数据
+    # Grab the internal data from Map > std::map
     value = value['_elements']
     map_helper(d, value, elem_fn=add_map_elem)
 
@@ -232,7 +232,7 @@ def qdump__Map(d, value):
 def qdump__Vector(d, value):
     """Display Stanford Vector on debugger."""
 
-    # 从 Vector > std::vector 中获取内部数据
+    # Grab the internal data from Vector > std::vector
     value = value['_elements']
     vector_or_deque_helper(d, value, elem_fn=add_indexed_elem)
 
@@ -243,7 +243,7 @@ def qdump__Grid(d, value):
     rows = value['_rowCount'].integer()
     cols = value['_columnCount'].integer()
 
-    # 从 Grid > Vector > std::vector 中获取内部数据
+    # Grab the internal data from the Grid > Vector > std::vector
     value = value['_elements']['_elements']
     vector_or_deque_helper(d, value, elem_fn=partial(add_grid_elem, cols=cols))
 
@@ -251,7 +251,7 @@ def qdump__Grid(d, value):
 def qdump__HashMap(d, value):
     """Display Stanford HashMap on debugger."""
 
-    # 从 HashMap 获取内部映射 > std::unordered_map
+    # Grab the internal map from HashMap > std::unordered_map
     value = value['_elements']
     unordered_map_helper(d, value, elem_fn=add_map_elem)
 
@@ -259,20 +259,20 @@ def qdump__HashMap(d, value):
 def qdump__HashSet(d, value):
     """Display Stanford HashSet on debugger."""
 
-    # 从 HashMap 获取内部映射 > std::unordered_map
+    # Grab the internal map from HashMap > std::unordered_map
     value = value['_map']['_elements']
     unordered_map_helper(d, value, elem_fn=add_set_elem)
 
 
 ####################
-# 辅助函数 #
+# Helper Functions #
 ####################
 
 
 def vector_or_deque_helper(d, value, elem_fn):
     """Wrapper for dumping vectors or deque in the bool case."""
 
-    # 如果内部类型是 bool，容器实际为 std::deque，而不是 vector
+    # If the inner type is bool, container is actually a std::deque, not vector
     inner_type = value.type[0]
     if inner_type.name == 'bool':
         deque_helper(d, value, elem_fn)
@@ -286,13 +286,13 @@ def vector_helper(d, value, elem_fn):
     inner_type = value.type[0]
     is_bool = inner_type.name == 'bool'
 
-    # 检查是否使用 libstdc++ 或 libc++ 编译
+    # Check if compiled with libstdc++ or libc++
     class_is_lib_cpp = is_lib_cpp(value)
 
     if is_bool:
         if class_is_lib_cpp:
             start = value["__begin_"].pointer()
-            size = value["__size_"].integer()  # JDZ：提取整数值
+            size = value["__size_"].integer()  # JDZ extract integer value
             alloc = size
         else:
             start = value["_M_start"]["_M_p"].pointer()
@@ -300,7 +300,7 @@ def vector_helper(d, value, elem_fn):
             finish = value["_M_finish"]["_M_p"].pointer()
             foffset = value["_M_finish"]["_M_offset"].integer()
             alloc = value["_M_end_of_storage"].pointer()
-            size = (finish - start) * 8 + foffset - soffset  # 8 是 CHAR_BIT。
+            size = (finish - start) * 8 + foffset - soffset  # 8 is CHAR_BIT.
     else:
         if class_is_lib_cpp:
             start = value["__begin_"].pointer()
@@ -327,8 +327,8 @@ def vector_helper(d, value, elem_fn):
                     for i in d.childRange():
                         q = start + int(i / 8)
                         with dumper.SubItem(d, i):
-                            # std::vector<bool> 以特殊形式存储元素
-                            # 位数组，因此我们读取每个位并从以下形式转换：
+                            # std::vector<bool> stores elements as special
+                            # bit-array, so we read each bit and convert from
                             # {0, 1} -> {false, true}
                             val = (int(d.extractPointer(q)) >> (i % 8)) & 1
                             d.putValue(val != 0)
@@ -350,7 +350,7 @@ def vector_helper(d, value, elem_fn):
 def deque_helper(d, value, elem_fn):
     """Wrapper for dumping deques."""
 
-    # 检查是否使用 libstdc++ 或 libc++ 编译
+    # Check if compiled with libstdc++ or libc++
     if is_lib_cpp(value):
         deque_helper_libcpp(d, value, elem_fn)
     else:
@@ -448,12 +448,12 @@ def unordered_map_helper_libstd(d, value, elem_fn):
     """Dumps the unordered_map for HashSet and HashMap for libstdc++."""
 
     try:
-        # gcc 约为 4.7
+        # gcc ~= 4.7
         size = value["_M_element_count"].integer()
         start = value["_M_before_begin"]["_M_nxt"]
     except:
         try:
-            # libc++（Mac？）
+            # libc++ (Mac?)
             size = value["_M_h"]["_M_element_count"].integer()
             start = value["_M_h"]["_M_bbegin"]["_M_node"]["_M_nxt"]
         except:
@@ -465,9 +465,9 @@ def unordered_map_helper_libstd(d, value, elem_fn):
                 # gcc 4.6.2
                 size = value["_M_element_count"].integer()
                 start = value["_M_buckets"].dereference()
-                # FIXME：按指针对齐？
+                # FIXME: Pointer-aligned?
                 d.putItemCount(size)
-                # 我们不知道数据位于何处
+                # We don't know where the data is
                 d.putNumChild(0)
                 return
 
@@ -499,7 +499,7 @@ def map_helper_libcpp(d, value, elem_fn):
         (proxy, head, size) = value.split("ppp")
         d.check(0 <= size and size <= 100 * 1000 * 1000)
 
-    # JEB：有时开头会有额外数据（？）
+    # JEB sometimes there is extra data at the front (?)
     except RuntimeError:
         (junk, proxy, head, size) = value.split("pppp")
         d.check(0 <= size and size <= 100 * 1000 * 1000)
@@ -534,7 +534,7 @@ def map_helper_libcpp(d, value, elem_fn):
 def map_helper_libstd(d, value, elem_fn):
     """Dumps the internal map for Set or Map for libstdc++."""
 
-    # 实际内容是带 'I@' 的 (color, pad)，但我们可以节省周期
+    # stuff is actually (color, pad) with 'I@', but we can save cycles
     (compare, stuff, parent, left, right) = value.split('ppppp')
     size = value["_M_t"]["_M_impl"]["_M_node_count"].integer()
     d.check(0 <= size and size <= 100 * 1000 * 1000)

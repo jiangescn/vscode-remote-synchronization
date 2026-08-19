@@ -6,22 +6,22 @@
 #include "map.h"
 
 /**
- * 给定某国家或地区的交通网格，以及可用于防灾物资的城市数量
- * 物资可以囤积，返回是否能在最多以下数量内囤积灾难物资
- * 指定数量的城市，使每个城市要么拥有补给，要么与一个拥有补给的城市相邻
- * 执行。
+ * Given a transportation grid for a country or region, along with the number of cities where disaster
+ * supplies can be stockpiled, returns whether it's possible to stockpile disaster supplies in at most
+ * the specified number of cities such that each city either has supplies or is adjacent to a city that
+ * does.
  * <p>
- * 此函数可以假定每个城市都是交通映射中的键，并且道路
- * 双向：如果存在从城市 A 到城市 B 的道路，则也存在从城市 B 返回
- * 城市 A 也是如此。
+ * This function can assume that every city is a key in the transportation map and that roads are
+ * bidirectional: if there's a road from City A to City B, then there's a road from City B back to
+ * City A as well.
  * <p>
- * 城市数量可以为零，但绝不能为负数。如果为负数，你
- * 应通过调用 error() 函数报告错误。
+ * The number of cities can be zero, but it should never be negative. If it is negative, you
+ * should report an error by calling the error() function.
  *
- * @param roadNetwork 底层交通网络。
- * @param numCities 能够负担用于存放补给品的城市数量。
- * @param supplyLocations 输出参数；如果存在解，则填入应选择的城市。
- * @return 是否存在解。
+ * @param roadNetwork     The underlying transportation network.
+ * @param numCities       How many cities you can afford to put supplies in.
+ * @param supplyLocations An outparameter filled in with which cities to choose if a solution exists.
+ * @return Whether a solution exists.
  */
 bool canBeMadeDisasterReady(const Map<std::string, Set<std::string>>& roadNetwork,
                             int numCities,

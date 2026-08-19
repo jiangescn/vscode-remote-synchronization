@@ -1,9 +1,9 @@
 /******************************************************************************
- * 文件：OnlyConnect.h
- * 作者：Keith Schwarz（htiek@cs.stanford.edu）
+ * File: OnlyConnect.h
+ * Author: Keith Schwarz (htiek@cs.stanford.edu)
  *
- * 作业中 Only Connect 部分的头文件。你不应
- * 修改此文件。
+ * Header file for the Only Connect portion of the assignment. You should not
+ * modify this file.
  */
 
 #ifndef OnlyConnect_Included
@@ -12,11 +12,11 @@
 #include <string>
 
 /**
- * 给定字符串，通过删除所有以下内容将其转换为 Only Connect 谜题：
- * 处理非辅音，并将所有字符转为大写。
+ * Given a string, converts that string into an Only Connect puzzle by deleting all
+ * non-consonants and making all characters upper-case.
  *
- * @param phrase 要转换的短语。
- * @return 将该字符串渲染为 Only Connect 谜题后的结果。
+ * @param phrase The phrase to transform.
+ * @return That string, rendered as an Only Connect puzzle.
  */
 std::string onlyConnectize(std::string phrase);
 

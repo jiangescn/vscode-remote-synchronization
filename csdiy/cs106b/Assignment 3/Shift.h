@@ -4,44 +4,44 @@
 #include <string>
 #include <ostream>
 
-/* 表示星期几的类型。 */
+/* Type representing a day of the week. */
 enum class Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
 };
 
-/* 表示工作日班次的类型。为简化起见，我们假定
- * 每个班次只发生在特定日历日，因此不能让某个班次
- * 从周一 10:00PM 到周二 2:00AM。这只是为了让你的生活稍微
- * 在编写代码过程中更容易——它并不表示所有班次
- * 在现实中这样对齐得更整齐。
+/* Type representing a weekday shift. As a simplifying assumption, we're assuming that
+ * every shift occurs only a particular calendar day, so you can't, say, have a shift
+ * from 10:00PM on Monday to 2:00AM on Tuesday. This is just to make your life a bit
+ * easier in the course of coding this up - it's not meant to suggest that all shifts
+ * are nicely aligned this way IRL.
  */
 struct Shift {
     Day day;
-    int startHour; // 包含端点。
-    int endHour;   // 不含上界。可以为 24，表示“一直到午夜”
-    int value;     // 此班次产生的价值。
+    int startHour; // Inclusive.
+    int endHour;   // Exclusive. Could be 24 to mean "up through midnight"
+    int value;     // How much value this shift produced.
 };
 
-/* 给定两个班次，报告它们是否相互重叠。 */
+/* Given two shifts, reports whether those shifts overlap with one another. */
 bool overlapsWith(const Shift& one, const Shift& two);
 
-/* 给定一个班次，返回其长度或价值。这些函数仅为方便而提供。 */
+/* Given a shift, returns its length or value. These are provided purely for convenience. */
 int lengthOf(const Shift& shift);
 int valueOf(const Shift& shift);
 
 
-/* * * * * 你不需要阅读以下任何内容，但感兴趣的话可以继续！* * * * */
+/* * * * * You shouldn't need anything below here, but feel free to read on if you're curious! * * * * */
 
 
-/* 这些运算符使在 Map 和 HashMap 中存储 Shift 成为可能（如果需要）
- * 你希望执行的操作。
+/* These operators make it possible to store Shifts in Maps and HashMaps, if that's
+ * something you'd like to do.
  */
 bool operator<  (const Shift& lhs, const Shift& rhs);
 bool operator== (const Shift& lhs, const Shift& rhs);
 int  hashCode   (const Shift& shift);
 
-/* 这些运算符使输出 Shift 和 Day 成为可能（如果需要）
- * 你希望执行的操作。
+/* These operator makes it possible to print out Shifts and Days, if that's
+ * something you'd like to do.
  */
 std::ostream& operator<< (std::ostream& out, Day day);
 std::ostream& operator<< (std::ostream& out, const Shift& shift);

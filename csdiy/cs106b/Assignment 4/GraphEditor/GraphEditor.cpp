@@ -3,26 +3,26 @@
 
 namespace GraphEditor {
     namespace {
-        /* 活动状态以高亮颜色显示。 */
-        const std::string kActiveStateColor = "#ffd320"; // 滑块高亮颜色
+        /* Active state is displayed with a highlight color. */
+        const std::string kActiveStateColor = "#ffd320"; // Slide highlight color
 
-        /* 悬停状态使用更粗的特殊边框显示。 */
+        /* Hovered state is displayed with a thicker, special border. */
         const std::string kHoverBorderColor = "blue";
-        const double kHoverBorderWidth = 16.0 / 1000; // 1000px 窗口上的 8px
+        const double kHoverBorderWidth = 16.0 / 1000; // 8px on a 1000px window
 
-        /* 需要移动多远（弧度）才算作自环。 */
+        /* How far, in radians, you need to travel before it counts as a self-loop. */
         const double kSelfTransitionThreshold = M_PI / 3;
 
-        const double kNewTransitionWidth = 3.0 / 1000; // 1000px 窗口上的 3px
+        const double kNewTransitionWidth = 3.0 / 1000; // 3px on 1000px window
         const std::string kNewTransitionColor = "red";
 
         const std::string kActiveTransitionColor = "#ff950e";
         const double kActiveTransitionWidth = GraphEditor::kEdgeTolerance;
-        const std::string kHoverTransitionColor = "blue"; // 滑块高亮深色
+        const std::string kHoverTransitionColor = "blue"; // Slide highlight dark color
     }
 
     EditorBase::EditorBase(std::shared_ptr<ViewerBase> viewer) : mViewer(viewer) {
-        // 已在上方处理
+        // Handled above
     }
 
     void EditorBase::setActive(Entity* active) {
@@ -35,7 +35,7 @@ namespace GraphEditor {
             setActiveEdge(nullptr);
         }
 
-        /* 将此情况告知用户。 */
+        /* Let folks know about this one. */
         for (auto listener: mListeners) {
             listener->entitySelected(active);
         }
@@ -51,7 +51,7 @@ namespace GraphEditor {
             setHoverEdge(nullptr);
         }
 
-        /* 将此情况告知用户。 */
+        /* Let folks know about this one. */
         for (auto listener: mListeners) {
             listener->entityHovered(hover);
         }
@@ -96,7 +96,7 @@ namespace GraphEditor {
     void EditorBase::mouseDoubleClicked(double x, double y) {
         GPoint pos = mViewer->graphicsToWorld(GPoint{x, y});
 
-        /* 那里有内容吗？如果有，则不执行任何操作。 */
+        /* Anything there? If so, don't do anything. */
         if (mViewer->nodeAt(pos)) return;
         if (mViewer->edgeAt(pos)) return;
 
@@ -112,12 +112,12 @@ namespace GraphEditor {
     }
 
     void EditorBase::mouseMoved(double x, double y) {
-        /* 如果正在拖动鼠标，则跳过此步骤。 */
+        /* Skip this if we're dragging the mouse. */
         if (dragType != DragType::NONE) return;
 
         GPoint pt = mViewer->graphicsToWorld(GPoint{x, y});
 
-        /* 查看是否点击了某个状态。 */
+        /* See if we hit a state. */
         if (auto over = mViewer->nodeAt(pt)) {
             setHover(over);
         } else if (auto over = mViewer->edgeAt(pt)) {
@@ -139,19 +139,19 @@ namespace GraphEditor {
     void EditorBase::mousePressed(double x, double y) {
         GPoint pt = mViewer->graphicsToWorld(GPoint{x, y});
 
-        /* 是否命中某个状态？ */
+        /* Did we hit a state? */
         if (auto over = mViewer->nodeAt(pt)) {
-            /* 强制将其同时设为悬停项。这可防止
-             * 防止我们在
-             * 发生 mousePressed 事件后、期间没有发生其他事件的事件
-             * mouseMoved 事件。
+            /* Forcibly set this to be the overed item as well. This prevents
+             * us from crashing or getting into an inconsistent state in the
+             * event that the mousePressed event happened without an intervening
+             * mouseMoved event.
              */
             setHover(over);
             setActive(over);
 
-            /* 计算到州中心的距离。 */
+            /* Compute the distance to the center of the state. */
             if (isCloseTo(pt, hoverNode->position(), GraphEditor::kNodeRadius - GraphEditor::kEdgeTolerance)) {
-                /* 开始拖动状态。 */
+                /* Initiate a state drag. */
                 lastState = pt;
                 dragType = DragType::NODE;
             } else {
@@ -160,18 +160,18 @@ namespace GraphEditor {
                 dragType = DragType::EDGE;
             }
         }
-        /* 是否命中某个过渡？ */
+        /* Did we hit a transition? */
         else if (auto over = mViewer->edgeAt(pt)) {
             setActive(over);
         }
-        /* 没有命中任何内容。 */
+        /* Didn't hit anything. */
         else {
             setActive(nullptr);
         }
     }
 
     void EditorBase::dragState(GPoint pt) {
-        /* TODO：与其他州发生碰撞？ */
+        /* TODO: Collisions with other states? */
         if (hoverNode) {
             hoverNode->position(hoverNode->position() + (lastState - hoverNode->position()));
             lastState = pt;
@@ -204,31 +204,31 @@ namespace GraphEditor {
     }
 
     void EditorBase::finishCreatingEdge(GPoint pt) {
-        /* 首先看看命中了什么。 */
+        /* For starters, see what we hit. */
         auto end = mViewer->nodeAt(pt);
 
-        /* 如果这不是状态，则无需执行任何操作。 */
+        /* If this isn't a state, there's nothing to do. */
         if (end == nullptr) {
             edgeStart = nullptr;
             return;
         }
 
-        /* 如果这是同一状态，则确认拖动距离足以进行此次
-         * 计为自环。
+        /* If this is the same state, confirm that we dragged enough for this
+         * to count as a self-loop.
          */
         if (end == edgeStart) {
             double theta0 = angleOf(dragEdge0 - edgeStart->position());
             double theta1 = angleOf(dragEdge1 - edgeStart->position());
 
-            /* 每个角度都在 (-pi, pi] 中，因此差值位于 [-2pi, 2pi]。我们需要一个位于
-             * (-pi, pi]。为此，先将其变换到 [0, 2pi]。
+            /* Each are in (-pi, pi], so the difference is in [-2pi, 2pi]. We want something in
+             * (-pi, pi]. To do this, first get us in [0, 2pi].
              */
             double thetaDiff = theta0 - theta1;
             if (thetaDiff < 0) {
                 thetaDiff = fmod(thetaDiff + 2 * M_PI, 2 * M_PI);
             }
 
-            /* 现在，将范围从 [0, 2pi] 平移到 [-pi, pi]。 */
+            /* Now, shift us to [-pi, pi] from [0, 2pi]. */
             if (thetaDiff > M_PI) {
                 thetaDiff -= 2 * M_PI;
             }
@@ -239,7 +239,7 @@ namespace GraphEditor {
             }
         }
 
-        /* 如果边已存在，则选中它且不执行其他操作。 */
+        /* If the edge already exists, select it and do nothing. */
         auto* edge = edgeBetween(edgeStart, end);
         if (!edge) {
             edge = newEdge(edgeStart, end);
@@ -261,11 +261,11 @@ namespace GraphEditor {
     void EditorBase::drawGraph(GCanvas* canvas,
                                const std::unordered_map<Node*, NodeStyle>& clientNodeStyles,
                                const std::unordered_map<Edge*, EdgeStyle>& clientEdgeStyles) {
-        /* 配置样式。 */
+        /* Configure styles. */
         std::unordered_map<Node*, NodeStyle> nodeStyles = clientNodeStyles;
         std::unordered_map<Edge*, EdgeStyle> edgeStyles = clientEdgeStyles;
 
-        /* 活动状态和悬停状态并非互斥！ */
+        /* Active and hover states are NOT mutually exclusive! */
         if (activeNode && !clientNodeStyles.count(activeNode)) {
             nodeStyles[activeNode].fillColor = kActiveStateColor;
         }
@@ -275,7 +275,7 @@ namespace GraphEditor {
             nodeStyles[hoverNode].radius     -= kHoverBorderWidth / 2.0;
         }
 
-        /* 活动过渡始终优先于悬停过渡。 */
+        /* Active transition always takes precedence over hover transition. */
         if (hoverEdge && !clientEdgeStyles.count(hoverEdge)) {
             edgeStyles[hoverEdge].lineColor = kHoverTransitionColor;
             edgeStyles[hoverEdge].lineWidth = GraphEditor::kEdgeTolerance;
@@ -319,24 +319,24 @@ namespace GraphEditor {
         return activeEdge;
     }
 
-    /**** 默认监听器接口。****/
+    /**** Default listener interface. ****/
     void Listener::isDirty() {
-        // 不执行任何操作
+        // Do nothing
     }
 
     void Listener::needsRepaint() {
-        // 不执行任何操作
+        // Do nothing
     }
 
     void Listener::entityHovered(Entity *) {
-        // 不执行任何操作
+        // Do nothing
     }
 
     void Listener::entitySelected(Entity *) {
-        // 不执行任何操作
+        // Do nothing
     }
 
     void Listener::entityCreated(Entity *) {
-        // 不执行任何操作
+        // Do nothing
     }
 }

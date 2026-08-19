@@ -1,14 +1,14 @@
 /*
- * 文件：glayout.h
+ * File: glayout.h
  * ---------------
  *
  * @author Marty Stepp
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 glayout.h，以替代 Java 版本
+ * - renamed to glayout.h to replace Java version
  * @version 2018/06/25
- * - 初始版本
+ * - initial version
  */
 
 
@@ -22,8 +22,8 @@
 #include "ginteractor.h"
 
 /**
- * 提供容器布局管理相关功能的辅助类。
- * 客户端通常无需直接使用此类。
+ * A helper class with functionality related to container layout management.
+ * Clients generally do not need to use this class directly.
  * @private
  */
 class GLayout {
@@ -42,16 +42,16 @@ public:
     static Position toPosition(const std::string& positionName);
 
 private:
-    GLayout();   // 禁止构造
+    GLayout();   // forbid construction
 };
 
 /**
- * 类似 Java AWT，以“边框”方式进行布局的 Qt 布局管理器。
- * 此类目前无法正常工作。
+ * A Qt layout manager that performs a "border" layout a la Java AWT's.
+ * This class currently does not work properly.
  *
- * 基于：http://doc.qt.io/qt-5.6/qtwidgets-layouts-borderlayout-example.html
+ * based on: http://doc.qt.io/qt-5.6/qtwidgets-layouts-borderlayout-example.html
  *
- * TODO：完成/调试或移除
+ * TODO: finish/debug or remove
  *
  * @private
  */

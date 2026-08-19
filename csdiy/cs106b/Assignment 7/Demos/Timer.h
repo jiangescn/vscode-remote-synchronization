@@ -5,8 +5,8 @@
 
 namespace Timing {
     /**
-     * 表示秒表的类型，用于测量各种操作的耗时
-     * 操作。
+     * A type representing a stopwatch. This is used to time the costs of various
+     * operations.
      */
     class Timer {
     public:

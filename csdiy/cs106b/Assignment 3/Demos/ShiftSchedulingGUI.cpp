@@ -7,38 +7,38 @@ using namespace std;
 using namespace MiniGUI;
 
 namespace {
-    /* 通用图形常量。 */
+    /* General graphics constants. */
     const string kBackgroundColor = "#FFFFFF";
     const double kWindowPadding = 10;
 
-    /* 线条颜色。 */
-    const string kLineColor = "#989898"; // 西班牙灰
+    /* Line colors. */
+    const string kLineColor = "#989898"; // Spanish Gray
 
-    /* Grid 属性。 */
+    /* Grid properties. */
     const Font   kHeaderFont(FontFamily::SANS_SERIF, FontStyle::NORMAL, 14, "#989898");
     const double kHeaderHeight    = 50;
 
     const Font   kHourFont(FontFamily::SANS_SERIF, FontStyle::NORMAL, 8, "#989898");
     const double kHourWidth       = 30;
 
-    /* 允许该人员工作的小时数。 */
+    /* Number of hours to let the person work. */
     const int kStandardHours = 30;
 
-    /* 班次属性。 */
-    const string kShiftBackgroundColor = "#0093AF"; // 孟塞尔蓝
-    const string kShiftBorderColor     = "#004957"; // Munsell Blue 的分量，减半
+    /* Shift properties. */
+    const string kShiftBackgroundColor = "#0093AF"; // Munsell Blue
+    const string kShiftBorderColor     = "#004957"; // Components of Munsell Blue, halved
     const Font kShiftFont(FontFamily::SANS_SERIF, FontStyle::NORMAL, 14, "#FFFFFF");
 
-    const string kUnchosenShiftBackgroundColor = "#E3DAC9"; // 骨白色
-    const string kUnchosenShiftBorderColor     = "#716D64"; // Bone 的分量，减半
-    const Font kUnchosenShiftFont(FontFamily::SANS_SERIF, FontStyle::NORMAL, 14, "#383632"); // Bone 的分量，缩小为四分之一
+    const string kUnchosenShiftBackgroundColor = "#E3DAC9"; // Bone
+    const string kUnchosenShiftBorderColor     = "#716D64"; // Components of Bone, halved
+    const Font kUnchosenShiftFont(FontFamily::SANS_SERIF, FontStyle::NORMAL, 14, "#383632"); // Components of Bone, quartered
     const double kShiftPadding         = 5;
 
-    /* 班次值的范围。 */
+    /* Ranges on shift values. */
     const int kLowWeight  = 0;
-    const int kHighWeight = 99 / 8; // 最长班次的长度
+    const int kHighWeight = 99 / 8; // Length of the longest shift
 
-    /* 可用班次。 */
+    /* Available shifts. */
     const Set<Shift> kStandardShifts = {
         { Day::SUNDAY,  8, 14, 0 },
         { Day::SUNDAY, 12, 18, 0 },
@@ -78,7 +78,7 @@ namespace {
     };
 
 
-    /* 按顺序返回一周所有日期的列表。 */
+    /* Returns a list of all days of the week, in order. */
     const Vector<Day> kAllDays = {
         Day::SUNDAY,
         Day::MONDAY,
@@ -89,7 +89,7 @@ namespace {
         Day::SATURDAY
     };
 
-    /* 将一种类型的集合转换为另一种类型。 */
+    /* Converts a set of one type to another. */
     template <typename Result, typename T>
     Result setCast(const T& input) {
         Result result;
@@ -109,19 +109,19 @@ namespace {
         return expand({ x, y, width, height }, delta);
     }
 
-    /* 给定窗口，返回该窗口内的绘图区域。 */
+    /* Given a window, returns the drawing area within that window. */
     GRectangle boundsFor(GWindow& window) {
         return expand(0.0, 0.0, window.getCanvasWidth(), window.getCanvasHeight(), -kWindowPadding);
     }
 
-    /* 将星期转换为字符串。 */
+    /* Converts a day into a string. */
     string dayToString(Day day) {
         ostringstream result;
         result << day;
         return result.str();
     }
 
-    /* 在给定边界内居中绘制单个文本字符串。 */
+    /* Draws a single text string, centered, in the given bounds. */
     void drawCenteredText(const string& text,
                           const GRectangle& bounds,
                           const Font& font,
@@ -132,11 +132,11 @@ namespace {
         render->draw(window);
     }
 
-    /* 给定列的客户端区域，返回 GRectangle 列表，每个矩形
-     * 它对应小时数的边界框。第一个条目
-     * 对应时间 kLowHour，下一个对应 kLowHour + 1，依此类推。
+    /* Given the client area of a column, returns a list of GRectangles, each of
+     * which corresponds to the bounding box for the hours. The first entry
+     * corresponds to time kLowHour, the next to kLowHour + 1, etc.
      *
-     * 尽管每个小时都有边界框，但通常不会绘制该框。
+     * Although each hour has a bounding box, that box is not usually drawn.
      */
     Vector<GRectangle> cellBoundingBoxes(const GRectangle& bounds, int lowHour, int highHour) {
         Vector<GRectangle> result;
@@ -152,29 +152,29 @@ namespace {
         return result;
     }
 
-    /* 绘制日历视图的一列。bounds 参数表示
-     * 此列应占用的空间。
+    /* Draws a single column of the calendar view. The bounds parameter indicates the
+     * space that this column is supposed to take up.
      */
     void drawColumnFor(Day day, GWindow& window, const GRectangle& headerSpace,
                        const GRectangle& columnSpace,
                        int lowHour, int highHour) {
-        /* 绘制标题。 */
+        /* Draw the header. */
         window.setColor(kLineColor);
         window.drawRect(headerSpace);
         drawCenteredText(dayToString(day), headerSpace, kHeaderFont, window);
 
-        /* 绘制列轮廓。 */
+        /* Draw the outline of the column. */
         window.setColor(kLineColor);
         window.drawRect(columnSpace);
 
-        /* 绘制列内的内部线条。 */
+        /* Draw the internal lines within the column. */
         for (auto box: cellBoundingBoxes(columnSpace, lowHour, highHour)) {
             window.drawLine(box.x, box.y + box.height / 2,
                             box.x + box.width, box.y + box.height / 2);
         }
     }
 
-    /* 给定小时，返回该小时的人类可读表示。 */
+    /* Given an hour, returns a human-readable representation of that hour. */
     string hourToString(int hour) {
         hour %= 24;
 
@@ -184,7 +184,7 @@ namespace {
         return to_string(hour - 12) + "PM";
     }
 
-    /* 在每行前绘制标题。 */
+    /* Draws the headers in front of each of the rows. */
     void drawRowHeaders(GWindow& window, const GRectangle& bounds, int lowHour, int highHour) {
         auto boxes = cellBoundingBoxes(bounds, lowHour, highHour);
 
@@ -194,14 +194,14 @@ namespace {
         }
     }
 
-    /* 在指定空间中绘制日历网格。 */
+    /* Draws a calendar grid in the indicated space. */
     void drawGrid(GWindow& window,
                   const GRectangle& rowSpace,
                   const GRectangle& columnHeaderSpace,
                   const GRectangle& columnSpace,
                   double columnWidth,
                   int lowHour, int highHour) {
-        /* 绘制所有列。 */
+        /* Draw all columns. */
         for (auto day: kAllDays) {
             double x = columnSpace.x + static_cast<double>(day) * columnWidth;
             drawColumnFor(day, window, {
@@ -214,45 +214,45 @@ namespace {
                           }, lowHour, highHour);
         }
 
-        /* 绘制行标题。 */
+        /* Draw the row headers. */
         drawRowHeaders(window, rowSpace, lowHour, highHour);
     }
 
-    /* 渲染所选班次集合，假定它们都在同一
-     * 某一天，位于分配给该天的边界框内。
+    /* Renders the selected collection of shifts, which are all assumed to be on the same
+     * day, within the bounding box assigned to that particular day.
      */
     void drawShiftsForDay(GWindow& window, const GRectangle& bounds,
                           const Set<Shift>& shifts,
                           const Set<Shift>& chosen,
                           int lowHour, int highHour) {
-        /* 边界情况：如果没有班次，则没有内容可绘制！ */
+        /* Edge case: If there are no shifts, there's nothing to draw! */
         if (shifts.isEmpty()) return;
 
-        /* 现在的问题是，如何以最少方式细分此列。事实证明
-         * 可视为一类称为区间图的图的着色问题
-         * （节点对应区间，边对应重叠的
-         * 区间）！一般而言，图着色是难解问题，但幸运的是
-         * 区间图的图着色问题已知可以在
-         * 通过贪心算法在多项式时间内完成（按开始时间排序区间，并
-         * 将每个区间放入第一个能容纳它的槽位）。这源自
-         * 区间图是完美图这一事实。
+        /* The question, now, is how to minimally subdivide this column. This turns out
+         * to be a graph coloring problem for a class of graphs called interval graphs
+         * (nodes correspond to intervals, with edges corresponding to overlapping
+         * intervals)! Graph coloring is, in general, intractible, but fortunately
+         * the graph coloring problem for interval graphs is known to be solvable in
+         * polynomial-time via a greedy algorithm (sort intervals by start time, and
+         * place each interval in the first slot where it fits). This follows from the
+         * fact that interval graphs are perfect graphs.
          *
-         * 我们将用它为每个区间分配一个虚拟子列。幸运的是，
-         * 用于班次的比较函数会隐式按开始时间排序，
-         * 这样就能遍历班次并找到第一个满足条件的子列
-         * 不会与它们冲突！
+         * We'll use this to assign each interval to a virtual subcolumn. Fortunately,
+         * our comparison function for shifts implicitly sorts them by start time,
+         * so we can just iterate over the shifts and find the first subcolumn that
+         * doesn't conflict with them!
          *
-         * 可以使用更巧妙的数据结构加速，但由于我们
-         * 处理少量区间时无需在此处执行此操作。
+         * We could speed this up by using more clever data structures, but since we're
+         * dealing with small numbers of intervals there's no need to do this here.
          */
-        Map<Shift, int> subcolumns;       // 键是班次，索引是其子列。
-        Map<int,   int> subcolumnBottoms; // 键是子列，索引是下一个空闲位置
-                                          // 该子列中的位置。
+        Map<Shift, int> subcolumns;       // Key is a shift, index is its subcolumn.
+        Map<int,   int> subcolumnBottoms; // Key is a subcolumn, index is the next free
+                                          // spot in that subcolumn.
 
         for (const auto& shift: shifts) {
-            /* 依次尝试所有子列，直到找到可容纳它的位置。 */
+            /* Try all subcolumns until one is found where it fits. */
             for (int i = 0; ; i++) {
-                /* autoinsert 默认为 0，对我们而言总是可行。 */
+                /* Autoinsert defaults to 0, which will always work for us. */
                 if (subcolumnBottoms[i] <= shift.startHour) {
                     subcolumns[shift] = i;
                     subcolumnBottoms[i] = shift.endHour;
@@ -261,49 +261,49 @@ namespace {
             }
         }
 
-        /* 所需子列数等于 subcolumnBottoms 映射的大小，因为
-         * 只有在需要探测某个特定子列时才会访问它。
+        /* The number of subcolumns needed is the size of the subcolumnBottoms map, since
+         * it's touched only when we needed to probe a particular subcolumn.
          */
         double width = bounds.width / subcolumnBottoms.size();
         auto boxes = cellBoundingBoxes(bounds, lowHour, highHour);
 
-        /* 在各自子列中绘制每个班次。 */
+        /* Draw each shift in its subcolumn. */
         for (const auto& shift: shifts) {
 
-            /* 将逻辑小时转换为从 0 开始的小时。 */
+            /* Convert from logical hours to 0-indexed hours. */
             int startIndex = shift.startHour - lowHour;
             int endIndex   = shift.endHour   - lowHour;
 
             double x = bounds.x + width * subcolumns[shift];
             double y = boxes[startIndex].y + boxes[startIndex].height / 2.0;
 
-            /* 所有框的高度相同，因此只需查看它们之间的距离。 */
+            /* All boxes have the same height, so we can just see how far apart they are. */
             double height = boxes[endIndex].y - boxes[startIndex].y;
 
             auto box = expand(x, y, width, height, -kShiftPadding);
 
-            /* 绘制方框。 */
+            /* Draw the box. */
             window.setColor(chosen.contains(shift)? kShiftBackgroundColor : kUnchosenShiftBackgroundColor);
             window.fillRect(box);
             window.setColor(chosen.contains(shift)? kShiftBorderColor : kUnchosenShiftBorderColor);
             window.drawRect(box);
 
-            /* 绘制值。 */
+            /* Draw the value. */
             drawCenteredText(to_string(valueOf(shift)), box, chosen.contains(shift)? kShiftFont : kUnchosenShiftFont, window);
         }
     }
 
-    /* 将指定班次集合绘制到日历网格中。 */
+    /* Draws the specified set of shifts into the calendar grid. */
     void drawShifts(GWindow& window, const GRectangle& columnSpace, double columnWidth,
                     const Set<Shift>& shifts, const Set<Shift>& chosen,
                     int lowHour, int highHour) {
-        /* 按天划分班次以便渲染。 */
+        /* Partition shifts into days for rendering purposes. */
         Map<Day, Set<Shift>> byDay;
         for (const auto& shift: shifts) {
             byDay[shift.day] += shift;
         }
 
-        /* 分别渲染每一天。 */
+        /* Render each day separately. */
         for (Day day: byDay) {
             double x = columnSpace.x + columnWidth * static_cast<double>(day);
             drawShiftsForDay(window, {
@@ -312,7 +312,7 @@ namespace {
         }
     }
 
-    /* 给定班次集合，返回这些班次的总价值。 */
+    /* Given a collection of shifts, returns the total value of those shifts. */
     int valueOf(const Set<Shift>& shifts) {
         int result = 0;
         for (const auto& shift: shifts) {
@@ -321,7 +321,7 @@ namespace {
         return result;
     }
 
-    /* 给定班次集合，返回这些班次的总时长。 */
+    /* Given a collection of shifts, returns the total length of those shifts. */
     int lengthOf(const Set<Shift>& shifts) {
         int result = 0;
         for (const auto& shift: shifts) {
@@ -330,8 +330,8 @@ namespace {
         return result;
     }
 
-    /* 用于可视化以下过程会生成的班次类型的问题处理程序
-     * 最优调度器。
+    /* Problem handler to visualize the sorts of shifts that would be generated by
+     * an optimal scheduler.
     */
     class ShiftSchedulingGUI: public ProblemHandler {
     public:
@@ -343,18 +343,18 @@ namespace {
         void repaint() override;
 
     private:
-        Set<Shift> mShifts; // 要显示的班次
-        Set<Shift> mChosen; // 哪些已由用户选取。
+        Set<Shift> mShifts; // Shifts to display
+        Set<Shift> mChosen; // Which have been picked by the user.
 
-        /* 图形控件。 */
+        /* Graphical controls. */
         Temporary<GButton> mSolve;
         Temporary<GButton> mRandomize;
         Temporary<GLabel>  mStatus;
 
-        /* 随机化系统中的权重。 */
+        /* Randomizes the weights in the system. */
         void randomizeWeights();
 
-        /* 返回描述所生成解的字符串。 */
+        /* Returns a string describing the solution produced. */
         string solutionDescription() const;
     };
 
@@ -387,34 +387,34 @@ namespace {
     void ShiftSchedulingGUI::repaint() {
         clearDisplay(window(), kBackgroundColor);
 
-        /* 确定行和列的位置。 */
+        /* Determine where the rows and columns go. */
         auto bounds = boundsFor(window());
 
-        /* 列标题相对于行起点有偏移。 */
+        /* The column headers are offset from the row start. */
         GRectangle columnHeaderSpace = {
             bounds.x + kHourWidth, bounds.y,
             bounds.width - kHourWidth, kHeaderHeight
         };
 
-        /* 行空间会按列标题的高度向下偏移，但
-         * 否则会紧贴边框。
+        /* The row space shifts down by the amount of the column headers, but is
+         * otherwise flush against the border.
          */
         GRectangle rowSpace = {
             bounds.x, columnHeaderSpace.y + columnHeaderSpace.height,
             kHourWidth, bounds.height - columnHeaderSpace.y - columnHeaderSpace.height
         };
 
-        /* 两侧夹着标题的列空间。 */
+        /* The column space sandwiched on both sides by headers. */
         GRectangle columnSpace = {
             rowSpace.x + rowSpace.width, rowSpace.y,
             bounds.width - rowSpace.width, rowSpace.height
         };
 
-        /* 确定每列的宽度。 */
+        /* Determine the width of each column. */
         double columnWidth = columnSpace.width / kAllDays.size();
 
-        /* 找出这些班次覆盖的小时范围。如果没有班次，则默认使用
-         * 0（午夜）和 24（午夜）。
+        /* Find the range of hours spanned by these shifts. If no shifts exist, default to using
+         * 0 (midnight) and 24 (midnight).
          */
         int lowHour = 0;
         int highHour = 24;
@@ -441,8 +441,8 @@ namespace {
     }
 
     void ShiftSchedulingGUI::randomizeWeights() {
-        /* 按每小时随机分配权重。即生成每小时值，
-         * 然后用该每小时数值对偏移量加权。
+        /* Assign weights randomly on a per-hour basis. That is, generate a per-hour value,
+         * then weight the shift by that per-hour value.
          */
         mShifts.clear();
         for (Shift shift: kStandardShifts) {

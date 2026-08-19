@@ -1,17 +1,17 @@
 /*
- * 文件：filelibunix.cpp
+ * File: filelibunix.cpp
  * ---------------------
- * 此文件包含 filelib.h 基础功能的 Unix 实现。
- * 在 Java 后端退役之前，此代码位于 platform.cpp 中。
+ * This file contains Unix implementations of filelib.h primitives.
+ * This code used to live in platform.cpp before the Java back-end was retired.
  *
  * @version 2018/10/23
- * - 添加 getAbsolutePath
+ * - added getAbsolutePath
  */
 
 #include "filelib.h"
 
-// 仅在非 Windows 操作系统上定义以下全部内容
-// （Windows 版本请参阅 filelibwindows.cpp）
+// define all of the following only on non-Windows OS
+// (see filelibwindows.cpp for Windows versions)
 #ifndef _WIN32
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -176,10 +176,10 @@ void filelib_listDirectory(const std::string& path, Vector<std::string>& list) {
     sort(list.begin(), list.end());
 }
 
-std::string file_openFileDialog(const std::string& /*标题*/,
-                                const std::string& /*模式*/,
-                                const std::string& /*路径*/) {
-    // TODO（待办）
+std::string file_openFileDialog(const std::string& /*title*/,
+                                const std::string& /*mode*/,
+                                const std::string& /*path*/) {
+    // TODO
     return "";
 }
 
@@ -191,6 +191,6 @@ void filelib_setCurrentDirectory(const std::string& path) {
     }
 }
 
-} // 命名空间 platform
+} // namespace platform
 
 #endif // _WIN32

@@ -6,24 +6,24 @@ using namespace std;
 using namespace MiniGUI;
 
 namespace {
-    /* 为避免退化情况而微调世界坐标边界的量。 */
+    /* Amount to nudge borders of the world coordinates to avoid degenerate cases. */
     const double kEpsilon = 0.01;
 
-    /* 线条粗细。 */
+    /* Line thickness. */
     const double kLineWidth = 2;
 
-    /* 从窗口边框到实际晶体的边距。 */
+    /* Margin from the border of the window to the actual crystal. */
     const double kWindowPadding = 20;
 
-    /* 文本允许达到的最大高度。 */
+    /* How tall the text is allowed to be. */
     const double kFontHeight = 24;
 
-    /* 滑块控件。 */
+    /* Slider controls. */
     const int kMinOrder = 0;
     const int kMaxOrder = 13;
     const int kDefaultOrder = 0;
 
-    /* 前景色和背景色。 */
+    /* Foreground and background colors. */
     const Vector<string> kColors = {
         "#000000",
         "#FFFF00"
@@ -31,27 +31,27 @@ namespace {
 
     const Font kLabelFont(FontFamily::SERIF, FontStyle::NORMAL, 16, "#00FFFF");
 
-    /* 类型：Geometry
+    /* Type: Geometry
      *
-     * 关于每个单元格应有多大以及如何在其中正确显示内容的信息
-     * 窗口。
+     * Information about how big each cell should be and how to display things properly in the
+     * window.
      */
     struct Geometry {
-        double minX, minY;   // 任意点的最小 X 和 Y 坐标
-        double baseX, baseY; // 从屏幕左上角到内容区域的偏移量
-        double scale;        // 从全局坐标转换到窗口坐标的缩放系数
+        double minX, minY;   // Lowest X and Y coordinate of any point
+        double baseX, baseY; // Offset from the upper-left corner of the screen to the content
+        double scale;        // Scaling factor converting from global to window coordinates
     };
 
-    /* 给定晶体，计算用于绘制它的几何信息。 */
+    /* Given a crystal, computes the geometry used to draw it. */
     Geometry geometryFor(const Vector<GPoint>& points, GWindow& window) {
-        /* 计算边界框。 */
+        /* Compute the bounding box. */
         double minX =  numeric_limits<double>::infinity();
         double minY =  numeric_limits<double>::infinity();
 
         double maxX = -numeric_limits<double>::infinity();
         double maxY = -numeric_limits<double>::infinity();
 
-        /* 扩展包围分形所用位置的方框。 */
+        /* Expand our box around the spots used in the fractal. */
         for (const auto& loc: points) {
             minX = min(minX, loc.x);
             minY = min(minY, loc.y);
@@ -60,23 +60,23 @@ namespace {
             maxY = max(maxY, loc.y);
         }
 
-        /* 将所有内容轻微移动，以避免退化情况。 */
+        /* Nudge everything ever so slightly to avoid degenerate cases. */
         minX -= kEpsilon;
         minY -= kEpsilon;
 
         maxX += kEpsilon;
         maxY += kEpsilon;
 
-        /* 获取世界的宽度和高度。 */
+        /* Get the width and height of the world. */
         double width  = maxX - minX;
         double height = maxY - minY;
 
-        /* 计算缩放到窗口宽度和高度所需的缩放因子。 */
+        /* Computing the scaling factors needed to scale to the window width and window height. */
         double scaleX = (window.getWidth()  - 2 * kWindowPadding) / width;
         double scaleY = (window.getHeight() - 2 * kWindowPadding) / height;
         double scale = min(scaleX, scaleY);
 
-        /* 根据缩放比例计算基础 x 和 y。 */
+        /* Compute base x and y based on the scale. */
         double baseX = kWindowPadding + (window.getWidth()  - 2 * kWindowPadding - width  * scale) / 2.0;
         double baseY = kWindowPadding + (window.getHeight() - 2 * kWindowPadding - height * scale) / 2.0;
 
@@ -92,8 +92,8 @@ namespace {
 
         GPoint loc(0, 0);
 
-        /* 如果阶数为奇数，默认情况下所有内容都会旋转 180 度，因此需要修正
-         * 此项。如果阶数为偶数，它会逆时针旋转 30 度。
+        /* If the order is odd, everything is, by default, rotated 180 degrees and we need to correct for
+         * this. If the order is even, it's rotated 30 degrees counterclockwise.
          */
         double theta;
         if (n == 0) theta = 0;
@@ -129,7 +129,7 @@ namespace {
 
         auto g = geometryFor(points, window);
 
-        /* 为提高效率，只创建一个 GLine。 */
+        /* For efficiency's sake, only make one GLine. */
         GLine line;
         line.setColor(kColors[1]);
         line.setLineWidth(kLineWidth);
@@ -146,7 +146,7 @@ namespace {
             window.draw(line);
         }
 
-        /* 为简单起见，显示阶数。 */
+        /* Display the order, just for simplicity's sake. */
         auto render = TextRender::construct("Derived from order-" + to_string(order) + " A-sequence.",
                                             { kWindowPadding, window.getCanvasHeight() - kWindowPadding - kFontHeight, window.getCanvasWidth() - 2 * kWindowPadding, kFontHeight},
                                             kLabelFont, LineBreak::NO_BREAK_SPACES);

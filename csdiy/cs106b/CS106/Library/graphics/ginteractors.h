@@ -1,15 +1,15 @@
 /*
- * 文件：ginteractors.h
+ * File: ginteractors.h
  * ---------------------
  *
- * 此文件提供一种便捷方式，用于包含所有基于 Qt 的图形
- * 只需一条 include 语句即可包含项目中的交互控件。
+ * This file serves as a convenient way to include all Qt-based graphical
+ * interactors in your project with a single include statement.
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 ginteractors.h，以替代 Java 版本
+ * - renamed to ginteractors.h to replace Java version
  * @version 2018/07/04
- * - 初始版本
+ * - initial version
  */
 
 

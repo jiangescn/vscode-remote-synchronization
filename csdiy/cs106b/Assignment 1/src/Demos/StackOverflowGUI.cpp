@@ -9,8 +9,8 @@ namespace {
     const Font kMessageFont(FontFamily::SERIF, FontStyle::NORMAL, 24, "#A50021"); // Madder
     const string kBackgroundColor = "white";
 
-    /* 这是一种不同寻常的情况——它实际上不会可视化任何内容，而是
-     * 要么 (1) 崩溃，要么 (2) 因异常中止。
+    /* This is an unusual one - it doesn't actually visualize anything, and instead
+     * either (1) crashes or (2) aborts with an exception.
      */
     class StackOverflowGUI: public ProblemHandler {
     public:

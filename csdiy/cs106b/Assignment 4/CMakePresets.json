@@ -1,0 +1,21 @@
+{
+  "version": 6,
+  "include": [
+    "../CMakePresets.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "debug-ninja",
+      "inherits": "cs106-base",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {}
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug-ninja",
+      "configurePreset": "debug-ninja"
+    }
+  ]
+}

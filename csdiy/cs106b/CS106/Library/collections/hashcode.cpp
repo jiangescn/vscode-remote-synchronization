@@ -1,26 +1,26 @@
 /*
- * 文件：hashcode.cpp
+ * File: hashcode.cpp
  * ------------------
- * 此文件实现在 hashcode.h 中声明的接口。
+ * This file implements the interface declared in hashcode.h.
  *
  * @version 2019/04/16
- * - 修复 win64 中 void* 指针 hashCode 的错误
+ * - bugfix for win64 involving hashCode for void* pointers
  * @version 2018/08/10
- * - 修复负哈希码和统一字符串哈希相关问题
+ * - bugfixes involving negative hash codes, unified string hashing
  * @version 2017/10/21
- * - 为 short、unsigned 整数添加哈希码
+ * - added hash codes for short, unsigned integers
  * @version 2015/07/05
- * - 使用全局哈希函数而非全局变量
+ * - using global hashing functions rather than global variables
  */
 
 #include "hashcode.h"
-#include <cstddef>       // 用于 size_t
-#include <cstdint>       // 用于 uintptr_t
-#include <cstring>       // 用于 strlen
+#include <cstddef>       // For size_t
+#include <cstdint>       // For uintptr_t
+#include <cstring>       // For strlen
 
-static const int HASH_SEED = 5381;               // 第一个周期的起点
-static const int HASH_MULTIPLIER = 33;           // 每个周期的乘数
-static const int HASH_MASK = unsigned(-1) >> 1;  // 除符号位外全为 1
+static const int HASH_SEED = 5381;               // Starting point for first cycle
+static const int HASH_MULTIPLIER = 33;           // Multiplier for each cycle
+static const int HASH_MASK = unsigned(-1) >> 1;  // All 1 bits except the sign
 
 int hashSeed() {
     return HASH_SEED;
@@ -35,23 +35,23 @@ int hashMask() {
 }
 
 /* 
- * 实现说明：hashCode(int)
+ * Implementation notes: hashCode(int)
  * -----------------------------------
- * 整数的哈希码会屏蔽符号位，从而保证结果非负。
+ * Hash code for integers masks off the sign bit, guaranteeing a nonnegative value.
  */
 int hashCode(int key) {
     return key & HASH_MASK;
 }
 
 /* 
- * 实现说明：hashCode（其他基本类型）
+ * Implementation notes: hashCode(other primitive types)
  * -----------------------------------------------------
- * 所有其他基本类型的哈希码都会转发给整数哈希码。
- * 这确保所有哈希码都得到正确的掩码处理。
+ * Hash codes for all other primitive types forward to the hash code for integers.
+ * This ensures that all hash codes get the proper masking treatment.
  *
- * 感谢 Jeremy Barenholtz 指出这些函数的原始版本
- * 函数只是将参数转换为整数，可能导致负数
- * 结果。
+ * Thanks to Jeremy Barenholtz for identifying that the original versions of these
+ * functions, which just cast their arguments to integers, could lead to negative
+ * results.
  */
 int hashCode(bool key) {
     return hashCode(static_cast<int>(key));
@@ -88,25 +88,25 @@ int hashCode(uintptr_t key) {
 #endif // _WIN64
 
 /* 
- * 实现说明：hashCode(void*)
+ * Implementation notes: hashCode(void*)
  * -----------------------------------------------------
- * 用于处理未被其他处理程序匹配的指针的兜底处理程序
- * 重载只是将指针值按数值处理。
+ * Catch-all handler for pointers not matched by other
+ * overloads just treats the pointer value numerically.
  */
 int hashCode(void* key) {
     return hashCode(reinterpret_cast<uintptr_t>(key));
 }
 
 /*
- * 实现说明：hashCode(string)、hashCode(double)
+ * Implementation notes: hashCode(string), hashCode(double)
  * --------------------------------------------------------
- * 此函数接收一个字符串键，并用它派生哈希码，
- * 它是通过确定性方式与键关联的非负整数
- * 将键良好分布到整数空间的函数。
- * 这种通用方法称为线性同余法，它也用于
- * 用于随机数生成器。这里使用的具体算法是
- * 以发明者 Daniel J. Bernstein 的姓名首字母命名为 djb2，
- * 伊利诺伊大学芝加哥分校数学教授。
+ * This function takes a string key and uses it to derive a hash code,
+ * which is a nonnegative integer related to the key by a deterministic
+ * function that distributes keys well across the space of integers.
+ * The general method is called linear congruence, which is also used
+ * in random-number generators.  The specific algorithm used here is
+ * called djb2 after the initials of its inventor, Daniel J. Bernstein,
+ * Professor of Mathematics at the University of Illinois at Chicago.
  */
 int hashCode(const char* base, size_t numBytes) {
     unsigned hash = HASH_SEED;

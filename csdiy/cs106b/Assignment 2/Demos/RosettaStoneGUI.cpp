@@ -29,11 +29,11 @@ namespace {
         void actionPerformed(GObservable* source) override;
         void settingUp() override;
 
-    private /* 辅助函数 */:
+    private /* helpers */:
         void initChrome();
         void findBestMatch(const string& text);
 
-    private /* 状态 */:
+    private /* state */:
         Set<Corpus> all_;
 
         Temporary<GColorConsole> console_;

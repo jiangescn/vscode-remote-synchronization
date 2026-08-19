@@ -1,16 +1,16 @@
 /*
- * 文件：gevent.h
+ * File: gevent.h
  * --------------
  *
  * @author Marty Stepp
  * @version 2018/09/20
- * - 暂时移除 waitForEvent/Click 全局函数的弃用警告
+ * - removed deprecation warning on waitForEvent/Click global functions (for now)
  * @version 2018/09/07
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2018/08/23
- * - 重命名为 gevent.h，以替代 Java 版本
+ * - renamed to gevent.h to replace Java version
  * @version 2018/07/06
- * - 初始版本
+ * - initial version
  */
 
 
@@ -32,14 +32,14 @@ class _Internal_QCheckBox;
 class _Internal_QPushButton;
 class _Internal_QWidget;
 
-/** 传递给各种交互控件的事件监听器函数类型。 */
+/** Types for the event listener functions to be passed to various interactors. */
 typedef std::function<void(GEvent)> GEventListener;
 
-/** 传递给各种交互控件的事件监听器函数类型。 */
+/** Types for the event listener functions to be passed to various interactors. */
 typedef std::function<void()>       GEventListenerVoid;
 
 /**
- * 表示所有主要事件类别。
+ * Represents all major categories of events.
  */
 enum EventClass {
     NULL_EVENT      = 0x0000,
@@ -58,13 +58,13 @@ enum EventClass {
                     | MOUSE_EVENT | CLICK_EVENT | TABLE_EVENT | SERVER_EVENT
                     | CHANGE_EVENT | HYPERLINK_EVENT | SCROLL_EVENT
 };
-// 注意：如果添加任何新的事件类，还必须向以下位置添加逻辑：
-// gevent.cpp 中的 GEvent::classToString 函数。
+// Note: If you add any new classes of events, you must also add logic to the
+// GEvent::classToString function in gevent.cpp.
 
 
 /**
- * 定义所有事件的事件子类型。
- * 事件类型是事件类中的一个子类别。
+ * Defines the event subtypes for all events.
+ * An event type is a subcategory within an event class.
  */
 enum EventType {
     NULL_TYPE            = 0,
@@ -97,14 +97,14 @@ enum EventType {
 
     TIMER_TICKED         = TIMER_EVENT + 1,
 
-    TABLE_UPDATED        = TABLE_EVENT + 1,   // 当单元格的值被设置时
-    TABLE_SELECTED       = TABLE_EVENT + 2,   // 光标移动到某个单元格上
-    TABLE_EDIT_BEGIN     = TABLE_EVENT + 3,   // 用户按 F2 或双击开始编辑单元格
-    TABLE_REPLACE_BEGIN  = TABLE_EVENT + 4,   // 用户开始在单元格中输入；类似 TABLE_EDIT_BEGIN，但会清除原值
-    TABLE_EDIT_CANCEL    = TABLE_EVENT + 5,   // 用户按 Esc 或以其他方式停止编辑单元格
-    TABLE_CUT            = TABLE_EVENT + 6,   // 用户将单元格值剪切到剪贴板
-    TABLE_COPY           = TABLE_EVENT + 7,   // 用户将单元格值复制到剪贴板
-    TABLE_PASTE          = TABLE_EVENT + 8,   // 用户从剪贴板粘贴单元格值
+    TABLE_UPDATED        = TABLE_EVENT + 1,   // when a cell's value gets set
+    TABLE_SELECTED       = TABLE_EVENT + 2,   // cursor moves onto a cell
+    TABLE_EDIT_BEGIN     = TABLE_EVENT + 3,   // user presses F2 or double clicks to start editing a cell
+    TABLE_REPLACE_BEGIN  = TABLE_EVENT + 4,   // user starts typing on a cell; like TABLE_EDIT_BEGIN but wipes out previous value
+    TABLE_EDIT_CANCEL    = TABLE_EVENT + 5,   // user presses Esc or otherwise stops editing a cell
+    TABLE_CUT            = TABLE_EVENT + 6,   // user cuts cell value to clipboard
+    TABLE_COPY           = TABLE_EVENT + 7,   // user copies cell value to clipboard
+    TABLE_PASTE          = TABLE_EVENT + 8,   // user pastes cell value from clipboard
 
     SERVER_REQUEST       = SERVER_EVENT + 1,
 
@@ -114,12 +114,12 @@ enum EventType {
 
     SCROLL_SCROLLED      = SCROLL_EVENT + 1
 };
-// 注意：如果添加任何新的事件类，还必须向以下位置添加逻辑：
-// gevent.cpp 中的 GEvent::typeToString 函数。
+// Note: If you add any new classes of events, you must also add logic to the
+// GEvent::typeToString function in gevent.cpp.
 
 /**
- * 一组常量，用于检查各种事件修饰键是否生效。
- * 这些常量可以使用位运算符合并到一个修饰符 int 中。
+ * A set of constants used to check whether various event modifiers are in effect.
+ * These constants can be combined in a single modifier int using bitwise operators.
  */
 enum Modifier {
     SHIFT_DOWN     = 1 << 0,
@@ -133,40 +133,40 @@ enum Modifier {
 };
 
 /**
- * GEvent 表示在图形交互控件上发生的用户操作。
+ * A GEvent represents a user action that has occurred on a graphical interactor.
  *
- * 此库的旧版本使用事件轮询模型，客户端会
- * 建议编写 while (true) 循环并调用 waitForEvent(...) 来
- * 获取每个事件并处理它。
- * 当前设计更倾向于附加事件监听器函数
- * 在事件发生时调用。
- * 这些监听器函数可以接受一个可选的 GEvent 参数。
- * GEvent 对象将包含有关已发生事件的信息。
+ * Older versions of this library used an event-polling model where the client
+ * was encouraged to write a while (true) loop and call waitForEvent(...) to
+ * get each event and process it.
+ * The current design instead prefers that you attach event listener functions
+ * to be called when events occur.
+ * These listener functions can accept an optional GEvent as a parameter.
+ * The GEvent object will contain information about the event that occurred.
  *
- * 此库的旧版本针对各种类型使用继承层次结构
- * 事件类型，例如 GMouseEvent、GKeyEvent 等。
- * 当前设计使用单一 GEvent 类型，它是所有数据的联合
- * 任何类型的事件都需要。
- * 此前的子类名称（如 GMouseEvent）为保持向后
- * 用于兼容性，但它们现在只是 GEvent 类型的别名。
+ * Older versions of this library had an inheritance hierarchy for various
+ * event types, such as GMouseEvent, GKeyEvent, etc.
+ * The current design has a single type GEvent that is a union of all data
+ * needed by any kind of event.
+ * The previous subclass names such as GMouseEvent are retained for backward
+ * compatibility, but they are now just aliases for the type GEvent.
  */
 class GEvent {
 public:
     /**
-     * 一个什么也不做、可传入的空事件处理程序。
+     * An empty event handler that can be passed that does nothing.
      */
     static GEventListener EMPTY_EVENT_LISTENER;
 
     /**
-     * 仅打印所发生事件的事件监听器。
-     * 此监听器有助于调试。
+     * An event listener that just prints the event that occurred.
+     * This listener is useful for debugging.
      */
     static GEventListener LOG_EVENT;
 
     /*
-     * 类型：KeyCode
+     * Type: KeyCode
      * -------------
-     * 此类型定义按键事件中返回的键码名称。
+     * This type defines the names of the key codes returned in a key event.
      */
     enum KeyCode {
         BACKSPACE_KEY = 8,
@@ -212,7 +212,7 @@ public:
     };
 
     /**
-     * 创建给定类型的新事件。
+     * Creates a new event of the given type.
      */
     GEvent(EventClass eventClass = NULL_EVENT,
             EventType eventType = NULL_TYPE,
@@ -220,215 +220,215 @@ public:
             GObservable* source = nullptr);
 
     /**
-     * 释放事件内部分配的内存。
+     * Frees memory allocated internally by the event.
      */
     virtual ~GEvent();
 
     /**
-     * 将 ACTION_PERFORMED 等事件类转换为
-     * 转换为类似 "ACTION_PERFORMED" 的字符串。
+     * Converts an event class such as ACTION_PERFORMED
+     * to a string such as "ACTION_PERFORMED".
      * @private
      */
     static std::string classToString(EventClass eventClass);
 
     /**
-     * 返回与事件关联的动作命令。
-     * 对于按钮等某些交互控件，这将是以下对象的文本：
-     * 交互控件。
+     * Returns the action command associated with the event.
+     * For some interactors such as buttons, this will be the text of the
+     * interactor.
      */
     virtual std::string getActionCommand() const;
 
     /**
-     * 如果这是鼠标事件，则返回点击的鼠标按钮。
-     * 若这不是鼠标事件，则返回 0。
+     * Returns which mouse button was clicked, if this is a mouse event.
+     * If this is not a mouse event, returns 0.
      */
     virtual int getButton() const;
 
     /**
-     * 返回此事件的类（例如 MOUSE_EVENT 这样的主要类型）。
-     * 等价于 getEventClass。
+     * Returns this event's class (major type such as MOUSE_EVENT).
+     * Equivalent to getEventClass.
      */
     virtual EventClass getClass() const;
 
     /**
-     * 如果这是表格事件，则返回发生交互的列。
-     * 若这不是表格事件，则返回 0。
+     * Returns the column that was interacted with, if this is a table event.
+     * If this is not a table event, returns 0.
      */
     virtual int getColumn() const;
 
     /**
-     * 返回从以下时刻起经过的毫秒数所表示的当前时间
-     * 1970/01/01 12:00am 纪元。
-     * 用于为各个事件提供时间戳。
+     * Returns the current time as a number of milliseconds elapsed since the
+     * epoch of 1970/01/01 12:00am.
+     * Used to supply timestamps to individual events.
      * @private
      */
     static long getCurrentTimeMS();
 
     /**
-     * 返回此事件的类（例如 MOUSE_EVENT 这样的主要类型）。
-     * 等价于 getClass。
+     * Returns this event's class (major type such as MOUSE_EVENT).
+     * Equivalent to getClass.
      */
     virtual EventClass getEventClass() const;
 
     /**
-     * 返回事件类型（次要类型，例如 MOUSE_PRESSED）。
-     * 等价于 getType。
+     * Returns the event's type (minor type such as MOUSE_PRESSED).
+     * Equivalent to getType.
      */
     virtual EventType getEventType() const;
 
     /**
-     * 返回生成此事件的源交互控件。
+     * Returns the source interactor that generated this event.
      */
     virtual GInteractor* getInteractor() const;
 
     /**
-     * 返回此事件所包装的 Qt 事件（如果有）。
-     * 如果此事件未包装 Qt 事件，则返回 nullptr。
+     * Returns the Qt event being wrapped by this event, if any.
+     * If this event does not wrap a Qt event, returns nullptr.
      */
     virtual QEvent* getInternalEvent() const;
 
     /**
-     * 如果这是键盘事件，则返回输入的键盘字符。
-     * 如果这不是键盘事件，则返回 '\0'。
+     * Returns the key character that was typed, if this is a key event.
+     * If this is not a key event, returns '\0'.
      */
     virtual char getKeyChar() const;
 
     /**
-     * 如果这是键盘事件，则返回输入的整数键码。
-     * 用于比较键值的有用常量见 KeyCode 枚举。
-     * 如果这不是键盘事件，则返回 0。
+     * Returns the integer key code that was typed, if this is a key event.
+     * See the KeyCode enumeration for helpful constants for comparing key values.
+     * If this is not a key event, returns 0.
      */
     virtual int getKeyCode() const;
 
     /**
-     * 返回表示交互控件内鼠标位置的 (x, y) 点
-     * 此事件发生的时间。
-     * 如果这不是鼠标事件，则返回 (0, 0)。
+     * Returns an (x, y) point representing the mouse position within the interactor
+     * when this event occurred.
+     * If this is not a mouse event, returns (0, 0).
      */
     virtual GPoint getLocation() const;
 
     /**
-     * 返回此事件期间激活的修饰键。
-     * 更多信息见 Modifiers 枚举。
+     * Returns the modifiers active during this event.
+     * See the Modifiers enumeration for more information.
      */
     virtual int getModifiers() const;
 
     /**
-     * 返回此事件的名称，例如 "click"、"keydown" 或 "actionperformed"。
+     * Returns this event's name such as "click" or "keydown" or "actionperformed".
      */
     virtual std::string getName() const;
 
     /**
-     * 如果这是服务器 URL 事件，则返回此事件的请求 URL。
-     * 如果这不是服务器 URL 事件，则返回空字符串。
+     * Returns this event's request URL, if this is a server URL event.
+     * If this is not a server URL event, returns an empty string.
      */
     virtual std::string getRequestURL() const;
 
     /**
-     * 如果这是表格事件，则返回发生交互的行。
-     * 若这不是表格事件，则返回 0。
+     * Returns the row that was interacted with, if this is a table event.
+     * If this is not a table event, returns 0.
      */
     virtual int getRow() const;
 
     /**
-     * 返回生成此事件的源对象。
+     * Returns the source object that generated this event.
      */
     virtual GObservable* getSource() const;
 
     /**
-     * 返回此事件的时间戳，以从以下时刻起经过的毫秒数表示
-     * 自 1970/01/01 12:00am 纪元以来。
+     * Returns this event's timestamp, as a number of milliseconds elapsed
+     * since the epoch of 1970/01/01 12:00am.
      */
     virtual long getTime() const;
 
     /**
-     * 返回事件类型（主要类型，例如 MOUSE_EVENT）。
-     * 等价于 getEventType。
+     * Returns the event's type (major type such as MOUSE_EVENT).
+     * Equivalent to getEventType.
      */
     virtual EventType getType() const;
 
     /**
-     * 返回交互控件内鼠标位置的 x 坐标
-     * 此事件发生的时间。
-     * 若这不是鼠标事件，则返回 0。
+     * Returns the x-coordinate of the mouse position within the interactor
+     * when this event occurred.
+     * If this is not a mouse event, returns 0.
      */
     virtual double getX() const;
 
     /**
-     * 返回交互控件内鼠标位置的 y 坐标
-     * 此事件发生的时间。
-     * 若这不是鼠标事件，则返回 0。
+     * Returns the y-coordinate of the mouse position within the interactor
+     * when this event occurred.
+     * If this is not a mouse event, returns 0.
      */
     virtual double getY() const;
 
     /**
-     * 指示 GUI 系统忽略或取消此事件。
-     * 例如，如果监听窗口关闭事件并忽略它们，
-     * 窗口将保持打开状态。
+     * Instructs the GUI system to ignore or cancel this event.
+     * For example, if you listen to window-closing events and ignore them,
+     * the window will stay open.
      */
     virtual void ignore();
 
     /**
-     * 如果此事件发生时按住 Alt 键，则返回 <code>true</code>。
-     * 若这不是鼠标事件或按键事件，则返回 false。
+     * Returns <code>true</code> if the Alt key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isAltKeyDown() const;
 
     /**
-     * 如果此事件发生时按住 Ctrl 键，则返回 <code>true</code>。
-     * 若这不是鼠标事件或按键事件，则返回 false。
+     * Returns <code>true</code> if the Ctrl key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isCtrlKeyDown() const;
 
     /**
-     * 如果按住 Ctrl 键或 Command 键（Mac），则返回 <code>true</code>
-     * 在此事件期间被按住。
-     * 若这不是鼠标事件或按键事件，则返回 false。
+     * Returns <code>true</code> if the Ctrl key, or the Command key (Mac),
+     * was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isCtrlOrCommandKeyDown() const;
 
     /**
-     * 如果用户多次按下鼠标按钮，则返回 true。
-     * 若这不是鼠标事件，则返回 false。
+     * Returns true if the user pressed the mouse button multiple times.
+     * If this is not a mouse event, returns false.
      */
     virtual bool isDoubleClick() const;
 
     /**
-     * 如果用户按下鼠标左键，则返回 true。
-     * 若这不是鼠标事件，则返回 false。
+     * Returns true if the user pressed the left mouse button.
+     * If this is not a mouse event, returns false.
      */
     virtual bool isLeftClick() const;
 
     /**
-     * 如果用户按下鼠标中键，则返回 true。
-     * （请注意，并非每个鼠标都能简单划分为“左键、右键、
-     * 以及“中键”按钮；这是在标准三键鼠标上实现的
-     * 使用滚轮。）
-     * 若这不是鼠标事件，则返回 false。
+     * Returns true if the user pressed the middle mouse button.
+     * (Note that not every mouse has a simple delineation of "left, right,
+     * and middle" buttons; this was implemented on a standard 3-button mouse
+     * with scroll wheel.)
+     * If this is not a mouse event, returns false.
      */
     virtual bool isMiddleClick() const;
 
     /**
-     * 如果用户按下鼠标右键，则返回 true。
-     * 若这不是鼠标事件，则返回 false。
+     * Returns true if the user pressed the right mouse button.
+     * If this is not a mouse event, returns false.
      */
     virtual bool isRightClick() const;
 
     /**
-     * 如果此事件发生时按住 Meta/Command 键，则返回 <code>true</code>。
-     * 若这不是鼠标事件或按键事件，则返回 false。
+     * Returns <code>true</code> if the Meta/Command key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isMetaKeyDown() const;
 
     /**
-     * 如果此事件发生时按住 Shift 键，则返回 <code>true</code>。
-     * 若这不是鼠标事件或按键事件，则返回 false。
+     * Returns <code>true</code> if the Shift key was held down during this event.
+     * If this is not a mouse or key event, returns false.
      */
     virtual bool isShiftKeyDown() const;
 
     /**
-     * 将 67 这样的键码转换为“A”这样的字符串。
-     * 适用于“Enter”和“Tab”等特殊键。
+     * Converts a key code such as 67 into a string such as "A".
+     * Works for special keys such as "Enter" and "Tab".
      */
     static std::string keyCodeToString(int keyCode);
 
@@ -493,19 +493,19 @@ public:
     virtual void setY(double y);
 
     /**
-     * 返回用于调试的事件文本表示。
+     * Returns a text representation of the event for debugging.
      */
     virtual std::string toString() const;
 
     /**
-     * 将 MOUSE_EVENT 等事件类型转换为以下字符串：
-     * “MOUSE_EVENT”。
+     * Converts an event type such as MOUSE_EVENT to a string such as
+     * "MOUSE_EVENT".
      */
     static std::string typeToString(EventType eventType);
 
 private:
     /*
-     * 表示两种事件监听器。
+     * Represents the two types of event listeners.
      */
     enum EventListenerType {
         HANDLER_EVENT,
@@ -513,7 +513,7 @@ private:
     };
 
     /*
-     * 可保存两种事件监听器类型之一的包装器。
+     * A wrapper that can hold either of the two types of event listeners.
      */
     struct EventListenerWrapper {
         GEventListener handler;
@@ -529,7 +529,7 @@ private:
         }
     };
 
-    // 成员变量
+    // member variables
     std::string _actionCommand;
     int _button;
     EventClass _class;
@@ -553,11 +553,11 @@ private:
 };
 
 /**
- * 将给定事件写入给定输出流。
+ * Writes the given event to the given output stream.
  */
 std::ostream& operator <<(std::ostream& out, const GEvent& event);
 
-// 将 GEvent 作为所有事件类型的别名
+// alias GEvent to all event types
 typedef GEvent GActionEvent;
 typedef GEvent GChangeEvent;
 typedef GEvent GHyperlinkEvent;
@@ -569,52 +569,52 @@ typedef GEvent GTableEvent;
 typedef GEvent GTimerEvent;
 typedef GEvent GWindowEvent;
 
-// 用于向后兼容的全局函数
-// 实现见 geventqueue.cpp
+// global functions for backward compatibility
+// see geventqueue.cpp for implementation
 
 /**
- * 检查队列中是否存在所需类型的事件
- * 事件队列。如果存在，此函数会以完全相同的形式返回事件
- * 方式与 <code>waitForEvent</code> 相同；如果没有，<code>getNextEvent</code>
- * 返回无效事件。<code>mask</code> 参数是可选的。
- * 如果缺少它，<code>getNextEvent</code> 将接受任何事件。
+ * Checks to see if there are any events of the desired type waiting on the
+ * event queue.  If so, this function returns the event in exactly the same
+ * fashion as <code>waitForEvent</code>; if not, <code>getNextEvent</code>
+ * returns an invalid event.  The <code>mask</code> parameter is optional.
+ * If it is missing, <code>getNextEvent</code> accepts any event.
  *
- * @deprecated 已弃用
- * 此函数已弃用，不建议使用。
- * 不要在事件循环中调用 waitForClick，而应连接一个
- * 使用所选控件对象的方法，将事件监听函数连接到该控件
- * 例如 setActionListener 或 setMouseListener。
+ * @deprecated
+ * This function is deprecated and discouraged from use.
+ * Instead of calling waitForClick in an event loop, you should attach an
+ * event-listening function to the widget of choice using that object's methods
+ * such as setActionListener or setMouseListener.
  */
 GEvent getNextEvent(int mask = ANY_EVENT) /*Q_DECL_DEPRECATED*/;
 
 /**
- * 等待任意窗口中任意位置发生鼠标单击，
- * 返回发生的事件。
+ * Waits for a mouse click to occur anywhere in any window,
+ * returning the event that occurred.
  *
- * @deprecated 已弃用
- * 此函数已弃用，不建议使用。
- * 不要在事件循环中调用 waitForClick，而应连接一个
- * 使用所选控件对象的方法，将事件监听函数连接到该控件
- * 例如 setActionListener 或 setMouseListener。
+ * @deprecated
+ * This function is deprecated and discouraged from use.
+ * Instead of calling waitForClick in an event loop, you should attach an
+ * event-listening function to the widget of choice using that object's methods
+ * such as setActionListener or setMouseListener.
  */
 GMouseEvent waitForClick() /*Q_DECL_DEPRECATED*/;
 
 /**
- * 让进程等待，直到发生类型被以下对象覆盖的事件：
- * 事件掩码。mask 参数是以下事件的组合
- * 感兴趣的事件。例如，要等待鼠标事件或动作事件，
- * 客户端可以使用以下调用：
+ * Dismisses the process until an event occurs whose type is covered by
+ * the event mask.  The mask parameter is a combination of the events of
+ * interest.  For example, to wait for a mouse event or an action event,
+ * clients can use the following call:
  *
  *<pre>
  *    e = waitForEvent(MOUSE_EVENT + ACTION_EVENT);
  *</pre>
  *
- * <code>mask</code> 参数是可选的。如果省略，
- * <code>waitForEvent</code> 接受任何事件。
+ * The <code>mask</code> parameter is optional.  If it is missing,
+ * <code>waitForEvent</code> accepts any event.
  *
- * <p>作为更复杂的示例，以下代码是标准的
- * 需要响应鼠标的动画应用程序事件循环，
- * 键盘事件和计时器事件：
+ * <p>As a more sophisticated example, the following code is the canonical
+ * event loop for an animated application that needs to respond to mouse,
+ * key, and timer events:
  *
  *<pre>
  *    GTimer timer(ANIMATION_DELAY_IN_MILLISECONDS);
@@ -635,11 +635,11 @@ GMouseEvent waitForClick() /*Q_DECL_DEPRECATED*/;
  *    }
  *</pre>
  *
- * @deprecated 已弃用
- * 此函数已弃用，不建议使用。
- * 不要在事件循环中调用 waitForClick，而应连接一个
- * 使用所选控件对象的方法，将事件监听函数连接到该控件
- * 例如 setActionListener 或 setMouseListener。
+ * @deprecated
+ * This function is deprecated and discouraged from use.
+ * Instead of calling waitForClick in an event loop, you should attach an
+ * event-listening function to the widget of choice using that object's methods
+ * such as setActionListener or setMouseListener.
  */
 GEvent waitForEvent(int mask = ANY_EVENT) /*Q_DECL_DEPRECATED*/;
 

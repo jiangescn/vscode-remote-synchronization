@@ -1,9 +1,9 @@
 ###############################################################################
-# CS106B/X 库的项目文件
+# Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version 2021 秋季学期第 1 版，适用于 Qt 6
-#    构建静态库并安装到用户数据目录
+# @version Fall Quarter 2021.1 for Qt 6
+#    build static lib and install into user data
 ###############################################################################
 
 TEMPLATE    =   lib
@@ -14,7 +14,7 @@ SPL_VERSION         =   2021.1
 REQUIRES_QT_VERSION =   6.1
 
 ###############################################################################
-#       收集文件                                                          #
+#       Gather files                                                          #
 ###############################################################################
 
 LIB_SUBDIRS         =   collections console graphics io system util
@@ -36,16 +36,16 @@ INCLUDEPATH         +=  $$LIB_SUBDIRS
 QT                  +=  core gui widgets network
 
 ###############################################################################
-#       构建设置                                                        #
+#       Build settings                                                        #
 ###############################################################################
 
-# MinGW 编译器支持较滞后，为稳妥起见，在所有平台上都使用 C++11
-# 而不是进行特殊处理
+# MinGW compiler lags, be conservative and use C++11 on all platforms
+# rather than special case
 CONFIG              +=  c++11
 
-# 设置 develop_mode 以启用警告、弃用提示、细节检查等全部内容。
-# 请注意并修复！库应无警告地编译。
-# 为学生发布安静构建时禁用此模式。
+# Set develop_mode to enable warnings, deprecated, nit-picks, all of it.
+# Pay attention and fix! Library should compile cleanly.
+# Disable mode when publish to quiet build for student.
 
 develop_mode {
     CONFIG          +=  debug
@@ -65,7 +65,7 @@ develop_mode {
 #       Make install                                                          #
 ###############################################################################
 
-# 使用 makefile include 将默认目标设置为 install 目标
+# Use makefile include to set default goal to install target
 QMAKE_EXTRA_INCLUDES += $$relative_path($$absolute_path(assume_install.mk), $$OUT_PWD)
 
 win32|win64 { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
@@ -91,7 +91,7 @@ versionfile.path    =   "$${SPL_DIR}/lib"
 
 
 ###############################################################################
-#       要求                                                          #
+#       Requirements                                                          #
 ###############################################################################
 
 !versionAtLeast(QT_VERSION, $$REQUIRES_QT_VERSION) {

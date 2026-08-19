@@ -10,8 +10,8 @@ namespace {
     const string kBaseDir = "res/apportionment/";
     const string kFileExtension = ".csv";
 
-    /* 加载给定 CSV 文件的内容，如果出现问题则报告错误
-     * 发生错误。
+    /* Loads the contents of the given CSV file, reporting an error if something
+     * goes wrong.
      */
     Map<string, int> contentsOf(const string& filename) {
         try {
@@ -28,15 +28,15 @@ namespace {
         }
     }
 
-    /* 返回映射中最长键的长度。 */
+    /* Returns the length of the longest key in the map. */
     int longestKeyIn(const Map<string, int>& map) {
         return static_cast<int>(max_element(map.begin(), map.end(), [](const string& lhs, const string& rhs) {
             return lhs.size() < rhs.size();
         })->size());
     }
 
-    /* 假定转换后，返回最大席位数的长度
-     * 先转换为带逗号分隔的字符串。
+    /* Returns the length of the largest number of seats, assuming things are converted
+     * to commafied strings first.
      */
     int longestSeatSizeIn(const Map<string, int>& seats) {
         int longest = 0;
@@ -47,13 +47,13 @@ namespace {
         return longest;
     }
 
-    /* 分配席位并显示结果。 */
+    /* Apportions seats and shows the result. */
     void showApportionment(ostream& out, const string& filename, int numSeats) {
         try {
             auto populations = contentsOf(filename);
             auto seats       = apportion(populations, numSeats);
 
-            /* 将所有内容填充到正确大小。 */
+            /* To pad everything to the proper size. */
             int nameLength = longestKeyIn(populations);
             int seatLength = longestSeatSizeIn(seats);
 
@@ -99,10 +99,10 @@ namespace {
 
     void ApportionmentGUI::actionPerformed(GObservable* source) {
         if (source == go_) {
-            /* 确认有可供处理的文件。 */
+            /* Confirm we have a file to work with. */
             string file = selector_->getSelectedItem();
             if (file != kNotSelected) {
-                /* 确认有一定数量的席位。 */
+                /* Confirm we have a number of seats. */
                 int seats = kInvalidChoice;
                 try {
                     seats = stringToInteger(seats_->getText());

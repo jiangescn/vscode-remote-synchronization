@@ -1,16 +1,16 @@
 /*
- * 文件：gcolor.cpp
+ * File: gcolor.cpp
  * ----------------
  *
  * @author Marty Stepp
  * @version 2019/05/05
- * - 添加 getLuminance
+ * - added getLuminance
  * @version 2018/09/16
- * - 添加 splitRGB/ARGB、hasAlpha；改进 ARGB 支持
+ * - added splitRGB/ARGB, hasAlpha; better ARGB support
  * @version 2018/08/23
- * - 重命名为 gcolor.cpp，以替代 Java 版本
+ * - renamed to gcolor.cpp to replace Java version
  * @version 2018/06/30
- * - 初始版本
+ * - initial version
  */
 
 #include "gcolor.h"
@@ -23,10 +23,10 @@ Map<std::string, int> GColor::_colorTable;
 Map<std::string, std::string> GColor::_colorNameTable;
 
 GColor::GColor() {
-    // 空
+    // empty
 }
 
-/*静态*/ std::string GColor::canonicalColorName(const std::string& str) {
+/*static*/ std::string GColor::canonicalColorName(const std::string& str) {
     std::string result = "";
     int nChars = static_cast<int>(str.length());
     for (int i = 0; i < nChars; i++) {
@@ -36,7 +36,7 @@ GColor::GColor() {
     return result;
 }
 
-/*静态*/ const Map<std::string, int>& GColor::colorTable() {
+/*static*/ const Map<std::string, int>& GColor::colorTable() {
     if (_colorTable.isEmpty()) {
         _colorTable["black"] = 0x000000;
         _colorTable["blue"] = 0x0000FF;
@@ -57,7 +57,7 @@ GColor::GColor() {
     return _colorTable;
 }
 
-/*静态*/ const Map<std::string, std::string>& GColor::colorNameTable() {
+/*static*/ const Map<std::string, std::string>& GColor::colorNameTable() {
     if (_colorNameTable.isEmpty()) {
         _colorNameTable["#000000"] = "black";
         _colorNameTable["#ff000000"] = "black";
@@ -93,11 +93,11 @@ GColor::GColor() {
     return _colorNameTable;
 }
 
-/*静态*/ int GColor::convertARGBToARGB(int a, int r, int g, int b) {
+/*static*/ int GColor::convertARGBToARGB(int a, int r, int g, int b) {
     return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
-/*静态*/ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
+/*static*/ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
     if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         error("GColor::convertARGBToColor: invalid ARGB value (must be 0-255)");
     }
@@ -110,17 +110,17 @@ GColor::GColor() {
     return os.str();
 }
 
-/*静态*/ std::string GColor::convertARGBToColor(int argb) {
+/*static*/ std::string GColor::convertARGBToColor(int argb) {
     int a, r, g, b;
     splitARGB(argb, a, r, g, b);
     return convertARGBToColor(a, r, g, b);
 }
 
-/*静态*/ int GColor::convertColorToARGB(const std::string& colorName) {
+/*static*/ int GColor::convertColorToARGB(const std::string& colorName) {
     return convertColorToRGB(colorName);
 }
 
-/*静态*/ int GColor::convertColorToRGB(const std::string& colorName) {
+/*static*/ int GColor::convertColorToRGB(const std::string& colorName) {
     if (colorName == "") return -1;
     if (colorName[0] == '#') {
         std::istringstream is(colorName.substr(1) + "@");
@@ -139,15 +139,15 @@ GColor::GColor() {
     return colorTable()[name];
 }
 
-/*静态*/ std::string GColor::convertQColorToColor(const QColor& color) {
+/*static*/ std::string GColor::convertQColorToColor(const QColor& color) {
     return convertRGBToColor(color.red(), color.green(), color.blue());
 }
 
-/*静态*/ int GColor::convertQColorToRGB(const QColor& color) {
+/*static*/ int GColor::convertQColorToRGB(const QColor& color) {
     return convertRGBToRGB(color.red(), color.green(), color.blue());
 }
 
-/*静态*/ std::string GColor::convertRGBToColor(int rgb) {
+/*static*/ std::string GColor::convertRGBToColor(int rgb) {
     std::ostringstream os;
     os << std::hex << std::setfill('0') << std::uppercase << "#";
     os << std::setw(2) << (rgb >> 16 & 0xFF);
@@ -161,7 +161,7 @@ GColor::GColor() {
     }
 }
 
-/*静态*/ std::string GColor::convertRGBToColor(int r, int g, int b) {
+/*static*/ std::string GColor::convertRGBToColor(int r, int g, int b) {
     if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         error("GColor::convertRGBToColor: invalid RGB value (must be 0-255)");
     }
@@ -178,48 +178,48 @@ GColor::GColor() {
     }
 }
 
-/*静态*/ int GColor::convertRGBToRGB(int r, int g, int b) {
+/*static*/ int GColor::convertRGBToRGB(int r, int g, int b) {
     return (r << 16) | (g << 8) | b;
 }
 
-/*静态*/ int GColor::fixAlpha(int argb) {
+/*static*/ int GColor::fixAlpha(int argb) {
     int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
     if (alpha == 0 && (argb & 0x00ffffff) != 0) {
-        argb = argb | 0xff000000;   // 将 alpha 完整设为 255
+        argb = argb | 0xff000000;   // set full 255 alpha
     }
     return argb;
 }
 
-/*静态*/ double GColor::getLuminance(int rgb) {
+/*static*/ double GColor::getLuminance(int rgb) {
     // https://en.wikipedia.org/wiki/Relative_luminance
     int r, g, b;
     splitRGB(rgb, r, g, b);
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/*静态*/ double GColor::getLuminance(const std::string& color) {
+/*static*/ double GColor::getLuminance(const std::string& color) {
     return getLuminance(convertColorToRGB(color));
 }
 
-/*静态*/ bool GColor::hasAlpha(const std::string& color) {
+/*static*/ bool GColor::hasAlpha(const std::string& color) {
     return static_cast<int>(color.length()) == 9
             && color[0] == '#';
 }
 
-/*静态*/ void GColor::splitARGB(int argb, int& a, int& r, int& g, int& b) {
+/*static*/ void GColor::splitARGB(int argb, int& a, int& r, int& g, int& b) {
     a = ((static_cast<unsigned int>(argb) & 0xff000000) >> 24) & 0x000000ff;
     r = (argb & 0x00ff0000) >> 16;
     g = (argb & 0x0000ff00) >> 8;
     b = (argb & 0x000000ff);
 }
 
-/*静态*/ void GColor::splitRGB(int rgb, int& r, int& g, int& b) {
+/*static*/ void GColor::splitRGB(int rgb, int& r, int& g, int& b) {
     r = (rgb & 0x00ff0000) >> 16;
     g = (rgb & 0x0000ff00) >> 8;
     b = (rgb & 0x000000ff);
 }
 
-/*静态*/ QColor GColor::toQColor(const std::string& color) {
+/*static*/ QColor GColor::toQColor(const std::string& color) {
     if (hasAlpha(color)) {
         int argb = convertColorToARGB(color);
         int a, r, g, b;
@@ -231,7 +231,7 @@ GColor::GColor() {
     }
 }
 
-/*静态*/ QColor GColor::toQColorARGB(int argb) {
+/*static*/ QColor GColor::toQColorARGB(int argb) {
     int a, r, g, b;
     splitARGB(argb, a, r, g, b);
     return QColor(r, g, b, a);

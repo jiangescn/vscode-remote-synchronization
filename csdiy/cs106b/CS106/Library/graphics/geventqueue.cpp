@@ -1,14 +1,14 @@
 /*
- * 文件：geventqueue.cpp
+ * File: geventqueue.cpp
  * ---------------------
  *
  * @author Marty Stepp
  * @version 2019/01/08
- * - 修复 waitForClick 函数的错误（它原先永远不会返回！）
+ * - bug fix in waitForClick function (was never returning!)
  * @version 2018/08/23
- * - 重命名为 geventqueue.cpp
+ * - renamed to geventqueue.cpp
  * @version 2018/07/03
- * - 初始版本
+ * - initial version
  */
 
 #include "qtgui.h"
@@ -24,7 +24,7 @@ GEventQueue* GEventQueue::_instance = nullptr;
 
 GEventQueue::GEventQueue()
         : _eventMask(0) {
-    // 空
+    // empty
 }
 
 GThunk GEventQueue::dequeue() {
@@ -49,13 +49,13 @@ int GEventQueue::getEventMask() const {
 GEvent GEventQueue::getNextEvent(int mask) {
     setEventMask(mask);
 
-    // 检查是否有事件到达
+    // check if any events have arrived
     _eventQueueMutex.lockForRead();
     bool empty = _eventQueue.isEmpty();
     _eventQueueMutex.unlock();
 
     if (!empty) {
-        // 获取事件并返回
+        // grab the event and return it
         _eventQueueMutex.lockForWrite();
         while (!_eventQueue.isEmpty()) {
             GEvent event = _eventQueue.dequeue();
@@ -110,7 +110,7 @@ void GEventQueue::runOnQtGuiThreadSync(GThunk thunk) {
     _functionQueueMutex.unlock();
     emit eventReady();
 
-    // TODO：“empty”并不是完全正确的条件
+    // TODO: "empty" is not quite right condition
     while (true) {
         _functionQueueMutex.lockForRead();
         bool empty = _functionQueue.isEmpty();
@@ -130,13 +130,13 @@ void GEventQueue::setEventMask(int mask) {
 GEvent GEventQueue::waitForEvent(int mask) {
     setEventMask(mask);
     while (true) {
-        // 检查是否有事件到达
+        // check if any events have arrived
         _eventQueueMutex.lockForRead();
         bool empty = _eventQueue.isEmpty();
         _eventQueueMutex.unlock();
 
         if (!empty) {
-            // 获取事件并返回
+            // grab the event and return it
             _eventQueueMutex.lockForWrite();
             while (!_eventQueue.isEmpty()) {
                 GEvent event = _eventQueue.dequeue();

@@ -9,18 +9,18 @@ namespace {
     const string kBackgroundColor = "#FFFFFF";
     const string kBorderColor     = "#4C516D"; // Independence
 
-    /* 计时参数。 */
+    /* Timing parameters. */
     const int    kFramesPerSecond = 100;
     const double kPauseTime = 1000.0 / kFramesPerSecond;
     const int    kFramesPerAnimation = 100;
 
-    /* 三角形参数。 */
+    /* Triangle parameters. */
     const int kOrder = 8;
 
-    /* 边长为 1 的等边三角形高度。 */
+    /* Height of an equilateral triangle with unit side length. */
     const double kEquilateralHeight = sqrt(3.0) / 2.0;
 
-    /* 计算三个点的重心。 */
+    /* Computes the centroid of three points. */
     GPoint centroidOf(const GPoint& p0, const GPoint& p1, const GPoint& p2) {
         return {
             (p0.x + p1.x + p2.x) / 3.0,
@@ -29,7 +29,7 @@ namespace {
     }
 
 
-    /* 用于深入探索 Sierpinski 三角形的问题处理程序。 */
+    /* Problem handler to do a deep dive into the Sierpinski triangle. */
     class SierpinskiBungeeJumpGUI: public ProblemHandler {
     public:
         SierpinskiBungeeJumpGUI(GWindow& window);
@@ -43,10 +43,10 @@ namespace {
 
     private:
         GTimer* mTimer;
-        int    mFrame = 0; // 当前处于哪个动画帧
+        int    mFrame = 0; // Which animation frame we're on
 
-        GPoint mPoints[3];       // 三角形的控制点
-        GPoint mCentroid;        // 旋转中心
+        GPoint mPoints[3];       // Control points of the triangle
+        GPoint mCentroid;        // Centroid of rotation
 
         void calculateGeometry();
     };
@@ -57,9 +57,9 @@ namespace {
     }
 
     SierpinskiBungeeJumpGUI::~SierpinskiBungeeJumpGUI() {
-        /* TODO：GTimer 中似乎存在一个错误，如果我们使用
-         * 此处实际使用 GTimer 对象，而不是指向它的指针。请修复泄漏并
-         * 删除此析构函数。
+        /* TODO: There seems to be a bug in GTimer that causes major problems if we use an
+         * actual GTimer object here rather than a pointer to one. Fix the leak and
+         * remove this destructor.
          */
         mTimer->stop();
     }
@@ -76,10 +76,10 @@ namespace {
     void SierpinskiBungeeJumpGUI::repaint() {
         clearDisplay(window(), kBackgroundColor);
 
-        /* 查看当前动画进度。 */
+        /* See where we are in this animation. */
         double alpha = mFrame / double(kFramesPerAnimation);
 
-        /* 假设我们有这个初始三角形
+        /* Imagine we have this starting triangle
          *
          *            p2
          *            /\
@@ -92,26 +92,26 @@ namespace {
          *     /--\/--\/--\/--\
          *    p0      A^^^^B  p1
          *
-         * 我们希望最终满足
+         * We want to end up such that
          *
-         *     点 A 最终位于 p2 原来的位置，
-         *     点 B 最终位于 p0 原来的位置，并且
-         *     点 C 最终位于 p1 原来的位置。
+         *     point A ends up where p2 used to be,
+         *     point B ends up where p0 used to be, and
+         *     point C ends up where p1 used to be.
          *
-         * 这对应于
+         * This corresponds to
          *
-         *     1. 将整个图形绕三角形 ABC 的重心旋转 120 度，然后
-         *     2. 将整个图形的大小加倍，并以 ABC 的重心为中心。
+         *     1. rotating the entire figure around the centroid of triangle ABC by 120 degrees, then
+         *     2. doubling the size of the entire figure, centering around the the centroid of ABC.
          *
-         * 我们将根据目前完成的进度计算旋转和缩放。
+         * We'll compute the rotation and scale based on the progress that we've made so far.
          *
-         * 还需要考虑最后一个影响。如果我们单纯地放大到此处的中心
-         * 三角形时，我们最终会查看纯空白区域。还需要稍微平移
-         * 将所有内容稍微平移；具体来说，使顶部的三角形成为新的
-         * 中心点。
+         * There's one last effect to take into account. If we purely zoom into the center of this
+         * triangle, we'll end up looking in pure whitespace. We need to also slightly translate
+         * everything over a bit; specifically, so that the triangle in the top becomes the new
+         * center point.
          *
-         * 为此，我们将计算该新三角形的质心，并随
-         * 移入位置。
+         * To do this, we'll compute the centroid of that new triangle and interpolate it over
+         * into position.
          */
 
         GPoint sticky = mPoints[0];
@@ -120,62 +120,62 @@ namespace {
                                  mPoints[2] + (sticky - mPoints[2]) / 2);
 
 
-        /* 围绕该点旋转所有内容。 */
+        /* Rotate everything around that point. */
         double theta = alpha * 2 * M_PI / 3;
         GPoint p0 = mCentroid + (rotate(mPoints[0] - mCentroid, theta));
         GPoint p1 = mCentroid + (rotate(mPoints[1] - mCentroid, theta));
         GPoint p2 = mCentroid + (rotate(mPoints[2] - mCentroid, theta));
         anchor    = mCentroid + (rotate(anchor     - mCentroid, theta));
 
-        /* 围绕该点缩放所有内容。 */
+        /* Scale everything around that point. */
         p0     += alpha * (p0     - mCentroid);
         p1     += alpha * (p1     - mCentroid);
         p2     += alpha * (p2     - mCentroid);
         anchor += alpha * (anchor - mCentroid);
 
-        /* 根据锚点确定所有内容需要偏移多少。 */
+        /* Determine how much to shift everything over based on the anchor point. */
         auto shift = (mCentroid - anchor) * alpha;
 
         p0 += shift;
         p1 += shift;
         p2 += shift;
 
-        /* 绘制我们的三角形！ */
+        /* Draw our triangle! */
         drawSierpinskiTriangle(window(),
                                p0.x, p0.y,
                                p1.x, p1.y,
                                p2.x, p2.y,
                                kOrder);
 
-        /* 绘制边框，以避免暴露旋转完成时的细节，即
-         * 三角形实际上并不像原始结构那样与同一区域中的相邻三角形相邻
-         * 那个是什么。:-)
+        /* Draw the borders to avoid revealing the detail that when the rotation finishes, the
+         * triangle isn't actually adjacent to bordering triangles in the same way that the original
+         * one was. :-)
          */
         window().setColor(kBorderColor);
 
-        /* 各边 */
+        /* Sides */
         window().fillRect(0, 0, mPoints[0].x, window().getCanvasHeight());
         window().fillRect(mPoints[1].x, 0, window().getCanvasWidth() - mPoints[1].x, window().getCanvasHeight());
 
-        /* 顶部和底部 */
+        /* Top and bottom */
         window().fillRect(0, 0, window().getCanvasWidth(), mPoints[2].y);
         window().fillRect(0, mPoints[0].y, window().getCanvasWidth(), window().getCanvasHeight() - mPoints[0].y);
     }
 
     void SierpinskiBungeeJumpGUI::calculateGeometry() {
-        /* 我们希望三角形是尽可能大的等边三角形
-         * 同时仍能放入窗口。假定我们
-         * 具有单位三角形。
+        /* We want our triangle to be an equilateral triangle that's as large as possible
+         * while still fitting into the window. Compute the scale factor to use assuming we
+         * have a unit triangle.
          */
         double scale  = min(window().getCanvasWidth(), window().getCanvasHeight() / kEquilateralHeight);
         double width  = 1.0 * scale;
         double height = kEquilateralHeight * scale;
 
-        /* 使用它计算原点。 */
+        /* Use that to compute our origin points. */
         double baseX = (window().getCanvasWidth()  - width)  / 2.0;
         double baseY = (window().getCanvasHeight() - height) / 2.0;
 
-        /* 计算三角形各顶点的位置。 */
+        /* Compute the points of the corners of our triangle. */
         mPoints[0] = { baseX,             baseY + height };
         mPoints[1] = { baseX + width,     baseY + height };
         mPoints[2] = { baseX + width / 2, baseY          };

@@ -1,13 +1,13 @@
 /*
- * 文件：plainconsole.h
+ * File: plainconsole.h
  * --------------------
- * 此文件声明用于为
- * C++ 纯文本控制台流：cin/cout/cerr。
- * 每个函数的实现见 plainconsole.cpp。
+ * This file declares functions to add utility to the
+ * C++ plain text console streams, cin/cout/cerr.
+ * See plainconsole.cpp for implementation of each function.
  *
  * @author Marty Stepp
  * @version 2018/09/25
- * - 添加用于生成新文档的文档注释
+ * - added doc comments for new documentation generation
  * @version 2015/10/21
  * @since 2015/10/21
  */
@@ -18,17 +18,17 @@
 
 namespace plainconsole {
 /**
- * 设置 cout 控制台：如果打印字符数超过给定数量，则抛出错误
- * 总共曾向其中输出的字符数。
- * 这可用于停止试图无限输出的学生程序。
+ * Sets the cout console to throw an error if more than the given number of
+ * total characters are ever printed to it.
+ * This can be used to stop student programs that try to print infinite output.
  */
 void setOutputLimit(int limit);
 
 /**
- * 设置从 cin 读取的用户输入值是否回显到 cout。
- * 这在捕获输出对话框以进行比较/diff 时很有用。
+ * Sets whether user input values read from cin are echoed back to cout.
+ * This is useful when capturing output dialogues for comparison/diffing.
  */
 void setEcho(bool value);
-} // 命名空间 plainconsole
+} // namespace plainconsole
 
 #endif // _plainconsole_h

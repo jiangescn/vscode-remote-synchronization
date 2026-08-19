@@ -1,12 +1,12 @@
 /*
- * 文件：consolestreambuf.h
+ * File: consolestreambuf.h
  * --------------------------
- * 此文件定义 <code>ConsoleStreambuf</code> 类，该类
- * 表示一个向 Stanford 图形控制台读写的流缓冲区
- * 通过进程管道连接 Java 后端进程。
+ * This file defines the <code>ConsoleStreambuf</code> class, which
+ * represents a stream buffer that reads/writes to the Stanford graphical console
+ * using a process pipe to a Java back-end process.
  *
  * @version 2016/10/04
- * - 初始版本
+ * - initial version
  */
 
 #ifndef _consolestreambuf_h
@@ -19,15 +19,15 @@ namespace stanfordcpplib {
 
 class ConsoleStreambuf : public std::streambuf {
 protected:
-    /* 常量 */
+    /* Constants */
     static const int BUFFER_SIZE = 4096;
 
-    /* 实例变量 */
+    /* Instance variables */
     char inBuffer[BUFFER_SIZE];
     char outBuffer[BUFFER_SIZE];
     int blocked;
 
-    // 由子类重写
+    // to be overridden in subclasses
     virtual void myEndLineConsole(bool isStderr) = 0;
 
     virtual std::string myGetLineConsole() = 0;
@@ -42,7 +42,7 @@ public:
     }
 
     ~ConsoleStreambuf() {
-        /* 空 */
+        /* Empty */
     }
 
     virtual bool isBlocked() {
@@ -84,7 +84,7 @@ public:
     }
 
     virtual int underflow() {
-        // 将来允许长字符串
+        // Allow long strings at some point
         blocked++;
         std::string line = myGetLineConsole();
         blocked--;
@@ -117,19 +117,19 @@ extern std::string getLineConsoleQt();
 extern void putConsoleQt(const std::string& str, bool isStderr);
 
 /*
- * 以下类是上面 ConsoleStreambuf 类的精确副本，
- * 区别仅在于使用不同的 Qt 相关输出函数。
+ * The following class is an exact copy of the ConsoleStreambuf class above,
+ * except using different Qt-related functions for output.
  */
 class ConsoleStreambufQt : public ::stanfordcpplib::ConsoleStreambuf {
 public:
     ConsoleStreambufQt(bool isStderr = false)
             : ConsoleStreambuf(),
               _isStderr(isStderr) {
-        // 空
+        // empty
     }
 
     ~ConsoleStreambufQt() {
-        /* 空 */
+        /* Empty */
     }
 
 protected:

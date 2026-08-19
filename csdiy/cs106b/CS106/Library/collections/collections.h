@@ -1,11 +1,11 @@
 /*
- * 文件：collections.h
+ * File: collections.h
  * -------------------
- * 包含可用于多种集合的通用函数。
+ * Contains general-purpose functions for use with many collections.
  *
- * 例如，我们提供用于比较任何满足以下条件的集合的函数
- * 可见迭代器（begin()、end()）。
- * 用于实现集合上的 < 和 >= 等比较运算符。
+ * For example, we have functions for comparing any collections that have
+ * a visible iterator (begin(), end()).
+ * Used to implement comparison operators like < and >= on collections.
  */
 
 #ifndef _collections_h
@@ -21,47 +21,47 @@
 #include "hashcode.h"
 #include "random.h"
 
-// 开始使用 strlib.h 中的全局命名空间字符串读写函数
+// begin global namespace string read/writing functions from strlib.h
 
 /**
- * 将 infile 中的下一个字符读入引用参数 ch。
- * 若第一个非空白字符是单个
- * 或双引号，此函数会读取字符，直到遇到
- * 匹配的引号，并在此过程中处理标准转义序列。
- * 否则，readQuotedChar 会读取字符，直到遇到以下任一字符
- * 位于实现文件的字符串 STRING_DELIMITERS 中。
+ * Reads the next char from infile into the reference parameter ch.
+ * If the first character (other than whitespace) is either a single
+ * or a double quote, this function reads characters up to the
+ * matching quote, processing standard escape sequences as it goes.
+ * If not, readQuotedChar reads characters up to any of the characters
+ * in the string STRING_DELIMITERS in the implementation file.
  *
  * @private
  */
 bool readQuotedChar(std::istream& is, char& ch, bool throwOnError = true);
 
 /**
- * 将 infile 中的下一个字符串读入引用参数 str。
- * 若第一个非空白字符是单个
- * 或双引号，此函数会读取字符，直到遇到
- * 匹配的引号，并在此过程中处理标准转义序列。
- * 否则，readQuotedString 会读取字符，直到遇到以下任一字符
- * 位于实现文件的字符串 STRING_DELIMITERS 中。
+ * Reads the next string from infile into the reference parameter str.
+ * If the first character (other than whitespace) is either a single
+ * or a double quote, this function reads characters up to the
+ * matching quote, processing standard escape sequences as it goes.
+ * If not, readQuoted String reads characters up to any of the characters
+ * in the string STRING_DELIMITERS in the implementation file.
  *
  * @private
  */
 bool readQuotedString(std::istream& is, std::string& str, bool throwOnError = true);
 
 /**
- * 将字符 ch 用单引号包围后写入 outfile，并转换
- * 根据需要将特殊字符转换为转义序列。如果可选参数
- * 除非将参数 forceQuotes 显式设置为 false，否则会包含引号
- * 仅在必要时出现在输出中。
+ * Writes the char ch to outfile surrounded by single quotes, converting
+ * special characters to escape sequences, as necessary.  If the optional
+ * parameter forceQuotes is explicitly set to false, quotes are included
+ * in the output only if necessary.
  *
  * @private
  */
 std::ostream& writeQuotedChar(std::ostream& os, char ch, bool forceQuotes = true);
 
 /**
- * 将字符串 str 用双引号包围后写入 outfile，并转换
- * 根据需要将特殊字符转换为转义序列。如果可选参数
- * 除非将参数 forceQuotes 显式设置为 false，否则会包含引号
- * 仅在必要时出现在输出中。
+ * Writes the string str to outfile surrounded by double quotes, converting
+ * special characters to escape sequences, as necessary.  If the optional
+ * parameter forceQuotes is explicitly set to false, quotes are included
+ * in the output only if necessary.
  *
  * @private
  */
@@ -69,14 +69,14 @@ std::ostream& writeQuotedString(std::ostream& os, const std::string& str,
                                 bool forceQuotes = true);
 
 /**
- * 检查字符串是否需要加引号才能被正确读取。
+ * Checks whether the string needs quoting in order to be read correctly.
  * @private
  */
 bool stringNeedsQuoting(const std::string& str);
 
 /**
- * 将通用值写入输出流。如果该值是字符串，
- * 此函数使用 writeQuotedString 写入值。
+ * Writes a generic value to the output stream.  If that value is a string,
+ * this function uses writeQuotedString to write the value.
  * @private
  */
 template <typename ValueType>
@@ -110,8 +110,8 @@ inline std::string genericValueToString(const std::string& value,
 }
 
 /**
- * 从输入流读取通用值。如果该值是字符串，
- * 此函数使用 readQuotedString 读取值。
+ * Reads a generic value from the input stream.  If that value is a string,
+ * this function uses readQuotedString to read the value.
  * @private
  */
 template <typename ValueType>
@@ -127,7 +127,7 @@ inline bool readGenericValue(std::istream& is, std::string& value) {
     return readQuotedString(is, value, /* throwOnError */ false);
 }
 
-// 结束 strlib.h 中的全局命名空间字符串读写函数
+// end of global namespace string read/writing functions from strlib.h
 namespace stanfordcpplib {
 namespace collections {
 
@@ -148,16 +148,16 @@ void checkVersion(const CollectionType& coll, const IteratorType& itr,
 }
 
 /*
- * 对给定两个集合执行排序比较
- * 通过逐对比较它们的元素。
- * 如果集合 1“小于”集合 2，则返回 -1；
- * 如果集合 1“大于”集合 2，则返回 1；
- * 如果集合 1“等于”集合 2，则返回 0。
- * 元素类型必须具有 operator <。
+ * Performs a comparison for ordering between the given two collections
+ * by comparing their elements pairwise to each other.
+ * Returns -1 if collection 1 is "less than" collection 2;
+ * Returns  1 if collection 1 is "greater than" collection 2;
+ * Returns  0 if collection 1 is "equal to" collection 2.
+ * The element type must have an operator <.
  */
 template <typename CollectionType>
 int compare(const CollectionType& coll1, const CollectionType& coll2) {
-    // 优化：如果它们是同一个对象，则它们相等
+    // optimization: if they are the same object, then they are equal
     if (&coll1 == &coll2) {
         return 0;
     }
@@ -169,17 +169,17 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
     for (;
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
-        // 逐对比较迭代器中的各元素
+        // compare each pair of elements from iterators
 
-        // 致学生：
-        // 若程序中紧接下方的一行无法编译，通常
-        // 表示你正在尝试创建一个嵌套集合
-        // （例如 Set<Vector<T>>），其中某个元素类型 T 没有
-        // 小于运算符 <。要使以下功能正常，*必须*定义该运算符：
-        // 由 Vector 组成的 Set 或 Map，使该集合/映射知道如何排序
-        // 将元素按升序排列。
-        // 你应为类添加 < 运算符，或考虑使用
-        // 不同的嵌套集合解决方案。祝你好运！
+        // TO STUDENT:
+        // If the line below is failing to compile in your program, it probably
+        // means that you are trying to make a nested collection
+        // (e.g. Set<Vector<T>>) for some element type T that does not have a
+        // less-than < operator.  That operator is *required* in order to make
+        // a Set or Map of Vectors, so that the set/map knows how to sort the
+        // elements into their ascending order.
+        // You should either add a < operator to your class, or consider a
+        // different nested collection solution.  Good luck!
         if (*itr1 < *itr2) {
             return -1;
         } else if (*itr2 < *itr1) {
@@ -187,8 +187,8 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
         }
     }
 
-    // 若执行到这里，v1 的所有内容都与 v2 匹配，因此它们要么相等，
-    // 或者其中一个比另一个短（元素更少），因而更小
+    // if we get here, everything from v1 matched v2, so they are either equal,
+    // or one is shorter than the other (fewer elements) and is therefore less
     if (itr1 == end1 && itr2 == end2) {
         return 0;
     } else if (itr1 == end1) {
@@ -199,18 +199,18 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
 }
 
 /*
- * 对给定两个映射执行排序比较
- * 通过逐对比较它们的键/值对。
- * 如果集合 1“小于”集合 2，则返回 -1；
- * 如果集合 1“大于”集合 2，则返回 1；
- * 如果集合 1“等于”集合 2，则返回 0。
- * 请注意，这里映射中键和值的顺序很重要；
- * 同一个映射若键的顺序不同，会产生不同结果。
- * 键和值的类型都必须具有 operator <。
+ * Performs a comparison for ordering between the given two maps
+ * by comparing their key/value pairs pairwise to each other.
+ * Returns -1 if collection 1 is "less than" collection 2;
+ * Returns  1 if collection 1 is "greater than" collection 2;
+ * Returns  0 if collection 1 is "equal to" collection 2.
+ * Note that the order of keys and values in the maps matter here;
+ * the same map with keys in different orders would produce a different result.
+ * The key and value types must both have an operator <.
  */
 template <typename MapType>
 int compareMaps(const MapType& map1, const MapType& map2) {
-    // 优化：如果它们是同一个对象，则它们相等
+    // optimization: if they are the same object, then they are equal
     if (&map1 == &map2) {
         return 0;
     }
@@ -222,24 +222,24 @@ int compareMaps(const MapType& map1, const MapType& map2) {
     for (;
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
-        // 逐对比较迭代器中的各元素
+        // compare each pair of elements from iterators
 
-        // 致学生：
-        // 若程序中紧接下方的一行无法编译，通常
-        // 表示你正在尝试创建一个嵌套集合
-        // （例如 Set<Map<K, V>>），其中某个元素类型 K 或 V 没有
-        // 小于运算符 <。要使以下功能正常，*必须*定义该运算符：
-        // 由 Map 组成的 Set 或 Map，使该集合/映射知道如何排序
-        // 将键和值按升序排列。
-        // 你应为键/值类型添加 < 运算符，或考虑使用
-        // 不同的嵌套集合解决方案。祝你好运！
+        // TO STUDENT:
+        // If the line below is failing to compile in your program, it probably
+        // means that you are trying to make a nested collection
+        // (e.g. Set<Map<K, V>>) for some element type K or V that does not have a
+        // less-than < operator.  That operator is *required* in order to make
+        // a Set or Map of Maps, so that the set/map knows how to sort the
+        // keys and values into their ascending order.
+        // You should either add a < operator to your key/value types, or consider a
+        // different nested collection solution.  Good luck!
         if (*itr1 < *itr2) {
             return -1;
         } else if (*itr2 < *itr1) {
             return 1;
         }
 
-        // key1 == key2，因此比较值
+        // key1 == key2, so compare values
         auto value1 = map1[*itr1];
         auto value2 = map2[*itr2];
         if (value1 < value2) {
@@ -249,8 +249,8 @@ int compareMaps(const MapType& map1, const MapType& map2) {
         }
     }
 
-    // 若执行到这里，v1 的所有内容都与 v2 匹配，因此它们要么相等，
-    // 或者其中一个比另一个短（元素更少），因而更小
+    // if we get here, everything from v1 matched v2, so they are either equal,
+    // or one is shorter than the other (fewer elements) and is therefore less
     if (itr1 == end1 && itr2 == end2) {
         return 0;
     } else if (itr1 == end1) {
@@ -261,11 +261,11 @@ int compareMaps(const MapType& map1, const MapType& map2) {
 }
 
 /*
- * 用于比较两个交错值序列的模板函数，返回
- * 如果第一个值小于第二个值，则为 -1，
- *  如果值相等，则为 0，
- *  如果第一个值大于第二个值，则为 1。
- * 传入的类型必须支持 < 小于运算符。
+ * Template functions to compare two interleaved sequences of values, returning
+ * -1 if the first value is less than the second,
+ *  0 if the values are equal,
+ *  1 if the first value is greater than the second.
+ * The type passed must support a < less-than operator.
  */
 inline int compareTo() {
     return 0;
@@ -278,21 +278,21 @@ int compareTo(const T& first, const T& second, const Rest&... rest) {
 }
 
 /*
- * 如果两个集合以相同顺序包含相同元素，则返回 true。
- * 元素类型必须具有 operator ==。
+ * Returns true if the two collections contain the same elements in the same order.
+ * The element type must have an operator ==.
  */
 template <typename CollectionType>
 bool equals(const CollectionType& coll1, const CollectionType& coll2) {
-    // 优化：如果实际上是同一个集合，则停止
+    // optimization: if literally same collection, stop
     if (&coll1 == &coll2) {
         return true;
     }
-    // 优化：若大小不同，则无需逐对比较
+    // optimization: if not same size, don't bother comparing pairwise
     if (coll1.size() != coll2.size()) {
         return false;
     }
 
-    // 逐对检查元素是否相等
+    // check each pair of elements for equality
     auto itr1 = coll1.begin();
     auto end1 = coll1.end();
     auto itr2 = coll2.begin();
@@ -308,21 +308,21 @@ bool equals(const CollectionType& coll1, const CollectionType& coll2) {
 }
 
 /*
- * 如果两个集合以相同顺序包含相同元素，则返回 true。
- * 元素类型必须是 double、float 或任意浮点类型。
+ * Returns true if the two collections contain the same elements in the same order.
+ * The element type must be double, float, or any floating-point type.
  */
 template <typename CollectionType>
 bool equalsDouble(const CollectionType& coll1, const CollectionType& coll2) {
-    // 优化：如果实际上是同一个集合，则停止
+    // optimization: if literally same collection, stop
     if (&coll1 == &coll2) {
         return true;
     }
-    // 优化：若大小不同，则无需逐对比较
+    // optimization: if not same size, don't bother comparing pairwise
     if (coll1.size() != coll2.size()) {
         return false;
     }
 
-    // 逐对检查元素是否相等
+    // check each pair of elements for equality
     auto itr1 = coll1.begin();
     auto end1 = coll1.end();
     auto itr2 = coll2.begin();
@@ -338,24 +338,24 @@ bool equalsDouble(const CollectionType& coll1, const CollectionType& coll2) {
 }
 
 /*
- * 如果给定两个映射包含相同键集合，且每个
- * 该键在两个映射中对应相同的值。
- * 不考虑键的顺序。
- * 键和值的类型都必须具有 operator ==。
+ * Returns true if the given two maps contain the same set of keys and each
+ * key maps to the same value in both maps.
+ * The order of the keys is not considered.
+ * The key and value types must both have an operator ==.
  */
 template <typename MapType>
 bool equalsMap(const MapType& map1, const MapType& map2) {
-    // 优化：如果确实是同一映射，则停止
+    // optimization: if literally same map, stop
     if (&map1 == &map2) {
         return true;
     }
-    // 优化：若大小不同，则无需逐对比较
+    // optimization: if not same size, don't bother comparing pairwise
     if (map1.size() != map2.size()) {
         return false;
     }
 
-    // 检查第一个映射中的每个元素是否也在第二个映射中。
-    // 由于大小相同，如果此条件为 true，则映射相等。
+    // check whether each element in the first map is also in the second.
+    // since the sizes are the same, if this is true, the maps are equal.
     for (auto itr1 = map1.begin(), end1 = map1.end(); itr1 != end1; ++itr1) {
         if (!map2.containsKey(*itr1) || !(map1.get(*itr1) == map2.get(*itr1))) {
             return false;
@@ -365,10 +365,10 @@ bool equalsMap(const MapType& map1, const MapType& map2) {
 }
 
 /*
- * 为任意可迭代类型计算 hashCode。
- * 对于维持某种元素顺序的集合，将 'orderMatters' 传 true
- * 有意义的顺序。对于几乎所有集合而言都是如此
- * 基于哈希的集合除外，其顺序半随机且不重要。
+ * Computes a hashCode for any iterable type.
+ * Pass true for 'orderMatters' for collections that maintain some kind of element
+ * ordering that is of importance.  This would be true for almost all collections
+ * except hash-based ones where the ordering is semi-random and unimportant.
  */
 template <typename IteratorType>
 int hashCodeIterable(IteratorType begin, IteratorType end, bool orderMatters = true) {
@@ -384,8 +384,8 @@ int hashCodeIterable(IteratorType begin, IteratorType end, bool orderMatters = t
 }
 
 /*
- * 为任意集合类型计算 hashCode。
- * 集合必须具有 begin() 和 end()
+ * Computes a hashCode for any type of collection.
+ * The collection must have begin() and end()
  */
 template <typename CollectionType>
 int hashCodeCollection(const CollectionType& collection, bool orderMatters = true) {
@@ -393,8 +393,8 @@ int hashCodeCollection(const CollectionType& collection, bool orderMatters = tru
 }
 
 /*
- * 哈希映射的模板哈希函数。
- * 要求 HashMap 中的键和值类型具有 hashCode 函数。
+ * Template hash function for hash maps.
+ * Requires the key and value types in the HashMap to have a hashCode function.
  */
 template <typename MapType>
 int hashCodeMap(const MapType& map, bool orderMatters = true) {
@@ -417,8 +417,8 @@ int hashCodeMap(const MapType& map, bool orderMatters = true) {
 }
 
 /*
- * 从给定集合中随机选择并返回一个元素。
- * 如果集合为空，则抛出错误。
+ * Returns a randomly chosen element of the given collection.
+ * Throws an error if the set is empty.
  */
 template <typename Collection>
 auto randomElement(const Collection& collection) -> const decltype(*collection.begin())& {
@@ -429,9 +429,9 @@ auto randomElement(const Collection& collection) -> const decltype(*collection.b
 }
 
 /*
- * 从给定集合中随机选择并返回一个元素。
- * 集合必须具有索引 [] 运算符。
- * 如果集合为空，则抛出错误。
+ * Returns a randomly chosen element of the given collection.
+ * The collection must have an index [] operator.
+ * Throws an error if the set is empty.
  */
 template <template <typename> class CollectionType, class ElementType>
 const ElementType& randomElementIndexed(const CollectionType<ElementType>& collection) {
@@ -447,13 +447,13 @@ template <typename CollectionType, typename ElementType>
     void readOne(CollectionType& collection, const ElementType& elem)
         { collection.add(elem); }
 /*
- * 从给定输入流读取任意集合。
- * 集合必须具有接受单个值的 add() 方法，或者
- * （或提供自己的回调作为 add 操作）
- * 以及移除集合中所有元素的 clear() 方法。
+ * Reads in any collection from the given input stream.
+ * The collection must eiither have an add() method that takes a single value,
+ * (or provide own callback to use as add operation)
+ * and a clear() method that removes all elements from the collection.
  */
 template <typename CollectionType, typename ElementType>
-std::istream& readCollection(std::istream& input, CollectionType& collection, ElementType& element, std::string /* 描述符 */,
+std::istream& readCollection(std::istream& input, CollectionType& collection, ElementType& element, std::string /* descriptor */,
         void (*fn)(CollectionType&, const ElementType&) = readOne<CollectionType,ElementType>)
 {
 
@@ -490,14 +490,14 @@ template <typename CollectionType, typename KeyType, typename ValueType>
     void readOne(CollectionType& collection, const KeyType& key, const ValueType& value)
         { collection.put(key, value); }
 /*
- * 从给定输入流读取任意配对集合（Map 或 Priority Queue）。
- * 集合必须具有接受键和值的 put() 方法
- * （或提供一个用作 add 操作的回调）
- * 以及移除集合中所有元素的 clear() 方法。
+ * Reads in any paired collection (Map or Priority Queue) from the given input stream.
+ * The collection must have a put() method that takes key and value
+ * (or provide a callback to use as add operation)
+ * and a clear() method that removes all elements from the collection.
  */
 
 template <typename CollectionType, typename KeyType, typename ValueType>
-std::istream& readPairedCollection(std::istream& input, CollectionType& collection, KeyType& key, ValueType& value, std::string /* 描述符 */,
+std::istream& readPairedCollection(std::istream& input, CollectionType& collection, KeyType& key, ValueType& value, std::string /* descriptor */,
         void (*fn)(CollectionType&, const KeyType&, const ValueType&) = readOne<CollectionType,KeyType,ValueType>)
 {
     char ch = '\0';
@@ -537,8 +537,8 @@ std::istream& readPairedCollection(std::istream& input, CollectionType& collecti
 }
 
 /*
- * 使用两个迭代器将任意集合写入给定输出流，
- * 开始和结束。
+ * Writes out any collection to the given output stream using its two iterators,
+ * begin and end.
  */
 template <typename IteratorType>
 std::ostream& writeIterable(std::ostream& out, IteratorType begin, IteratorType end) {
@@ -557,8 +557,8 @@ std::ostream& writeIterable(std::ostream& out, IteratorType begin, IteratorType 
 }
 
 /*
- * 使用两个迭代器将任意集合写入给定输出流，
- * 开始和结束。
+ * Writes out any collection to the given output stream using its two iterators,
+ * begin and end.
  */
 template <typename CollectionType>
 std::ostream& writeCollection(std::ostream& out, CollectionType collection) {
@@ -566,8 +566,8 @@ std::ostream& writeCollection(std::ostream& out, CollectionType collection) {
 }
 
 /*
- * 使用两个迭代器将任意集合写入给定输出流，
- * 开始和结束。
+ * Writes out any collection to the given output stream using its two iterators,
+ * begin and end.
  */
 template <typename IteratorType>
 std::ostream& writeIterableOfPointers(std::ostream& out, IteratorType begin, IteratorType end) {
@@ -586,8 +586,8 @@ std::ostream& writeIterableOfPointers(std::ostream& out, IteratorType begin, Ite
 }
 
 /*
- * 使用两个迭代器将任意集合写入给定输出流，
- * 开始和结束。
+ * Writes out any collection to the given output stream using its two iterators,
+ * begin and end.
  */
 template <typename CollectionType>
 std::ostream& writeCollectionOfPointers(std::ostream& out, CollectionType collection) {
@@ -595,11 +595,11 @@ std::ostream& writeCollectionOfPointers(std::ostream& out, CollectionType collec
 }
 
 /*
- * 实现说明：<< 和 >>
+ * Implementation notes: << and >>
  * -------------------------------
- * 插入和提取运算符使用以下文件中的模板功能：
- * 使用 strlib.h 读写通用值，并以特殊方式处理字符串
- * 特殊处理。
+ * The insertion and extraction operators use the template facilities in
+ * strlib.h to read and write generic values in a way that treats strings
+ * specially.
  */
 template <typename MapType>
 std::ostream& writeMap(std::ostream& out, const MapType& map) {
@@ -622,35 +622,35 @@ std::ostream& writeMap(std::ostream& out, const MapType& map) {
 }
 
 /*
- * 负责跟踪某个对象版本的类型。将其单独提取为
- * 它自己的对象带有特殊复制函数，因此每当底层对象
- * 被移动或赋值时，底层版本号会更新。
+ * Type responsible for tracking the version of some object. This is factored out into
+ * its own object with unusual copy functions so that any time the underlying object
+ * is moved or assigned the underlying version number is updated.
  */
 class VersionTracker {
 public:
-    /* 对 VersionTracker 赋值会递增底层版本号。 */
+    /* Assigning a VersionTracker increments the underlying version number. */
     VersionTracker& operator= (VersionTracker) {
         ++_version;
         return *this;
     }
 
-    /* 移动构造 VersionTracker 会采用以下对象的版本号
-     * 正在移动的对象。
+    /* Move-constructing a VersionTracker implements the version number of the
+     * object being moved.
      */
     VersionTracker(VersionTracker&& rhs) {
         rhs._version++;
     }
 
-    /* 使用默认构造函数和默认复制构造函数。 */
+    /* Use default constructor and default copy constructor. */
     VersionTracker() = default;
     VersionTracker(const VersionTracker &) = default;
 
-    /* 标记版本必须更新。 */
+    /* Marks that the version must be updated. */
     void update() {
         ++_version;
     }
 
-    /* 返回版本号。 */
+    /* Returns the version number. */
     unsigned int version() const {
         return _version;
     }
@@ -660,12 +660,12 @@ private:
 };
 
 /*
- * 包装底层迭代器类型的受检迭代器类型，并添加边界检查
- * 以及版本检查。
+ * Checked iterator type that wraps an underlying iterator type, adding in bounds-checking
+ * and version-checking.
  */
 template <typename Iterator> class CheckedIterator {
 public:
-    /* 我们具有所包装迭代器的相同类型。 */
+    /* We're whatever sort of iterator we're wrapping. */
     using difference_type   = typename std::iterator_traits<Iterator>::difference_type;
     using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
     using pointer           = typename std::iterator_traits<Iterator>::pointer;
@@ -673,12 +673,12 @@ public:
     using value_type        = typename std::iterator_traits<Iterator>::value_type;
 
     /*
-     * 必须显式声明默认构造函数，以使私有构造函数
-     * 不会遮蔽我们。
+     * Default constructor must be explicitly declared so that the private constructor
+     * doesn't shadow us.
      */
     CheckedIterator() = default;
 
-    /* 根据底层容器信息构造迭代器。 */
+    /* Constructs an iterator given information about the underlying container. */
     template <typename Container>
     CheckedIterator(const VersionTracker* owner, Iterator iter, Container& c)
         : _version(owner->version()), _owner(owner), _iter(iter), _begin(c.begin()), _end(c.end()) {
@@ -686,12 +686,12 @@ public:
     }
 
     /*
-     * 我们与所有其他 CheckedIterator 类型互为友元，从而允许交叉构造
-     * 诸如此类。
+     * We're friends with all other CheckedIterator types, allowing for cross-construction
+     * and the like.
      */
     template <typename OtherItr> friend class CheckedIterator;
 
-    /* 允许时使用的转换构造函数。 */
+    /* Conversion constructor, when permitted. */
     template <typename OtherItr> CheckedIterator(const CheckedIterator<OtherItr>& rhs)
         : _version(rhs._version),
           _owner(rhs._owner),
@@ -705,9 +705,9 @@ public:
         return CheckedIterator<OtherItr>{_version, _owner, _iter, _begin, _end};
     }
 
-    /* 所有可能的迭代器函数。 */
+    /* All possible iterator functions. */
 
-    /* 比较运算符。 */
+    /* Comparison operators. */
     template <typename OtherItr> bool operator ==(const CheckedIterator<OtherItr>& rhs) const {
         if (!_owner || !rhs._owner) {
             error("Cannot compare an uninitialized iterator.");
@@ -722,8 +722,8 @@ public:
     }
 
     /*
-     * 如果底层所有者不同，我们会报告错误，否则
-     * 行为未定义。
+     * We report errors if the underlying owners are different, since otherwise
+     * the behavior is undefined.
      */
     template <typename OtherItr> bool operator <(const CheckedIterator<OtherItr>& rhs) const {
         if (!_owner || !rhs._owner) {
@@ -744,7 +744,7 @@ public:
         return !(*this < rhs);
     }
 
-    /* 随机访问。 */
+    /* Random access. */
     reference operator [](difference_type index) const {
         if (!_owner) {
             error("Cannot access elements through an uninitialized iterator.");
@@ -792,7 +792,7 @@ public:
         return _iter - rhs._iter;
     }
 
-    /* 向前和向后。 */
+    /* Forwards and backwards. */
     CheckedIterator& operator ++() {
         if (!_owner) {
             error("Cannot advance an uninitialized iterator.");
@@ -830,7 +830,7 @@ public:
         return result;
     }
 
-    /* 解引用。 */
+    /* Dereferencing. */
     reference operator *() const {
         if (!_owner) {
             error("Cannot dereference an uninitialized iterator.");
@@ -846,7 +846,7 @@ public:
         return &**this;
     }
 
-    /* 直接版本访问。 */
+    /* Direct version access. */
     unsigned int version() const {
         if (!_owner) {
             error("Cannot get version from an uninitialized iterator.");
@@ -862,53 +862,53 @@ private:
 };
 
 /*
- * 用于键值对的迭代器，只投影第一个分量。本质上，它将
- * pair<const Key, Value> 的迭代器转换为 const Key 的迭代器。
+ * Iterator over a pairs that projects out the first component. Essentially, this turns an
+ * iterator over pair<const Key, Value> into an iterator over const Key.
  *
- * 所有边界检查、错误处理等都假定由底层对象提供
- * 迭代器类型。
+ * All bounds-checking, error-handling, etc. are presumed to come from the underlying
+ * iterator type.
  */
 template <typename Iterator> class ProjectingIterator {
 public:
-    /* 我们所包装对象的类型。 */
+    /* The sort of thing that we're wrapping. */
     using value_type       = typename std::remove_reference<decltype(std::declval<Iterator>()->first)>::type;
 
-    /* 我们具有所包装迭代器的相同类型。 */
+    /* We're whatever sort of iterator we're wrapping. */
     using difference_type   = typename std::iterator_traits<Iterator>::difference_type;
     using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
     using pointer           = const value_type *;
     using reference         = const value_type &;
 
     /*
-     * 必须显式声明默认构造函数，以使私有构造函数
-     * 不会遮蔽我们。
+     * Default constructor must be explicitly declared so that the private constructor
+     * doesn't shadow us.
      */
     ProjectingIterator() = default;
 
-    /* 包装现有迭代器。 */
+    /* Wraps an existing iterator. */
     explicit ProjectingIterator(Iterator iter) : _iter(iter) {
-        // 空
+        // Empty
     }
 
     /*
-     * 我们与所有其他相关类型互为友元，从而允许交叉构造
-     * 诸如此类。
+     * We're friends with all other related types, allowing for cross-construction
+     * and the like.
      */
     template <typename OtherItr> friend class ProjectingIterator;
 
-    /* 允许时使用的转换构造函数。 */
+    /* Conversion constructor, when permitted. */
     template <typename OtherItr> ProjectingIterator(const ProjectingIterator<OtherItr>& rhs)
         : _iter(rhs._iter) {
-        // 空
+        // Empty
     }
 
     template <typename OtherItr> operator ProjectingIterator<OtherItr>() const {
         return ProjectingIterator<OtherItr>(_iter);
     }
 
-    /* 所有可能的迭代器函数。 */
+    /* All possible iterator functions. */
 
-    /* 比较运算符。 */
+    /* Comparison operators. */
     template <typename OtherItr> bool operator ==(const ProjectingIterator<OtherItr>& rhs) {
         return _iter == rhs._iter;
     }
@@ -929,7 +929,7 @@ public:
         return !(*this < rhs);
     }
 
-    /* 随机访问。 */
+    /* Random access. */
     reference operator [](difference_type index) const {
         return _iter[index];
     }
@@ -952,7 +952,7 @@ public:
         return _iter - rhs._iter;
     }
 
-    /* 向前和向后。 */
+    /* Forwards and backwards. */
     ProjectingIterator& operator ++() {
         ++_iter;
         return *this;
@@ -973,7 +973,7 @@ public:
         return result;
     }
 
-    /* 解引用。 */
+    /* Dereferencing. */
     reference operator *() const {
         return _iter->first;
     }
@@ -986,280 +986,280 @@ private:
 };
 
 /**
- * 类：GenericSet<SetTraits>
+ * Class: GenericSet<SetTraits>
  * ----------------------------
- * 此类存储一组互不相同的元素。SetTraits 应
- * 包含以下内容的类型：
+ * This class stores a collection of distinct elements. SetTraits should be
+ * a type containing the following:
  *
- *     typename ValueType：映射中存储的任意类型
- *     typename MapType：应为 Map<ValueType, bool>
- *     static std::string name()：应返回类型名称。
+ *     typename ValueType:          whatever is stored in the map
+ *     typename MapType:            should be a Map<ValueType, bool>
+ *     static std::string name():   should return the name of the type.
  *
- * 还有一个要求：你需要定义一个函数
+ * There's one more requirement: you need to define a function
  *
  *     template <typename... Args>
  *        static MapType construct(Args&&... args)
  *
- * 使用指定参数构造内部 MapType 对象。
- * 此函数应做一些有创意或巧妙的事情，以确保
- * 是在参数不正确时生成的友好编译器错误
- * 无效，否则错误会深度嵌套在
- * GenericSet 模板。
+ * that constructs an internal MapType object with the specified arguments.
+ * This function should do something creative or clever to ensure that there
+ * is a nice compiler error generated in the event that the arguments are
+ * invalid, since otherwise the error is going to be deeply nested inside the
+ * GenericSet template.
  *
- * 这不应由学生直接使用。
+ * This is not meant to be used directly by students.
  */
 template <typename SetTraits>
 class GenericSet {
 public:
     /**
-     * 便于使用的实用别名。
+     * Utility alias to make things easier to work with.
      */
     using value_type = typename SetTraits::ValueType;
 
     /**
-     * 构造函数：GenericSet
-     * 用法：GenericSet<ValueType, SetTraits> set;
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set;
      * --------------------------------------------
-     * 初始化指定元素类型的空集合。
+     * Initializes an empty set of the specified element type.
      */
     GenericSet() = default;
 
     /**
-     * 构造函数：GenericSet
-     * 用法：GenericSet<ValueType, SetTraits> set {1, 2, 3};
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set {1, 2, 3};
      * ------------------------------------------------------
-     * 初始化一个存储给定元素的新集合。
+     * Initializes a new set that stores the given elements.
      */
     GenericSet(std::initializer_list<value_type> list);
 
     /**
-     * 构造函数：GenericSet
-     * 用法：GenericSet<ValueType, SetTraits> set(... things for the map ...);
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set(... things for the map ...);
      * ------------------------------------------------------------------------
-     * 将指定参数转发给底层 Map 类型。
+     * Forwards the specified arguments down to the underlying Map type.
      */
     template <typename... Args>
     explicit GenericSet(Args... args);
 
     /**
-     * 构造函数：GenericSet
-     * 用法：GenericSet<ValueType, SetTraits> set({1, 2, 3}, ... things for the map ...);
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set({1, 2, 3}, ... things for the map ...);
      * -----------------------------------------------------------------------------------
-     * 使用指定元素构造集合，并将参数转发给
-     * 底层映射。
+     * Constructs a set using the specified elements, forwarding the arguments to the
+     * underlying map.
      */
     template <typename... Args>
     GenericSet(std::initializer_list<value_type> list,
                Args... args);
 
     /**
-     * 析构函数：~Set
+     * Destructor: ~Set
      * ----------------
-     * 释放与此集合关联的任何堆存储。
+     * Frees any heap storage associated with this set.
      */
     virtual ~GenericSet() = default;
 
     /**
-     * 方法：add
-     * 用法：set.add(value);
+     * Method: add
+     * Usage: set.add(value);
      * ----------------------
-     * 如果元素尚不存在，则将其添加到此集合。
+     * Adds an element to this set, if it was not already there.
      */
     void add(const value_type& value);
 
     /**
-     * 方法：back
-     * 用法：ValueType value = set.last();
+     * Method: back
+     * Usage: ValueType value = set.last();
      * ------------------------------------
-     * 按照以下顺序返回集合中的最后一个值
-     * <code>for-each</code> 循环。如果集合为空，则产生错误。
+     * Returns the last value in the set in the order established by the
+     * <code>for-each</code> loop.  If the set is empty, generates an error.
      */
     value_type last() const;
 
     /**
-     * 方法：clear
-     * 用法：set.clear();
+     * Method: clear
+     * Usage: set.clear();
      * -------------------
-     * 从此集合中删除所有元素。
+     * Removes all elements from this set.
      */
     void clear();
 
     /**
-     * 方法：contains
-     * 用法：if (set.contains(value)) ...
+     * Method: contains
+     * Usage: if (set.contains(value)) ...
      * -----------------------------------
-     * 如果指定值在此集合中，则返回 <code>true</code>。
+     * Returns <code>true</code> if the specified value is in this set.
      */
     bool contains(const value_type& value) const;
 
     /**
-     * 方法：difference
-     * 用法：set.difference(set2);
+     * Method: difference
+     * Usage: set.difference(set2);
      * ----------------------------
-     * 从此集合中删除给定另一集合的所有元素。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
-     * 返回对此集合的引用。
+     * Removes all elements of the given other set from this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
      *
-     * 注意，此函数会就地修改当前集合，而不是
-     * 返回一个新集合。如果需要新集合，请考虑使用 - 运算符
-     * 改用此运算符（不是 -=），它会返回新创建的集合副本。
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the - operator
+     * instead (not -=), which returns a newly created copy set.
      *
-     * 行为与 -= 运算符相同。
+     * Identical in behavior to the -= operator.
      */
     GenericSet& difference(const GenericSet& set);
 
     /**
-     * 方法：equals
-     * 用法：if (set.equals(set2)) ...
+     * Method: equals
+     * Usage: if (set.equals(set2)) ...
      * --------------------------------
-     * 如果此集合包含完全相同的值，则返回 <code>true</code>
-     * 与给定的另一个集合相同。
-     * 行为与 == 运算符相同。
+     * Returns <code>true</code> if this set contains exactly the same values
+     * as the given other set.
+     * Identical in behavior to the == operator.
      */
     bool equals(const GenericSet& set2) const;
 
     /**
-     * 方法：first
-     * 用法：ValueType value = set.first();
+     * Method: first
+     * Usage: ValueType value = set.first();
      * -------------------------------------
-     * 按照以下顺序返回集合中的第一个值
-     * <code>for-each</code> 循环。如果集合为空，<code>first</code>
-     * 生成错误。
+     * Returns the first value in the set in the order established by the
+     * <code>for-each</code> loop.  If the set is empty, <code>first</code>
+     * generates an error.
      */
     value_type first() const;
 
     /**
-     * 方法：intersect
-     * 用法：set.intersect(set2);
+     * Method: intersect
+     * Usage: set.intersect(set2);
      * ---------------------------
-     * 从此集合中删除所有不包含在给定集合中的元素
-     * 另一个集合。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
-     * 返回对此集合的引用。
+     * Removes all elements from this set that are not contained in the given
+     * other set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
      *
-     * 注意，此函数会就地修改当前集合，而不是
-     * 返回一个新集合。如果需要新集合，请考虑使用 * 运算符
-     * 改用此运算符（不是 *=），它会返回新创建的集合副本。
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the * operator
+     * instead (not *=), which returns a newly created copy set.
      *
-     * 行为与 *= 运算符相同。
+     * Identical in behavior to the *= operator.
      */
     GenericSet& intersect(const GenericSet& set);
 
     /**
-     * 方法：isEmpty
-     * 用法：if (set.isEmpty()) ...
+     * Method: isEmpty
+     * Usage: if (set.isEmpty()) ...
      * -----------------------------
-     * 如果此集合不包含元素，则返回 <code>true</code>。
+     * Returns <code>true</code> if this set contains no elements.
      */
     bool isEmpty() const;
 
     /**
-     * 方法：isSubsetOf
-     * 用法：if (set.isSubsetOf(set2)) ...
+     * Method: isSubsetOf
+     * Usage: if (set.isSubsetOf(set2)) ...
      * ------------------------------------
-     * 实现集合的子集关系。它返回
-     * 若此集合的每个元素都满足条件，则为 <code>true</code>
-     * 包含在 <code>set2</code> 中。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
+     * Implements the subset relation on sets.  It returns
+     * <code>true</code> if every element of this set is
+     * contained in <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
      */
     bool isSubsetOf(const GenericSet& set2) const;
 
     /**
-     * 方法：isSupersetOf
-     * 用法：if (set.isSupersetOf(set2)) ...
+     * Method: isSupersetOf
+     * Usage: if (set.isSupersetOf(set2)) ...
      * --------------------------------------
-     * 实现集合的超集关系。它返回
-     * 若此集合的每个元素都满足条件，则为 <code>true</code>
-     * 包含在 <code>set2</code> 中。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
+     * Implements the superset relation on sets.  It returns
+     * <code>true</code> if every element of this set is
+     * contained in <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
      */
     bool isSupersetOf(const GenericSet& set2) const;
 
     /**
-     * 方法：mapAll
-     * 用法：set.mapAll(fn);
+     * Method: mapAll
+     * Usage: set.mapAll(fn);
      * ----------------------
-     * 遍历集合中的元素并调用 <code>fn(value)</code>
-     * 分别处理每一个。迭代顺序与底层存储顺序一致
-     * 元素的存储顺序。对于 Set，这是按照以下规则排序的顺序
-     * 比较函数；对于 HashSet，则为元素的某种顺序
-     * 恰好位于其中。
+     * Iterates through the elements of the set and calls <code>fn(value)</code>
+     * for each one.  The iteration order matches the underlying order in which
+     * the elements are stored.  For Set, this is sorted order according to the
+     * comparison function and for HashSet, this is whatever order the elements
+     * happen to be in.
      */
     void mapAll(std::function<void (const value_type&)> fn) const;
 
     /**
-     * 方法：remove
-     * 用法：set.remove(value);
+     * Method: remove
+     * Usage: set.remove(value);
      * -------------------------
-     * 从此集合中删除一个元素。如果该值原本不存在
-     * 包含在集合中时，不会产生错误，并且集合
-     * 保持不变。
+     * Removes an element from this set.  If the value was not
+     * contained in the set, no error is generated and the set
+     * remains unchanged.
      */
     void remove(const value_type& value);
 
     /**
-     * 方法：size
-     * 用法：count = set.size();
+     * Method: size
+     * Usage: count = set.size();
      * --------------------------
-     * 返回此集合中的元素数量。
+     * Returns the number of elements in this set.
      */
     int size() const;
 
     /**
-     * 方法：toString
-     * 用法：string str = set.toString();
+     * Method: toString
+     * Usage: string str = set.toString();
      * -----------------------------------
-     * 将集合转换为可打印的字符串表示。
+     * Converts the set to a printable string representation.
      */
     std::string toString() const;
 
     /**
-     * 方法：unionWith
-     * 用法：set.unionWith(set2);
+     * Method: unionWith
+     * Usage: set.unionWith(set2);
      * ---------------------------
-     * 将给定其他集合中的所有元素添加到此集合。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
-     * 返回对此集合的引用。
-     * 行为与 += 运算符相同。
+     * Adds all elements of the given other set to this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     * Identical in behavior to the += operator.
      *
-     * 注意，此函数会就地修改当前集合，而不是
-     * 返回一个新集合。如果需要新集合，请考虑使用 + 运算符
-     * 改用此运算符（不是 +=），它会返回新创建的集合副本。
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the + operator
+     * instead (not +=), which returns a newly created copy set.
      *
-     * （实现说明：此函数不能命名为“union”，因为
-     * 它是 C/C++ 关键字。）
+     * (Implementation note: This function cannot be named 'union' because
+     * that is a C/C++ keyword.)
      */
     GenericSet& unionWith(const GenericSet& set);
 
     /**
-     * 运算符：==
-     * 用法：set1 == set2
+     * Operator: ==
+     * Usage: set1 == set2
      * -------------------
-     * 如果 <code>set1</code> 和 <code>set2</code>，则返回 <code>true</code>
-     * 包含相同元素。
+     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+     * contain the same elements.
      */
     bool operator ==(const GenericSet& set2) const;
 
     /**
-     * 运算符：!=
-     * 用法：set1 != set2
+     * Operator: !=
+     * Usage: set1 != set2
      * -------------------
-     * 如果 <code>set1</code> 和 <code>set2</code>，则返回 <code>true</code>
-     * 不同。
+     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+     * are different.
      */
     bool operator !=(const GenericSet& set2) const;
 
     /**
-     * 运算符：<、>、<=、>=
-     * 用法：if (set1 <= set2) ...
+     * Operators: <, >, <=, >=
+     * Usage: if (set1 <= set2) ...
      * ...
      * ----------------------------
-     * 用于比较两个集合的关系运算符。
-     * <、>、<=、>= 运算符要求值类型具有 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two sets.
+     * The <, >, <=, >= operators require that the value type has a < operator
+     * so that the elements can be compared pairwise.
      *
-     * 这些函数实现为友元函数，因此，如果我们完整实例化
-     * 此类型，以便使用关系运算符时不会出错。
+     * These are implemented as friend functions so that if we fully instantiate
+     * this type, we don't get errors when using relational operators.
      */
     template <typename Traits>
     friend bool operator <(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
@@ -1271,54 +1271,54 @@ public:
     friend bool operator >=(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
 
     /**
-     * 运算符：+
-     * 用法：set1 + set2
+     * Operator: +
+     * Usage: set1 + set2
      *        set1 + element
      * ---------------------
-     * 返回集合 <code>set1</code> 与 <code>set2</code> 的并集，即
-     * 是至少出现在两个集合之一中的元素集合。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
-     * 右侧集合可以替换为值类型的一个元素，方式为
-     * 在这种情况下，运算符返回添加该元素后形成的新集合。
+     * Returns the union of sets <code>set1</code> and <code>set2</code>, which
+     * is the set of elements that appear in at least one of the two sets.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * The right hand set can be replaced by an element of the value type, in
+     * which case the operator returns a new set formed by adding that element.
      */
     GenericSet operator +(const GenericSet& set2) const;
     GenericSet operator +(const value_type& element) const;
 
     /**
-     * 运算符：*
-     * 用法：set1 * set2
+     * Operator: *
+     * Usage: set1 * set2
      * ------------------
-     * 返回集合 <code>set1</code> 与 <code>set2</code> 的交集，
-     * 它是同时出现在两者中的所有元素的集合。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
+     * Returns the intersection of sets <code>set1</code> and <code>set2</code>,
+     * which is the set of all elements that appear in both.
+     * You can also pass an initializer list such as {1, 2, 3}.
      */
     GenericSet operator *(const GenericSet& set2) const;
 
     /**
-     * 运算符：-
-     * 用法：set1 - set2
+     * Operator: -
+     * Usage: set1 - set2
      *        set1 - element
      * ---------------------
-     * 返回集合 <code>set1</code> 与 <code>set2</code> 的差集，
-     * 它包含出现在 <code>set1</code> 中但
-     * 而不是 <code>set2</code>。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
-     * 右侧集合可以替换为值类型的一个元素，方式为
-     * 在这种情况下，运算符返回移除该元素后形成的新集合。
+     * Returns the difference of sets <code>set1</code> and <code>set2</code>,
+     * which is all of the elements that appear in <code>set1</code> but
+     * not <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * The right hand set can be replaced by an element of the value type, in
+     * which case the operator returns a new set formed by removing that element.
      */
     GenericSet operator -(const GenericSet& set2) const;
     GenericSet operator -(const value_type& element) const;
 
     /**
-     * 运算符：+=
-     * 用法：set1 += set2;
+     * Operator: +=
+     * Usage: set1 += set2;
      *        set1 += value;
      * ---------------------
-     * 将 <code>set2</code> 中的所有元素（或单个
-     * 将指定值）添加到 <code>set1</code>。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
-     * 为方便使用，<code>Set</code> 包还重载了逗号
-     * 运算符，使得可以像这样初始化集合：
+     * Adds all of the elements from <code>set2</code> (or the single
+     * specified value) to <code>set1</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * As a convenience, the <code>Set</code> package also overloads the comma
+     * operator so that it is possible to initialize a set like this:
      *
      *<pre>
      *    Set&lt;int&gt; digits;
@@ -1329,70 +1329,70 @@ public:
     GenericSet& operator +=(const value_type& value);
 
     /**
-     * 运算符：*=
-     * 用法：set1 *= set2;
+     * Operator: *=
+     * Usage: set1 *= set2;
      * --------------------
-     * 从 <code>set1</code> 中删除不在以下集合中的元素
-     * <code>set2</code>。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
+     * Removes any elements from <code>set1</code> that are not present in
+     * <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
      */
     GenericSet& operator *=(const GenericSet& set2);
 
     /**
-     * 运算符：-=
-     * 用法：set1 -= set2;
+     * Operator: -=
+     * Usage: set1 -= set2;
      *        set1 -= value;
      * ---------------------
-     * 从 <code>set2</code> 中删除这些元素（或单个
-     * 从 <code>set1</code> 中删除指定值）。
-     * 还可以传入初始化列表，例如 {1, 2, 3}。
-     * 为方便使用，<code>Set</code> 包还重载了逗号
-     * 运算符，使得可以从集合中移除多个元素
-     * 如下所示：
+     * Removes the elements from <code>set2</code> (or the single
+     * specified value) from <code>set1</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * As a convenience, the <code>Set</code> package also overloads the comma
+     * operator so that it is possible to remove multiple elements from a set
+     * like this:
      *
      *<pre>
      *    digits -= 0, 2, 4, 6, 8;
      *</pre>
      *
-     * 它会从集合中移除值 0、2、4、6 和 8
-     * <code>digits</code>。
+     * which removes the values 0, 2, 4, 6, and 8 from the set
+     * <code>digits</code>.
      */
     GenericSet& operator -=(const GenericSet& set2);
     GenericSet& operator -=(const value_type& value);
 
     /*
-     * 其他 Set 操作
+     * Additional Set operations
      * -------------------------
-     * 除本接口中列出的方法外，Set
-     * 类支持以下操作：
+     * In addition to the methods listed in this interface, the Set
+     * class supports the following operations:
      *
-     *   - 使用 << 和 >> 运算符进行流输入/输出
-     *   - 为复制构造函数和赋值运算符实现深拷贝
-     *   - 使用基于范围的 for 语句和 STL 迭代器进行迭代
+     *   - Stream I/O using the << and >> operators
+     *   - Deep copying for the copy constructor and assignment operator
+     *   - Iteration using the range-based for statement and STL iterators
      *
-     * 这些迭代形式按升序处理 Set。
+     * The iteration forms process the Set in ascending order.
      */
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
 private:
-    typename SetTraits::MapType _map = SetTraits::construct();  /* 用于存储元素的 Map    */
-    bool _removeFlag = false;                                   /* 用于区分 += 和 -= 的标志   */
+    typename SetTraits::MapType _map = SetTraits::construct();  /* Map used to store the elements    */
+    bool _removeFlag = false;                                   /* Flag to differentiate += and -=   */
 
 public:
     /*
-     * 隐藏功能
+     * Hidden features
      * ---------------
-     * 此文件的剩余部分包含实现以下功能所需的代码：
-     * 支持逗号运算符、复制和迭代。
+     * The remainder of this file consists of the code required to
+     * support the comma operator, copying, and iteration.
      *
-     * 将这些方法包含在公共接口中会使
-     * 使普通客户端更难理解该接口。
+     * Including these methods in the public interface would make
+     * that interface more difficult to understand for the average client.
      */
     GenericSet& operator ,(const value_type& value) {
         if (this->_removeFlag) {
@@ -1422,9 +1422,9 @@ public:
 template <typename SetTraits>
 GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list)
     : _map(SetTraits::construct()) {
-    /* 不能使用 addAll，因为那会递归尝试构造 GenericSet。
-     * 改为直接在此添加所有内容。这里成为以下操作的集中位置：
-     * 所有 initializer_list 转换。
+    /* Can't do addAll because that would recursively try constructing a GenericSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
      */
     for (const auto& elem: list) {
         add(elem);
@@ -1434,7 +1434,7 @@ GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list)
 template <typename SetTraits>
 template <typename... Args>
 GenericSet<SetTraits>::GenericSet(Args... args) : GenericSet({}, std::move(args)...) {
-    // 由其他构造函数处理
+    // Handled by other constructor
 }
 
 template <typename SetTraits>
@@ -1442,9 +1442,9 @@ template <typename... Args>
 GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list, Args... args)
     : _map(SetTraits::construct(std::move(args)...)) {
 
-    /* 不能使用 addAll，因为那会递归尝试构造 GenericSet。
-     * 改为直接在此添加所有内容。这里成为以下操作的集中位置：
-     * 所有 initializer_list 转换。
+    /* Can't do addAll because that would recursively try constructing a GenericSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
      */
     for (const auto& elem: list) {
         add(elem);
@@ -1483,13 +1483,13 @@ GenericSet<SetTraits>& GenericSet<SetTraits>::difference(const GenericSet<SetTra
 
 template <typename SetTraits>
 bool GenericSet<SetTraits>::equals(const GenericSet& set2) const {
-    // 优化：如果确实是同一集合，则停止
+    // optimization: if literally same set, stop
     if (this == &set2) {
         return true;
     }
 
-    /* 如果大小相同且我们是另一个集合的子集，则两者相等
-     * 集合。
+    /* We are equal if we have the same size and we're a subset of the other
+     * set.
      */
     if (size() != set2.size()) {
         return false;
@@ -1571,10 +1571,10 @@ GenericSet<SetTraits>& GenericSet<SetTraits>::unionWith(const GenericSet<SetTrai
 
 
 /*
- * 实现说明：集合运算符
+ * Implementation notes: set operators
  * -----------------------------------
- * 集合运算符的实现使用迭代来遍历
- * 遍历一个或两个集合中的元素。
+ * The implementations for the set operators use iteration to walk
+ * over the elements in one or both sets.
  */
 template <typename SetTraits>
 bool GenericSet<SetTraits>::operator ==(const GenericSet& set2) const {
@@ -1674,24 +1674,24 @@ std::ostream& operator <<(std::ostream& os, const GenericSet<SetTraits>& set) {
 template <typename SetTraits>
 std::istream& operator >>(std::istream& is, GenericSet<SetTraits>& set) {
     typename SetTraits::ValueType element;
-    return stanfordcpplib::collections::readCollection(is, set, element, /* 描述符 */ SetTraits::name() + "::operator >>");
+    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ SetTraits::name() + "::operator >>");
 }
 
 
 /*
- * 用于使用以下方式自动检查类型是否可比较的类型
- * < 运算符，以及类型是否支持 operator== 和 hashCode。
+ * Types used to automatically check whether a type is comparable using
+ * the < operator and whether a type supports operator== and hashCode.
  *
- * 这用于在以下情况下向学生提供更好的编译器诊断信息：
- * 它们试图以错误方式实例化我们的时间。
+ * This is used to provide better compiler diagnostics to students when
+ * they try to instantiate our times incorrectly.
  *
- * 将来 C++20 concepts 推广后，我们应考虑
- * 使用 concepts 替换此代码。
+ * Later on, when C++20 concepts are rolled out, we should consider
+ * replacing this code with concepts.
  */
 template <typename T>
 struct IsLessThanComparable {
 private:
-    /* 使用 SFINAE 重载检测应选择这两个选项中的哪一个。 */
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
     struct Yes{};
     struct No {};
 
@@ -1710,7 +1710,7 @@ public:
 template <typename T>
 struct IsHashable {
 private:
-    /* 使用 SFINAE 重载检测应选择这两个选项中的哪一个。 */
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
     struct Yes{};
     struct No {};
 
@@ -1728,46 +1728,46 @@ public:
 };
 
 /*
- * 返回 std::less<T>，但在其周围包装友好的静态断言，以便
- * 确保当 T 无法通过 < 比较时，错误消息
- * 更易读。
+ * Returns std::less<T>, except with a nice static assertion wrapped around it to
+ * make sure that in the event that T isn't comparable via <, the error message is
+ * more readable.
  */
 template <typename T>
 std::function<bool (const T&, const T&)> checkedLess() {
     static_assert(IsLessThanComparable<T>::value,
                   "Oops! You tried using a type as a key in our Map without making it comparable. Click this error for more details.");
     /*
-     * CS106 的同学你好！如果编译错误将你指向此行代码，
-     * 这可能意味着你尝试使用自定义结构体或类类型创建 Map
-     * 作为键类型，或将自定义结构体作为值类型的 Set。
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a Map with a custom struct or class type
+     * as the key type or a Set with a custom struct as a value type.
      *
-     * 要让某类型成为 Map 的键类型——或成为其值类型
-     * 在 Set 中——它需要能够使用 < 运算符进行比较。默认情况下，C++ 中的类型
-     * 无法使用 < 运算符比较，因此出现错误。
+     * In order to have a type be a key type in a Map - or to have a type be a value type
+     * in a Set - it needs to have be comparable using the < operator. By default, types in C++
+     * can't be compared using the < operator, hence the error.
      *
-     * 有两种修复方式。第一种是直接不使用自定义
-     * 将该类型用作 Map 的键或 Set 的值。这可能是最简单的选择。
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the Map or value in a Set. This is probably the easiest option.
      *
-     * 解决此问题的第二种方法是为自定义类型显式定义 operator< 函数
-     * 类型。语法如下：
+     * The second way to fix this is to explicitly define an operator< function for your custom
+     * type. Here's the syntax for doing that:
      *
      *     bool operator< (const YourCustomType& lhs, const YourCustomType& rhs) {
      *         using namespace stanfordcpplib::collections;
      *         return compareTo(lhs.data1, rhs.data1,
      *                          lhs.data2, rhs.data2,
      *                          ...
-     *                          lhs.dataN, rhs.dataN) == -1; // -1 表示小于
+     *                          lhs.dataN, rhs.dataN) == -1; // -1 signals less than
      *     }
      *
-     * 其中 data1、data2、...、dataN 是该类型的数据成员。例如，如果你有
-     * 自定义类型
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
      *
      *     struct MyType {
      *         int myInt;
      *         string myString;
      *     };
      *
-     * 你需要定义函数
+     * you would define the function
      *
      *     bool operator< (const MyType& lhs, const MyType& rhs) {
      *         using namespace stanfordcpplib::collections;
@@ -1775,13 +1775,13 @@ std::function<bool (const T&, const T&)> checkedLess() {
      *                          lhs.myString, rhs.myString) == -1;
      *     }
      *
-     * 希望这能有所帮助！
+     * Hope this helps!
      */
     return std::less<T>();
 }
 
 /*
- * 始终包含值 false 的实用特征类型。
+ * Utility traits type that always contains a value that's false.
  */
 template <typename... Args> struct Fail {
     static constexpr bool value = false;

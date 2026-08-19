@@ -14,7 +14,7 @@
 using namespace std;
 
 namespace {
-    /* 测试类型 --> 字符串 */
+    /* Test type --> String */
     string to_string(SimpleTest::TestType type) {
         switch (type) {
             case SimpleTest::TestType::STUDENT: return "Student Test";
@@ -25,19 +25,19 @@ namespace {
         }
     }
 
-    /* 测试 --> 显示名称 */
+    /* Test --> Display Name */
     string displayNameOf(const SimpleTest::Test& test) {
         return to_string(test.type) + ": " + test.name;
     }
 
-    /* 给定文件路径，返回不含路径部分的文件名。 */
+    /* Given a file path, returns the name of the file, excluding the path to it. */
     string tailOf(const string& path) {
-        /* 查找文件名中最后一个 / 或 \。 */
+        /* Find the last / or \ in the filename. */
         size_t index = path.find_last_of("\\/");
         return index == string::npos ? path : path.substr(index + 1);
     }
 
-    /* 允许所有内容。 */
+    /* Everything is allowed. */
     SimpleTest::TestFilter filter() {
         return [](const string&, const SimpleTest::Test&) {
             return true;
@@ -45,17 +45,17 @@ namespace {
     }
 
     SimpleTest::TestGroupComparator comparator() {
-        /* 按文件索引对文件排序。 */
+        /* Sort files by their file index. */
         auto fileList = MiniGUI::Config::testOrder();
 
         return [=](const string& lhs, const string& rhs) {
-            /* 比较两个字符串的索引。 */
+            /* Compare indices of the two strings. */
             return find(fileList.begin(), fileList.end(), lhs) <
                    find(fileList.begin(), fileList.end(), rhs);
         };
     }
 
-    /* 获取所有包含测试的文件，即所有测试组 */
+    /* Retrieves all files that contain tests, i.e. all test groups */
     Vector<string> getTestGroups() {
         Vector<string> keys;
         auto& tests = SimpleTest::Internal::rawTests();
@@ -64,7 +64,7 @@ namespace {
             keys += tailOf(entry.first);
         }
 
-        /* 按规范顺序排序。 */
+        /* Sort by the canonical ordering. */
         auto fileList = MiniGUI::Config::testOrder();
         sort(keys.begin(), keys.end(), [&](const string& lhs, const string& rhs) {
             return find(fileList.begin(), fileList.end(), lhs) <
@@ -74,7 +74,7 @@ namespace {
         return keys;
     }
 
-    /* 通过控制台提示用户选择要运行的测试组（或全部运行）。-1 表示全部。 */
+    /* Prompts the user via the console for which test group to run (or all of them). -1 -> all. */
     int getTestSelection(const Vector<string>& groups) {
         cout << "Select which test to run!" << endl;
 
@@ -86,7 +86,7 @@ namespace {
         return getInteger("Select which test to run: ") - 1;
     }
 
-    /* 根据测试组 Vector 返回合适的 TestFilter。 */
+    /* Returns an appropriate TestFilter given the Vector of test groups. */
     SimpleTest::TestFilter filterToSelection(const Vector<string>& groups, int selection) {
         if (selection < 0) {
             return filter();
@@ -100,19 +100,19 @@ namespace {
         };
     }
 
-    /* 显示给定测试组的所有结果。 */
+    /* Displays all the results from the given test group. */
     void displayResults(GColorConsole& console, const Vector<SimpleTest::TestGroup>& testGroups) {
-        /* 在主 GUI 线程上执行，以便始终能看到当前进度。 */
+        /* Do on the main GUI thread so that we can always see where we are. */
         GThread::runOnQtGuiThread([&] {
             console.clearDisplay();
 
             for (const auto& group: testGroups) {
-                /* 绘制标题 */
+                /* Draw Header */
                 console.doWithStyle("#000080", GColorConsole::BOLD, [&] {
                     console << "==== Tests for " << group.name << " ====" << '\n';
                 });
 
-                /* 绘制每个测试 */
+                /* Draw each test */
                 for (const auto& test: group.tests) {
                     if (test.result == SimpleTest::TestResult::WAITING) {
                         console.doWithStyle("#A0A0A0", GColorConsole::ITALIC, [&] {
@@ -147,7 +147,7 @@ namespace {
                     }
                 }
 
-                /* 绘制整体结果。 */
+                /* Draw the overall result. */
                 if (group.numPassed == group.numTests && group.numTests > 0) {
                     console.doWithStyle("#0000FF", GColorConsole::ITALIC, [&] {
                         console << "All tests in this section passed!" << '\n';
@@ -178,13 +178,13 @@ namespace {
         Temporary<GColorConsole> console;
     };
 
-    /* 初始化界面框架。 */
+    /* Initialize chrome. */
     TestingGUI::TestingGUI(GWindow& window) : ProblemHandler(window) {
         console = Temporary<GColorConsole>(new GColorConsole(), window, "CENTER");
         setDemoOptionsEnabled(false);
     }
 
-    /* 实际运行所有测试。 */
+    /* Actually run all the tests. */
     void TestingGUI::settingUp() {
         SimpleTest::TestReporter reporter = [this](const Vector<SimpleTest::TestGroup>& groups) {
             displayResults(*console, groups);
@@ -201,9 +201,9 @@ GRAPHICS_HANDLER("Run Tests", GWindow& window) {
 }
 
 namespace {
-    /* 将流从正常目标重定向到其他位置的类型
-     * 移动到另一个位置。例如，可以用它来
-     * 重定向 stdout 或 stderr。
+    /* Type that diverts a stream from its normal destination
+     * to another location. This can be used, for example, to
+     * divert stdout or stderr.
      */
     class OstreamDiverter {
     public:
@@ -215,12 +215,12 @@ namespace {
             original.rdbuf(diverted.rdbuf());
         }
 
-        /* 用于写入原始源的访问权限。 */
+        /* Access to write to the original source. */
         ostream& out() {
             return diverted;
         }
 
-        /* 已写入的内容。 */
+        /* What was written. */
         std::string written() {
             return replacement.str();
         }
@@ -231,12 +231,12 @@ namespace {
         ostream  diverted;
     };
 
-    /* 在控制台模式下运行所有测试。 */
+    /* Runs all the tests in console mode. */
     void runConsoleTests(SimpleTest::TestFilter filter, bool divertStreams) {
         Vector<SimpleTest::TestGroup> lastGroups;
 
         {
-            /* 若处于自动评分模式，则重定向该流。 */
+            /* Divert the stream if we're in autograder mode. */
             unique_ptr<OstreamDiverter> newCout, newCerr;
             if (divertStreams) {
                 newCout.reset(new OstreamDiverter(cout));
@@ -245,10 +245,10 @@ namespace {
 
             const SimpleTest::Test* running = nullptr;
             SimpleTest::TestReporter reporter = [&](const Vector<SimpleTest::TestGroup>& groups) {
-                /* cout 可能已被重定向。若是，请使用“真实”的 cout。 */
+                /* cout may be diverted. If so, use the "real" cout. */
                 ostream& out = newCout? newCout->out() : cout;
 
-                /* 保存最后一组测试组，以便稍后输出失败信息。 */
+                /* Stash the last set of groups so that we can print failures later. */
                 lastGroups = groups;
                 for (const auto& group: groups) {
                     for (const auto& test: group.tests) {
@@ -280,7 +280,7 @@ namespace {
         cout << endl;
         cout << "Test summary: " << endl;
 
-        /* 列出所有错误。 */
+        /* List all errors. */
         int totalTests = 0, totalPassed = 0;
         for (const auto& group: lastGroups) {
             totalTests  += group.numTests;
@@ -298,7 +298,7 @@ namespace {
             }
         }
 
-        /* 列出错误数量。 */
+        /* List error counts. */
         for (const auto& group: lastGroups) {
             cout << group.name << ": " << group.numPassed << " of " << pluralize(group.numTests, "test") << " passed." << endl;
         }

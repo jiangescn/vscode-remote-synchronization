@@ -1,4 +1,5 @@
 #include "WhatAreYouDoing.h"
+#include "strlib.h"
 using namespace std;
 
 /* TODO：阅读 WhatAreYouDoing.h 中的注释，了解此函数需要执行什么，然后
@@ -7,11 +8,51 @@ using namespace std;
  * 不要忘记 WhatAreYouDoing.h 中定义的 tokenize 函数；你几乎
  * 肯定希望使用它。
  */
+
+string Vector_to_string(Vector<string>& s)
+{
+    string ans = "";
+    for (auto it : s)
+    {
+        ans += it;
+    }
+    return ans;
+}
+
+
+void dfs(Set<string> &ans, Vector<string> token, int deep)
+{
+    if(deep == token.size())
+    {
+        ans.add(Vector_to_string(token));
+        return;
+    }
+
+    dfs(ans, token, deep + 1);
+    if(!isalpha(token[deep][0]))
+    {
+        return;
+    }
+
+    token[deep] = toLowerCase(token[deep]);
+    dfs(ans, token, deep + 1);
+}
+
+
 Set<string> allEmphasesOf(const string& sentence) {
     /* TODO：删除此行及下一行，然后实现此函数。 */
-    (void) sentence;
-    return {};
+    Vector<string> token = tokenize(sentence);
+    Set<string> ans;
+
+    for (string &it : token)
+    {
+        it = toUpperCase(it);
+    }
+    dfs(ans, token, 0);
+    return ans;
 }
+
+
 
 /* * * * * * 测试用例 * * * * * */
 #include "GUI/SimpleTest.h"

@@ -1,21 +1,21 @@
 /*
- * 文件：librarymain.cpp
+ * File: librarymain.cpp
  * ---------------------
- * 此文件包含一个 `libraryMain` 函数定义，用于初始化
- * Stanford C++ 库，然后运行学生的 main 函数
- * 在其自己的线程中。这是 Qt 版本库正常运行所必需的
- * 函数正常工作。
+ * This file contains a 'libraryMain' function definition that initializes the
+ * Stanford C++ library, then runs the student's main function
+ * in its own thread.  This is necessary for the Qt version of the library to
+ * function properly.
  */
 
 #include "private/init.h"
 #include "qtgui.h"
 
-// 学生实现看似普通的 main() 函数，但
-// 构建期间会重命名为 studentMain()
+// student implements what looks like ordinary main() function, but
+// will be renamed to studentMain() during build
 int studentMain();
 
-// 根据需要初始化 Qt GUI 库子系统和 Qt 图形控制台
-// 调用 studentMain 之前
+// initializes the Qt GUI library subsystems and Qt graphical console as needed
+// before calling studentMain
 
 int libraryMain(int argc, char** argv)
 {

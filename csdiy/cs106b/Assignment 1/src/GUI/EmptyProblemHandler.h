@@ -3,8 +3,8 @@
 
 #include "ProblemHandler.h"
 
-/* 一个问题处理程序，仅提示用户选择要解决的问题。此处理程序
- * 在没有其他内容可显示时安装。
+/* A problem handler that just prompts the user to pick a problem to solve. This
+ * gets installed whenever there's nothing else to display.
  */
 class EmptyProblemHandler: public ProblemHandler {
 public:

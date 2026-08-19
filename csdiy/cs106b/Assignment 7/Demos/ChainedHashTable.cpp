@@ -10,12 +10,12 @@ ChainedHashTable::ChainedHashTable(HashFunction<string> hashFn) {
 }
 
 bool ChainedHashTable::insert(const string& data) {
-    /* 如果此元素已存在，则不要添加。 */
+    /* Don't add this element if it's already here. */
     if (contains(data)) {
         return false;
     }
 
-    /* 添加到适当的桶中。 */
+    /* Add to the appropriate bucket. */
     int bucket = mHashFn(data);
     mBuckets[bucket] += data;
     mNumElems++;

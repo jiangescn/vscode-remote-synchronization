@@ -1,28 +1,28 @@
 /*
- * 文件：gcanvas.cpp
+ * File: gcanvas.cpp
  * -----------------
  *
  * @author Marty Stepp
  * @version 2019/05/01
- * - 添加 createArgbPixel
- * - 修复与保存及带 alpha 透明度的 setPixels 相关的问题
+ * - added createArgbPixel
+ * - bug fixes related to save / setPixels with alpha transparency
  * @version 2019/04/23
- * - 修复 Windows 上因 istream 更改导致从文件加载画布的错误
- * - 将大多数事件监听器代码移至 GInteractor 超类
+ * - bug fix for loading canvas from file on Windows related to istream change
+ * - moved most event listener code to GInteractor superclass
  * @version 2019/03/07
- * - 添加直接从 istream 加载画布的支持（htiek）
+ * - added support for loading canvas directly from istream (htiek)
  * @version 2019/02/06
- * - 修复鼠标滚轮监听器，使其在没有实际滚动区域时也能工作
+ * - fixed mouse wheel listeners to work even if no actual scroll area exists
  * @version 2019/02/02
- * - 析构函数现在会停止事件处理
+ * - destructor now stops event processing
  * @version 2018/09/20
- * - 为画布内容添加读写锁以避免竞态条件
+ * - added read/write lock for canvas contents to avoid race conditions
  * @version 2018/09/04
- * - 添加双击事件支持
+ * - added double-click event support
  * @version 2018/08/23
- * - 重命名为 gcanvas.cpp，以替代 Java 版本
+ * - renamed to gcanvas.cpp to replace Java version
  * @version 2018/06/30
- * - 初始版本
+ * - initial version
  */
 
 #include "gcanvas.h"
@@ -51,7 +51,7 @@ int GCanvas::createRgbPixel(int red, int green, int blue) {
 }
 
 int GCanvas::getAlpha(int argb) {
-    // 由于 >> 移位的符号扩展，必须再执行一次 &
+    // have to & a second time because of sign-extension on >> shift
     return ((static_cast<unsigned int>(argb) & 0xff000000) >> 24) & 0x000000ff;
 }
 
@@ -77,20 +77,20 @@ void GCanvas::getRedGreenBlue(int rgb, int& red, int& green, int& blue) {
 GCanvas::GCanvas(QWidget* parent)
         : _backgroundImage(nullptr),
           _filename("") {
-    init(/* 宽度 */ -1, /* 高度 */ -1, /* 背景 */ 0xffffff, parent);
+    init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
 }
 
 GCanvas::GCanvas(const std::string& filename, QWidget* parent)
         : _backgroundImage(nullptr),
           _filename(filename) {
-    init(/* 宽度 */ -1, /* 高度 */ -1, /* 背景 */ 0xffffff, parent);
+    init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
     load(filename);
 }
 
 GCanvas::GCanvas(std::istream& source, QWidget* parent)
         : _backgroundImage(nullptr),
           _filename("std::istream data") {
-    init(/* 宽度 */ -1, /* 高度 */ -1, /* 背景 */ 0xffffff, parent);
+    init(/* width */ -1, /* height */ -1, /* background */ 0xffffff, parent);
     if (!loadFromStream(source)) {
         error("GCanvas::constructor: could not load image from input stream");
     }
@@ -122,7 +122,7 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
         _gcompound.setWidget(_iqcanvas);
         int alpha = getAlpha(rgbBackground);
         if (GColor::hasAlpha(_backgroundColor)) {
-            // 空
+            // empty
         } else if (alpha > 0 && alpha < 255) {
             _backgroundColor = GColor::convertARGBToColor(rgbBackground);
         } else {
@@ -138,11 +138,11 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
         }
     }
 
-    setVisible(false);   // 所有控件在添加到窗口之前都不会显示
+    setVisible(false);   // all widgets are not shown until added to a window
 }
 
 GCanvas::~GCanvas() {
-    // TODO：delete _iqcanvas;
+    // TODO: delete _iqcanvas;
     _iqcanvas->detach();
     _iqcanvas = nullptr;
 }
@@ -150,7 +150,7 @@ GCanvas::~GCanvas() {
 void GCanvas::add(GObject* gobj) {
     GThread::runOnQtGuiThread([this, gobj]() {
         lockForWrite();
-        _gcompound.add(gobj);   // 调用 conditionalRepaint
+        _gcompound.add(gobj);   // calls conditionalRepaint
         unlock();
     });
 }
@@ -158,7 +158,7 @@ void GCanvas::add(GObject* gobj) {
 void GCanvas::add(GObject* gobj, double x, double y) {
     GThread::runOnQtGuiThread([this, gobj, x, y]() {
         lockForWrite();
-        _gcompound.add(gobj, x, y);   // 调用 conditionalRepaint
+        _gcompound.add(gobj, x, y);   // calls conditionalRepaint
         unlock();
     });
 }
@@ -166,7 +166,7 @@ void GCanvas::add(GObject* gobj, double x, double y) {
 void GCanvas::add(GObject& gobj) {
     GThread::runOnQtGuiThread([this, &gobj]() {
         lockForWrite();
-        _gcompound.add(gobj);   // 调用 conditionalRepaint
+        _gcompound.add(gobj);   // calls conditionalRepaint
         unlock();
     });
 }
@@ -174,20 +174,20 @@ void GCanvas::add(GObject& gobj) {
 void GCanvas::add(GObject& gobj, double x, double y) {
     GThread::runOnQtGuiThread([this, &gobj, x, y]() {
         lockForWrite();
-        _gcompound.add(gobj, x, y);   // 调用 conditionalRepaint
+        _gcompound.add(gobj, x, y);   // calls conditionalRepaint
         unlock();
     });
 }
 
 void GCanvas::clear() {
     clearObjects();
-    clearPixels();   // 调用 conditionalRepaint
+    clearPixels();   // calls conditionalRepaint
 }
 
 void GCanvas::clearObjects() {
     GThread::runOnQtGuiThread([this]() {
         lockForWrite();
-        _gcompound.clear();   // 调用 conditionalRepaint
+        _gcompound.clear();   // calls conditionalRepaint
         unlock();
     });
 }
@@ -198,7 +198,7 @@ void GCanvas::clearPixels() {
         if (_backgroundImage) {
             // delete _backgroundImage;
             // _backgroundImage = nullptr;
-            // 保留背景图像缓冲区，但改用背景色填充
+            // keep background image buffer but fill with background color instead
             GThread::runOnQtGuiThread([this]() {
                 if (GColor::hasAlpha(_backgroundColor)) {
                     _backgroundImage->fill(static_cast<unsigned int>(_backgroundColorInt));
@@ -325,7 +325,7 @@ void GCanvas::draw(QPainter* painter) {
     if (_backgroundImage) {
         painter->drawImage(/* x */ 0, /* y */ 0, *_backgroundImage);
     }
-    _gcompound.draw(painter);   // 调用 conditionalRepaint
+    _gcompound.draw(painter);   // calls conditionalRepaint
     // unlock();
 }
 
@@ -370,8 +370,8 @@ void GCanvas::ensureBackgroundImage() {
 
 void GCanvas::ensureBackgroundImageConstHack() const {
     if (!_backgroundImage) {
-        // 你的一生都是谎言。
-        // 另外，这段代码很糟，我应该反省。
+        // Your whole life has been a lie.
+        // Also, this code is bad and I should feel bad.
         GCanvas* hack = const_cast<GCanvas*>(this);
         hack->ensureBackgroundImage();
     }
@@ -381,7 +381,7 @@ bool GCanvas::equals(const GCanvas& other) const {
     if (getSize() != other.getSize()) {
         return false;
     }
-    // TODO：比较像素
+    // TODO: compare pixels
     return true;
 }
 
@@ -389,8 +389,8 @@ void GCanvas::fill(int rgb) {
     checkColor("GCanvas::fill", rgb);
     fillRegion(/* x */ 0,
                /* y */ 0,
-               /* 宽度 */ getWidth(),
-               /* 高度 */ getHeight(),
+               /* width */ getWidth(),
+               /* height */ getHeight(),
                rgb);
 }
 
@@ -432,7 +432,7 @@ void GCanvas::flatten() {
         painter.setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
         _gcompound.draw(&painter);
         painter.end();
-        _gcompound.clear();   // 调用 conditionalRepaint
+        _gcompound.clear();   // calls conditionalRepaint
         unlock();
     });
 }
@@ -562,8 +562,8 @@ bool GCanvas::isAutoRepaint() const {
 }
 
 void GCanvas::load(const std::string& filename) {
-    // 为提高效率，至少先检查文件是否存在
-    // 并立即抛出错误，而不是联系后端
+    // for efficiency, let's at least check whether the file exists
+    // and throw error immediately rather than contacting the back-end
     if (!fileExists(filename)) {
         error("GCanvas::load: file not found: " + filename);
     }
@@ -591,7 +591,7 @@ void GCanvas::load(const std::string& filename) {
 }
 
 bool GCanvas::loadFromStream(std::istream& input) {
-    // 将缓冲区字节转换为 std::string
+    // buffer bytes into a std::string
     std::ostringstream byteStream;
     byteStream << input.rdbuf();
     std::string bytes = byteStream.str();
@@ -618,7 +618,7 @@ bool GCanvas::loadFromStream(std::istream& input) {
 void GCanvas::notifyOfResize(double width, double height) {
     if (_backgroundImage) {
         GThread::runOnQtGuiThread([this, width, height]() {
-            // 创建新尺寸的图像缓冲区
+            // make new image buffer of the new size
             lockForWrite();
             QImage* newImage = new QImage(
                         static_cast<int>(width),
@@ -631,13 +631,13 @@ void GCanvas::notifyOfResize(double width, double height) {
                 }
             }
 
-            // 在其上绘制任何之前的内容
+            // draw any previous contents onto it
             if (newImage->paintEngine()) {
                 QPainter painter(newImage);
                 painter.drawImage(0, 0, *_backgroundImage);
             }
 
-            // TODO：delete _backgroundImage;
+            // TODO: delete _backgroundImage;
             _backgroundImage = newImage;
             unlock();
             conditionalRepaint();
@@ -674,7 +674,7 @@ void GCanvas::repaint() {
         lockForRead();
         getWidget()->repaint();
         unlock();
-        // _gcompound.repaint();   // 在 Qt GUI 线程上运行
+        // _gcompound.repaint();   // runs on Qt GUI thread
     });
 }
 
@@ -686,10 +686,10 @@ void GCanvas::repaintRegion(int x, int y, int width, int height) {
     });
 }
 
-void GCanvas::resize(double width, double height, bool /* 保留 */) {
+void GCanvas::resize(double width, double height, bool /* retain */) {
     checkSize("GCanvas::resize", width, height);
 
-    // TODO（待办）
+    // TODO
     setSize(width, height);
 
     conditionalRepaint();
@@ -700,7 +700,7 @@ void GCanvas::save(const std::string& filename) {
         ensureBackgroundImage();
         lockForRead();
         if (!_gcompound.isEmpty()) {
-            // 在副本对象中展平图像，然后保存
+            // flatten image in a copy object, then save
             QImage imageCopy = this->_backgroundImage->copy(
                         0, 0,
                         static_cast<int>(getWidth()), static_cast<int>(getHeight()));
@@ -715,7 +715,7 @@ void GCanvas::save(const std::string& filename) {
                 error("GCanvas::save: failed to save to " + filename);
             }
         } else {
-            // 由我自己保存
+            // save it myself
             bool result = _backgroundImage->save(QString::fromStdString(filename));
             unlock();
             if (!result) {
@@ -738,11 +738,11 @@ void GCanvas::setBackground(int color) {
     GDrawingSurface::setBackground(color);
     GInteractor::setBackground(color);
     if (_backgroundImage) {
-        // 这里的语义略显混乱；
-        // 如果在画布上绘制一些形状（使用 draw() 变体），然后设置其背景，
-        // 这些形状会被清除。
-        // 结论是：先设置背景，再绘制内容。
-        // 或者使用 add() 而不是 draw() 添加形状，使它们位于背景之上。
+        // Slightly confusing semantics here;
+        // if you draw some shapes on a canvas (with draw() variants) and then set its background,
+        // the shapes will get wiped out.
+        // The lesson is, set the background first before drawing stuff.
+        // Or add your shapes using add() rather than draw() so they sit atop the background.
         GThread::runOnQtGuiThread([this, color]() {
             lockForWrite();
             _backgroundImage->fill(static_cast<unsigned int>(color));
@@ -786,7 +786,7 @@ void GCanvas::setKeyListener(GEventListener func) {
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
         unlock();
     });
-    GInteractor::setKeyListener(func);   // 调用父类实现
+    GInteractor::setKeyListener(func);   // call super
 }
 
 void GCanvas::setKeyListener(GEventListenerVoid func) {
@@ -795,7 +795,7 @@ void GCanvas::setKeyListener(GEventListenerVoid func) {
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
         unlock();
     });
-    GInteractor::setKeyListener(func);   // 调用父类实现
+    GInteractor::setKeyListener(func);   // call super
 }
 
 void GCanvas::setPixel(double x, double y, int rgb) {
@@ -813,8 +813,8 @@ void GCanvas::setPixel(double x, double y, int rgb) {
         conditionalRepaintRegion(
                 static_cast<int>(x),
                 static_cast<int>(y),
-                /* 宽度 */ 1,
-                /* 高度 */ 1);
+                /* width */ 1,
+                /* height */ 1);
     });
 }
 
@@ -832,7 +832,7 @@ void GCanvas::setPixelARGB(double x, double y, int argb) {
         lockForWrite();
         _backgroundImage->setPixel((int) x, (int) y, argb);
         unlock();
-        conditionalRepaintRegion((int) x, (int) y, /* 宽度 */ 1, /* 高度 */ 1);
+        conditionalRepaintRegion((int) x, (int) y, /* width */ 1, /* height */ 1);
     });
 }
 
@@ -841,10 +841,10 @@ void GCanvas::setPixelARGB(double x, double y, int a, int r, int g, int b) {
 }
 
 void GCanvas::setPixels(const Grid<int>& pixels) {
-    // TODO：这是否与 fromGrid 重复？
+    // TODO: is this redundant with fromGrid?
     ensureBackgroundImage();
     if (pixels.numCols() != (int) getWidth() || pixels.numRows() != (int) getHeight()) {
-        // TODO（待办）
+        // TODO
         // resize(pixels.width(), pixels.height());
         error("GCanvas::setPixels: wrong size");
     }
@@ -864,7 +864,7 @@ void GCanvas::setPixels(const Grid<int>& pixels) {
 void GCanvas::setPixelsARGB(const Grid<int>& pixels) {
     ensureBackgroundImage();
     if (pixels.numCols() != (int) getWidth() || pixels.numRows() != (int) getHeight()) {
-        // TODO（待办）
+        // TODO
         // resize(pixels.width(), pixels.height());
         error("GCanvas::setPixels: wrong size");
     }
@@ -929,12 +929,12 @@ _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
     require::nonNull(gcanvas, "_Internal_QCanvas::constructor");
     setObjectName(QString::fromStdString("_Internal_QCanvas_" + std::to_string(gcanvas->getID())));
 
-    // 设置默认白色背景
+    // set default white background color
 //    QPalette pal = palette();
 //    pal.setColor(QPalette::Background, Qt::white);
 //    setAutoFillBackground(true);
 //    setPalette(pal);
-    setMouseTracking(true);   // 使鼠标移动事件发生
+    setMouseTracking(true);   // causes mouse move events to occur
 }
 
 void _Internal_QCanvas::detach() {
@@ -942,7 +942,7 @@ void _Internal_QCanvas::detach() {
 }
 
 void _Internal_QCanvas::enterEvent(ParameterToEnterEvent* event) {
-    QWidget::enterEvent(event);   // 调用父类实现
+    QWidget::enterEvent(event);   // call super
     if (!_gcanvas || !_gcanvas->isAcceptingEvent("mouseenter")) {
         return;
     }
@@ -950,7 +950,7 @@ void _Internal_QCanvas::enterEvent(ParameterToEnterEvent* event) {
 }
 
 void _Internal_QCanvas::keyPressEvent(QKeyEvent* event) {
-    QWidget::keyPressEvent(event);   // 调用父类实现
+    QWidget::keyPressEvent(event);   // call super
     if (!_gcanvas || !_gcanvas->isAcceptingEvent("keypress")) {
         return;
     }
@@ -958,7 +958,7 @@ void _Internal_QCanvas::keyPressEvent(QKeyEvent* event) {
 }
 
 void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
-    QWidget::keyReleaseEvent(event);   // 调用父类实现
+    QWidget::keyReleaseEvent(event);   // call super
     if (!_gcanvas) {
         return;
     }
@@ -972,7 +972,7 @@ void _Internal_QCanvas::keyReleaseEvent(QKeyEvent* event) {
 }
 
 void _Internal_QCanvas::leaveEvent(QEvent* event) {
-    QWidget::leaveEvent(event);   // 调用父类实现
+    QWidget::leaveEvent(event);   // call super
     if (!_gcanvas || !_gcanvas->isAcceptingEvent("mouseexit")) {
         return;
     }
@@ -980,16 +980,16 @@ void _Internal_QCanvas::leaveEvent(QEvent* event) {
 }
 
 void _Internal_QCanvas::mouseDoubleClickEvent(QMouseEvent* event) {
-    QWidget::mouseDoubleClickEvent(event);   // 调用父类实现
+    QWidget::mouseDoubleClickEvent(event);   // call super
     emit doubleClicked();
     if (!_gcanvas || !_gcanvas->isAcceptingEvent("doubleclick")) {
         return;
     }
     GEvent mouseEvent(
-                /* 类  */ MOUSE_EVENT,
-                /* 类型   */ MOUSE_DOUBLE_CLICKED,
-                /* 名称   */ "doubleclick",
-                /* 来源 */ _gcanvas);
+                /* class  */ MOUSE_EVENT,
+                /* type   */ MOUSE_DOUBLE_CLICKED,
+                /* name   */ "doubleclick",
+                /* source */ _gcanvas);
     mouseEvent.setActionCommand(_gcanvas->getActionCommand());
     mouseEvent.setButton((int) event->button());
     mouseEvent.setX(event->pos().x());
@@ -998,7 +998,7 @@ void _Internal_QCanvas::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
-    QWidget::mouseMoveEvent(event);   // 调用父类实现
+    QWidget::mouseMoveEvent(event);   // call super
     if (!_gcanvas) {
         return;
     }
@@ -1008,13 +1008,13 @@ void _Internal_QCanvas::mouseMoveEvent(QMouseEvent* event) {
     }
     _gcanvas->fireGEvent(event, MOUSE_MOVED, "mousemove");
     if (event->buttons() != 0) {
-        // 鼠标拖动
+        // mouse drag
         _gcanvas->fireGEvent(event, MOUSE_DRAGGED, "mousedrag");
     }
 }
 
 void _Internal_QCanvas::mousePressEvent(QMouseEvent* event) {
-    QWidget::mousePressEvent(event);   // 调用父类实现
+    QWidget::mousePressEvent(event);   // call super
     if (!_gcanvas || !_gcanvas->isAcceptingEvent("mousepress")) {
         return;
     }
@@ -1022,7 +1022,7 @@ void _Internal_QCanvas::mousePressEvent(QMouseEvent* event) {
 }
 
 void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
-    QWidget::mouseReleaseEvent(event);   // 调用父类实现
+    QWidget::mouseReleaseEvent(event);   // call super
     if (!_gcanvas) {
         return;
     }
@@ -1036,7 +1036,7 @@ void _Internal_QCanvas::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
-    QWidget::paintEvent(event);   // 调用父类实现
+    QWidget::paintEvent(event);   // call super
     if (!_gcanvas) {
         return;
     }
@@ -1051,7 +1051,7 @@ void _Internal_QCanvas::paintEvent(QPaintEvent* event) {
 }
 
 void _Internal_QCanvas::resizeEvent(QResizeEvent* event) {
-    QWidget::resizeEvent(event);   // 调用父类实现
+    QWidget::resizeEvent(event);   // call super
     if (!_gcanvas) {
         return;
     }
@@ -1072,18 +1072,18 @@ QSize _Internal_QCanvas::sizeHint() const {
 }
 
 void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
-    QWidget::wheelEvent(event);   // 调用父类实现
+    QWidget::wheelEvent(event);   // call super
     if (!_gcanvas) {
         return;
     }
     QPoint delta = event->angleDelta();
     if (delta.y() < 0) {
-        // 向下滚动
+        // scroll down
         if (_gcanvas->isAcceptingEvent("mousewheeldown")) {
             _gcanvas->fireGEvent(event, MOUSE_WHEEL_DOWN, "mousewheeldown");
         }
     } else if (delta.y() > 0) {
-        // 向上滚动
+        // scroll up
         if (_gcanvas->isAcceptingEvent("mousewheelup")) {
             _gcanvas->fireGEvent(event, MOUSE_WHEEL_UP, "mousewheelup");
         }

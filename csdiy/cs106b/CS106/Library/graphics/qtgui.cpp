@@ -1,12 +1,12 @@
 /*
- * 文件：qtgui.cpp
+ * File: qtgui.cpp
  * ---------------
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 qtgui.cpp
+ * - renamed to qtgui.cpp
  * @version 2018/07/03
- * - 初始版本
+ * - initial version
  */
 
 #include "qtgui.h"
@@ -22,20 +22,20 @@
 #include "private/static.h"
 #include "private/init.h"
 
-// QSPLApplication 成员
+// QSPLApplication members
 QSPLApplication::QSPLApplication(int& argc, char *argv[])
         : QApplication(argc, argv) {
-    // 空
+    // empty
 }
 
 bool QSPLApplication::notify(QObject* receiver, QEvent* e) {
-    // 可以在此处使用 try/catch 处理 GUI 线程上的异常
-    // 但这会掩盖来源位置（丢失 backtrace）
-    return QApplication::notify(receiver, e);   // 调用父类实现
+    // could use try/catch here to handle exceptions on gui thread
+    // but this disguises where came from (loses backtrace)
+    return QApplication::notify(receiver, e);   // call super
 }
 
 
-// QtGui 成员
+// QtGui members
 QSPLApplication* QtGui::_app = nullptr;
 QtGui* QtGui::_instance = nullptr;
 
@@ -50,8 +50,8 @@ void QtGui::exitGraphics(int exitCode) {
         exitCode = 0;
     }
     if (_app) {
-// 需要暂时关闭 C++ 库的 exit 宏，以调用 QApplication 的 exit 方法
-// （注意：必须与 init.h 中的 exit 定义保持同步）
+// need to temporarily turn off C++ lib exit macro to call QApplication's exit method
+// (NOTE: must keep in sync with exit definition in init.h)
 #undef exit
         _app->quit();
         _app = nullptr;
@@ -88,7 +88,7 @@ void QtGui::initializeQt() {
                     "  - pid: %{pid}\n"
                     "  - thread: %{threadid}\n"
 
-                    // backtrace 在 Windows 和某些其他构建中不可用
+                    // backtrace doesn't work on windows and some other builds
 #ifndef _WIN32
                     "  - stack:\n"
                     "      %{backtrace depth=20 separator=\"\n      \"}"
@@ -103,7 +103,7 @@ void QtGui::initializeQt() {
 QtGui* QtGui::instance() {
     if (!_instance) {
         _instance = new QtGui();
-        GEventQueue::instance();   // 在 Qt GUI 主线程上创建事件队列
+        GEventQueue::instance();   // create event queue on Qt GUI main thread
     }
     return _instance;
 }
@@ -121,11 +121,11 @@ void QtGui::setArgs(int argc, char** argv) {
     _argv = argv;
 }
 
-// 应由 Qt 主线程调用此函数
+// this should be called by the Qt main thread
 void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startBackgroundEventLoop");
     native_set_thread_name("Qt GUI Event Loop");
-    // 在独立的第二线程中启动学生的 main 函数
+    // start student's main function in its own second thread
 
     if (!GThread::studentThreadExists()) {
         GThread::startStudentThread([&]() -> int {
@@ -135,23 +135,23 @@ void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
             return result;
         });
 
-        startEventLoop(exitAfter);   // 在主线程上启动 Qt 事件循环
+        startEventLoop(exitAfter);   // begin Qt event loop on main thread
     }
 }
 
-// 应由 Qt 主线程调用此函数
+// this should be called by the Qt main thread
 void QtGui::startEventLoop(bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startEventLoop");
     if (!_app) {
         error("QtGui::startEventLoop: need to initialize Qt first");
     }
 
-    // 在主线程上启动 Qt 事件循环；
-    // Qt GUI 主线程在此阻塞，直到 student main()（在其独立线程中）结束
+    // start Qt event loop on main thread;
+    // Qt GUI main thread blocks here until student main() finishes (in its own thread)
     int exitCode = _app->exec();
 
-    // 如果执行到这里，表示一个“关闭时退出”的窗口刚刚被关闭；
-    // 现在该关闭 Qt 系统并退出 C++ 程序了
+    // if I get here, it means an "exit on close" window was just closed;
+    // it's time to shut down the Qt system and exit the C++ program
     if (exitAfter) {
         exitGraphics(exitCode);
     }
@@ -161,12 +161,12 @@ void QtGui::startEventLoop(bool exitAfter) {
 
 namespace stanfordcpplib {
 void studentThreadHasExited(const std::string& reason) {
-    // 短暂等待控制台完成打印任何/全部输出
+    // briefly wait for the console to finish printing any/all output
     GThread::getCurrentThread()->yield();
     GThread::getCurrentThread()->sleep(1);
 
-    // 如果执行到这里，表示学生的 main() 已运行完毕；
-    // 通过在图形控制台上显示已完成的标题来表示这一点
+    // if I get here, student's main() has finished running;
+    // indicate this by showing a completed title on the graphical console
     if (getConsoleEnabled()) {
 #ifndef SPL_HEADLESS_MODE
         GConsoleWindow* console = getConsoleWindow();
@@ -175,8 +175,8 @@ void studentThreadHasExited(const std::string& reason) {
         }
 #endif // SPL_HEADLESS_MODE
     } else {
-        // 需要在此处退出，否则程序不会终止
-        // BUG 修复：不，这并非必要且有害；它会让窗口过早退出；禁用
+        // need to exit here else program will not terminate
+        // BUGFIX: no, this is not needed and is bad; it exits the window too soon; disable
         // QtGui::instance()->exitGraphics(result);
     }
 }

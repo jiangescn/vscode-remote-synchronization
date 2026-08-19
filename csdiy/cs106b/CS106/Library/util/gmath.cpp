@@ -1,15 +1,15 @@
 /*
- * 文件：gmath.cpp
+ * File: gmath.cpp
  * ---------------
- * 此文件实现 gmath.h 接口。在所有情况下，
- * 每个函数的实现只需要一行代码，
- * 因此无需详细文档。
+ * This file implements the gmath.h interface.  In all cases, the
+ * implementation for each function requires only one line of code,
+ * which makes detailed documentation unnecessary.
  *
  * @version 2018/11/22
- * - 添加无界面模式支持
- * - 按字母顺序排列方法
+ * - added headless mode support
+ * - alphabetized methods
  * @version 2016/10/14
- * - 修改浮点相等测试，使用 floatingPointEqual 函数
+ * - modified floating-point equality tests to use floatingPointEqual function
  */
 
 #include "gmath.h"
@@ -20,7 +20,7 @@
 extern const double PI = 3.14159265358979323846;
 extern const double E  = 2.71828182845904523536;
 
-// 另请参阅：
+// See also:
 // http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
 template<typename T>
 bool withinEpsilon(T f1, T f2) {

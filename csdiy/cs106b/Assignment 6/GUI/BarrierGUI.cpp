@@ -17,7 +17,7 @@ namespace {
 
     const double kPadding = 20;
 
-    /* 图形边界。 */
+    /* Graphics bounds. */
     GRectangle boundsFor(GWindow& window) {
         return { kPadding, kPadding, window.getCanvasWidth() - 2 * kPadding, window.getCanvasHeight() - 2 * kPadding };
     }
@@ -43,8 +43,8 @@ namespace {
         string message;
     };
 
-    /* 给定一组包含测试的文件名，返回所有这些文件名的集合
-     * 包含失败的测试。
+    /* Given a set of filenames containing tests, returns a set of all the filenames
+     * containing tests that failed.
      */
     set<string> failingTestsIn(const set<string>& filenames) {
         Vector<SimpleTest::TestGroup> lastTests;
@@ -82,7 +82,7 @@ ifPassedThen(const set<string>& filenames,
 
         setDemoOptionsEnabled(true);
 
-        /* 运行测试并检查是否全部通过。 */
+        /* Run the tests and see if they all passed. */
         auto fails = failingTestsIn(filenames);
         if (fails.empty()) {
             return constructor(window);

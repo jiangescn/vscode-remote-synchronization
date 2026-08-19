@@ -1,12 +1,12 @@
 /*
- * 文件：gobservable.cpp
+ * File: gobservable.cpp
  * ---------------------
  *
  * @author Marty Stepp
  * @version 2018/08/23
- * - 重命名为 gobservable.cpp，以替代 Java 版本
+ * - renamed to gobservable.cpp to replace Java version
  * @version 2018/07/11
- * - 初始版本
+ * - initial version
  */
 
 #include "gobservable.h"
@@ -19,11 +19,11 @@
 
 GObservable::GObservable()
         : _eventsEnabled(true) {
-    // 空
+    // empty
 }
 
 GObservable::~GObservable() {
-    // 空
+    // empty
 }
 
 void GObservable::clearEventListeners() {
@@ -44,7 +44,7 @@ void GObservable::fireEvent(GEvent& event) {
         if (hasEventListener(event.getName())) {
             _eventMap[event.getName()].fireEvent(event);
         } else {
-            // 放入全局队列供 waitForEvent 调用使用
+            // put into global queue for waitForEvent calls
             GEventQueue::instance()->enqueueEvent(event);
         }
     }
@@ -55,10 +55,10 @@ void GObservable::fireGEvent(QEvent* event,
                              const std::string& eventName) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent generalEvent(
-                /* 类  */ MOUSE_EVENT,
-                /* 类型   */ eventType,
-                /* 名称   */ eventName,
-                /* 来源 */ this);
+                /* class  */ MOUSE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ this);
     generalEvent.setInternalEvent(event);
     fireEvent(generalEvent);
 }
@@ -68,10 +68,10 @@ void GObservable::fireGEvent(QCloseEvent* event,
                              const std::string& eventName) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent windowEvent(
-                /* 类  */ WINDOW_EVENT,
-                /* 类型   */ eventType,
-                /* 名称   */ eventName,
-                /* 来源 */ this);
+                /* class  */ WINDOW_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ this);
     windowEvent.setInternalEvent(event);
     fireEvent(windowEvent);
 }
@@ -81,10 +81,10 @@ void GObservable::fireGEvent(QKeyEvent* event,
                              const std::string& eventName) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent keyEvent(
-                /* 类  */ KEY_EVENT,
-                /* 类型   */ eventType,
-                /* 名称   */ eventName,
-                /* 来源 */ this);
+                /* class  */ KEY_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ this);
     keyEvent.setKeyCode(event->key());
     std::string text = event->text().toStdString();
     if (!text.empty()) {
@@ -104,10 +104,10 @@ void GObservable::fireGEvent(QMouseEvent* event,
                              const std::string& actionCommand) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent mouseEvent(
-                /* 类  */ MOUSE_EVENT,
-                /* 类型   */ eventType,
-                /* 名称   */ eventName,
-                /* 来源 */ this);
+                /* class  */ MOUSE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ this);
     mouseEvent.setButton((int) event->button());
     mouseEvent.setX(event->pos().x());
     mouseEvent.setY(event->pos().y());
@@ -122,10 +122,10 @@ void GObservable::fireGEvent(QResizeEvent* event,
                              const std::string& eventName) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent windowEvent(
-                /* 类  */ WINDOW_EVENT,
-                /* 类型   */ WINDOW_RESIZED,
-                /* 名称   */ eventName,
-                /* 来源 */ this);
+                /* class  */ WINDOW_EVENT,
+                /* type   */ WINDOW_RESIZED,
+                /* name   */ eventName,
+                /* source */ this);
     windowEvent.setInternalEvent(event);
     fireEvent(windowEvent);
 }
@@ -135,10 +135,10 @@ void GObservable::fireGEvent(QTimerEvent* event,
                              const std::string& /* eventName */) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent timerEvent(
-                /* 类  */ TIMER_EVENT,
-                /* 类型   */ TIMER_TICKED,
-                /* 名称   */ "timer",
-                /* 来源 */ this);
+                /* class  */ TIMER_EVENT,
+                /* type   */ TIMER_TICKED,
+                /* name   */ "timer",
+                /* source */ this);
     timerEvent.setInternalEvent(event);
     fireEvent(timerEvent);
 }
@@ -148,10 +148,10 @@ void GObservable::fireGEvent(QWheelEvent* event,
                              const std::string& eventName) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent wheelEvent(
-                /* 类  */ MOUSE_EVENT,
-                /* 类型   */ eventType,
-                /* 名称   */ eventName,
-                /* 来源 */ this);
+                /* class  */ MOUSE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ this);
     wheelEvent.setButton((int) event->buttons());
     wheelEvent.setX(event->position().x());
     wheelEvent.setY(event->position().y());
@@ -165,10 +165,10 @@ void GObservable::fireGEvent(QWindowStateChangeEvent* event,
                              const std::string& eventName) {
     require::nonNull(event, "GObservable::fireGEvent", "event");
     GEvent windowEvent(
-                /* 类  */ WINDOW_EVENT,
-                /* 类型   */ eventType,
-                /* 名称   */ eventName,
-                /* 来源 */ this);
+                /* class  */ WINDOW_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ this);
     windowEvent.setInternalEvent(event);
     fireEvent(windowEvent);
 }

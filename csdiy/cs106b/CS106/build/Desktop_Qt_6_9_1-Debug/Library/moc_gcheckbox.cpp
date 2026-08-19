@@ -1,9 +1,9 @@
 /****************************************************************************
-** 读取 C++ 文件“gcheckbox.h”生成的元对象代码
+** Meta object code from reading C++ file 'gcheckbox.h'
 **
-** 创建工具：Qt 元对象编译器 69 版（Qt 6.9.1）
+** Created by: The Qt Meta Object Compiler version 69 (Qt 6.9.1)
 **
-** 警告！对此文件所做的所有更改都将丢失！
+** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
 #include "../../../Library/graphics/gcheckbox.h"
@@ -32,7 +32,7 @@ QT_WARNING_DISABLE_DEPRECATED
 QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
 struct qt_meta_tag_ZN19_Internal_QCheckBoxE_t {};
-} // 未命名命名空间
+} // unnamed namespace
 
 template <> constexpr inline auto _Internal_QCheckBox::qt_create_metaobjectdata<qt_meta_tag_ZN19_Internal_QCheckBoxE_t>()
 {
@@ -45,9 +45,9 @@ template <> constexpr inline auto _Internal_QCheckBox::qt_create_metaobjectdata<
     };
 
     QtMocHelpers::UintData qt_methods {
-        // 信号“doubleClicked”
+        // Signal 'doubleClicked'
         QtMocHelpers::SignalData<void()>(1, 2, QMC::AccessPublic, QMetaType::Void),
-        // 槽 'handleStateChange'
+        // Slot 'handleStateChange'
         QtMocHelpers::SlotData<void(int)>(3, 2, QMC::AccessPublic, QMetaType::Void, {{
             { QMetaType::Int, 2 },
         }}),

@@ -1,12 +1,12 @@
 /*
- * 文件：gspacer.h
+ * File: gspacer.h
  * ---------------
  *
- * GSpacer 只是一个空白空间块，用于为布局增加间距。
+ * A GSpacer is just an empty blob of space that helps you pad layouts.
  *
  * @author Marty Stepp
  * @version 2018/10/06
- * - 初始版本
+ * - initial version
  */
 
 
@@ -19,14 +19,14 @@
 
 class _Internal_QSpacer;
 /**
- * GSpacer 只是一个空白空间块，用于为布局增加间距。
+ * A GSpacer is just an empty blob of space that helps you pad layouts.
  */
 class GSpacer : public GInteractor {
 public:
     GSpacer(double width, double height, QWidget* parent = nullptr);
 
     /**
-     * 释放滚动窗格内部所分配的内存。
+     * Frees memory allocated internally by the scroll pane.
      */
     ~GSpacer() override;
 
@@ -49,7 +49,7 @@ private:
 
 
 /**
- * 内部类；客户端代码不应使用。
+ * Internal class; not to be used by clients.
  * @private
  */
 class _Internal_QSpacer : public QWidget, public _Internal_QWidget {
@@ -59,7 +59,7 @@ public:
     _Internal_QSpacer(GSpacer* gspacer, double width, double height, QWidget* parent = nullptr);
     QSize sizeHint() const override;
 
-// private（私有）：
+// private:
     // GSpacer* _gspacer;
 };
 

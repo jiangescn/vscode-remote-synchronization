@@ -1,9 +1,9 @@
 /*
- * 文件：linkedlist.h
+ * File: linkedlist.h
  * ------------------
- * 此文件导出 <code>LinkedList</code> 类，该类提供
- * 对象双向链表的实现，并提供
- * 类似于 <code>Vector</code> 类的公共接口。
+ * This file exports the <code>LinkedList</code> class, which provides an
+ * implementation of a doubly-linked list of objects and provides a
+ * public interface similar to that of the <code>Vector</code> class.
  */
 
 #ifndef _linkedlist_h
@@ -26,211 +26,211 @@
 #include "vector.h"
 
 /*
- * 类：LinkedList<ValueType>
+ * Class: LinkedList<ValueType>
  * ----------------------------
- * 此类存储一个类似数组的有序值列表。
- * 支持使用方括号进行传统数组选择，但
- * 还支持插入和删除元素。在以下方面类似：
- * 与 STL <code>list</code> 类型对应的函数。
+ * This class stores an ordered list of values similar to an array.
+ * It supports traditional array selection using square brackets, but
+ * also supports inserting and deleting elements.  It is similar in
+ * function to the STL <code>list</code> type.
  */
 template <typename ValueType>
 class LinkedList {
 public:
     /*
-     * 构造函数：LinkedList
-     * 用法：LinkedList<ValueType> list;
+     * Constructor: LinkedList
+     * Usage: LinkedList<ValueType> list;
      * ----------------------------------
-     * 初始化一个新 LinkedList。默认构造函数创建一个
-     * 空 LinkedList。
+     * Initializes a new LinkedList.  The default constructor creates an
+     * empty LinkedList.
      */
     LinkedList() = default;
-    /* 隐式 */ LinkedList(const std::list<ValueType>& v);
+    /* implicit */ LinkedList(const std::list<ValueType>& v);
 
     /*
-     * 此构造函数使用初始化列表设置链表。
-     * 用法：LinkedList<int> list {1, 2, 3};
+     * This constructor uses an initializer list to set up the linked list.
+     * Usage: LinkedList<int> list {1, 2, 3};
      */
     LinkedList(std::initializer_list<ValueType> list);
 
     /*
-     * 析构函数：~LinkedList
+     * Destructor: ~LinkedList
      * -------------------
-     * 释放此 LinkedList 分配的任何堆存储。
+     * Frees any heap storage allocated by this LinkedList.
      */
     virtual ~LinkedList() = default;
 
     /*
-     * 方法：add
-     * 用法：list.add(value);
+     * Method: add
+     * Usage: list.add(value);
      * ----------------------
-     * 将新值添加到此 LinkedList 末尾。
+     * Adds a new value to the end of this LinkedList.
      */
     void add(ValueType value);
 
     /*
-     * 方法：addAll
-     * 用法：list.addAll(l2);
+     * Method: addAll
+     * Usage: list.addAll(l2);
      * -----------------------
-     * 将给定其他链表中的所有元素添加到此列表。
-     * 返回对此列表的引用。
-     * 行为与 += 运算符相同。
+     * Adds all elements of the given other linked list to this list.
+     * Returns a reference to this list.
+     * Identical in behavior to the += operator.
      */
     LinkedList<ValueType>& addAll(const LinkedList<ValueType>& list);
 
     /*
-     * 方法：clear
-     * 用法：list.clear();
+     * Method: clear
+     * Usage: list.clear();
      * --------------------
-     * 从此 LinkedList 中删除所有元素。
+     * Removes all elements from this LinkedList.
      */
     void clear();
 
     /*
-     * 方法：equals
-     * 用法：if (list.equals(l2)) ...
+     * Method: equals
+     * Usage: if (list.equals(l2)) ...
      * -------------------------------
-     * 如果此链表包含完全相同的内容，则返回 <code>true</code>
-     * 与给定另一个列表相同的值。
-     * 行为与 == 运算符相同。
+     * Returns <code>true</code> if this linked list contains exactly the same
+     * values as the given other list.
+     * Identical in behavior to the == operator.
      */
     bool equals(const LinkedList<ValueType>& l2) const;
 
     /*
-     * 方法：get
-     * 用法：ValueType val = list.get(index);
+     * Method: get
+     * Usage: ValueType val = list.get(index);
      * ---------------------------------------
-     * 返回此 LinkedList 中指定索引处的元素。此
-     * 如果索引不在链表范围内，此方法会报告错误。
+     * Returns the element at the specified index in this LinkedList.  This
+     * method signals an error if the index is not in the list range.
      *
-     * 客户端应注意，与向量不同，此操作
-     * 对于链表为 O(N)，因为必须遍历列表才能到达
-     * 给定索引。
+     * The client should be mindful that unlike with a vector, this operation
+     * is O(N) for linked lists because it must traverse the list to reach
+     * the given index.
      */
     const ValueType& get(int index) const;
 
     /*
-     * 方法：insert
-     * 用法：list.insert(0, value);
+     * Method: insert
+     * Usage: list.insert(0, value);
      * -----------------------------
-     * 在指定索引之前将元素插入此 LinkedList。
-     * 如果索引超出从 0 开始的范围，此方法会报告错误
-     * 范围最大可包含 LinkedList 的长度。
+     * Inserts the element into this LinkedList before the specified index.
+     * This method signals an error if the index is outside the range from 0
+     * up to and including the length of the LinkedList.
      */
     void insert(int index, ValueType value);
 
     /*
-     * 方法：isEmpty
-     * 用法：if (list.isEmpty()) ...
+     * Method: isEmpty
+     * Usage: if (list.isEmpty()) ...
      * ------------------------------
-     * 如果此 LinkedList 不包含元素，则返回 <code>true</code>。
+     * Returns <code>true</code> if this LinkedList contains no elements.
      */
     bool isEmpty() const;
 
     /*
-     * 方法：mapAll
-     * 用法：list.mapAll(fn);
+     * Method: mapAll
+     * Usage: list.mapAll(fn);
      * ----------------------
-     * 按以下顺序对 LinkedList 中的每个元素调用指定函数：
-     * 按索引升序。
+     * Calls the specified function on each element of the LinkedList in
+     * ascending index order.
      */
     void mapAll(std::function<void (const ValueType &)> fn) const;
 
     /*
-     * 方法：remove
-     * 用法：list.remove(index);
+     * Method: remove
+     * Usage: list.remove(index);
      * -------------------------
-     * 从此 LinkedList 中删除指定索引处的元素。
-     * 如果索引超出列表范围，此方法会报告错误。
+     * Removes the element at the specified index from this LinkedList.
+     * This method signals an error if the index is outside the list range.
      */
     void remove(int index);
 
     /*
-     * 方法：set
-     * 用法：list.set(index, value);
+     * Method: set
+     * Usage: list.set(index, value);
      * ------------------------------
-     * 用以下值替换此 LinkedList 中指定索引处的元素
-     * 新值。该索引处之前的值会被覆盖。
-     * 如果索引不在列表范围内，此方法会报告错误。
+     * Replaces the element at the specified index in this LinkedList with
+     * a new value.  The previous value at that index is overwritten.
+     * This method signals an error if the index is not in the list range.
      *
-     * 客户端应注意，与向量不同，此操作
-     * 对于链表为 O(N)，因为必须遍历列表才能到达
-     * 给定索引。
+     * The client should be mindful that unlike with a vector, this operation
+     * is O(N) for linked lists because it must traverse the list to reach
+     * the given index.
      */
     void set(int index, const ValueType& value);
 
     /*
-     * 方法：size
-     * 用法：int nElems = list.size();
+     * Method: size
+     * Usage: int nElems = list.size();
      * --------------------------------
-     * 返回此 LinkedList 中的元素数量。
+     * Returns the number of elements in this LinkedList.
      */
     int size() const;
 
     /*
-     * 方法：sort
-     * 用法：list.sort();
+     * Method: sort
+     * Usage: list.sort();
      * -------------------
-     * 将此链表中的元素重新排列为排序顺序。
-     * 例如，如果列表存储 {9, 1, 4, 3}，则将其改为 {1, 3, 4, 9}。
-     * ValueType 必须具有 operator < 才能调用此方法。
+     * Rearranges the order of the elements in this list into sorted order.
+     * For example, if the list stores {9, 1, 4, 3}, changes it to store {1, 3, 4, 9}.
+     * The ValueType must have an operator < to call this method.
      */
     void sort();
 
     /*
-     * 方法：subList
-     * 用法：LinkedList<ValueType> sub = list.subList(start, length);
+     * Method: subList
+     * Usage: LinkedList<ValueType> sub = list.subList(start, length);
      * ---------------------------------------------------------------
-     * 返回一个包含给定元素子集范围的新列表
-     * 从此列表生成。新列表是深拷贝，不与此列表链接。
-     * 如果范围 (start .. start + length) 未包含在
-     * 位于此列表的边界内，否则 length 为负数。
+     * Returns a new list containing the given subset range of elements
+     * from this list. The new list is a deep copy, not linked to this one.
+     * Throws an error if the range (start .. start + length) is not contained
+     * within the bounds of this list, or if length is negative.
      */
     LinkedList<ValueType> subList(int start, int length) const;
 
     /*
-     * 方法：toString
-     * 用法：string str = list.toString();
+     * Method: toString
+     * Usage: string str = list.toString();
      * ------------------------------------
-     * 将 LinkedList 转换为可打印的字符串表示。
+     * Converts the LinkedList to a printable string representation.
      */
     std::string toString() const;
 
     /*
-     * 运算符：[]
-     * 用法：list[index]
+     * Operator: []
+     * Usage: list[index]
      * -----------------
-     * 重载 <code>[]</code>，用于从此 LinkedList 中选择元素。
-     * 此扩展允许使用传统数组下标语法来
-     * 获取或设置单个元素。若以下情况发生，此方法会报错：
-     * 索引超出列表范围。该文件支持两种
-     * 此运算符的多个版本，一个用于 <code>const</code> LinkedList，另一个
-     * 一个用于可变 LinkedList。
+     * Overloads <code>[]</code> to select elements from this LinkedList.
+     * This extension enables the use of traditional array notation to
+     * get or set individual elements.  This method signals an error if
+     * the index is outside the list range.  The file supports two
+     * versions of this operator, one for <code>const</code> LinkedLists and
+     * one for mutable LinkedLists.
      *
-     * 客户端应注意，此操作对于链表是 O(N)
-     * 链表，因为它必须遍历链表才能到达给定索引。
+     * The client should be mindful that this operation is O(N) for linked
+     * lists because it must traverse the list to reach the given index.
      */
     ValueType& operator [](int index);
     const ValueType& operator [](int index) const;
 
     /*
-     * 运算符：+
-     * 用法：v1 + l2
+     * Operator: +
+     * Usage: v1 + l2
      * --------------
-     * 连接两个 LinkedList，或将此链表与一个
-     * 例如 {1, 2, 3} 的初始化列表。
+     * Concatenates two LinkedLists, or concatenates this linked list with an
+     * initializer list such as {1, 2, 3}.
      */
     LinkedList operator +(const LinkedList& l2) const;
     LinkedList operator +(std::initializer_list<ValueType> list) const;
 
     /*
-     * 运算符：+=
-     * 用法：l1 += l2;
+     * Operator: +=
+     * Usage: l1 += l2;
      *        l1 += value;
      * -------------------
-     * 将 <code>l2</code> 中的所有元素（或单个
-     * 将指定值）添加到 <code>l1</code>。为方便起见，
-     * <code>LinkedList</code> 包还重载了逗号运算符，因此
-     * 使得可以像这样初始化 LinkedList：
+     * Adds all of the elements from <code>l2</code> (or the single
+     * specified value) to <code>l1</code>.  As a convenience, the
+     * <code>LinkedList</code> package also overloads the comma operator so
+     * that it is possible to initialize a LinkedList like this:
      *
      *<pre>
      *    LinkedList&lt;int&gt; digits;
@@ -241,20 +241,20 @@ public:
     LinkedList& operator +=(const ValueType& value);
 
     /*
-     * 比较 LinkedList 是否相等。
+     * Comparing LinkedLists for equality.
      */
     bool operator ==(const LinkedList& list2) const;
     bool operator !=(const LinkedList& list2) const;
 
 
     /*
-     * 运算符：<、>、<=、>=
-     * 用法：if (list1 == list2) ...
+     * Operators: <, >, <=, >=
+     * Usage: if (list1 == list2) ...
      * ...
      * -------------------------------
-     * 用于比较两个链表的关系运算符。
-     * <、>、<=、>= 运算符要求 ValueType 定义 < 运算符
-     * 以便逐对比较各元素。
+     * Relational operators to compare two lists.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
      */
     bool operator <(const LinkedList& list2) const;
     bool operator <=(const LinkedList& list2) const;
@@ -262,74 +262,74 @@ public:
     bool operator >=(const LinkedList& list2) const;
 
     /*
-     * 其他 LinkedList 操作
+     * Additional LinkedList operations
      * --------------------------------
-     * 除本接口中列出的方法外，LinkedList
-     * 类支持以下操作：
+     * In addition to the methods listed in this interface, the LinkedList
+     * class supports the following operations:
      *
-     *   - 使用 << 和 >> 运算符进行流输入/输出
-     *   - 为复制构造函数和赋值运算符实现深拷贝
-     *   - 使用基于范围的 for 语句或 STL 迭代器进行迭代
+     *   - Stream I/O using the << and >> operators
+     *   - Deep copying for the copy constructor and assignment operator
+     *   - Iteration using the range-based for statement or STL iterators
      *
-     * 这些迭代形式按索引顺序处理 LinkedList。
+     * The iteration forms process the LinkedList in index order.
      */
 
-    /* 私有部分 */
+    /* Private section */
 
     /**********************************************************************/
-    /* 注意：文件中此处以下的所有内容在逻辑上都属于    */
-    /* 属于实现细节，客户端无需关注。    */
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
 private:
     /*
-     * 实现说明：LinkedList 数据结构
+     * Implementation notes: LinkedList data structure
      * -------------------------------------------
-     * LinkedList 的元素存储在动态数组中
-     * 指定的元素类型。如果数组中的空间曾经
-     * 容量耗尽时，实现会将数组容量加倍。
+     * The elements of the LinkedList are stored in a dynamic array of
+     * the specified element type.  If the space in the array is ever
+     * exhausted, the implementation doubles the array capacity.
      */
 
-    /* 实例变量 */
-    std::list<ValueType> _elements;   // 使用 STL 链表作为底层存储
+    /* Instance variables */
+    std::list<ValueType> _elements;   // STL linked list as backing storage
     stanfordcpplib::collections::VersionTracker _version;
 
-    /* 私有方法 */
+    /* Private methods */
 
     /*
-     * 如果给定索引不在以下范围内，则抛出 ErrorException：
-     * [min..max]，包含两端。
-     * 这是供 LinkedList 各成员使用的统一错误处理程序，这些成员
-     * 接受索引参数。
-     * prefix 参数表示放在以下内容开头的文本字符串：
-     * 错误消息，通常用于指出是哪个成员抛出了错误。
+     * Throws an ErrorException if the given index is not within the range of
+     * [min..max] inclusive.
+     * This is a consolidated error handler for all various LinkedList members that
+     * accept index parameters.
+     * The prefix parameter represents a text string to place at the start of
+     * the error message, generally to help indicate which member threw the error.
      *
-     * 我们将 prefix 设为 const char* 而不是 std::string，以避免必须
-     * 每次调用都构造并销毁前缀。
+     * We make prefix a const char* rather than a std::string to avoid having to
+     * construct and then destroy the prefix with each call.
      */
     void checkIndex(int index, int min, int max, const char* prefix) const;
 
     /*
-     * 隐藏功能
+     * Hidden features
      * ---------------
-     * 此文件的剩余部分包含实现以下功能所需的代码：
-     * 支持深拷贝和迭代。加入这些方法
-     * 放入公共接口会使该接口更加
-     * 普通客户端难以理解。
+     * The remainder of this file consists of the code required to
+     * support deep copying and iteration.  Including these methods
+     * in the public interface would make that interface more
+     * difficult to understand for the average client.
      */
 
 public:
 
     /*
-     * 运算符：,
+     * Operator: ,
      * -----------
-     * 将元素添加到作为左操作数传入的 LinkedList。
-     * 此形式使在旧版 C++ 中初始化 LinkedList 更方便。
+     * Adds an element to the LinkedList passed as the left-hand operatand.
+     * This form makes it easier to initialize LinkedLists in old versions of C++.
      */
     LinkedList& operator ,(const ValueType& value);
 
     /*
-     * 迭代器支持。
+     * Iterator support.
      */
     using iterator = stanfordcpplib::collections::CheckedIterator<typename std::list<ValueType>::iterator>;
     using const_iterator = stanfordcpplib::collections::CheckedIterator<typename std::list<ValueType>::const_iterator>;
@@ -348,17 +348,17 @@ public:
     }
 };
 
-/* 实现部分 */
+/* Implementation section */
 
 template <typename ValueType>
 LinkedList<ValueType>::LinkedList(const std::list<ValueType>& v)
         : _elements(v) {
-    // 空
+    // empty
 }
 
 template <typename ValueType>
 LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) : _elements(list) {
-    // 空
+    // empty
 }
 
 template <typename ValueType>
@@ -411,10 +411,10 @@ bool LinkedList<ValueType>::isEmpty() const {
 }
 
 /*
- * 实现说明：mapAll
+ * Implementation notes: mapAll
  * ----------------------------
- * mapAll 函数的各种版本会应用该函数或
- * 按索引升序对每个元素调用函数对象。
+ * The various versions of the mapAll function apply the function or
+ * function object to each element in ascending index order.
  */
 template <typename ValueType>
 void LinkedList<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
@@ -446,8 +446,8 @@ int LinkedList<ValueType>::size() const {
 
 template <typename ValueType>
 void LinkedList<ValueType>::sort() {
-    // 实际对向量排序，以避免 O(N^2) 运行时间
-    // 代价是额外使用 O(N) 内存
+    // actually sort a vector to avoid O(N^2) runtime
+    // at the cost of O(N) extra memory usage
     Vector<ValueType> vec;
     for (ValueType element : *this) {
         vec.add(element);
@@ -487,10 +487,10 @@ std::string LinkedList<ValueType>::toString() const {
 }
 
 /*
- * 实现说明：LinkedList 选择
+ * Implementation notes: LinkedList selection
  * ------------------------------------------
- * 以下代码使用以下方式实现传统数组选择：
- * 用于索引的方括号。
+ * The following code implements traditional array selection using
+ * square brackets for the index.
  */
 template <typename ValueType>
 ValueType& LinkedList<ValueType>::operator [](int index) {
@@ -534,8 +534,8 @@ LinkedList<ValueType>::operator +=(const ValueType& value) {
 }
 
 /*
- * 实现说明：关系运算符
- * 这些运算符只是转发到底层 STL list。
+ * Implementation notes: relational operators
+ * These operators just forward to the underlying STL list.
  */
 template <typename ValueType>
 bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
@@ -577,18 +577,18 @@ void LinkedList<ValueType>::checkIndex(int index, int min, int max, const char* 
             out << min << ".." << max;
         } else if (min == max) {
             out << min;
-        } // 否则 min > max，没有范围，空 LinkedList
+        } // else min > max, no range, empty LinkedList
         out << "]";
         error(out.str());
     }
 }
 
 /*
- * 实现说明：逗号运算符
+ * Implementation notes: The , operator
  * ------------------------------------
- * 逗号运算符通过将右操作数添加到 LinkedList 来工作，并
- * 然后按引用返回 LinkedList，以便为下一次
- * 链中的值。
+ * The comma operator works adding the right operand to the LinkedList and
+ * then returning the LinkedList by reference so that it is set for the next
+ * value in the chain.
  */
 template <typename ValueType>
 LinkedList<ValueType>&
@@ -598,11 +598,11 @@ LinkedList<ValueType>::operator ,(const ValueType& value) {
 }
 
 /*
- * 实现说明：<< 和 >>
+ * Implementation notes: << and >>
  * -------------------------------
- * 插入和提取运算符使用以下文件中的模板功能：
- * 使用 strlib.h 读写通用值，并以特殊方式处理字符串
- * 特殊处理。
+ * The insertion and extraction operators use the template facilities in
+ * strlib.h to read and write generic values in a way that treats strings
+ * specially.
  */
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const LinkedList<ValueType>& list) {
@@ -612,12 +612,12 @@ std::ostream& operator <<(std::ostream& os, const LinkedList<ValueType>& list) {
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, LinkedList<ValueType>& list) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, list, element, /* 描述符 */ "LinkedList::operator >>");
+    return stanfordcpplib::collections::readCollection(is, list, element, /* descriptor */ "LinkedList::operator >>");
 }
 
 /*
- * 链表的模板哈希函数。
- * 要求 LinkedList 中的元素类型具有 hashCode 函数。
+ * Template hash function for linked lists.
+ * Requires the element type in the LinkedList to have a hashCode function.
  */
 template <typename T>
 int hashCode(const LinkedList<T>& list) {
@@ -625,11 +625,11 @@ int hashCode(const LinkedList<T>& list) {
 }
 
 /*
- * 函数：randomElement
- * 用法：element = randomElement(list);
+ * Function: randomElement
+ * Usage: element = randomElement(list);
  * -------------------------------------
- * 返回从给定列表中随机选择的元素。
- * 如果列表为空，则抛出错误。
+ * Returns a randomly chosen element of the given list.
+ * Throws an error if the list is empty.
  */
 template <typename T>
 const T& randomElement(const LinkedList<T>& list) {

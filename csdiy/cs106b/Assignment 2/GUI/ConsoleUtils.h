@@ -1,5 +1,5 @@
 /**
- * 用于构建控制台程序的实用工具。
+ * Utilities for building console-based programs.
  */
 #pragma once
 
@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-/* 给定选项列表，反复提示用户直到其选择一个选项，然后
- * 返回所选项的索引。
+/* Given a list of options, prompts the user until they pick an option, then
+ * returns the index of the selection.
  */
 int makeSelectionFrom(const std::string& title, const Vector<std::string>& options);
 int makeSelectionFrom(const std::string& title, const std::vector<std::string>& options);
 
-/* 提示用户从给定目录中选择文件。 */
+/* Prompts the user for a file from the given directory. */
 std::string makeFileSelection(const std::string& suffix, const std::string& directory = "res/");

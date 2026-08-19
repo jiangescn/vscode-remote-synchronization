@@ -1,8 +1,8 @@
 /*
- * 文件：ioutils.h
+ * File: ioutils.h
  * ---------------
- * 此文件包含用于帮助捕获、重定向
- * 并向 cin/cout/err 提供输入。
+ * This file contains declarations of functions to help capture, redirect,
+ * and feed input to cin/cout/err.
  * 
  * @author Marty Stepp
  * @version 2014/10/14
@@ -21,13 +21,13 @@ void captureStdoutBegin(bool alsoStderr = false);
 std::string captureStdoutEnd();
 
 /*
- * 函数：getConsoleEchoUserInput
- * 用法：bool echo = getConsoleEchoUserInput();
+ * Function: getConsoleEchoUserInput
+ * Usage: bool echo = getConsoleEchoUserInput();
  * ---------------------------------------------
- * 返回 Stanford 图形控制台的输入是否
- * 控制台窗口内容正在镜像到操作系统标准终端
- * 窗口。初始值为 false，除非之前调用以下方法将其设为 true：
- * setConsoleEchoUserInput(true)。
+ * Returns whether or not the input from the Stanford graphical
+ * console window is being echoed onto the standard operating system terminal
+ * window. Initially this is false unless set to true by a previous call to
+ * setConsoleEchoUserInput(true).
  */
 bool getConsoleEchoUserInput();
 int getConsoleOutputLimit();
@@ -37,22 +37,22 @@ void redirectStdinFeedInput(std::string userInput);
 void redirectStdinEnd();
 
 /*
- * 函数：setConsoleEchoUserInput
- * 用法：setConsoleEchoUserInput(true);
+ * Function: setConsoleEchoUserInput
+ * Usage: setConsoleEchoUserInput(true);
  * -------------------------------------
- * 启用或禁用回显来自 Stanford 的输入
- * 将控制台窗口内容镜像到操作系统标准终端窗口。
- * 通常不需要这种回显，但如果你希望能够复制
- * 并将控制台交互粘贴到另一个窗口时，此功能很有用。
+ * Enables or disables echoing the input from the Stanford
+ * console window onto the standard operating system terminal window.
+ * Normally you don't need this echoing, but if you want to be able to copy
+ * and paste your console interaction into another window, it is useful.
  */
 void setConsoleEchoUserInput(bool echo);
 
 /*
- * 设置控制台：如果总打印字符数超过 'limit'，则抛出错误。
- * 用于停止输出无限或近似无限内容的学生程序。
- * 如果 limit <= 0，则不设限制。
+ * Sets console to throw an error if more than 'limit' total chars are printed.
+ * Used to stop students who print infinite or semi-infinite output.
+ * If limit <= 0, no limit.
  */
 void setConsoleOutputLimit(int limit = 0);
-} // 命名空间 ioutils
+} // namespace ioutils
 
 #endif // _ioutils_h

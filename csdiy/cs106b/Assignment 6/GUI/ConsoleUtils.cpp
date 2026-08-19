@@ -28,7 +28,7 @@ int makeSelectionFrom(const string& title, const vector<string>& options) {
     }
 }
 
-/* 列出具有给定后缀的所有文件，并让用户选择一个。 */
+/* Lists all files with the given suffix and asks the user to pick one. */
 string makeFileSelection(const string& suffix, const string& directory) {
     Vector<string> options;
     for (const string& file: listDirectory(directory)) {

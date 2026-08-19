@@ -8,49 +8,49 @@
 #include <sstream>
 #include <iterator>
 
-/* 给定 UTF-8 编码流，从中提取一个字符。若该流
- * 不包含字符的正确编码——包括已到达 EOF 的情况——此时会报告
- * 通过抛出 UTFException 报告错误。
+/* Given a stream encoded in UTF-8, extracts one character from the stream. If the stream is
+ * doesn't contain a proper encoding of a character - including if it's at EOF - this reports
+ * an error by throwing a UTFException.
  */
 inline char32_t readChar(std::istream& source);
 
-/* 给定 UTF-8 编码流，查看流中的下一个字符但不取出。若该流
- * 不包含字符的正确编码——包括已到达 EOF 的情况——此时会报告
- * 通过抛出 UTFException 报告错误。
+/* Given a stream encoded in UTF-8, peeks at the next character from the stream. If the stream
+ * doesn't contain a proper encoding of a character - including if it's at EOF - this reports
+ * an error by throwing a UTFException.
  */
 inline char32_t peekChar(std::istream& source);
 
-/* 给定 UTF-32 的 Unicode 字符，返回该字符的 UTF-8 表示。 */
+/* Given a Unicode character in UTF-32, returns a UTF-8 representation of that character. */
 inline std::string toUTF8(char32_t ch);
 
-/* 给定表示单个 UTF-8 字符的字符串，返回其 char32_t 表示
- * 该字符。若字符串不表示单个 UTF-8 字符，则抛出
- * UTFException。
+/* Given a string representing a single UTF-8 character, returns a char32_t representation
+ * of that character. If the string does not represent a single UTF-8 character, throws
+ * a UTFException.
  */
 inline char32_t fromUTF8(const std::string& ch);
 
-/* 给定 UTF-32 的 Unicode 字符，返回表示一系列 UTF-16 单元的字符串 
- * 该字符的转义序列。此字符串具有以下格式之一：
- * \uXXXX（用于不需要代理项的字符），或 \uXXXX\uXXXX（用于以下字符：
- * 执行。）
+/* Given a Unicode character in UTF-32, returns a string representing a series of UTF-16 
+ * escape sequences for that character. This string will either have the format
+ * \uXXXX (for characters that don't need surrogates) or \uXXXX\uXXXX (for characters that
+ * do.)
  */
 inline std::string utf16EscapeFor(char32_t ch);
 
-/* 给定一个指向形如 \uHHHH 的转义序列的字符串（代理对则为 \uHHHH\uHHHH），
- * 代理项对），读取转义序列并返回所得字符。若
- * 流不包含这种格式的序列——包括已到达 EOF——
- * 此时通过抛出 UTFException 报告错误。
+/* Given a string pointing at an escape sequence of the form \uHHHH (or \uHHHH\uHHHH for a
+ * surrogate pair), reads the escape sequence(s) and returns the resulting character. If
+ * the stream doesn't contain a sequence formatted this way - including if it's at EOF -
+ * this reports an error by throwing a UTFException.
  */
 inline char32_t readUTF16EscapedChar(std::istream& source);
 
-/* 表示 UTF 编码期间产生的异常类型。 */
+/* Type representing an exception generated during UTF coding. */
 class UTFException: public std::logic_error {
 public:
     inline UTFException(const std::string& message);
 };
 
-/* 支持遍历字符串中字符的包装类型。此类型
- * 允许写出类似以下内容：
+/* Wrapper type supporting iteration over the characters in a string. This
+ * allows you to say something like
  *
  *     for (char32_t ch: utf8Reader(str)) {
  *          ...
@@ -78,19 +78,19 @@ private:
 
 
 
-/* * * * * 此处以下为实现部分 * * * * */
+/* * * * * Implementation Below This Point * * * * */
 
 #include <sstream>
 #include <iomanip>
 #include <cctype>
 
 namespace MiniData_UnicodeImpl {
-    /* 报告 UTF 错误。 */
+    /* Reports a UTF error. */
     [[ noreturn ]] inline void utfError(const std::string& message) {
         throw UTFException(message);
     }
 
-    /* 从流中获取下一个原始字符；若无法获取，则调用 error() 报错。 */
+    /* Gets the next raw character from a stream, reporting an error() if unable to do so. */
     inline char get(std::istream& input) {
         char result;
         if (!input.get(result)) utfError("Unexpected end of stream.");
@@ -98,29 +98,29 @@ namespace MiniData_UnicodeImpl {
         return result;
     }
     
-    /* 返回给定字节是否为后续字节（即以 10 开头的字节）。 */
+    /* Returns whether a given byte is a follow byte (that is, a byte starting with 10). */
     inline bool isFollowByte(char byte) {
         return (byte & 0b11000000) == 0b10000000;
     }
     
-    /* 将给定字符转换为十六进制值。 */
+    /* Converts a given character to a hex value. */
     inline std::string toHex(char ch) {
         std::ostringstream builder;
         builder << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(static_cast<unsigned char>(ch));
         return builder.str();
     }
     
-    /* 给定 UTF-8 编码流，读取组成单个 Unicode 字符的字节
-     * 字符。
+    /* Given a stream encoded in UTF-8, reads the bytes that compose a single Unicode
+     * character.
      */
     inline std::string nextBytesFrom(std::istream& source) {
         char header = get(source);
         std::string result(1, header);
         
-        /* 若此字符未设置最高位，则只需读取这些内容。 */
+        /* If this character doesn't have a high bit set, that's all there is to read. */
         if ((header & 0b10000000) == 0) return result;
         
-        /* 否则，确定需要读取多少个字符。 */
+        /* Otherwise, see how many characters there are to read. */
         std::size_t followBytes = 0;
         if      ((header & 0b11100000) == 0b11000000) followBytes = 1;
         else if ((header & 0b11110000) == 0b11100000) followBytes = 2;
@@ -137,21 +137,21 @@ namespace MiniData_UnicodeImpl {
         return result;        
     }
     
-    /* 给定表示 UTF-8 编码字符字节的字符串，解码这些字节
-     * 将字节组合成单个字符。
+    /* Given a string representing the bytes of a UTF-8 encoded character, decodes those
+     * bytes into a single character.
      */
     inline char32_t decode(const std::string& bytes) {
         if (bytes.empty()) utfError("Empty byte string?");
         
-        /* 若第一个字节以零位开头，则原样返回。 */
+        /* If the first byte starts with a zero bit, we just return it as-is. */
         if ((bytes[0] & 0b10000000) == 0) {
             if (bytes.size() != 1) utfError("Wrong number of bytes for 7-bit code point.");
             
             return bytes[0];
         }
         
-        /* 若第一个字节以 110xxxxx 开头，则需要解码一个 11 位数
-         * 格式为 110bbbbb 10bbbbbb
+        /* If the first byte begins with 110xxxxx, then we need to decode an 11-bit number
+         * of the form 110bbbbb 10bbbbbb
          */
         if ((bytes[0] & 0b11100000) == 0b11000000) {
             if (bytes.size() != 2) utfError("Wrong number of bytes for 11-bit code point.");
@@ -161,8 +161,8 @@ namespace MiniData_UnicodeImpl {
                    ((bytes[1] & 0b00111111) << 0);
         }
         
-        /* 若第一个字节以 1110xxxx 开头，则需要解码一个 16 位数
-         * 格式为 1110bbbb 10bbbbbb 10bbbbbb。
+        /* If the first byte begins with 1110xxxx, then we need to decode a 16-bit number
+         * of the form 1110bbbb 10bbbbbb 10bbbbbb.
          */
         if ((bytes[0] & 0b11110000) == 0b11100000) {
             if (bytes.size() != 3) utfError("Wrong number of bytes for 16-bit code point.");
@@ -174,8 +174,8 @@ namespace MiniData_UnicodeImpl {
                    ((bytes[2] & 0b00111111) <<  0);
         }
         
-        /* 若第一个字节以 11110xxx 开头，则需要解码一个 21 位数
-         * 格式为 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb。
+        /* If the first byte begins with 11110xxx, then we need to decode a 21-bit number
+         * of the form 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb.
          */
         if ((bytes[0] & 0b11111000) == 0b11110000) {
             if (bytes.size() != 4) utfError("Wrong number of bytes for 21-bit code point.");
@@ -192,36 +192,36 @@ namespace MiniData_UnicodeImpl {
         utfError("Not sure how to handle byte " + toHex(bytes[0]));
     }
     
-    /* 给定 16 位值，写出其转义序列。 */
+    /* Given a 16-bit value, writes out an escape sequence for it. */
     inline std::string oneEscapeUTF16For(uint16_t value) {
         std::ostringstream builder;
         builder << "\\u" << std::hex << std::setfill('0') << std::setw(4) << value;
         return builder.str();
     }
     
-    /* 给定需要代理项对的字符，返回两个代理分量。 */
+    /* Given a character that requires a surrogate pair, returns the surrogate components. */
     inline uint16_t highSurrogateFor(char32_t ch) {
-        return ((ch - 0x10000) >> 10) + 0xD800;            // 高 10 位
+        return ((ch - 0x10000) >> 10) + 0xD800;            // Top 10 bits
     }
     inline uint16_t lowSurrogateFor(char32_t ch) {
-        return ((ch - 0x10000) & 0b1111111111) + 0xDC00;   // 低 10 位
+        return ((ch - 0x10000) & 0b1111111111) + 0xDC00;   // Lower 10 bits
     }
     
-    /* 给定代理项对，将其重新组合成单个 Unicode 字符。 */
+    /* Given a surrogate pair, assembles the pair back into a single Unicode character. */
     inline char32_t assembleSurrogates(uint16_t high, uint16_t low) {
         return ((high - 0xD800) << 10) + (low - 0xDC00) + 0x10000;
     }
     
-    /* 给定一个流，读取形如 \uXXXX 的转义序列并返回其值
-     * 以这种方式编码。它可能是代理项对的一部分，因此返回值可能并不
-     * 实际上是有效字符。
+    /* Given a stream, reads an escape sequence of the form \uXXXX and returns the value
+     * encoded this way. It may be part of a surrogate pair, so what's returned may not
+     * actually be a valid character.
      */
     inline char32_t readOneUTF16Escape(std::istream& input) {
-        /* 确认开头为 \u。 */
+        /* Confirm we start with \u. */
         if (get(input) != '\\') utfError("Expected \\u.");
         if (get(input) != 'u')  utfError("Expected \\u.");
         
-        /* 读取四个十六进制字节。 */
+        /* Read four bytes of hex. */
         std::string builder;
         for (int i = 0; i < 4; i++) {
             char next = get(input);
@@ -230,7 +230,7 @@ namespace MiniData_UnicodeImpl {
             builder += next;
         }
         
-        /* 将这些字节转换为整数。 */
+        /* Convert those bytes to an integer. */
         return char32_t(stoi(builder, nullptr, 16));
     }
 }
@@ -240,11 +240,11 @@ inline char32_t readChar(std::istream& source) {
 }
 
 inline char32_t peekChar(std::istream& source) {
-    /* 读取字节并解码。 */
+    /* Read the bytes and decode them. */
     auto bytes = MiniData_UnicodeImpl::nextBytesFrom(source);
     auto result = MiniData_UnicodeImpl::decode(bytes);
     
-    /* 将字节放回。 */
+    /* Put the bytes back. */
     for (std::size_t i = 0; i < bytes.size(); i++) {
         source.unget();
         if (!source) MiniData_UnicodeImpl::utfError("Couldn't unget enough characters.");
@@ -254,7 +254,7 @@ inline char32_t peekChar(std::istream& source) {
 }
 
 inline std::string utf16EscapeFor(char32_t ch) {
-    /* 若此字符处于可直接转换的范围，则直接转换。 */
+    /* If this character is in the range where we can just directly convert it, go do so. */
     if (ch <= 0xD7FF || (ch >= 0xE000 && ch <= 0xFFFF)) {
         return MiniData_UnicodeImpl::oneEscapeUTF16For(ch);
     } else {
@@ -266,7 +266,7 @@ inline std::string utf16EscapeFor(char32_t ch) {
 inline char32_t readUTF16EscapedChar(std::istream& source) {
     char32_t result = MiniData_UnicodeImpl::readOneUTF16Escape(source);
     
-    /* 若读取的是高代理项的一半，则读取下一半并重新组合。 */
+    /* If what we read is pair of a high surrogate, read the next half and reassemble it. */
     if (result >= 0xD800 && result <= 0xDFFF) {
         if (result >= 0xDC00) MiniData_UnicodeImpl::utfError("Read second half of surrogate pair with no matching first half?");
         
@@ -280,11 +280,11 @@ inline char32_t readUTF16EscapedChar(std::istream& source) {
 inline std::string toUTF8(char32_t charCode) {
     std::ostringstream result;
 
-    /* 占用不超过 7 位的内容直接映射为自身。 */
+    /* Anything 7 bits or less just gets directly mapped to itself. */
     if (charCode < (1u << 7)) {
         result << char(charCode);
     }
-    /* 占用不超过 11 位的内容拆分为
+    /* Anything using 11 bits or less gets broken into
      * 110xxxxx 10xxxxxx
      */
     else if (charCode < (1u << 11)) {
@@ -293,7 +293,7 @@ inline std::string toUTF8(char32_t charCode) {
 
         result << char(highFive | 0b11000000) << char(lowSix | 0b10000000);
     }
-    /* 占用不超过 16 位的内容拆分为
+    /* Anything using 16 bits or less gets broken into
      * 1110xxxx 10xxxxxx 10xxxxxx
      */
     else if (charCode < (1u << 16)) {
@@ -305,7 +305,7 @@ inline std::string toUTF8(char32_t charCode) {
                << char(midSix | 0b10000000)
                << char(lowSix | 0b10000000);
     }
-    /* 占用不超过 21 位的内容拆分为
+    /* Anything using 21 bits or less gets broken into
      * 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
      */
     else if (charCode < (1u << 22)) {
@@ -343,7 +343,7 @@ class utf8Reader::const_iterator: public std::iterator<std::input_iterator_tag, 
 public:
     const_iterator() = default;
 
-    /* 只有当双方都是范围末尾迭代器，或双方都到达末尾时，才相等。 */
+    /* We're only equal if we're end-of-range iterators or if both of us are at the end. */
     bool operator== (const_iterator rhs) const {
         bool us   =     !owner ||     done;
         bool them = !rhs.owner || rhs.done;

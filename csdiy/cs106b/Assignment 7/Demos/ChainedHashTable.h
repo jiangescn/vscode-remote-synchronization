@@ -8,39 +8,39 @@
 class ChainedHashTable {
 public:
     /**
-     * 构造使用给定哈希函数的新链式哈希表
-     * 作为参数。
+     * Constructs a new chained hash table that uses the hash function given
+     * as the argument.
      */
     ChainedHashTable(HashFunction<std::string> hashFn);
 
     /**
-     * 返回该表是否为空。
+     * Returns whether the table is empty.
      */
     bool isEmpty() const;
 
     /**
-     * 返回表中的元素数量。
+     * Returns the number of elements in the table.
      */
     int size() const;
 
     /**
-     * 将指定元素插入此哈希表。若该元素已经
-     * 存在时，保持表不变。
+     * Inserts the specified element into this hash table. If the element already
+     * exists, this leaves the table unchanged.
      *
-     * 此函数返回元素是否已插入表中。
+     * This function returns whether the element was inserted into the table.
      */
     bool insert(const std::string& key);
 
     /**
-     * 返回此哈希表是否包含指定键。
+     * Returns whether the specified key is contained in this hash tasble.
      */
     bool contains(const std::string& key) const;
 
     /**
-     * 从此哈希表中移除指定元素。若该元素不
-     * 已存在于哈希表中，则此操作为空操作。
+     * Removes the specified element from this hash table. If the element is not
+     * present in the hash table, this operation is a no-op.
      *
-     * 若成功移除元素则返回 true，否则返回 false。
+     * Returns true if the element was removed and false otherwise.
      */
     bool remove(const std::string& key);
 

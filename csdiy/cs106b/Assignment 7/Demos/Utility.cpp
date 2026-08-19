@@ -5,7 +5,7 @@
 #include <random>
 #include <climits>
 
-/* 请求一致哈希函数时使用的随机数种子。 */
+/* Random number seed to use when asking for a consistent hash function. */
 const int kStableSeed = 137;
 
 HashFunction<std::string> Hash::random(int numSlots) {

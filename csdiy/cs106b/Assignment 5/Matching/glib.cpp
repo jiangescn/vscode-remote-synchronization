@@ -100,17 +100,17 @@ namespace EdRothberg {
         return(tmp);
     }
     
-    /*** 新增：清理为图分配的内存 ***/
+    /*** New addition to clean up memory allocated for a graph ***/
     
     void FreeGraph(Graph g) {
-        /* 清除边。节点数量存储为 g[0] 的度数。 */
+        /* Wipe the edges. Node count is stored as g[0]'s degree. */
         for (int i = 1; i <= Degree(g, 0); i++) {
             while (g[i].adj_list != nullptr) {
                 RemoveEdge(g, g[i].adj_list);
             }
         }
         
-        /* 清除图本身。 */
+        /* Wipe the graph itself. */
         free(g);
     }
 }
